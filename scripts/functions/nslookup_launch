@@ -1,0 +1,122 @@
+#!/bin/sh
+# Copyright (C) 2019 iopsys Software Solutions AB
+# 	Author: AMIN Ben Ramdhane <amin.benramdhane@pivasoftware.com>
+
+
+UCI_CONFIG_DIR="/etc/config/"
+UCI_GET_VARSTATE="/sbin/uci -q ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} -P /var/state get"
+UCI_SET_VARSTATE="/sbin/uci -q ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} -P /var/state set"
+UCI_ADD_VARSTATE="/sbin/uci -q ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} -P /var/state add"
+UCI_DELETE_VARSTATE="/sbin/uci -q ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} -P /var/state delete"
+UCI_SHOW_VARSTATE="/sbin/uci -q ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} -P /var/state show"
+LOG_FILE="/tmp/nslookup.log"
+
+nslookup_get() {
+	local val=`$UCI_GET_VARSTATE $1`
+	echo ${val:-$2}
+}
+
+nslookup_launch() {
+	local i j time1 time2 timeresponse status AnswerType HostNameReturned address dns_server_ip ResponseTime success_count
+	local address=""
+	[ "$1" == "cwmp" ] && [ "`$UCI_GET_VARSTATE cwmp.@nslookupdiagnostic[0].DiagnosticState`" != "Requested" ] && return
+	local hostname=`nslookup_get cwmp.@nslookupdiagnostic[0].HostName`
+	local dnsserver=`nslookup_get cwmp.@nslookupdiagnostic[0].DNSServer`
+	local cnt=`nslookup_get cwmp.@nslookupdiagnostic[0].NumberOfRepetitions 1`
+	[ "$hostname" = "" ] && return
+	i=0
+	j=0
+	success_count=0
+	[ -e "${LOG_FILE}" ] && rm ${LOG_FILE}
+	delete_all_results
+	while [ $i -lt $cnt ]; do
+		let i++
+		time1=`date +%s`
+		if [ -z "$dnsserver" ]; then
+			nslookup $hostname >>${LOG_FILE} 2>&1
+		else
+			nslookup $hostname $dnsserver >>${LOG_FILE} 2>&1
+		fi
+		time2=`date +%s`                       
+		timeresponse=$(($(($time2-$time1))*1000))
+		echo "ResponseTime: $timeresponse" >>${LOG_FILE}
+		echo "++++++++++++++++++++++++++++++" >>${LOG_FILE}
+	done
+
+	while IFS= read line; do
+	[ -z "$line" ] && continue;
+	local server=`echo "$line" | tr -d '\t' | tr -d ' ' | grep "Server:" | awk -F':' '{print $2}'`
+
+	if [[ -n "$server" && "$server" == "0.0.0.0" ]]; then
+	        status="Error_DNSServerNotAvailable"
+	        continue
+	elif [ -n "$server" ]; then
+	        dns_server_ip=$server
+	        continue
+	fi
+
+	var=`echo "$line" | tr -d '\t' | tr -d ' ' | grep "Name:" | awk -F':' '{print $2}'`
+	[ -n "$var" ] && { HostNameReturned=$var; status="Success"; AnswerType="Authoritative"; let success_count++; continue; }
+
+	var=`echo "$line" | grep "Address " | awk -F':' '{print substr($0, index($0,$2))}' | tr -d '\t' | tr -d ' '`
+	[ -n "$var" ] && { [ -z "$address" ] && address="$var" || address="$address,$var"; continue; }
+
+	var=`echo "$line" | tr -d '\t' | tr -d ' ' | grep "ResponseTime:" | awk -F':' '{print $2}'`
+	[ -n "$var" ] && { ResponseTime=$var; continue; }
+
+	echo $line | grep 'Can' >/dev/null 2>&1 && {  continue; }
+	echo $line | grep 'connection timed out' >/dev/null 2>&1 && { AnswerType="None"; status="Error_Timeout"; continue; }
+	echo $line | grep 'Non-authoritative' >/dev/null 2>&1 && { AnswerType="NonAuthoritative"; continue; }
+
+	if echo $line | grep '++++++++++++++++++++++' >/dev/null 2>&1; then
+		$UCI_ADD_VARSTATE cwmp NSLookupResult
+		$UCI_SET_VARSTATE cwmp.@NSLookupResult[$j].Status=$status
+		$UCI_SET_VARSTATE cwmp.@NSLookupResult[$j].AnswerType=$AnswerType
+		$UCI_SET_VARSTATE cwmp.@NSLookupResult[$j].HostNameReturned=$HostNameReturned
+		$UCI_SET_VARSTATE cwmp.@NSLookupResult[$j].IPAddresses=$address
+		$UCI_SET_VARSTATE cwmp.@NSLookupResult[$j].DNSServerIP=$dns_server_ip
+		$UCI_SET_VARSTATE cwmp.@NSLookupResult[$j].ResponseTime=$ResponseTime
+		let j++
+		address=""
+	fi
+	done <${LOG_FILE}
+	rm -f ${LOG_FILE}
+	$UCI_SET_VARSTATE cwmp.@nslookupdiagnostic[0].SuccessCount=$success_count
+	[ "$1" == "cwmp" ] && $UCI_SET_VARSTATE cwmp.@nslookupdiagnostic[0].DiagnosticState=Complete
+	[ "$1" == "cwmp" ] && event_dignostic
+}
+
+delete_all_results() {
+	local j
+	for j in $($UCI_SHOW_VARSTATE cwmp | grep "cwmp.@NSLookupResult.*=NSLookupResult"); do
+		$UCI_DELETE_VARSTATE cwmp.@NSLookupResult[-1]
+	done
+}
+
+event_dignostic() {
+	local e=1
+	local i=0
+	while [ "$e" != 0 -a $i -lt 200 ]; do
+		ubus -t 1 call tr069 inform '{"event":"8 DIAGNOSTICS COMPLETE"}' &>/dev/null
+		e=$?
+		[ "$e" != "0" ] && sleep 1;
+		let i++
+	done
+}
+
+nslookup_stop_diagnostic() {
+	delete_all_results
+	local pids=`ps | grep nslookup_launch | grep -v grep | awk '{print $1}'`
+	if [ -n "$pids" ]; then
+		kill -9 $pids &>/dev/null
+		$UCI_SET_VARSTATE cwmp.@nslookupdiagnostic[0].DiagnosticState=None
+	fi
+}
+
+if [ "$1" == "run" ]; then
+	nslookup_launch $2
+elif [ "$1" == "stop" ]; then
+	nslookup_stop_diagnostic
+else
+	return
+fi

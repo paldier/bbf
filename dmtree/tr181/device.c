@@ -1,0 +1,109 @@
+/*
+*      This program is free software: you can redistribute it and/or modify
+*      it under the terms of the GNU General Public License as published by
+*      the Free Software Foundation, either version 2 of the License, or
+*      (at your option) any later version.
+*
+*      Copyright (C) 2019 iopsys Software Solutions AB
+*		Author: Imen Bhiri <imen.bhiri@pivasoftware.com>
+*		Author: Anis Ellouze <anis.ellouze@pivasoftware.com>
+*		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
+*/
+
+#include "dmuci.h"
+#include "dmcwmp.h"
+#include "device.h"
+#include "deviceinfo.h"
+#include "managementserver.h"
+#include "times.h"
+#include "upnp.h"
+#include "x_iopsys_eu_ice.h"
+#include "x_iopsys_eu_igmp.h"
+#include "x_iopsys_eu_ipacccfg.h"
+#include "x_iopsys_eu_logincfg.h"
+#include "x_iopsys_eu_power_mgmt.h"
+#include "x_iopsys_eu_syslog.h"
+#include "softwaremodules.h"
+#include "xmpp.h"
+#include "x_iopsys_eu_owsd.h"
+#include "x_iopsys_eu_dropbear.h"
+#include "x_iopsys_eu_buttons.h"
+#include "x_iopsys_eu_wifilife.h"
+#include "ip.h"
+#include "ethernet.h"
+#include "bridging.h"
+#include "wifi.h"
+#include "atm.h"
+#include "ptm.h"
+#include "dhcpv4.h"
+#include "hosts.h"
+#include "nat.h"
+#include "ppp.h"
+#include "routing.h"
+#include "userinterface.h"
+#include "firewall.h"
+#include "dns.h"
+#include "users.h"
+#include "dsl.h"
+#include "dhcpv6.h"
+#include "interfacestack.h"
+#include "qos.h"
+#ifdef BBF_TR104
+#include "voice_services.h"
+#endif
+
+/* *** CWMP *** */
+DMOBJ tEntry181Obj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
+{(char *)&dmroot, &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, tRoot_181_Obj, tRoot_181_Params, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tRoot_181_Params[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"InterfaceStackNumberOfEntries", &DMREAD, DMT_UNINT, get_Device_InterfaceStackNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMOBJ tRoot_181_Obj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
+{"DeviceInfo", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,tDeviceInfoObj, tDeviceInfoParams, NULL, BBFDM_BOTH},
+{"ManagementServer", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,NULL, tManagementServerParams, NULL, BBFDM_BOTH},
+{"Time", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tTimeParams, NULL, BBFDM_BOTH},
+{"UPnP", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tUPnPObj, NULL, NULL, BBFDM_BOTH},
+#ifdef BBF_TR104
+{"Services", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tServiceObj, NULL, NULL, BBFDM_BOTH},
+#endif
+{CUSTOM_PREFIX"ICE", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_IceParam, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"IGMP", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_IgmpParam, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"IpAccCfg", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tSe_IpAccObj, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"LoginCfg", &DMREAD, NULL, NULL, NULL, NULL,NULL, &DMNONE,NULL, tSe_LoginCfgParam, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"PowerManagement", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_PowerManagementParam, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"SyslogCfg", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_SyslogCfgParam, NULL, BBFDM_BOTH},
+{"SoftwareModules", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tSoftwareModulesObj, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"Owsd", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,XIopsysEuOwsdObj, XIopsysEuOwsdParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"Dropbear", &DMWRITE, add_dropbear_instance, delete_dropbear_instance, NULL, browseXIopsysEuDropbear, NULL, &DMNONE, NULL, X_IOPSYS_EU_DropbearParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"Buttons", &DMREAD, NULL, NULL, NULL, browseXIopsysEuButton, NULL, &DMNONE, NULL, X_IOPSYS_EU_ButtonParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"WiFiLife", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, X_IOPSYS_EU_WiFiLifeObj, X_IOPSYS_EU_WiFiLifeParams, NULL, BBFDM_BOTH},
+{"Bridging",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tBridgingObj, tBridgingParams, NULL, BBFDM_BOTH},
+{"WiFi",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tWiFiObj, tWiFiParams, NULL, BBFDM_BOTH},
+{"IP",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tIPObj, tIPParams, NULL, BBFDM_BOTH},
+{"Ethernet", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tEthernetObj, tEthernetParams, NULL, BBFDM_BOTH},
+{"DSL",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tDSLObj, tDSLParams, NULL, BBFDM_BOTH},
+{"ATM",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tATMObj, NULL, NULL, BBFDM_BOTH},
+{"PTM", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tPTMObj, NULL, NULL, BBFDM_BOTH},
+{"DHCPv4", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tDhcpv4Obj, tDHCPv4Params, NULL, BBFDM_BOTH},
+{"DHCPv6", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tDHCPv6Obj, tDHCPv6Params, NULL, BBFDM_BOTH},
+{"Hosts", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tHostsObj, tHostsParams, NULL, BBFDM_BOTH},
+{"NAT", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tNATObj, tNATParams, NULL, BBFDM_BOTH},
+{"PPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tPPPObj, tPPPParams, NULL, BBFDM_BOTH},
+{"Routing", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tRoutingObj, tRoutingParams, NULL, BBFDM_BOTH},
+{"UserInterface", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tUserInterfaceObj, NULL, NULL, BBFDM_BOTH},
+{"Firewall", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tFirewallObj, tFirewallParams, NULL, BBFDM_BOTH},
+{"DNS", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tDNSObj, tDNSParams, NULL, BBFDM_BOTH},
+{"Users", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tUsersObj, tUsersParams, NULL, BBFDM_BOTH},
+{"InterfaceStack", &DMREAD, NULL, NULL, NULL, browseInterfaceStackInst, NULL, NULL, NULL, tInterfaceStackParams, NULL, BBFDM_BOTH},
+//{"QoS", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tQoSObj, tQoSParams, NULL, BBFDM_BOTH},
+{"XMPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL,tXMPPObj, tXMPPParams, NULL, BBFDM_BOTH},
+{0}
+};

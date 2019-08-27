@@ -4,8 +4,8 @@
  *	the Free Software Foundation, either version 2 of the License, or
  *	(at your option) any later version.
  *
- *	Copyright (C) 2012-2014 PIVA SOFTWARE (www.pivasoftware.com)
-*		Author: Imen Bhiri <imen.bhiri@pivasoftware.com>
+ *	Copyright (C) 2019 iopsys Software Solutions AB
+ *		Author: Imen Bhiri <imen.bhiri@pivasoftware.com>
  *		Author: Feten Besbes <feten.besbes@pivasoftware.com>
  *		Author: Mohamed Kallel <mohamed.kallel@pivasoftware.com>
  *		Author: Anis Ellouze <anis.ellouze@pivasoftware.com>

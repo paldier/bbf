@@ -4,7 +4,7 @@
  *	the Free Software Foundation, either version 2 of the License, or
  *	(at your option) any later version.
  *
- *	Copyright (C) 2016 Inteno Broadband Technology AB
+ *	Copyright (C) 2019 iopsys Software Solutions AB
  *		Author: Omar Kallel <omar.kallel@pivasoftware.com>
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  *

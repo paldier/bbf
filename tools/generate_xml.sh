@@ -287,7 +287,7 @@ gen_data_model_xml_file() {
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 echo "<deviceType xmlns=\"urn:dslforum-org:hdm-0-0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"urn:dslforum-org:hdm-0-0 deviceType.xsd\">"
 echo "    <protocol>$DEVICE_PROTOCOL</protocol>"
-echo "    <manufacturer>Inteno</manufacturer>"
+echo "    <manufacturer>iopsys</manufacturer>"
 echo "    <manufacturerOUI>002207</manufacturerOUI>"
 echo "    <productClass>$PRODUCT_CLASS</productClass>"
 echo "    <modelName>$MODEL_NAME</modelName>" 

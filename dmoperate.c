@@ -68,16 +68,15 @@ static void cwmp_init(struct dmctx *dm_ctx, char *path)
 		dmuci_get_option_value_string("cwmp", "cpe", "amd_version", &uci_amd);
 		if(uci_amd) {
 			amd = atoi(uci_amd);
-			free(uci_amd);
+			dmfree(uci_amd);
 		}
 		dmuci_get_option_value_string("cwmp", "cpe", "instance_mode", &uci_instance);
 		if(uci_instance) {
 			if(!is_str_eq(uci_instance, "InstanceAlias"))
 				instance = INSTANCE_MODE_NUMBER;
-			free(uci_instance);
+			dmfree(uci_instance);
 		}
 	}
-	printf("amd |%d| instance|%d|\n", amd, instance);
 	dm_ctx_init(dm_ctx, DM_CWMP, amd, instance);
 }
 
@@ -90,7 +89,6 @@ static bool cwmp_get(int operation, char *path, struct dmctx *dm_ctx)
 {
 	int fault = 0;
 
-	printf("Entry |%s| operation|%d| \n", path, operation);
 	switch(operation) {
 		case CMD_GET_NAME:
 			fault = dm_entry_param_method(dm_ctx, CMD_GET_NAME, path, "true", NULL);
@@ -99,7 +97,6 @@ static bool cwmp_get(int operation, char *path, struct dmctx *dm_ctx)
 			fault = dm_entry_param_method(dm_ctx, CMD_GET_VALUE, path, NULL, NULL);
 			break;
 		default:
-			printf("Operation not supported yet!\n");
 			return false;
 	}
 
@@ -119,7 +116,7 @@ static bool cwmp_set_value(char *path, char *value)
 	struct dmctx *p_dmctx = &dm_ctx;
 
 	cwmp_init(&dm_ctx, path);
-	printf("Entry path|%s|, value|%s|", path, value);
+
 	fault = dm_entry_param_method(&dm_ctx, CMD_SET_VALUE, path, value, NULL);
 
 	if(!fault) {
@@ -139,19 +136,16 @@ static bool cwmp_set_value(char *path, char *value)
 	return res;
 }
 
-
-char *cwmp_get_value_by_id(char *id)
+static char *cwmp_get_value_by_id(char *id)
 {
 	struct dmctx dm_ctx = {0};
 	struct dm_parameter *n;
 	char *value = NULL;
 
-	printf("Entry id |%s|", id);
 	cwmp_init(&dm_ctx, id);
 	if(cwmp_get(CMD_GET_VALUE, id, &dm_ctx)) {
 			list_for_each_entry(n, &dm_ctx.list_parameter, list) {
-				printf("value |%s| \n", n->name);
-				value = dmstrdup(n->data);
+				value = strdup(n->data);
 				break;
 			}
 	}
@@ -204,12 +198,10 @@ static opr_ret_t network_interface_reset(struct dmctx *dmctx, char *path, char *
 	zone = get_param_val_from_op_cmd(path, "Name");
 	if(zone) {
 		strcat(cmd, zone);
-		dmfree(zone);
+		free(zone);
 	} else {
-		printf("Network not reachable |%s|", cmd);
 		return FAIL;
 	}
-	printf("cmd |%s|", cmd);
 	if(0 == dmubus_call_set(cmd, "down", UBUS_ARGS{}, 0))
 		status = true;
 
@@ -284,15 +276,15 @@ static opr_ret_t vendor_conf_backup(struct dmctx *dmctx, char *path, char *input
 	char *vcf_name = NULL;
 
 	vcf_name = get_param_val_from_op_cmd(path, "Name");
-	if (vcf_name[0] == '\0')
+	if (!vcf_name)
 		return FAIL;
 
 	json_res = json_tokener_parse((const char *)input);
-	fserver.url = dmstrdup(dmjson_get_value(json_res, 1, "URL"));
+	fserver.url = dmjson_get_value(json_res, 1, "URL");
 	if(fserver.url[0] == '\0')
 		return UBUS_INVALID_ARGUMENTS;
 
-	fserver.user = dmstrdup(dmjson_get_value(json_res, 1, "Username"));
+	fserver.user = dmjson_get_value(json_res, 1, "Username");
 	if(fserver.user[0] == '\0')
 		return UBUS_INVALID_ARGUMENTS;
 
@@ -301,7 +293,7 @@ static opr_ret_t vendor_conf_backup(struct dmctx *dmctx, char *path, char *input
 		return UBUS_INVALID_ARGUMENTS;
 
 	dmcmd("/bin/sh", 7, ICWMP_SCRIPT, "upload", fserver.url, VCF_FILE_TYPE, fserver.user, fserver.pass, vcf_name);
-	dmfree(vcf_name);
+	free(vcf_name);
 
 	return SUCCESS;
 }

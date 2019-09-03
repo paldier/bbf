@@ -77,12 +77,12 @@ static void cwmp_init(struct dmctx *dm_ctx, char *path)
 			dmfree(uci_instance);
 		}
 	}
-	dm_ctx_init(dm_ctx, DM_CWMP, amd, instance);
+	dm_ctx_init_sub(dm_ctx, DM_CWMP, amd, instance);
 }
 
 static void cwmp_cleanup(struct dmctx *dm_ctx)
 {
-	dm_ctx_clean(dm_ctx);
+	dm_ctx_clean_sub(dm_ctx);
 }
 
 static bool cwmp_get(int operation, char *path, struct dmctx *dm_ctx)

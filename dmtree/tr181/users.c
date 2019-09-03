@@ -60,7 +60,7 @@ int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instanc
 	struct uci_section *s, *dmmap_user;
 	char *last_inst= NULL, *sect_name= NULL, *username, *v;
 	char ib[8];
-	last_inst= get_last_instance_icwmpd("dmmap_users", "user", "user_instance");
+	last_inst= get_last_instance_bbfdm("dmmap_users", "user", "user_instance");
 	if (last_inst)
 		sprintf(ib, "%s", last_inst);
 	else
@@ -73,9 +73,9 @@ int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instanc
 	dmuci_set_value_by_section(s, "enabled", "1");
 	dmuci_set_value_by_section(s, "password", username);
 
-	dmuci_add_section_icwmpd("dmmap_users", "user", &dmmap_user, &v);
+	dmuci_add_section_bbfdm("dmmap_users", "user", &dmmap_user, &v);
 	dmuci_set_value_by_section(dmmap_user, "section_name", sect_name);
-	*instance = update_instance_icwmpd(dmmap_user, last_inst, "user_instance");
+	*instance = update_instance_bbfdm(dmmap_user, last_inst, "user_instance");
 	return 0;
 }
 
@@ -95,7 +95,7 @@ int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *insta
 				dmuci_delete_by_section_unnamed((struct uci_section *)data, NULL, NULL);
 			} else {
 				get_dmmap_section_of_config_section("dmmap_users", "user", section_name((struct uci_section *)data), &dmmap_section);
-				dmuci_delete_by_section_unnamed_icwmpd(dmmap_section, NULL, NULL);
+				dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			}
 			break;

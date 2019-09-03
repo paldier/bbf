@@ -151,7 +151,7 @@ int add_ptm_link(char *refparam, struct dmctx *ctx, void *data, char **instancep
 	struct uci_section *dmmap_ptm = NULL;
 
 	check_create_dmmap_package("dmmap_dsl");
-	instance = get_last_instance_icwmpd("dmmap_dsl", "ptm-device", "ptmlinkinstance");
+	instance = get_last_instance_bbfdm("dmmap_dsl", "ptm-device", "ptmlinkinstance");
 	dmasprintf(&ptm_device, "ptm%d", instance ? atoi(instance) : 0);
 	dmasprintf(&instance_update, "%d", instance ? atoi(instance)+ 1 : 1);
 	dmuci_set_value("dsl", ptm_device, "", "ptm-device");
@@ -159,9 +159,9 @@ int add_ptm_link(char *refparam, struct dmctx *ctx, void *data, char **instancep
 	dmuci_set_value("dsl", ptm_device, "device", ptm_device);
 	dmuci_set_value("dsl", ptm_device, "priority", "1");
 	dmuci_set_value("dsl", ptm_device, "portid", "1");
-	dmuci_add_section_icwmpd("dmmap_dsl", "ptm-device", &dmmap_ptm, &v);
+	dmuci_add_section_bbfdm("dmmap_dsl", "ptm-device", &dmmap_ptm, &v);
 	dmuci_set_value_by_section(dmmap_ptm, "section_name", ptm_device);
-	*instancepara = update_instance_icwmpd(dmmap_ptm, instance, "ptmlinkinstance");
+	*instancepara = update_instance_bbfdm(dmmap_ptm, instance, "ptmlinkinstance");
 	return 0;
 }
 

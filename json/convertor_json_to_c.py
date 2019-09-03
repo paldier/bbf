@@ -219,13 +219,13 @@ def cprintAddDelObj( faddobj, fdelobj, name, mappingobj, dmobject ):
 			print >> fp, "	struct uci_section *dmmap = NULL, *s = NULL;"
 			print >> fp, ""
 			print >> fp, "	check_create_dmmap_package(\"%s\");" % dmmapfile
-			print >> fp, "	inst = get_last_instance_icwmpd(\"%s\", \"%s\", \"%s\");" % (dmmapfile, sectiontype, name+"instance")
+			print >> fp, "	inst = get_last_instance_bbfdm(\"%s\", \"%s\", \"%s\");" % (dmmapfile, sectiontype, name+"instance")
 			print >> fp, "	dmuci_add_section_and_rename(\"%s\", \"%s\", &s, &value);" % (file, sectiontype)
 			print >> fp, "	//dmuci_set_value_by_section(s, \"option\", \"value\");"
 			print >> fp, ""
-			print >> fp, "	dmuci_add_section_icwmpd(\"%s\", \"%s\", &dmmap, &v);" % (dmmapfile, sectiontype)
+			print >> fp, "	dmuci_add_section_bbfdm(\"%s\", \"%s\", &dmmap, &v);" % (dmmapfile, sectiontype)
 			print >> fp, "	dmuci_set_value_by_section(dmmap, \"section_name\", section_name(s));"
-			print >> fp, "	*instance = update_instance_icwmpd(dmmap, inst, \"%s\");" % (name+"instance")
+			print >> fp, "	*instance = update_instance_bbfdm(dmmap, inst, \"%s\");" % (name+"instance")
 	else:
 		print >> fp, "	//TODO"
 	print >> fp, "	return 0;"

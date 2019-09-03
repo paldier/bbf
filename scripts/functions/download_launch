@@ -10,8 +10,8 @@ UCI_SET_VARSTATE="/sbin/uci -q ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} -P /var/sta
 UCI_ADD_VARSTATE="/sbin/uci -q ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} -P /var/state add"
 UCI_DELETE_VARSTATE="/sbin/uci -q ${UCI_CONFIG_DIR:+-c $UCI_CONFIG_DIR} -P /var/state delete"
 CAPTURE_FILE="/tmp/download_dump"
-DOWNLOAD_DIAGNOSTIC_FILE="/tmp/icwmp_download_diagnostic"
-DOWNLOAD_DIAGNOSTIC_LOG_FILE="/tmp/icwmp_download_diagnostic_log"
+DOWNLOAD_DIAGNOSTIC_FILE="/tmp/bbfdm_download_diagnostic"
+DOWNLOAD_DIAGNOSTIC_LOG_FILE="/tmp/bbfdm_download_diagnostic_log"
 CONNECTION_TIMEOUT=10
 
 download_get() {

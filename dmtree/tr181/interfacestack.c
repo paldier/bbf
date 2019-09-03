@@ -67,12 +67,12 @@ static struct uci_section *create_dmmap_interface_stack_section(char *curr_inst)
 	char *name;
 
 	check_create_dmmap_package("dmmap_interface_stack");
-	uci_path_foreach_option_eq(icwmpd, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", curr_inst, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", curr_inst, s) {
 		return s;
 	}
 	if (!s) {
-		DMUCI_ADD_SECTION(icwmpd, "dmmap_interface_stack", "interface_stack", &s, &name);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "interface_stack_instance", curr_inst);
+		DMUCI_ADD_SECTION(bbfdm, "dmmap_interface_stack", "interface_stack", &s, &name);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "interface_stack_instance", curr_inst);
 	}
 	return s;
 }
@@ -253,7 +253,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		sprintf(buf_higheralias, "%s", higheralias);
 		if (strcmp(type, "bridge") == 0) {
 			br_inst = get_alias_by_section("dmmap_network", "interface", s, "bridge_instance");
-			uci_path_foreach_option_eq(icwmpd, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
+			uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
 				dmuci_get_value_by_section_string(port, "mg_port", &mg);
 				if (strcmp(mg, "true") == 0) {
 					sprintf(linker, "%s+", section_name(port));
@@ -296,7 +296,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		br_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "bridge_instance", "bridge_alias");
 		if (*br_inst == '\0')
 			continue;
-		uci_path_foreach_option_eq(icwmpd, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
+		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
 			dmuci_get_value_by_section_string(port, "mg_port", &mg);
 			if (strcmp(mg, "true") == 0) {
 				sprintf(linker, "%s+", section_name(port));
@@ -309,7 +309,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			}
 		}
 
-		uci_path_foreach_option_eq(icwmpd, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, sd) {
+		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, sd) {
 			dmuci_get_value_by_section_string(sd, "mg_port", &mg);
 			if (strcmp(mg, "true") == 0)
 				continue;
@@ -423,7 +423,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cDSL%cChannel%c", dmroot, dm_delim, dm_delim, dm_delim), link_channel, &vb);
 					if (vb == NULL)
 						vb = "";
-					uci_path_foreach_sections(icwmpd, "dmmap", "dsl_channel", ss) {
+					uci_path_foreach_sections(bbfdm, "dmmap", "dsl_channel", ss) {
 						dmuci_get_value_by_section_string(ss, "dsl_channel_alias", &loweralias);
 					}
 					sprintf(buf_loweralias, "%s", loweralias);
@@ -442,7 +442,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cDSL%cLine%c", dmroot, dm_delim, dm_delim, dm_delim), link_line, &value);
 					if (value == NULL)
 						value = "";
-					uci_path_foreach_sections(icwmpd, "dmmap", "dsl_line", ss) {
+					uci_path_foreach_sections(bbfdm, "dmmap", "dsl_line", ss) {
 						dmuci_get_value_by_section_string(ss, "dsl_line_alias", &loweralias);
 					}
 					sprintf(buf_loweralias, "%s", loweralias);
@@ -472,7 +472,7 @@ int get_Device_InterfaceStackNumberOfEntries(char *refparam, struct dmctx *ctx, 
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_path_foreach_sections(icwmpd, "dmmap_interface_stack", "interface_stack", s)
+	uci_path_foreach_sections(bbfdm, "dmmap_interface_stack", "interface_stack", s)
 	{
 		cnt++;
 	}
@@ -483,7 +483,7 @@ int get_Device_InterfaceStackNumberOfEntries(char *refparam, struct dmctx *ctx, 
 int get_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
-	uci_path_foreach_option_eq(icwmpd, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", instance, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", instance, s) {
 		dmuci_get_value_by_section_string(s, "interface_stack_alias", value);
 	}
 	return 0;
@@ -497,7 +497,7 @@ int set_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char
 		case VALUECHECK:
 			break;
 		case VALUESET:
-			uci_path_foreach_option_eq(icwmpd, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", instance, s) {
+			uci_path_foreach_option_eq(bbfdm, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", instance, s) {
 				dmuci_set_value_by_section(s, "interface_stack_alias", value);
 			}
 			break;

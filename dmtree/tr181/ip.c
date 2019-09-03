@@ -563,7 +563,7 @@ int get_IPInterface_IPv4AddressNumberOfEntries(char *refparam, struct dmctx *ctx
 	char *inst;
 
 	*value = "0";
-	uci_path_foreach_option_eq(icwmpd, "dmmap_network", "interface", "section_name", section_name(((struct ip_args *)data)->ip_sec), s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "interface", "section_name", section_name(((struct ip_args *)data)->ip_sec), s) {
 		dmuci_get_value_by_section_string(s, "ipv4_instance", &inst);
 		if(inst[0] != '\0')
 			*value = "1";
@@ -577,7 +577,7 @@ int get_IPInterface_IPv6AddressNumberOfEntries(char *refparam, struct dmctx *ctx
 	int cnt = 0;
 
 	*value = "0";
-	uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6", "section_name", section_name(((struct ip_args *)data)->ip_sec), s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6", "section_name", section_name(((struct ip_args *)data)->ip_sec), s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -590,7 +590,7 @@ int get_IPInterface_IPv6PrefixNumberOfEntries(char *refparam, struct dmctx *ctx,
 	int cnt = 0;
 
 	*value = "0";
-	uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6prefix", "section_name", section_name(((struct ip_args *)data)->ip_sec), s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6prefix", "section_name", section_name(((struct ip_args *)data)->ip_sec), s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -1457,7 +1457,7 @@ int get_IPInterfaceIPv6Address_Alias(char *refparam, struct dmctx *ctx, void *da
 	struct uci_section *dmmap_section;
 	char *name;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6", "ipv6_instance", instance, dmmap_section) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6", "ipv6_instance", instance, dmmap_section) {
 		dmuci_get_value_by_section_string(dmmap_section, "section_name", &name);
 		if(strcmp(name, section_name(((struct ipv6_args *)data)->ip_sec)) == 0)
 			dmuci_get_value_by_section_string(dmmap_section, "ipv6_alias", value);
@@ -1474,7 +1474,7 @@ int set_IPInterfaceIPv6Address_Alias(char *refparam, struct dmctx *ctx, void *da
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6", "ipv6_instance", instance, dmmap_section) {
+			uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6", "ipv6_instance", instance, dmmap_section) {
 				dmuci_get_value_by_section_string(dmmap_section, "section_name", &name);
 				if(strcmp(name, section_name(((struct ipv6_args *)data)->ip_sec)) == 0)
 					break;
@@ -1490,7 +1490,7 @@ int get_IPInterfaceIPv6Prefix_Alias(char *refparam, struct dmctx *ctx, void *dat
 	struct uci_section *dmmap_section;
 	char *name;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6prefix", "ipv6prefix_instance", instance, dmmap_section) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6prefix", "ipv6prefix_instance", instance, dmmap_section) {
 		dmuci_get_value_by_section_string(dmmap_section, "section_name", &name);
 		if(strcmp(name, section_name(((struct ipv6prefix_args *)data)->ip_sec)) == 0)
 			dmuci_get_value_by_section_string(dmmap_section, "ipv6prefix_alias", value);
@@ -1507,7 +1507,7 @@ int set_IPInterfaceIPv6Prefix_Alias(char *refparam, struct dmctx *ctx, void *dat
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6prefix", "ipv6prefix_instance", instance, dmmap_section) {
+			uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6prefix", "ipv6prefix_instance", instance, dmmap_section) {
 				dmuci_get_value_by_section_string(dmmap_section, "section_name", &name);
 				if(strcmp(name, section_name(((struct ipv6prefix_args *)data)->ip_sec)) == 0)
 					break;
@@ -1559,7 +1559,7 @@ char *get_last_instance_cond(char* dmmap_package, char *package, char *section, 
 			continue;
 		}
 		get_dmmap_section_of_config_section(dmmap_package, section, section_name(s), &dmmap_section);
-		inst = update_instance_icwmpd(dmmap_section, inst, opt_inst);
+		inst = update_instance_bbfdm(dmmap_section, inst, opt_inst);
 	}
 	return inst;
 }
@@ -1579,9 +1579,9 @@ int add_ip_interface(char *refparam, struct dmctx *ctx, void *data, char **insta
 	dmuci_set_value("network", ip_name, "", "interface");
 	dmuci_set_value("network", ip_name, "proto", "dhcp");
 
-	dmuci_add_section_icwmpd("dmmap_network", "interface", &dmmap_ip_interface, &v);
+	dmuci_add_section_bbfdm("dmmap_network", "interface", &dmmap_ip_interface, &v);
 	dmuci_set_value_by_section(dmmap_ip_interface, "section_name", ip_name);
-	*instance = update_instance_icwmpd(dmmap_ip_interface, last_inst, "ip_int_instance");
+	*instance = update_instance_bbfdm(dmmap_ip_interface, last_inst, "ip_int_instance");
 	return 0;
 }
 
@@ -1609,7 +1609,7 @@ int add_ipv4(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct ip_args *)data)->ip_sec), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "ipv4_instance", &instance);
-	*instancepara = update_instance_icwmpd(dmmap_section, instance, "ipv4_instance");
+	*instancepara = update_instance_bbfdm(dmmap_section, instance, "ipv4_instance");
 	if(instance[0] == '\0') {
 		dmuci_set_value_by_section(dmmap_section, "ipv4_instance", *instancepara);
 		dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ipaddr", "0.0.0.0");
@@ -1648,15 +1648,15 @@ int add_ipv6(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 		break;
 	}
 	if(ip[0] == '\0') {
-		uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6", "section_name", section_name(((struct ipv6_args *)data)->ip_sec), s) {
+		uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6", "section_name", section_name(((struct ipv6_args *)data)->ip_sec), s) {
 			dmuci_get_value_by_section_string(s, "ipv6_instance", &inst);
 		}
 		dmasprintf(&curr_inst, "%d", atoi(inst)+1);
 		dmuci_set_value_by_section(((struct ipv6_args *)data)->ip_sec, "ip6addr", "::");
 		dmuci_set_value_by_section(((struct ipv6_args *)data)->ip_sec, "proto", "static");
-		DMUCI_ADD_SECTION(icwmpd, "dmmap_network", "ipv6", &ss, &name);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, ss, "section_name", section_name(((struct ipv6_args *)data)->ip_sec));
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, ss, "ipv6_instance", curr_inst);
+		DMUCI_ADD_SECTION(bbfdm, "dmmap_network", "ipv6", &ss, &name);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, ss, "section_name", section_name(((struct ipv6_args *)data)->ip_sec));
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, ss, "ipv6_instance", curr_inst);
 	}
 	return 0;
 }
@@ -1690,15 +1690,15 @@ int add_ipv6_prefix(char *refparam, struct dmctx *ctx, void *data, char **instan
 		break;
 	}
 	if(ip[0] == '\0') {
-		uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6prefix", "section_name", section_name(((struct ipv6prefix_args *)data)->ip_sec), s) {
+		uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6prefix", "section_name", section_name(((struct ipv6prefix_args *)data)->ip_sec), s) {
 			dmuci_get_value_by_section_string(s, "ipv6prefix_instance", &inst);
 		}
 		dmasprintf(&curr_inst, "%d", atoi(inst)+1);
 		dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ip6prefix", "::");
 		dmuci_set_value_by_section(((struct ipv6prefix_args *)data)->ip_sec, "proto", "static");
-		DMUCI_ADD_SECTION(icwmpd, "dmmap_network", "ipv6prefix", &ss, &name);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, ss, "section_name", section_name(((struct ipv6prefix_args *)data)->ip_sec));
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, ss, "ipv6prefix_instance", curr_inst);
+		DMUCI_ADD_SECTION(bbfdm, "dmmap_network", "ipv6prefix", &ss, &name);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, ss, "section_name", section_name(((struct ipv6prefix_args *)data)->ip_sec));
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, ss, "ipv6prefix_instance", curr_inst);
 	}
 	return 0;
 }
@@ -1867,15 +1867,15 @@ static struct uci_section *update_dmmap_network_ipv6(char *curr_inst, char *sect
 	struct uci_section *s = NULL;
 	char *inst, *name;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6", "section_name", section_name, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6", "section_name", section_name, s) {
 		dmuci_get_value_by_section_string(s, "ipv6_instance", &inst);
 		if(strcmp(curr_inst, inst) == 0)
 			return s;
 	}
 	if (!s) {
-		DMUCI_ADD_SECTION(icwmpd, "dmmap_network", "ipv6", &s, &name);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "section_name", section_name);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "ipv6_instance", curr_inst);
+		DMUCI_ADD_SECTION(bbfdm, "dmmap_network", "ipv6", &s, &name);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "section_name", section_name);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "ipv6_instance", curr_inst);
 	}
 	return s;
 }
@@ -1940,15 +1940,15 @@ static struct uci_section *update_dmmap_network_ipv6prefix(char *curr_inst, char
 	struct uci_section *s = NULL;
 	char *inst, *name;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap_network", "ipv6prefix", "section_name", section_name, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6prefix", "section_name", section_name, s) {
 		dmuci_get_value_by_section_string(s, "ipv6prefix_instance", &inst);
 		if(strcmp(curr_inst, inst) == 0)
 			return s;
 	}
 	if (!s) {
-		DMUCI_ADD_SECTION(icwmpd, "dmmap_network", "ipv6prefix", &s, &name);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "section_name", section_name);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "ipv6prefix_instance", curr_inst);
+		DMUCI_ADD_SECTION(bbfdm, "dmmap_network", "ipv6prefix", &s, &name);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "section_name", section_name);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "ipv6prefix_instance", curr_inst);
 	}
 	return s;
 }

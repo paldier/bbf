@@ -542,7 +542,7 @@ int set_vcf_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 int lookup_vcf_name(char *instance, char **value)
 {
 	struct uci_section *s = NULL;
-	uci_path_foreach_option_eq(icwmpd, DMMAP, "vcf", "vcf_instance", instance, s) {
+	uci_path_foreach_option_eq(bbfdm, DMMAP, "vcf", "vcf_instance", instance, s) {
 		dmuci_get_value_by_section_string(s, "name", value);
 	}
 	return 0;
@@ -745,22 +745,22 @@ int browseVcfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, cha
 		}
 		closedir (dir);
 	}
-	uci_path_foreach_sections(icwmpd, DMMAP, "vcf", s) {
+	uci_path_foreach_sections(bbfdm, DMMAP, "vcf", s) {
 		dmuci_get_value_by_section_string(s, "name", &name);
 		if(del_sec) {
-			DMUCI_DELETE_BY_SECTION(icwmpd, del_sec, NULL, NULL);
+			DMUCI_DELETE_BY_SECTION(bbfdm, del_sec, NULL, NULL);
 			del_sec = NULL;
 		}
 		if (check_file_dir(name) == 0) {
 			del_sec = s;
 			continue;
 		}
-		vcf = handle_update_instance(1, dmctx, &vcf_last, update_instance_alias_icwmpd, 3, s, "vcf_instance", "vcf_alias");
+		vcf = handle_update_instance(1, dmctx, &vcf_last, update_instance_alias_bbfdm, 3, s, "vcf_instance", "vcf_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, vcf) == DM_STOP)
 			break;
 	}
 	if(del_sec)
-		DMUCI_DELETE_BY_SECTION(icwmpd, del_sec, NULL, NULL);
+		DMUCI_DELETE_BY_SECTION(bbfdm, del_sec, NULL, NULL);
 	return 0;
 }
 
@@ -775,7 +775,7 @@ int browseVlfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, cha
 			break;
 		dmuci_get_value_by_section_string(sys_log_sec, "log_file", &log_file);
 		dmuci_get_value_by_section_string(sys_log_sec, "log_size", &log_size);
-		uci_path_foreach_sections(icwmpd, "dmmap", "vlf", dm_sec) {
+		uci_path_foreach_sections(bbfdm, "dmmap", "vlf", dm_sec) {
 			if(dm_sec)
 				break;
 		}
@@ -783,12 +783,12 @@ int browseVlfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, cha
 			update_section_list(DMMAP,"vlf", NULL, i++, NULL, "log_file", log_file, "log_size", log_size);
 		}
 		else{
-			DMUCI_SET_VALUE_BY_SECTION(icwmpd, dm_sec, "log_file", log_file);
-			DMUCI_SET_VALUE_BY_SECTION(icwmpd, dm_sec, "log_size", log_size);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dm_sec, "log_file", log_file);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dm_sec, "log_size", log_size);
 		}
 	}
-	uci_path_foreach_sections(icwmpd, "dmmap", "vlf", dm_sec) {
-		instance = handle_update_instance(1, dmctx, &last_instance, update_instance_alias_icwmpd, 3, dm_sec, "vlf_instance", "vlf_alias");
+	uci_path_foreach_sections(bbfdm, "dmmap", "vlf", dm_sec) {
+		instance = handle_update_instance(1, dmctx, &last_instance, update_instance_alias_bbfdm, 3, dm_sec, "vlf_instance", "vlf_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)dm_sec, instance) == DM_STOP){
 			break;
 		}

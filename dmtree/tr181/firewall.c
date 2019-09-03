@@ -109,7 +109,7 @@ int browseLevelInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, c
 	check_create_dmmap_package("dmmap_firewall");
 	s = is_dmmap_section_exist("dmmap_firewall", "level");
 	if(!s)
-		dmuci_add_section_icwmpd("dmmap_firewall", "level", &s, &v);
+		dmuci_add_section_bbfdm("dmmap_firewall", "level", &s, &v);
 	instance =  handle_update_instance(1, dmctx, &instnbr, update_instance_alias, 3, s, "firewall_level_instance", "firewall_level_alias");
 
 	DM_LINK_INST_OBJ(dmctx, parent_node, s, "1");
@@ -124,7 +124,7 @@ int browseChainInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, c
 	check_create_dmmap_package("dmmap_firewall");
 	s = is_dmmap_section_exist("dmmap_firewall", "chain");
 	if(!s)
-		dmuci_add_section_icwmpd("dmmap_firewall", "chain", &s, &v);
+		dmuci_add_section_bbfdm("dmmap_firewall", "chain", &s, &v);
 	instance =  handle_update_instance(1, dmctx, &instnbr, update_instance_alias, 3, s, "firewall_chain_instance", "firewall_chain_alias");
 
 	DM_LINK_INST_OBJ(dmctx, parent_node, s, "1");
@@ -152,7 +152,7 @@ int add_firewall_rule(char *refparam, struct dmctx *ctx, void *data, char **inst
 	struct uci_section *s, *dmmap_firewall_rule;
 	char *last_inst= NULL, *sect_name= NULL, *rule_name, *v;
 	char ib[8];
-	last_inst= get_last_instance_icwmpd("dmmap_firewall", "rule", "firewall_chain_rule_instance");
+	last_inst= get_last_instance_bbfdm("dmmap_firewall", "rule", "firewall_chain_rule_instance");
 	if (last_inst)
 		sprintf(ib, "%s", last_inst);
 	else
@@ -165,9 +165,9 @@ int add_firewall_rule(char *refparam, struct dmctx *ctx, void *data, char **inst
 	dmuci_set_value_by_section(s, "src", "wan");
 	dmuci_set_value_by_section(s, "target", "ACCEPT");
 
-	dmuci_add_section_icwmpd("dmmap_firewall", "rule", &dmmap_firewall_rule, &v);
+	dmuci_add_section_bbfdm("dmmap_firewall", "rule", &dmmap_firewall_rule, &v);
 	dmuci_set_value_by_section(dmmap_firewall_rule, "section_name", sect_name);
-	*instance = update_instance_icwmpd(dmmap_firewall_rule, last_inst, "firewall_chain_rule_instance");
+	*instance = update_instance_bbfdm(dmmap_firewall_rule, last_inst, "firewall_chain_rule_instance");
 	return 0;
 }
 
@@ -186,7 +186,7 @@ int delete_firewall_rule(char *refparam, struct dmctx *ctx, void *data, char *in
 				dmuci_delete_by_section_unnamed((struct uci_section *)data, NULL, NULL);
 			} else {
 				get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name((struct uci_section *)data), &dmmap_section);
-				dmuci_delete_by_section_unnamed_icwmpd(dmmap_section, NULL, NULL);
+				dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			}
 			break;
@@ -781,7 +781,7 @@ int set_level_name(char *refparam, struct dmctx *ctx, void *data, char *instance
 		case VALUECHECK:
 			break;
 		case VALUESET:
-			DMUCI_SET_VALUE_BY_SECTION(icwmpd, level, "name", value);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, level, "name", value);
 			break;
 	}
         return 0;
@@ -794,7 +794,7 @@ int set_level_description(char *refparam, struct dmctx *ctx, void *data, char *i
 		case VALUECHECK:
 			break;
 		case VALUESET:
-			DMUCI_SET_VALUE_BY_SECTION(icwmpd, level, "description", value);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, level, "description", value);
 			break;
 	}
         return 0;
@@ -886,7 +886,7 @@ int set_chain_name(char *refparam, struct dmctx *ctx, void *data, char *instance
 		case VALUECHECK:
 			break;
 		case VALUESET:
-			DMUCI_SET_VALUE_BY_SECTION(icwmpd, chains, "name", value);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, chains, "name", value);
 			break;
 	}
         return 0;
@@ -928,7 +928,7 @@ int set_rule_description(char *refparam, struct dmctx *ctx, void *data, char *in
 		case VALUECHECK:
 			break;
 		case VALUESET:
-			DMUCI_SET_VALUE_BY_SECTION(icwmpd, dms, "description", value);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dms, "description", value);
 			break;
 	}
         return 0;

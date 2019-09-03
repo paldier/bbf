@@ -25,7 +25,7 @@
 struct uci_context *uci_ctx;
 struct uci_context *uci_varstate_ctx;
 
-NEW_UCI_PATH(icwmpd, ICWMPD_CONFIG, ICWMPD_SAVEDIR)
+NEW_UCI_PATH(bbfdm, BBFDM_CONFIG, BBFDM_SAVEDIR)
 struct uci_section *dmuci_walk_state_section (char *package, char *stype, void *arg1, void *arg2, int cmp , int (*filter)(struct uci_section *s, void *value), struct uci_section *prev_section, int walk) {
 	struct uci_section *s = NULL;
 	struct uci_element *e, *m;
@@ -346,7 +346,7 @@ int dmuci_commit_package(char *package)
 int dmuci_commit(void)
 {
 	char **configs = NULL;
-	char **icwmpd_configs = NULL;
+	char **bbfdm_configs = NULL;
 	char **p;
 
 	if ((uci_list_configs(uci_ctx, &configs) != UCI_OK) || !configs) {
@@ -355,17 +355,17 @@ int dmuci_commit(void)
 	for (p = configs; *p; p++) {
 		dmuci_commit_package(*p);
 	}
-	if(uci_ctx_icwmpd)
+	if(uci_ctx_bbfdm)
 	{
-		if ((uci_list_configs(uci_ctx_icwmpd, &icwmpd_configs) != UCI_OK) || !icwmpd_configs) {
+		if ((uci_list_configs(uci_ctx_bbfdm, &bbfdm_configs) != UCI_OK) || !bbfdm_configs) {
 			return -1;
 		}
-		for (p = icwmpd_configs; *p; p++) {
-			DMUCI_COMMIT_PACKAGE(icwmpd, *p);
+		for (p = bbfdm_configs; *p; p++) {
+			DMUCI_COMMIT_PACKAGE(bbfdm, *p);
 		}
 	}
 	free(configs);
-	free(icwmpd_configs);
+	free(bbfdm_configs);
 	return 0;
 }
 

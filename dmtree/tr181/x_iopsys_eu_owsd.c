@@ -67,7 +67,7 @@ int browseXIopsysEuOwsdListenObj(struct dmctx *dmctx, DMNODE *parent_node, void 
 
 	synchronize_specific_config_sections_with_dmmap("owsd", "owsd-listen", "dmmap_owsd", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
-		iowsd_listen =  handle_update_instance(1, dmctx, &iowsd_listen_last, update_instance_alias_icwmpd, 3, p->dmmap_section, "olisteninstance", "olistenalias");
+		iowsd_listen =  handle_update_instance(1, dmctx, &iowsd_listen_last, update_instance_alias_bbfdm, 3, p->dmmap_section, "olisteninstance", "olistenalias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)p->config_section, iowsd_listen) == DM_STOP)
 			break;
 	}
@@ -504,16 +504,16 @@ int add_owsd_listen(char *refparam, struct dmctx *ctx, void *data, char **instan
 	struct uci_section *listen_sec = NULL, *dmmap_sec= NULL;
 
 	check_create_dmmap_package("dmmap_owsd");
-	instance = get_last_instance_icwmpd("dmmap_owsd", "owsd-listen", "olisteninstance");
+	instance = get_last_instance_bbfdm("dmmap_owsd", "owsd-listen", "olisteninstance");
 
 	dmuci_add_section("owsd", "owsd-listen", &listen_sec, &value);
 	dmuci_set_value_by_section(listen_sec, "ipv6", "on");
 	dmuci_set_value_by_section(listen_sec, "whitelist_interface_as_origin", "1");
 	dmuci_add_list_value_by_section(listen_sec, "origin", "*");
 
-	dmuci_add_section_icwmpd("dmmap_owsd", "owsd-listen", &dmmap_sec, &v);
+	dmuci_add_section_bbfdm("dmmap_owsd", "owsd-listen", &dmmap_sec, &v);
 	dmuci_set_value_by_section(dmmap_sec, "section_name", section_name(listen_sec));
-	*instancepara = update_instance_icwmpd(dmmap_sec, instance, "olisteninstance");
+	*instancepara = update_instance_bbfdm(dmmap_sec, instance, "olisteninstance");
 
 	return 0;
 }
@@ -535,7 +535,7 @@ int delete_owsd_listen_instance(char *refparam, struct dmctx *ctx, void *data, c
 				dmuci_delete_by_section_unnamed(owsd_listensection, NULL, NULL);
 			} else {
 				get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name(owsd_listensection), &dmmap_section);
-				dmuci_delete_by_section_unnamed_icwmpd(dmmap_section, NULL, NULL);
+				dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(owsd_listensection, NULL, NULL);
 			}
 			break;

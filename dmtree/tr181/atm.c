@@ -251,7 +251,7 @@ int add_atm_link(char *refparam, struct dmctx *ctx, void *data, char **instancep
 	struct uci_section *dmmap_atm = NULL;
 
 	check_create_dmmap_package("dmmap_dsl");
-	instance = get_last_instance_icwmpd("dmmap_dsl", "atm-device", "atmlinkinstance");
+	instance = get_last_instance_bbfdm("dmmap_dsl", "atm-device", "atmlinkinstance");
 	dmasprintf(&atm_device, "atm%d", instance ? atoi(instance) : 0);
 	dmasprintf(&instance_update, "%d", instance ? atoi(instance)+ 1 : 1);
 	dmuci_set_value("dsl", atm_device, "", "atm-device");
@@ -262,9 +262,9 @@ int add_atm_link(char *refparam, struct dmctx *ctx, void *data, char **instancep
 	dmuci_set_value("dsl", atm_device, "link_type", "eoa");
 	dmuci_set_value("dsl", atm_device, "encapsulation", "llc");
 	dmuci_set_value("dsl", atm_device, "qos_class", "ubr");
-	dmuci_add_section_icwmpd("dmmap_dsl", "atm-device", &dmmap_atm, &v);
+	dmuci_add_section_bbfdm("dmmap_dsl", "atm-device", &dmmap_atm, &v);
 	dmuci_set_value_by_section(dmmap_atm, "section_name", atm_device);
-	*instancepara = update_instance_icwmpd(dmmap_atm, instance, "atmlinkinstance");
+	*instancepara = update_instance_bbfdm(dmmap_atm, instance, "atmlinkinstance");
 	return 0;
 }
 

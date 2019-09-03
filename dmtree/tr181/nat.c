@@ -73,7 +73,7 @@ int add_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *data, char
 	struct uci_section *s = NULL, *dmmap_firewall = NULL;
 
 	check_create_dmmap_package("dmmap_firewall");
-	inst = get_last_instance_icwmpd("dmmap_firewall", "zone", "interface_setting_instance");
+	inst = get_last_instance_bbfdm("dmmap_firewall", "zone", "interface_setting_instance");
 	sprintf(name, "iface_set_%d", inst ? (atoi(inst)+1) : 1);
 	dmuci_add_section_and_rename("firewall", "zone", &s, &value);
 	dmuci_set_value_by_section(s, "input", "REJECT");
@@ -81,9 +81,9 @@ int add_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *data, char
 	dmuci_set_value_by_section(s, "forward", "REJECT");
 	dmuci_set_value_by_section(s, "name", name);
 
-	dmuci_add_section_icwmpd("dmmap_firewall", "zone", &dmmap_firewall, &v);
+	dmuci_add_section_bbfdm("dmmap_firewall", "zone", &dmmap_firewall, &v);
 	dmuci_set_value_by_section(dmmap_firewall, "section_name", section_name(s));
-	*instance = update_instance_icwmpd(dmmap_firewall, inst, "interface_setting_instance");
+	*instance = update_instance_bbfdm(dmmap_firewall, inst, "interface_setting_instance");
 	return 0;
 
 }
@@ -129,7 +129,7 @@ int add_NAT_PortMapping(char *refparam, struct dmctx *ctx, void *data, char **in
 	struct uci_section *s = NULL, *dmmap_firewall = NULL;
 
 	check_create_dmmap_package("dmmap_firewall");
-	inst = get_last_instance_icwmpd("dmmap_firewall", "redirect", "port_mapping_instance");
+	inst = get_last_instance_bbfdm("dmmap_firewall", "redirect", "port_mapping_instance");
 	sprintf(name, "port_map_%d", inst ? (atoi(inst)+1) : 1);
 	dmuci_add_section_and_rename("firewall", "redirect", &s, &value);
 	dmuci_set_value_by_section(s, "name", name);
@@ -137,9 +137,9 @@ int add_NAT_PortMapping(char *refparam, struct dmctx *ctx, void *data, char **in
 	dmuci_set_value_by_section(s, "target", "DNAT");
 	dmuci_set_value_by_section(s, "dest", "lan");
 
-	dmuci_add_section_icwmpd("dmmap_firewall", "redirect", &dmmap_firewall, &v);
+	dmuci_add_section_bbfdm("dmmap_firewall", "redirect", &dmmap_firewall, &v);
 	dmuci_set_value_by_section(dmmap_firewall, "section_name", section_name(s));
-	*instance = update_instance_icwmpd(dmmap_firewall, inst, "port_mapping_instance");
+	*instance = update_instance_bbfdm(dmmap_firewall, inst, "port_mapping_instance");
 	return 0;
 
 }

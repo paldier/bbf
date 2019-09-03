@@ -23,9 +23,9 @@
 
 #define DB_CONFIG		"/lib/db/config"
 #define VARSTATE_CONFIG "/var/state"
-#define ICWMPD_CONFIG "/etc/icwmpd"
-#define ICWMPD_PATH "icwmpd"
-#define ICWMPD_SAVEDIR "/tmp/.icwmpd"
+#define BBFDM_CONFIG "/etc/bbfdm"
+#define BBFDM_PATH "bbfdm"
+#define BBFDM_SAVEDIR "/tmp/.bbfdm"
 
 extern struct uci_context *uci_ctx;
 extern struct uci_context *uci_varstate_ctx;
@@ -164,17 +164,17 @@ int dmuci_add_list_value_by_section(struct uci_section *s, char *option, char *v
 int dmuci_del_list_value_by_section(struct uci_section *s, char *option, char *value);
 struct uci_section *dmuci_walk_section(char *package, char *stype, void *arg1, void *arg2, int cmp , int (*filter)(struct uci_section *s, void *value), struct uci_section *prev_section, int walk);
 struct uci_section *dmuci_walk_state_section(char *package, char *stype, void *arg1, void *arg2, int cmp , int (*filter)(struct uci_section *s, void *value), struct uci_section *prev_section, int walk);
-struct uci_section *dmuci_walk_section_icwmpd(char *package, char *stype, void *arg1, void *arg2, int cmp , int (*filter)(struct uci_section *s, void *value), struct uci_section *prev_section, int walk);
-char *dmuci_set_value_by_section_icwmpd(struct uci_section *s, char *option, char *value);
+struct uci_section *dmuci_walk_section_bbfdm(char *package, char *stype, void *arg1, void *arg2, int cmp , int (*filter)(struct uci_section *s, void *value), struct uci_section *prev_section, int walk);
+char *dmuci_set_value_by_section_bbfdm(struct uci_section *s, char *option, char *value);
 
-int dmuci_add_section_icwmpd(char *package, char *stype, struct uci_section **s, char **value);
+int dmuci_add_section_bbfdm(char *package, char *stype, struct uci_section **s, char **value);
 int dmuci_add_state_section(char *package, char *stype, struct uci_section **s, char **value);
 char *dmuci_set_varstate_value(char *package, char *section, char *option, char *value);
-char *dmuci_set_value_icwmpd(char *package, char *section, char *option, char *value);
-int dmuci_delete_by_section_icwmpd(struct uci_section *s, char *option, char *value);
+char *dmuci_set_value_bbfdm(char *package, char *section, char *option, char *value);
+int dmuci_delete_by_section_bbfdm(struct uci_section *s, char *option, char *value);
 int dmuci_rename_section_by_section(struct uci_section *s, char *value);
-int dmuci_exit_icwmpd(void);
-int dmuci_init_icwmpd(void);
+int dmuci_exit_bbfdm(void);
+int dmuci_init_bbfdm(void);
 void init_uci_varstate_ctx(void);
 void end_uci_varstate_ctx(void);
 void uci_add_list_to_list(struct uci_list *addlist, struct uci_list *list);

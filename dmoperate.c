@@ -744,7 +744,6 @@ static opr_ret_t ip_diagnostics_serverselection(struct dmctx *dmctx, char *path,
 	serverselection.minimum_response_time = get_param_diagnostics("serverselectiondiagnostic", "MinimumResponseTime");
 	serverselection.maximum_response_time = get_param_diagnostics("serverselectiondiagnostic", "MaximumResponseTime");
 
-
 	char *param_fastest_host = dmstrdup("FastestHost");
 	char *param_average_response_time = dmstrdup("AverageResponseTime");
 	char *param_minimum_response_time = dmstrdup("MinimumResponseTime");

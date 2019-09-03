@@ -57,22 +57,22 @@ do { \
 	if (mpp) close (mpp); \
 } while (0)
 
-#define IPPING_PATH "/usr/share/icwmp/functions/ipping_launch"
+#define IPPING_PATH "/usr/share/bbfdm/functions/ipping_launch"
 #define IPPING_STOP DMCMD("/bin/sh", 2, IPPING_PATH, "stop");
-#define DOWNLOAD_DIAGNOSTIC_PATH "/usr/share/icwmp/functions/download_launch"
+#define DOWNLOAD_DIAGNOSTIC_PATH "/usr/share/bbfdm/functions/download_launch"
 #define DOWNLOAD_DUMP_FILE "/tmp/download_dump"
 #define DOWNLOAD_DIAGNOSTIC_STOP DMCMD("/bin/sh", 2, DOWNLOAD_DIAGNOSTIC_PATH, "stop");
-#define UPLOAD_DIAGNOSTIC_PATH "/usr/share/icwmp/functions/upload_launch"
+#define UPLOAD_DIAGNOSTIC_PATH "/usr/share/bbfdm/functions/upload_launch"
 #define UPLOAD_DUMP_FILE "/tmp/upload_dump"
 #define UPLOAD_DIAGNOSTIC_STOP DMCMD("/bin/sh", 2, UPLOAD_DIAGNOSTIC_PATH, "stop");
-#define NSLOOKUP_PATH "/usr/share/icwmp/functions/nslookup_launch"
+#define NSLOOKUP_PATH "/usr/share/bbfdm/functions/nslookup_launch"
 #define NSLOOKUP_LOG_FILE "/tmp/nslookup.log"
 #define NSLOOKUP_STOP DMCMD("/bin/sh", 2, NSLOOKUP_PATH, "stop");
-#define TRACEROUTE_PATH "/usr/share/icwmp/functions/traceroute_launch"
+#define TRACEROUTE_PATH "/usr/share/bbfdm/functions/traceroute_launch"
 #define TRACEROUTE_STOP DMCMD("/bin/sh", 2, TRACEROUTE_PATH, "stop");
-#define UDPECHO_PATH "/usr/share/icwmp/functions/udpecho_launch"
+#define UDPECHO_PATH "/usr/share/bbfdm/functions/udpecho_launch"
 #define UDPECHO_STOP DMCMD("/bin/sh", 2, UDPECHO_PATH, "stop");
-#define SERVERSELECTION_PATH "/usr/share/icwmp/functions/serverselection_launch"
+#define SERVERSELECTION_PATH "/usr/share/bbfdm/functions/serverselection_launch"
 #define SERVERSELECTION_STOP DMCMD("/bin/sh", 2, SERVERSELECTION_PATH, "stop");
 
 enum notification_enum {
@@ -157,7 +157,7 @@ int ipcalc_rev_end(char *ip_str, char *mask_str, char *start_str, char *ipend_st
 int network_get_ipaddr(char **value, char *iface);
 void remove_vid_interfaces_from_ifname(char *vid, char *ifname, char *new_ifname);
 void update_section_option_list(char *config, char *section, char *option, char *option_2,char *val, char *val_2, char *name);
-void update_section_list_icwmpd(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1,  char *option2, char *val2);
+void update_section_list_bbfdm(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1,  char *option2, char *val2);
 void update_section_list(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1,  char *option2, char *val2);
 char *get_nvram_wpakey();
 int reset_wlan(struct uci_section *s);

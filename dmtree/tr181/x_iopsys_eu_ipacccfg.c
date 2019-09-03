@@ -624,7 +624,7 @@ int add_ipacccfg_rule(char *refparam, struct dmctx *ctx, void *data, char **inst
 	struct uci_section *rule = NULL, *dmmap_rule= NULL;
 	
 	check_create_dmmap_package("dmmap_firewall");
-	instance = get_last_instance_icwmpd("dmmap_firewall", "rule", "fruleinstance");
+	instance = get_last_instance_bbfdm("dmmap_firewall", "rule", "fruleinstance");
 	dmuci_add_section_and_rename("firewall", "rule", &rule, &value);
 	dmuci_set_value_by_section(rule, "type", "generic");
 	dmuci_set_value_by_section(rule, "name", "new_rule");
@@ -635,9 +635,9 @@ int add_ipacccfg_rule(char *refparam, struct dmctx *ctx, void *data, char **inst
 	dmuci_set_value_by_section(rule, "hidden", "1");
 	dmuci_set_value_by_section(rule, "parental", "0");
 
-	dmuci_add_section_icwmpd("dmmap_firewall", "rule", &dmmap_rule, &v);
+	dmuci_add_section_bbfdm("dmmap_firewall", "rule", &dmmap_rule, &v);
 	dmuci_set_value_by_section(dmmap_rule, "section_name", section_name(rule));
-	*instancepara = update_instance_icwmpd(dmmap_rule, instance, "fruleinstance");
+	*instancepara = update_instance_bbfdm(dmmap_rule, instance, "fruleinstance");
 
 	return 0;
 }
@@ -686,15 +686,15 @@ int add_ipacccfg_port_forwarding(char *refparam, struct dmctx *ctx, void *data, 
 	struct uci_section *redirect = NULL, *dmmap_redirect= NULL;
 	
 	check_create_dmmap_package("dmmap_firewall");
-	instance = get_last_instance_icwmpd("dmmap_firewall", "redirect", "forwardinstance");
+	instance = get_last_instance_bbfdm("dmmap_firewall", "redirect", "forwardinstance");
 	dmuci_add_section_and_rename("firewall", "redirect", &redirect, &value);
 	dmuci_set_value_by_section(redirect, "enabled", "0");
 	dmuci_set_value_by_section(redirect, "target", "DNAT");
 	dmuci_set_value_by_section(redirect, "proto", "tcp udp");
 
-	dmuci_add_section_icwmpd("dmmap_firewall", "redirect", &dmmap_redirect, &v);
+	dmuci_add_section_bbfdm("dmmap_firewall", "redirect", &dmmap_redirect, &v);
 	dmuci_set_value_by_section(dmmap_redirect, "section_name", section_name(redirect));
-	*instancepara = update_instance_icwmpd(dmmap_redirect, instance, "forwardinstance");
+	*instancepara = update_instance_bbfdm(dmmap_redirect, instance, "forwardinstance");
 	return 0;
 }
 
@@ -798,7 +798,7 @@ int browseAccListInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data,
 
 	synchronize_specific_config_sections_with_dmmap("firewall", "rule", "dmmap_firewall", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
-		irule =  handle_update_instance(1, dmctx, &irule_last, update_instance_alias_icwmpd, 3, p->dmmap_section, "fruleinstance", "frulealias");
+		irule =  handle_update_instance(1, dmctx, &irule_last, update_instance_alias_bbfdm, 3, p->dmmap_section, "fruleinstance", "frulealias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)p->config_section, irule) == DM_STOP)
 			return 0;
 	}

@@ -445,11 +445,11 @@ char *update_instance(struct uci_section *s, char *last_inst, char *inst_opt)
 	argv[1] = inst_opt;
 	argv[2] = "";
 
-	instance = update_instance_alias_icwmpd(0, &last_inst, argv);
+	instance = update_instance_alias_bbfdm(0, &last_inst, argv);
 	return instance;
 }
 
-char *update_instance_icwmpd(struct uci_section *s, char *last_inst, char *inst_opt)
+char *update_instance_bbfdm(struct uci_section *s, char *last_inst, char *inst_opt)
 {
 	char *instance;
 	void *argv[3];
@@ -457,11 +457,11 @@ char *update_instance_icwmpd(struct uci_section *s, char *last_inst, char *inst_
 	argv[0]= s;
 	argv[1]= inst_opt;
 	argv[2]= "";
-	instance = update_instance_alias_icwmpd(0, &last_inst, argv);
+	instance = update_instance_alias_bbfdm(0, &last_inst, argv);
 	return instance;
 }
 
-char *update_instance_alias_icwmpd(int action, char **last_inst , void *argv[])
+char *update_instance_alias_bbfdm(int action, char **last_inst , void *argv[])
 {
 	char *instance;
 	char *alias;
@@ -475,14 +475,14 @@ char *update_instance_alias_icwmpd(int action, char **last_inst , void *argv[])
 			sprintf(buf, "%d", 1);
 		else
 			sprintf(buf, "%d", atoi(*last_inst)+1);
-		instance = DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, inst_opt, buf);
+		instance = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, inst_opt, buf);
 	}
 	*last_inst = instance;
 	if (action == INSTANCE_MODE_ALIAS) {
 		dmuci_get_value_by_section_string(s, alias_opt, &alias);
 		if (alias[0] == '\0') {
 			sprintf(buf, "cpe-%s", instance);
-			alias = DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, alias_opt, buf);
+			alias = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, alias_opt, buf);
 		}
 		sprintf(buf, "[%s]", alias);
 		instance = dmstrdup(buf);
@@ -539,18 +539,18 @@ char *update_instance_without_section(int action, char **last_inst, void *argv[]
 	return instance;
 }
 
-char *get_vlan_last_instance_icwmpd(char *package, char *section, char *opt_inst, char *vlan_method)
+char *get_vlan_last_instance_bbfdm(char *package, char *section, char *opt_inst, char *vlan_method)
 {
 	struct uci_section *s, *confsect;
 	char *inst = NULL, *last_inst = NULL, *type, *sect_name;
 
-	uci_path_foreach_sections(icwmpd, package, section, s) {
+	uci_path_foreach_sections(bbfdm, package, section, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &sect_name);
 		get_config_section_of_dmmap_section("network", "device", sect_name, &confsect);
 		dmuci_get_value_by_section_string(confsect, "type", &type);
 		if ((strcmp(vlan_method, "2") != 0 && strcmp(vlan_method, "1") != 0) || (strcmp(vlan_method, "1") == 0 && strcmp(type, "untagged") == 0) )
 			continue;
-		inst = update_instance_icwmpd(s, last_inst, opt_inst);
+		inst = update_instance_bbfdm(s, last_inst, opt_inst);
 		if(last_inst)
 			dmfree(last_inst);
 		last_inst = dmstrdup(inst);
@@ -558,14 +558,14 @@ char *get_vlan_last_instance_icwmpd(char *package, char *section, char *opt_inst
 	return inst;
 }
 
-char *get_last_instance_icwmpd(char *package, char *section, char *opt_inst)
+char *get_last_instance_bbfdm(char *package, char *section, char *opt_inst)
 {
 	struct uci_section *s;
 	char *inst = NULL;
 	char *last_inst = NULL;
 
-	uci_path_foreach_sections(icwmpd, package, section, s) {
-		inst = update_instance_icwmpd(s, last_inst, opt_inst);
+	uci_path_foreach_sections(bbfdm, package, section, s) {
+		inst = update_instance_bbfdm(s, last_inst, opt_inst);
 		if(last_inst)
 			dmfree(last_inst);
 		last_inst = dmstrdup(inst);
@@ -573,13 +573,13 @@ char *get_last_instance_icwmpd(char *package, char *section, char *opt_inst)
 	return inst;
 }
 
-char *get_last_instance_icwmpd_without_update(char *package, char *section, char *opt_inst)
+char *get_last_instance_bbfdm_without_update(char *package, char *section, char *opt_inst)
 {
 	struct uci_section *s;
 	char *inst = NULL;
 	char *last_inst = NULL;
 
-	uci_path_foreach_sections(icwmpd, package, section, s) {
+	uci_path_foreach_sections(bbfdm, package, section, s) {
 		dmuci_get_value_by_section_string(s, opt_inst, &inst);
 		if(last_inst)
 			dmfree(last_inst);
@@ -595,8 +595,8 @@ char *get_last_instance(char *package, char *section, char *opt_inst)
 	char *last_inst = NULL;
 	if (package == DMMAP)
 	{
-		uci_path_foreach_sections(icwmpd, "dmmap", section, s) {
-			inst = update_instance_icwmpd(s, last_inst, opt_inst);
+		uci_path_foreach_sections(bbfdm, "dmmap", section, s) {
+			inst = update_instance_bbfdm(s, last_inst, opt_inst);
 			if(last_inst)
 				dmfree(last_inst);
 			last_inst = dmstrdup(inst);
@@ -611,22 +611,22 @@ char *get_last_instance(char *package, char *section, char *opt_inst)
 	return inst;
 }
 
-char *get_last_instance_lev2_icwmpd_dmmap_opt(char* dmmap_package, char *section,  char *opt_inst, char *opt_check, char *value_check)
+char *get_last_instance_lev2_bbfdm_dmmap_opt(char* dmmap_package, char *section,  char *opt_inst, char *opt_check, char *value_check)
 {
 	struct uci_section *s;
 	char *instance = NULL, *section_name= NULL;
 	char *last_inst = NULL;
 
-	uci_path_foreach_option_eq(icwmpd, dmmap_package, section, opt_check, value_check, s) {
+	uci_path_foreach_option_eq(bbfdm, dmmap_package, section, opt_check, value_check, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &section_name);
-		instance = update_instance_icwmpd(s, last_inst, opt_inst);
+		instance = update_instance_bbfdm(s, last_inst, opt_inst);
 		if(last_inst)
 			dmfree(last_inst);
 		last_inst = dmstrdup(instance);
 	}
 	return instance;
 }
-char *get_last_instance_lev2_icwmpd(char *package, char *section, char* dmmap_package, char *opt_inst, char *opt_check, char *value_check)
+char *get_last_instance_lev2_bbfdm(char *package, char *section, char* dmmap_package, char *opt_inst, char *opt_check, char *value_check)
 {
 	struct uci_section *s, *dmmap_section;
 	char *instance = NULL;
@@ -636,10 +636,10 @@ char *get_last_instance_lev2_icwmpd(char *package, char *section, char* dmmap_pa
 	uci_foreach_option_cont(package, section, opt_check, value_check, s) {
 		get_dmmap_section_of_config_section(dmmap_package, section, section_name(s), &dmmap_section);
 		if(dmmap_section == NULL){
-			dmuci_add_section_icwmpd(dmmap_package, section, &dmmap_section, &v);
+			dmuci_add_section_bbfdm(dmmap_package, section, &dmmap_section, &v);
 			dmuci_set_value_by_section(dmmap_section, "section_name", section_name(s));
 		}
-		instance = update_instance_icwmpd(dmmap_section, last_inst, opt_inst);
+		instance = update_instance_bbfdm(dmmap_section, last_inst, opt_inst);
 		if(last_inst)
 			dmfree(last_inst);
 		last_inst = dmstrdup(instance);
@@ -655,8 +655,8 @@ char *get_last_instance_lev2(char *package, char *section, char *opt_inst, char 
 
 	if (package == DMMAP)
 	{
-		uci_path_foreach_option_cont(icwmpd, package, section, opt_check, value_check, s) {
-			instance = update_instance_icwmpd(s, last_inst, opt_inst);
+		uci_path_foreach_option_cont(bbfdm, package, section, opt_check, value_check, s) {
+			instance = update_instance_bbfdm(s, last_inst, opt_inst);
 			if(last_inst)
 				dmfree(last_inst);
 			last_inst = dmstrdup(instance);

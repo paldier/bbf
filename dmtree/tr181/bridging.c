@@ -228,7 +228,7 @@ int get_br_port_last_inst(char *br_key)
 	struct uci_section *s;
 	int instance;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap_bridge_port", "bridge_port", "bridge_key", br_key, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_key, s) {
 		dmuci_get_value_by_section_string(s, "bridge_port_instance", &tmp);
 		if (tmp[0] == '\0')
 			continue;
@@ -242,7 +242,7 @@ int reset_br_port(char *br_key)
 {
 	struct uci_section *s, *prev_s = NULL;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap_bridge_port", "bridge_port", "bridge_key", br_key, s){
+	uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_key, s){
 		if (prev_s)
 			dmuci_delete_by_section(prev_s, NULL, NULL);
 		prev_s = s;
@@ -481,7 +481,7 @@ int get_br_port_number_of_entries(char *refparam, struct dmctx *ctx, void *data,
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap_bridge_port", "bridge_port", "bridge_key", instance, s)
+	uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", instance, s)
 	{
 		cnt++;
 	}
@@ -494,7 +494,7 @@ int get_br_vlan_number_of_entries(char *refparam, struct dmctx *ctx, void *data,
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap_network", "device", "bridge_key", instance, s)
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "device", "bridge_key", instance, s)
 	{
 		cnt++;
 	}
@@ -507,7 +507,7 @@ int get_br_vlan_port_number_of_entries(char *refparam, struct dmctx *ctx, void *
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap_network", "device", "bridge_key", instance, s)
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "device", "bridge_key", instance, s)
 	{
 		cnt++;
 	}
@@ -1179,7 +1179,7 @@ int add_bridge(char *refparam, struct dmctx *ctx, void *data, char **instance)
 	char *p = bridge_name;
 	struct uci_section* dmmap_bridge= NULL;
 
-	last_inst = get_last_instance_lev2_icwmpd("network", "interface", "dmmap_network", "bridge_instance", "type", "bridge");
+	last_inst = get_last_instance_lev2_bbfdm("network", "interface", "dmmap_network", "bridge_instance", "type", "bridge");
 	sprintf(ib, "%d", last_inst ? atoi(last_inst)+1 : 1);
 	dmstrappendstr(p, "bridge_0_");
 	dmstrappendstr(p, ib);
@@ -1188,9 +1188,9 @@ int add_bridge(char *refparam, struct dmctx *ctx, void *data, char **instance)
 	dmuci_set_value("network", bridge_name, "type", "bridge");
 	dmuci_set_value("network", bridge_name, "proto", "dhcp");
 
-	dmuci_add_section_icwmpd("dmmap_network", "interface", &dmmap_bridge, &v);
+	dmuci_add_section_bbfdm("dmmap_network", "interface", &dmmap_bridge, &v);
 	dmuci_set_value_by_section(dmmap_bridge, "section_name", bridge_name);
-	*instance = update_instance_icwmpd(dmmap_bridge, last_inst, "bridge_instance");
+	*instance = update_instance_bbfdm(dmmap_bridge, last_inst, "bridge_instance");
 
 	update_section_list(DMMAP,"bridge_port", "bridge_key", 1, ib, "mg_port", "true", "bridge_port_instance", "1");
 	return 0;
@@ -1209,13 +1209,13 @@ int delete_bridge(char *refparam, struct dmctx *ctx, void *data, char *instance,
 			dmuci_set_value_by_section(dmmap_section, "bridge_instance", "");
 			dmuci_set_value_by_section(dmmap_section, "ip_int_instance", "");
 			dmuci_set_value_by_section(dmmap_section, "ipv4_instance", "");
-			uci_path_foreach_option_eq(icwmpd, "dmmap", "bridge_port", "bridge_key", ((struct bridging_args *)data)->br_key, s) {
+			uci_path_foreach_option_eq(bbfdm, "dmmap", "bridge_port", "bridge_key", ((struct bridging_args *)data)->br_key, s) {
 				if (prev_s)
-					DMUCI_DELETE_BY_SECTION(icwmpd, prev_s, NULL, NULL);
+					DMUCI_DELETE_BY_SECTION(bbfdm, prev_s, NULL, NULL);
 				prev_s = s;
 			}
 			if (prev_s)
-				DMUCI_DELETE_BY_SECTION(icwmpd, prev_s, NULL, NULL);
+				DMUCI_DELETE_BY_SECTION(bbfdm, prev_s, NULL, NULL);
 			reset_br_port( ((struct bridging_args *)data)->br_key);
 			dmuci_set_value_by_section(((struct bridging_args *)data)->bridge_sec, "ifname", "");
 			break;
@@ -1227,11 +1227,11 @@ int delete_bridge(char *refparam, struct dmctx *ctx, void *data, char *instance,
 				dmuci_set_value_by_section(dmmap_section, "bridge_instance", "");
 				dmuci_set_value_by_section(dmmap_section, "ip_int_instance", "");
 				dmuci_set_value_by_section(dmmap_section, "ipv4_instance", "");
-				uci_path_foreach_option_eq(icwmpd, "dmmap", "bridge_port", "bridge_key", bridgekey, s) {
+				uci_path_foreach_option_eq(bbfdm, "dmmap", "bridge_port", "bridge_key", bridgekey, s) {
 					prev_s = s;
 				}
 				if (prev_s)
-					DMUCI_DELETE_BY_SECTION(icwmpd, prev_s, NULL, NULL);
+					DMUCI_DELETE_BY_SECTION(bbfdm, prev_s, NULL, NULL);
 				reset_br_port(bridgekey);
 				dmuci_set_value_by_section(bridge_s, "ifname", "");
 			}
@@ -1246,7 +1246,7 @@ int add_br_vlan(char *refparam, struct dmctx *ctx, void *data, char **instance)
 	struct uci_section *vlan_s, *dmmap_bridge_vlan;
 
 	check_create_dmmap_package("dmmap_network");
-	last_instance = get_last_instance_lev2_icwmpd_dmmap_opt("dmmap_network", "device", "bridge_vlan_instance", "bridge_key", ((struct bridging_args *)data)->br_key);
+	last_instance = get_last_instance_lev2_bbfdm_dmmap_opt("dmmap_network", "device", "bridge_vlan_instance", "bridge_key", ((struct bridging_args *)data)->br_key);
 	dmasprintf(&vlan_name, "vlan%d", last_instance ? atoi(last_instance)+ 1 : 1);
 	last_vid = get_last_vid();
 	dmasprintf(&name, "%s.%d", wan_baseifname, last_vid ? atoi(last_vid)+ 1 : 1001);
@@ -1261,10 +1261,10 @@ int add_br_vlan(char *refparam, struct dmctx *ctx, void *data, char **instance)
 	dmfree(name);
 	dmfree(vid);
 
-	dmuci_add_section_icwmpd("dmmap_network", "device", &dmmap_bridge_vlan, &v);
+	dmuci_add_section_bbfdm("dmmap_network", "device", &dmmap_bridge_vlan, &v);
 	dmuci_set_value_by_section(dmmap_bridge_vlan, "section_name", vlan_name);
 	dmuci_set_value_by_section(dmmap_bridge_vlan, "bridge_key", ((struct bridging_args *)data)->br_key);
-	*instance = update_instance_icwmpd(dmmap_bridge_vlan, last_instance, "bridge_vlan_instance");
+	*instance = update_instance_bbfdm(dmmap_bridge_vlan, last_instance, "bridge_vlan_instance");
 	return 0;
 }
 
@@ -1319,7 +1319,7 @@ int add_br_port(char *refparam, struct dmctx *ctx, void *data, char **instance)
 
 	int m = get_br_port_last_inst(((struct bridging_args *)data)->br_key);
 	dmasprintf(instance, "%d", m+1);
-	DMUCI_ADD_SECTION(icwmpd, "dmmap_bridge_port", "bridge_port", &br_port_s, &value);
+	DMUCI_ADD_SECTION(bbfdm, "dmmap_bridge_port", "bridge_port", &br_port_s, &value);
 	dmuci_set_value_by_section(br_port_s, "bridge_key", ((struct bridging_args *)data)->br_key);
 	dmuci_set_value_by_section(br_port_s, "bridge_port_instance", *instance);
 	dmuci_set_value_by_section(br_port_s, "mg_port", "false");
@@ -1337,7 +1337,7 @@ int delete_br_port(char *refparam, struct dmctx *ctx, void *data, char *instance
 		get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
 		if(dmmap_section==NULL || dmmap_section==0){
 			dmmap_section= ((struct bridging_port_args *)data)->bridge_port_sec;
-			dmuci_delete_by_section_unnamed_icwmpd(dmmap_section, NULL, NULL);
+			dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
 		}
 		else{
 			dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_sec, "ifname", &ifname);
@@ -1346,17 +1346,17 @@ int delete_br_port(char *refparam, struct dmctx *ctx, void *data, char *instance
 				dmuci_set_value_by_section(((struct bridging_port_args *)data)->bridge_sec, "ifname", new_ifname);
 			}
 			get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
-			dmuci_delete_by_section_unnamed_icwmpd(dmmap_section, NULL, NULL);
+			dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
 		}
 		break;
 	case DEL_ALL:
-		uci_path_foreach_option_eq(icwmpd, "dmmap_bridge_port", "bridge_port", "bridge_key", ((struct bridging_args *)data)->br_key, s) {
+		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", ((struct bridging_args *)data)->br_key, s) {
 			if (prev_s)
-				DMUCI_DELETE_BY_SECTION(icwmpd, prev_s, NULL, NULL);
+				DMUCI_DELETE_BY_SECTION(bbfdm, prev_s, NULL, NULL);
 			prev_s = s;
 		}
 		if (prev_s)
-			DMUCI_DELETE_BY_SECTION(icwmpd, prev_s, NULL, NULL);
+			DMUCI_DELETE_BY_SECTION(bbfdm, prev_s, NULL, NULL);
 		dmuci_set_value_by_section(((struct bridging_args *)data)->bridge_sec, "ifname", ""); // TO CHECK
 		break;
 	}
@@ -1551,7 +1551,7 @@ int set_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *in
 				//remove old br_port param to the new one
 				update_port_parameters(linker, br_key, br_pt_inst, mg_port);
 				if(((struct bridging_port_args *)data)->ifname[0] == '\0')
-					DMUCI_DELETE_BY_SECTION(icwmpd,((struct bridging_port_args *)data)->bridge_port_sec, NULL, NULL);// delete dmmap section after remove br_port_instance to adequate config
+					DMUCI_DELETE_BY_SECTION(bbfdm,((struct bridging_port_args *)data)->bridge_port_sec, NULL, NULL);// delete dmmap section after remove br_port_instance to adequate config
 			} else {
 				return FAULT_9005;
 			}
@@ -1698,10 +1698,10 @@ int browseBridgeInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, 
 
 static void set_bridge_port_parameters(struct uci_section *dmmap_section, char* bridge_key)
 {
-	DMUCI_SET_VALUE_BY_SECTION(icwmpd, dmmap_section, "bridge_key", bridge_key);
-	DMUCI_SET_VALUE_BY_SECTION(icwmpd, dmmap_section, "mg_port", "false");
-	DMUCI_SET_VALUE_BY_SECTION(icwmpd, dmmap_section, "penable", "1");
-	DMUCI_SET_VALUE_BY_SECTION(icwmpd, dmmap_section, "is_dmmap", "false");
+	DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_section, "bridge_key", bridge_key);
+	DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_section, "mg_port", "false");
+	DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_section, "penable", "1");
+	DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_section, "is_dmmap", "false");
 }
 
 int browseBridgePortInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance){
@@ -1714,12 +1714,12 @@ int browseBridgePortInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_da
 
 	dmasprintf(&file_config_name, "%s","/etc/config/dsl");
 	check_create_dmmap_package("dmmap_bridge_port");
-	update_section_list_icwmpd("dmmap_bridge_port","bridge_port", "bridge_key", 1, ((struct bridging_args *)prev_data)->br_key, "mg_port", "true", "bridge_port_instance", "1");
-	uci_path_foreach_option_eq(icwmpd, "dmmap_bridge_port", "bridge_port", "bridge_key", ((struct bridging_args *)prev_data)->br_key, new_port) {
+	update_section_list_bbfdm("dmmap_bridge_port","bridge_port", "bridge_key", 1, ((struct bridging_args *)prev_data)->br_key, "mg_port", "true", "bridge_port_instance", "1");
+	uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", ((struct bridging_args *)prev_data)->br_key, new_port) {
 		dmuci_get_value_by_section_string(new_port, "is_dmmap", &is_dmmap);
 		if(strcmp(is_dmmap, "false") !=0 ) {
 			init_bridging_port_args(&curr_bridging_port_args, new_port, ((struct bridging_args *)prev_data)->bridge_sec, false, "");
-			port = handle_update_instance(2, dmctx, &port_last, update_instance_alias_icwmpd, 5, new_port, "bridge_port_instance", "bridge_port_alias",  &find_max, ((struct bridging_args *)prev_data)->br_key);
+			port = handle_update_instance(2, dmctx, &port_last, update_instance_alias_bbfdm, 5, new_port, "bridge_port_instance", "bridge_port_alias",  &find_max, ((struct bridging_args *)prev_data)->br_key);
 			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_bridging_port_args, port) == DM_STOP)
 				goto end;
 		}
@@ -1775,7 +1775,7 @@ int browseBridgePortInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_da
 	list_for_each_entry(p, &dup_list, list) {
 		set_bridge_port_parameters(p->dmmap_section, ((struct bridging_args *)prev_data)->br_key);
 		init_bridging_port_args(&curr_bridging_port_args, p->config_section, ((struct bridging_args *)prev_data)->bridge_sec, false, (char*)p->additional_attribute);
-		port = handle_update_instance(2, dmctx, &port_last, update_instance_alias_icwmpd, 5, p->dmmap_section, "bridge_port_instance", "bridge_port_alias", &find_max, ((struct bridging_args *)prev_data)->br_key);
+		port = handle_update_instance(2, dmctx, &port_last, update_instance_alias_bbfdm, 5, p->dmmap_section, "bridge_port_instance", "bridge_port_alias", &find_max, ((struct bridging_args *)prev_data)->br_key);
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_bridging_port_args, port) == DM_STOP)
 			goto end;
 	}

@@ -154,7 +154,7 @@ static unsigned char is_dns_server_in_dmmap(char *chk_ip, char *chk_interface)
 	struct uci_section *s = NULL;
 	char *ip, *interface;
 
-	uci_path_foreach_sections(icwmpd, "dmmap_dns", "dns_server", s) {
+	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s) {
 		dmuci_get_value_by_section_string(s, "ip", &ip);
 		dmuci_get_value_by_section_string(s, "interface", &interface);
 		if (strcmp(interface, chk_interface) == 0 && strcmp(ip, chk_ip) == 0) {
@@ -174,7 +174,7 @@ static int dmmap_synchronizeDNSClientRelayServer(struct dmctx *dmctx, DMNODE *pa
 	int j, found;
 
 	check_create_dmmap_package("dmmap_dns");
-	uci_path_foreach_sections_safe(icwmpd, "dmmap_dns", "dns_server", stmp, s) {
+	uci_path_foreach_sections_safe(bbfdm, "dmmap_dns", "dns_server", stmp, s) {
 		dmuci_get_value_by_section_string(s, "ip", &vip);
 		dmuci_get_value_by_section_string(s, "interface", &viface);
 		found = 0;
@@ -212,7 +212,7 @@ static int dmmap_synchronizeDNSClientRelayServer(struct dmctx *dmctx, DMNODE *pa
 			uci_foreach_element(v, e) {
 				if (is_dns_server_in_dmmap(e->name, section_name(s)))
 					continue;
-				dmuci_add_section_icwmpd("dmmap_dns", "dns_server", &sdns, &name);
+				dmuci_add_section_bbfdm("dmmap_dns", "dns_server", &sdns, &name);
 				dmuci_set_value_by_section(sdns, "ip", e->name);
 				dmuci_set_value_by_section(sdns, "interface", section_name(s));
 				dmuci_set_value_by_section(sdns, "enable", "1");
@@ -225,7 +225,7 @@ static int dmmap_synchronizeDNSClientRelayServer(struct dmctx *dmctx, DMNODE *pa
 		dmjson_foreach_value_in_array(jobj, arrobj, ipdns, j, 1, "dns-server") {
 			if (ipdns[0] == '\0' || is_dns_server_in_dmmap(ipdns, section_name(s)))
 				continue;
-			dmuci_add_section_icwmpd("dmmap_dns", "dns_server", &sdns, &name);
+			dmuci_add_section_bbfdm("dmmap_dns", "dns_server", &sdns, &name);
 			dmuci_set_value_by_section(sdns, "ip", ipdns);
 			dmuci_set_value_by_section(sdns, "interface", section_name(s));
 			dmuci_set_value_by_section(sdns, "enable", "1");
@@ -242,9 +242,9 @@ int browseServerInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, 
 	char *instance, *instnbr = NULL;
 
 	dmmap_synchronizeDNSClientRelayServer(dmctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(icwmpd, "dmmap_dns", "dns_server", s)
+	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s)
 	{
-		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias_icwmpd, 3, s, "dns_server_instance", "dns_server_alias");
+		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias_bbfdm, 3, s, "dns_server_instance", "dns_server_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, instance) == DM_STOP)
 			break;
 
@@ -258,9 +258,9 @@ int browseRelayForwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *pr
 	char *instance, *instnbr = NULL;
 
 	dmmap_synchronizeDNSClientRelayServer(dmctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(icwmpd, "dmmap_dns", "dns_server", s)
+	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s)
 	{
-		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias_icwmpd, 3, s, "dns_server_instance", "dns_server_alias");
+		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias_bbfdm, 3, s, "dns_server_instance", "dns_server_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, instance) == DM_STOP)
 			break;
 
@@ -289,13 +289,13 @@ int add_client_server(char *refparam, struct dmctx *ctx, void *data, char **inst
 	char *v, *inst;
 
 	check_create_dmmap_package("dmmap_dns");
-	inst = get_last_instance_icwmpd("dmmap_dns", "dns_server", "dns_server_instance");
+	inst = get_last_instance_bbfdm("dmmap_dns", "dns_server", "dns_server_instance");
 	dmuci_add_list_value("network", "lan", "dns", "0.0.0.0");
-	dmuci_add_section_icwmpd("dmmap_dns", "dns_server", &s, &v);
+	dmuci_add_section_bbfdm("dmmap_dns", "dns_server", &s, &v);
 	dmuci_set_value_by_section(s, "ip", "0.0.0.0");
 	dmuci_set_value_by_section(s, "interface", "lan");
 	dmuci_set_value_by_section(s, "enable", "1");
-	*instance = update_instance_icwmpd(s, inst, "dns_server_instance");
+	*instance = update_instance_bbfdm(s, inst, "dns_server_instance");
 	return 0;
 }
 
@@ -305,13 +305,13 @@ int add_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char **i
 	char *v, *inst;
 
 	check_create_dmmap_package("dmmap_dns");
-	inst = get_last_instance_icwmpd("dmmap_dns", "dns_server", "dns_server_instance");
+	inst = get_last_instance_bbfdm("dmmap_dns", "dns_server", "dns_server_instance");
 	dmuci_add_list_value("network", "lan", "dns", "0.0.0.0");
-	dmuci_add_section_icwmpd("dmmap_dns", "dns_server", &s, &v);
+	dmuci_add_section_bbfdm("dmmap_dns", "dns_server", &s, &v);
 	dmuci_set_value_by_section(s, "ip", "0.0.0.0");
 	dmuci_set_value_by_section(s, "interface", "lan");
 	dmuci_set_value_by_section(s, "enable", "1");
-	*instance = update_instance_icwmpd(s, inst, "dns_server_instance");
+	*instance = update_instance_bbfdm(s, inst, "dns_server_instance");
 	return 0;
 }
 
@@ -340,7 +340,7 @@ int delete_client_server(char *refparam, struct dmctx *ctx, void *data, char *in
 				dmuci_get_value_by_section_list(s, "dns", &v);
 				if (v != NULL) {
 					uci_foreach_element_safe(v, e, tmp) {
-						uci_path_foreach_option_eq_safe(icwmpd, "dmmap_dns", "dns_server", "ip", tmp->name, stmp, ss) {
+						uci_path_foreach_option_eq_safe(bbfdm, "dmmap_dns", "dns_server", "ip", tmp->name, stmp, ss) {
 							dmuci_delete_by_section(ss, NULL, NULL);
 						}
 						dmuci_del_list_value_by_section(s, "dns", tmp->name);
@@ -377,7 +377,7 @@ int delete_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char 
 				dmuci_get_value_by_section_list(s, "dns", &v);
 				if (v != NULL) {
 					uci_foreach_element_safe(v, e, tmp) {
-						uci_path_foreach_option_eq_safe(icwmpd, "dmmap_dns", "dns_server", "ip", tmp->name, stmp, ss) {
+						uci_path_foreach_option_eq_safe(bbfdm, "dmmap_dns", "dns_server", "ip", tmp->name, stmp, ss) {
 							dmuci_delete_by_section(ss, NULL, NULL);
 						}
 						dmuci_del_list_value_by_section(s, "dns", tmp->name);
@@ -414,7 +414,7 @@ int get_client_server_number_of_entries(char *refparam, struct dmctx *ctx, void 
 	int cnt = 0;
 
 	dmmap_synchronizeDNSClientRelayServer(ctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(icwmpd, "dmmap_dns", "dns_server", s)
+	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s)
 	{
 		cnt++;
 	}
@@ -501,7 +501,7 @@ int get_relay_forward_number_of_entries(char *refparam, struct dmctx *ctx, void 
 	int cnt = 0;
 
 	dmmap_synchronizeDNSClientRelayServer(ctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(icwmpd, "dmmap_dns", "dns_server", s)
+	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s)
 	{
 		cnt++;
 	}

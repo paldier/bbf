@@ -184,7 +184,7 @@ static int is_mac_exist(char *macaddr)
 	struct uci_section *s = NULL;
 	char *mac;
 
-	uci_path_foreach_sections(icwmpd, DMMAP, "link", s) {
+	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
 		dmuci_get_value_by_section_string(s, "mac", &mac);
 		if (strcmp(mac, macaddr) == 0)
 			return 1;
@@ -209,7 +209,7 @@ static void create_link(char *ifname)
 	if (is_mac_exist(macaddr))
 		return;
 
-	dmuci_add_section_icwmpd(DMMAP, "link", &dmmap, &v);
+	dmuci_add_section_bbfdm(DMMAP, "link", &dmmap, &v);
 	dmuci_set_value_by_section(dmmap, "mac", macaddr);
 	dmuci_set_value_by_section(dmmap, "device", device);
 	dmuci_set_value_by_section(dmmap, "section_name", ifname);
@@ -269,9 +269,9 @@ int browseEthernetLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_
 	char *id_last = NULL, *id = NULL;
 
 	dmmap_synchronizeEthernetLink(dmctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(icwmpd, DMMAP, "link", s) {
+	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
 		args.section = s;
-		id = handle_update_instance(1, dmctx, &id_last, update_instance_alias_icwmpd, 3, s, "link_instance", "link_alias");
+		id = handle_update_instance(1, dmctx, &id_last, update_instance_alias_bbfdm, 3, s, "link_instance", "link_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&args, id) == DM_STOP) {
 			break;
 		}
@@ -345,10 +345,10 @@ int addObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, char **ins
 	char *inst, *v;
 	struct uci_section *dmmap_network= NULL;
 
-	inst = get_last_instance_icwmpd(DMMAP, "link", "link_instance");
+	inst = get_last_instance_bbfdm(DMMAP, "link", "link_instance");
 
-	dmuci_add_section_icwmpd(DMMAP, "link", &dmmap_network, &v);
-	*instance = update_instance_icwmpd(dmmap_network, inst, "link_instance");
+	dmuci_add_section_bbfdm(DMMAP, "link", &dmmap_network, &v);
+	*instance = update_instance_bbfdm(dmmap_network, inst, "link_instance");
 	return 0;
 }
 
@@ -359,7 +359,7 @@ int delObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, char *inst
 			dmuci_delete_by_section(((struct dm_args *)data)->section, NULL, NULL);
 			break;
 		case DEL_ALL:
-			DMUCI_DEL_SECTION(icwmpd, DMMAP, "link", NULL, NULL);
+			DMUCI_DEL_SECTION(bbfdm, DMMAP, "link", NULL, NULL);
 			break;
 	}
 
@@ -374,9 +374,9 @@ int addObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void *data,
 	check_create_dmmap_package("dmmap_network");
 	dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
 	if(strcmp(vlan_method, "2") == 0)
-		inst = get_vlan_last_instance_icwmpd("dmmap_network", "device", "all_vlan_term_instance", vlan_method);
+		inst = get_vlan_last_instance_bbfdm("dmmap_network", "device", "all_vlan_term_instance", vlan_method);
 	else
-		inst = get_vlan_last_instance_icwmpd("dmmap_network", "device", "only_tagged_vlan_term_instance", vlan_method);
+		inst = get_vlan_last_instance_bbfdm("dmmap_network", "device", "only_tagged_vlan_term_instance", vlan_method);
 
 	dmuci_get_option_value_string("ports", "WAN", "ifname", &eth_wan);
 	dmasprintf(&vid, "%d", inst?atoi(inst)+4:4);
@@ -388,12 +388,12 @@ int addObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void *data,
 	dmasprintf(&name, "%s.%s", eth_wan, vid);
 	dmuci_set_value("network", vlan_name, "name", name);
 
-	dmuci_add_section_icwmpd("dmmap_network", "device", &dmmap_network, &v);
+	dmuci_add_section_bbfdm("dmmap_network", "device", &dmmap_network, &v);
 	dmuci_set_value_by_section(dmmap_network, "section_name", vlan_name);
 	if(strcmp(vlan_method, "2") == 0)
-		*instance = update_instance_icwmpd(dmmap_network, inst, "all_vlan_term_instance");
+		*instance = update_instance_bbfdm(dmmap_network, inst, "all_vlan_term_instance");
 	else
-		*instance = update_instance_icwmpd(dmmap_network, inst, "only_tagged_vlan_term_instance");
+		*instance = update_instance_bbfdm(dmmap_network, inst, "only_tagged_vlan_term_instance");
 
 	return 0;
 }
@@ -421,7 +421,7 @@ int delObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void *data,
 		} else {
 			get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name(((struct dm_args *)data)->section), &dmmap_section);
 			if(dmmap_section != NULL)
-				dmuci_delete_by_section_unnamed_icwmpd(dmmap_section, NULL, NULL);
+				dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
 			dmuci_delete_by_section(((struct dm_args *)data)->section, NULL, NULL);
 		}
 		break;
@@ -470,7 +470,7 @@ int get_Ethernet_LinkNumberOfEntries(char *refparam, struct dmctx *ctx, void *da
 	int cnt = 0;
 
 	dmmap_synchronizeEthernetLink(ctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(icwmpd, DMMAP, "link", s)
+	uci_path_foreach_sections(bbfdm, DMMAP, "link", s)
 	{
 		cnt++;
 	}
@@ -994,7 +994,7 @@ int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void *data, 
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(s), &dmmap_section);
 			if (dmmap_section != NULL) {
 				dmuci_get_value_by_section_string(dmmap_section, "bridge_instance", &br_inst);
-				uci_path_foreach_option_eq(icwmpd, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
+				uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
 					dmuci_get_value_by_section_string(port, "mg_port", &mg);
 					if (strcmp(mg, "true") == 0)
 						sprintf(linker, "%s+", section_name(port));

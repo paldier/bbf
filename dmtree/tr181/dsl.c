@@ -314,14 +314,14 @@ static struct uci_section *update_create_dmmap_dsl_line(char *curr_id)
 	struct uci_section *s = NULL;
 	char *name, *instance;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap", "dsl_line", "id", curr_id, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap", "dsl_line", "id", curr_id, s) {
 		return s;
 	}
 	if (!s) {
 		dmasprintf(&instance, "%d", atoi(curr_id)+1);
-		DMUCI_ADD_SECTION(icwmpd, "dmmap", "dsl_line", &s, &name);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "id", curr_id);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "dsl_line_instance", instance);
+		DMUCI_ADD_SECTION(bbfdm, "dmmap", "dsl_line", &s, &name);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "id", curr_id);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "dsl_line_instance", instance);
 		dmfree(instance);
 	}
 	return s;
@@ -332,14 +332,14 @@ static struct uci_section *update_create_dmmap_dsl_channel(char *curr_id)
 	struct uci_section *s = NULL;
 	char *name, *instance;
 
-	uci_path_foreach_option_eq(icwmpd, "dmmap", "dsl_channel", "id", curr_id, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap", "dsl_channel", "id", curr_id, s) {
 		return s;
 	}
 	if (!s) {
 		dmasprintf(&instance, "%d", atoi(curr_id)+1);
-		DMUCI_ADD_SECTION(icwmpd, "dmmap", "dsl_channel", &s, &name);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "id", curr_id);
-		DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "dsl_channel_instance", instance);
+		DMUCI_ADD_SECTION(bbfdm, "dmmap", "dsl_channel", &s, &name);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "id", curr_id);
+		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "dsl_channel_instance", instance);
 		dmfree(instance);
 	}
 	return s;
@@ -460,7 +460,7 @@ int get_DSL_LineNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, c
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_path_foreach_sections(icwmpd, "dmmap", "dsl_line", s) {
+	uci_path_foreach_sections(bbfdm, "dmmap", "dsl_line", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -472,7 +472,7 @@ int get_DSL_ChannelNumberOfEntries(char *refparam, struct dmctx *ctx, void *data
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_path_foreach_sections(icwmpd, "dmmap", "dsl_channel", s) {
+	uci_path_foreach_sections(bbfdm, "dmmap", "dsl_channel", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);

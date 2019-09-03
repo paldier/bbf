@@ -2584,7 +2584,7 @@ int set_WiFiEndPointProfile_Alias(char *refparam, struct dmctx *ctx, void *data,
 			get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name((struct uci_section*)data), &dmmap_section);
 			dmuci_get_value_by_section_string(dmmap_section, "endpointinstance", &epinst);
 			get_dmmap_section_of_config_section_eq("dmmap_wireless", "ep_profile", "ep_key", epinst, &dm);
-			DMUCI_SET_VALUE_BY_SECTION(icwmpd, dm, "ep_profile_alias", value);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dm, "ep_profile_alias", value);
 			break;
 	}
 	return 0;
@@ -3200,7 +3200,7 @@ int add_wifi_ssid(char *refparam, struct dmctx *ctx, void *data, char **instance
 	struct uci_section *dmmap_wifi=NULL;
 
 	check_create_dmmap_package("dmmap_wireless");
-	inst = get_last_instance_icwmpd("dmmap_wireless", "wifi-iface", "ssidinstance");
+	inst = get_last_instance_bbfdm("dmmap_wireless", "wifi-iface", "ssidinstance");
 	sprintf(ssid, "Iopsys_%d", inst ? (atoi(inst)+1) : 1);
 	dmuci_add_section("wireless", "wifi-iface", &s, &value);
 	dmuci_set_value_by_section(s, "device", "wl0");
@@ -3209,9 +3209,9 @@ int add_wifi_ssid(char *refparam, struct dmctx *ctx, void *data, char **instance
 	dmuci_set_value_by_section(s, "mode", "ap");
 	dmuci_set_value_by_section(s, "ssid", ssid);
 
-	dmuci_add_section_icwmpd("dmmap_wireless", "wifi-iface", &dmmap_wifi, &v);
+	dmuci_add_section_bbfdm("dmmap_wireless", "wifi-iface", &dmmap_wifi, &v);
 	dmuci_set_value_by_section(dmmap_wifi, "section_name", section_name(s));
-	*instance = update_instance_icwmpd(dmmap_wifi, inst, "ssidinstance");
+	*instance = update_instance_bbfdm(dmmap_wifi, inst, "ssidinstance");
 	return 0;
 }
 
@@ -3259,17 +3259,17 @@ int addObjWiFiEndPoint(char *refparam, struct dmctx *ctx, void *data, char **ins
 	int inst;
 
 	check_create_dmmap_package("dmmap_wireless");
-	instancepara1 = get_last_instance_lev2_icwmpd("wireless", "wifi-iface", "dmmap_wireless", "endpointinstance", "mode", "wet")?get_last_instance_lev2_icwmpd("wireless", "wifi-iface", "dmmap_wireless", "endpointinstance", "mode", "wet"):"0";
-	instancepara2 = get_last_instance_lev2_icwmpd("wireless", "wifi-iface", "dmmap_wireless", "endpointinstance", "mode", "sta")?get_last_instance_lev2_icwmpd("wireless", "wifi-iface", "dmmap_wireless", "endpointinstance", "mode", "sta"):"0";
+	instancepara1 = get_last_instance_lev2_bbfdm("wireless", "wifi-iface", "dmmap_wireless", "endpointinstance", "mode", "wet")?get_last_instance_lev2_bbfdm("wireless", "wifi-iface", "dmmap_wireless", "endpointinstance", "mode", "wet"):"0";
+	instancepara2 = get_last_instance_lev2_bbfdm("wireless", "wifi-iface", "dmmap_wireless", "endpointinstance", "mode", "sta")?get_last_instance_lev2_bbfdm("wireless", "wifi-iface", "dmmap_wireless", "endpointinstance", "mode", "sta"):"0";
 	instancepara=atoi(instancepara1)>atoi(instancepara2)?dmstrdup(instancepara1):dmstrdup(instancepara2);
 	dmuci_add_section("wireless", "wifi-iface", &endpoint_sec, &value);
 	dmuci_set_value_by_section(endpoint_sec, "device", "wl1");
 	dmuci_set_value_by_section(endpoint_sec, "mode", "wet");
 	dmuci_set_value_by_section(endpoint_sec, "network", "lan");
 
-	dmuci_add_section_icwmpd("dmmap_wireless", "wifi-iface", &dmmap_sec, &v);
+	dmuci_add_section_bbfdm("dmmap_wireless", "wifi-iface", &dmmap_sec, &v);
 	dmuci_set_value_by_section(dmmap_sec, "section_name", section_name(endpoint_sec));
-	*instance = update_instance_icwmpd(dmmap_sec, instancepara, "endpointinstance");
+	*instance = update_instance_bbfdm(dmmap_sec, instancepara, "endpointinstance");
 	return 0;
 }
 
@@ -3529,8 +3529,8 @@ int browseWiFiEndPointProfileInst(struct dmctx *dmctx, DMNODE *parent_node, void
 	dmuci_get_value_by_section_string(dmmap_section, "endpointinstance", &ep_instance);
 	s=is_dmmap_section_exist_eq("dmmap_wireless", "ep_profile", "ep_key", ep_instance);
 	if(!s)
-		dmuci_add_section_icwmpd("dmmap_wireless", "ep_profile", &s, &v);
-	DMUCI_SET_VALUE_BY_SECTION(icwmpd, s, "ep_key", ep_instance);
+		dmuci_add_section_bbfdm("dmmap_wireless", "ep_profile", &s, &v);
+	DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "ep_key", ep_instance);
 	instance =  handle_update_instance(1, dmctx, &instnbr, update_instance_alias, 3, s, "ep_profile_instance", "ep_profile_alias");
 
 	DM_LINK_INST_OBJ(dmctx, parent_node, ep_args->wifi_enp_sec, "1");

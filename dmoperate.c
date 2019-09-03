@@ -726,10 +726,11 @@ static opr_ret_t ip_diagnostics_serverselection(struct dmctx *dmctx, char *path,
 
 	set_param_diagnostics("serverselectiondiagnostic", "HostList", serverselection.hostlist);
 	set_param_diagnostics("serverselectiondiagnostic", "interface", serverselection.interface);
-	set_param_diagnostics("serverselectiondiagnostic", "ProtocolVersion", serverselection.proto);
+	set_param_diagnostics("serverselectiondiagnostic", "ProtocolVersion", serverselection.protocol_version);
 	set_param_diagnostics("serverselectiondiagnostic", "NumberOfRepetitions", serverselection.nbofrepetition);
 	set_param_diagnostics("serverselectiondiagnostic", "port", serverselection.port);
 	set_param_diagnostics("serverselectiondiagnostic", "Protocol", serverselection.proto);
+	set_param_diagnostics("serverselectiondiagnostic", "Timeout", serverselection.timeout);
 
 	//Free uci_varstate_ctx
 	end_uci_varstate_ctx();

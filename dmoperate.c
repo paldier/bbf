@@ -145,7 +145,7 @@ static char *cwmp_get_value_by_id(char *id)
 	cwmp_init(&dm_ctx, id);
 	if(cwmp_get(CMD_GET_VALUE, id, &dm_ctx)) {
 			list_for_each_entry(n, &dm_ctx.list_parameter, list) {
-				value = strdup(n->data);
+				value = dmstrdup(n->data);
 				break;
 			}
 	}
@@ -198,7 +198,7 @@ static opr_ret_t network_interface_reset(struct dmctx *dmctx, char *path, char *
 	zone = get_param_val_from_op_cmd(path, "Name");
 	if(zone) {
 		strcat(cmd, zone);
-		free(zone);
+		dmfree(zone);
 	} else {
 		return FAIL;
 	}
@@ -293,7 +293,7 @@ static opr_ret_t vendor_conf_backup(struct dmctx *dmctx, char *path, char *input
 		return UBUS_INVALID_ARGUMENTS;
 
 	dmcmd("/bin/sh", 7, ICWMP_SCRIPT, "upload", fserver.url, VCF_FILE_TYPE, fserver.user, fserver.pass, vcf_name);
-	free(vcf_name);
+	dmfree(vcf_name);
 
 	return SUCCESS;
 }

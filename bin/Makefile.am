@@ -53,7 +53,8 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/dhcpv6.c					\
 	../dmtree/tr181/dsl.c						\
 	../dmtree/tr181/interfacestack.c			\	
-	../dmtree/tr181/qos.c
+	../dmtree/tr181/qos.c						\
+	../dmtree/tr181/usb.c 
 endif
 
 if BBF_TR104

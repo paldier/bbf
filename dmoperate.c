@@ -285,12 +285,7 @@ static opr_ret_t vendor_conf_backup(struct dmctx *dmctx, char *path, char *input
 		return UBUS_INVALID_ARGUMENTS;
 
 	fserver.user = dmjson_get_value(json_res, 1, "Username");
-	if(fserver.user[0] == '\0')
-		return UBUS_INVALID_ARGUMENTS;
-
 	fserver.pass = dmjson_get_value(json_res, 1, "Password");
-	if(fserver.pass[0] == '\0')
-		return UBUS_INVALID_ARGUMENTS;
 
 	dmcmd("/bin/sh", 7, ICWMP_SCRIPT, "upload", fserver.url, VCF_FILE_TYPE, fserver.user, fserver.pass, vcf_name);
 	dmfree(vcf_name);
@@ -310,13 +305,7 @@ static opr_ret_t vendor_conf_restore(struct dmctx *dmctx, char *path, char *inpu
 		return UBUS_INVALID_ARGUMENTS;
 
 	fserver.user = dmjson_get_value(json_res, 1, "Username");
-	if(fserver.user[0] == '\0')
-		return UBUS_INVALID_ARGUMENTS;
-
 	fserver.pass = dmjson_get_value(json_res, 1, "Password");
-	if(fserver.pass[0] == '\0')
-		return UBUS_INVALID_ARGUMENTS;
-
 	file_size = dmjson_get_value(json_res, 1, "FileSize");
 
 	dmcmd("/bin/sh", 7, ICWMP_SCRIPT, "download", fserver.url, file_size, VCF_FILE_TYPE, fserver.user, fserver.pass);
@@ -740,7 +729,7 @@ static opr_ret_t ip_diagnostics_serverselection(struct dmctx *dmctx, char *path,
 	//Allocate uci_varstate_ctx
 	init_uci_varstate_ctx();
 
-	serverselection.fasthost = get_param_diagnostics("serverselectiondiagnostic", "AverageResponseTimeDetailed");
+	serverselection.fasthost = get_param_diagnostics("serverselectiondiagnostic", "FastestHost");
 	serverselection.average_response_time = get_param_diagnostics("serverselectiondiagnostic", "AverageResponseTime");
 	serverselection.minimum_response_time = get_param_diagnostics("serverselectiondiagnostic", "MinimumResponseTime");
 	serverselection.maximum_response_time = get_param_diagnostics("serverselectiondiagnostic", "MaximumResponseTime");

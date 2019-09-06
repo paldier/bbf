@@ -13,7 +13,8 @@ serverselection_get() {
 }
 
 serverselection_launch() {
-	local i res ba stc times sc1 success_count min_time avg_time max_time avg_time_sum min max fasthost micros
+	local i res ba stc times sc1 success_count min_time avg_time max_time avg_time_sum min max micros
+	local fasthost avg_time_host min_time_host max_time_host
 	[ "$1" == "cwmp" ] && [ "`$UCI_GET_VARSTATE cwmp.@serverselectiondiagnostic[0].DiagnosticState`" != "Requested" ] && return
 	local hostlist=`serverselection_get cwmp.@serverselectiondiagnostic[0].HostList`
 	local cnt=`serverselection_get cwmp.@serverselectiondiagnostic[0].NumberOfRepetitions 3`
@@ -95,7 +96,7 @@ serverselection_launch() {
 			done
 		fi
 		[ $success_count -gt 0 ] && avg_time=$((avg_time_sum/success_count)) || avg_time=0
-		[[ "$avg_time" != "0" && $avg_time -lt $avg_time_host ]] && avg_time_host=$avg_time && min_time=$min && max_time=$max && fasthost=$host
+		[[ "$avg_time" != "0" && $avg_time -lt $avg_time_host ]] && avg_time_host=$avg_time && min_time_host=$min && max_time_host=$max && fasthost=$host
 		success_count=0
 		avg_time_sum=0
 		min=9999999
@@ -105,8 +106,8 @@ serverselection_launch() {
 	$UCI_SET_VARSTATE cwmp.@serverselectiondiagnostic[0].DiagnosticState=Complete
 	$UCI_SET_VARSTATE cwmp.@serverselectiondiagnostic[0].FastestHost=$fasthost
 	$UCI_SET_VARSTATE cwmp.@serverselectiondiagnostic[0].AverageResponseTime=$avg_time_host
-	$UCI_SET_VARSTATE cwmp.@serverselectiondiagnostic[0].MinimumResponseTime=$min_time
-	$UCI_SET_VARSTATE cwmp.@serverselectiondiagnostic[0].MaximumResponseTime=$max_time
+	$UCI_SET_VARSTATE cwmp.@serverselectiondiagnostic[0].MinimumResponseTime=$min_time_host
+	$UCI_SET_VARSTATE cwmp.@serverselectiondiagnostic[0].MaximumResponseTime=$max_time_host
 	[ "$1" == "cwmp" ] && event_dignostic
 }
 

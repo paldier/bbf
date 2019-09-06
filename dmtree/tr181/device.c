@@ -49,6 +49,7 @@
 #include "interfacestack.h"
 #include "qos.h"
 #include "usb.h"
+#include "datamodelversion.h"
 #ifdef BBF_TR104
 #include "voice_services.h"
 #endif
@@ -63,6 +64,7 @@ DMOBJ tEntry181Obj[] = {
 DMLEAF tRoot_181_Params[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"InterfaceStackNumberOfEntries", &DMREAD, DMT_UNINT, get_Device_InterfaceStackNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{"RootDataModelVersion", &DMREAD, DMT_UNINT, get_Device_RootDataModelVersion, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

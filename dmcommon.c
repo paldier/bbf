@@ -1802,7 +1802,7 @@ int copy_temporary_file_to_original_file(char *f1, char *f2)
 char* readFileContent(char *filepath){
 	char *str=NULL, *tmp= NULL, *res= NULL;
 	FILE *f = fopen(filepath, "rb");
-	int i;
+	int i, j= 0;
 
 	if(f==NULL)
 		return "";
@@ -1815,20 +1815,38 @@ char* readFileContent(char *filepath){
 	fclose(f);
 
 	filecontent[fsize] = 0;
-	return filecontent;
+	for(i=0; i<strlen(filecontent); i++){
+		if(filecontent[i]<48 || (filecontent[i]>57 && filecontent[i]<65) || (filecontent[i]>90 && filecontent[i]<91) || filecontent[i]>122){
+			if(!j)
+				continue;
+			else
+				break;
+		}
+		if (!tmp){
+			dmasprintf(&str, "%c", filecontent[i]);
+			j++;
+			tmp= dmstrdup(str);
+			continue;
+		}
+		j++;
+		dmasprintf(&str, "%s%c", tmp, filecontent[i]);
+		if(tmp){
+			free(tmp);
+			tmp= NULL;
+		}
+		tmp= dmstrdup(str);
+		if(str!=NULL){
+			free(str);
+			str= NULL;
+		}
+	}
+	res= (char *)malloc((j+1)*sizeof(char));
+	strcpy(res, tmp);
+	res[j]= 0;
+	return res;
 
 }
 
-char* readFileContentAlphanum(char *filepath){
-    char *filecontent;
-    char rv = 0;
-    FILE *fp;
-    fp = fopen(filepath, "r");
-	if(fp==NULL)
-		return "";
-    rv = fscanf(fp, "%m[A-Za-z0-9]", &filecontent);
-    return filecontent;
-}
 void writeFileContent(const char *filepath, const char *data)
 {
     FILE *fp = fopen(filepath, "ab");

@@ -1035,7 +1035,7 @@ int get_USBUSBHostsHostDevice_USBVersion(char *refparam, struct dmctx *ctx, void
 	char *strhex, *filepath;
 
 	dmasprintf(&filepath,"%s/bcdDevice", usbdev->folder_path);
-	strhex= readFileContentAlphanum(filepath);
+	strhex= readFileContent(filepath);
 	dmasprintf(value, "%c.%c", strhex[1], strhex[2]);
 	return 0;
 }
@@ -1058,7 +1058,7 @@ int get_USBUSBHostsHostDevice_DeviceSubClass(char *refparam, struct dmctx *ctx, 
 	char *bDevCls, *filepath;
 
 	dmasprintf(&filepath,"%s/bDeviceSubClass", usbdev->folder_path);
-	bDevCls= readFileContentAlphanum(filepath);
+	bDevCls= readFileContent(filepath);
 
 	dmasprintf(value, "%c%c", bDevCls[0], bDevCls[1]);
 
@@ -1077,7 +1077,7 @@ int get_USBUSBHostsHostDevice_DeviceProtocol(char *refparam, struct dmctx *ctx, 
 	char *bDevProto, *filepath;
 
 	dmasprintf(&filepath,"%s/bDeviceProtocol", usbdev->folder_path);
-	bDevProto= readFileContentAlphanum(filepath);
+	bDevProto= readFileContent(filepath);
 
 	dmasprintf(value, "%c%c", bDevProto[0], bDevProto[1]);
 
@@ -1090,7 +1090,7 @@ int get_USBUSBHostsHostDevice_ProductID(char *refparam, struct dmctx *ctx, void 
 	char *idProd, *filepath;
 
 	dmasprintf(&filepath,"%s/idProduct", usbdev->folder_path);
-	idProd= readFileContentAlphanum(filepath);
+	idProd= readFileContent(filepath);
 
 	dmasprintf(value, "%c%c%c%c", idProd[0], idProd[1], idProd[2], idProd[3]);
 	return 0;
@@ -1102,7 +1102,7 @@ int get_USBUSBHostsHostDevice_VendorID(char *refparam, struct dmctx *ctx, void *
 	char *idVendor, *filepath;
 
 	dmasprintf(&filepath,"%s/idVendor", usbdev->folder_path);
-	idVendor= readFileContentAlphanum(filepath);
+	idVendor= readFileContent(filepath);
 
 	dmasprintf(value, "%c%c%c%c", idVendor[0], idVendor[1], idVendor[2], idVendor[3]);
 	return 0;
@@ -1114,7 +1114,7 @@ int get_USBUSBHostsHostDevice_Manufacturer(char *refparam, struct dmctx *ctx, vo
 	char *filepath;
 
 	dmasprintf(&filepath,"%s/manufacturer", usbdev->folder_path);
-	*value= readFileContentAlphanum(filepath);
+	*value= readFileContent(filepath);
 	return 0;
 }
 
@@ -1124,7 +1124,7 @@ int get_USBUSBHostsHostDevice_ProductClass(char *refparam, struct dmctx *ctx, vo
 	char *filepath;
 
 	dmasprintf(&filepath,"%s/product", usbdev->folder_path);
-	*value= readFileContentAlphanum(filepath);
+	*value= readFileContent(filepath);
 	return 0;
 }
 
@@ -1134,7 +1134,7 @@ int get_USBUSBHostsHostDevice_SerialNumber(char *refparam, struct dmctx *ctx, vo
 	char *filepath;
 
 	dmasprintf(&filepath,"%s/urbnum", usbdev->folder_path);
-	*value= readFileContentAlphanum(filepath);
+	*value= readFileContent(filepath);
 	return 0;
 }
 
@@ -1168,7 +1168,7 @@ int get_USBUSBHostsHostDevice_Rate(char *refparam, struct dmctx *ctx, void *data
 	struct usb_port *port= (struct usb_port *)data;
 	char *filepath= NULL, *speed;
 	dmasprintf(&filepath, "%s/speed", port->folder_path);
-	speed= readFileContentAlphanum(filepath);
+	speed= readFileContent(filepath);
 	if(strcmp(speed, "1.5") == 0)
 		*value= "Low";
 	else if(strcmp(speed, "12") == 0)
@@ -1201,7 +1201,7 @@ int get_USBUSBHostsHostDevice_MaxChildren(char *refparam, struct dmctx *ctx, voi
 	struct usb_port *port= (struct usb_port *)data;
 	char *filepath= NULL, *maxchild;
 	dmasprintf(&filepath, "%s/maxchild", port->folder_path);
-	maxchild= readFileContentAlphanum(filepath);
+	maxchild= readFileContent(filepath);
 	return 0;
 }
 
@@ -1210,7 +1210,7 @@ int get_USBUSBHostsHostDevice_IsSuspended(char *refparam, struct dmctx *ctx, voi
 	struct usb_port *port= (struct usb_port *)data;
 	char *filepath= NULL, *status;
 	dmasprintf(&filepath, "%s/power/runtime_status", port->folder_path);
-	status= readFileContentAlphanum(filepath);
+	status= readFileContent(filepath);
 	if(strncmp(status, "suspended", 9) == 0)
 		*value= "1";
 	else
@@ -1229,7 +1229,7 @@ int get_USBUSBHostsHostDevice_ConfigurationNumberOfEntries(char *refparam, struc
 	struct usb_port *port= (struct usb_port *)data;
 	char *filepath= NULL;
 	dmasprintf(&filepath, "%s/bNumConfigurations", port->folder_path);
-	*value= readFileContentAlphanum(filepath);
+	*value= readFileContent(filepath);
 	return 0;
 }
 
@@ -1239,7 +1239,7 @@ int get_USBUSBHostsHostDeviceConfiguration_ConfigurationNumber(char *refparam, s
 	struct usb_port *port= (struct usb_port *)data;
 	char *filepath= NULL;
 	dmasprintf(&filepath, "%s/bConfigurationValue", port->folder_path);
-	*value= readFileContentAlphanum(filepath);
+	*value= readFileContent(filepath);
 	return 0;
 }
 
@@ -1257,7 +1257,7 @@ int get_USBUSBHostsHostDeviceConfigurationInterface_InterfaceNumber(char *refpar
 	struct usb_port *port= (struct usb_port *)data;
 	char *filepath= NULL;
 	dmasprintf(&filepath, "%s/bInterfaceNumber", port->folder_path);
-	*value= readFileContentAlphanum(filepath);
+	*value= readFileContent(filepath);
 	return 0;
 }
 
@@ -1266,7 +1266,7 @@ int get_USBUSBHostsHostDeviceConfigurationInterface_InterfaceClass(char *refpara
 	struct usb_port *port= (struct usb_port *)data;
 	char *filepath= NULL;
 	dmasprintf(&filepath, "%s/bInterfaceClass", port->folder_path);
-	*value= readFileContentAlphanum(filepath);
+	*value= readFileContent(filepath);
 	return 0;
 }
 
@@ -1275,7 +1275,7 @@ int get_USBUSBHostsHostDeviceConfigurationInterface_InterfaceSubClass(char *refp
 	struct usb_port *port= (struct usb_port *)data;
 	char *filepath= NULL;
 	dmasprintf(&filepath, "%s/bInterfaceSubClass", port->folder_path);
-	*value= readFileContentAlphanum(filepath);
+	*value= readFileContent(filepath);
 	return 0;
 }
 
@@ -1284,7 +1284,7 @@ int get_USBUSBHostsHostDeviceConfigurationInterface_InterfaceProtocol(char *refp
 	struct usb_port *port= (struct usb_port *)data;
 	char *filepath= NULL;
 	dmasprintf(&filepath, "%s/bInterfaceProtocol", port->folder_path);
-	*value= readFileContentAlphanum(filepath);
+	*value= readFileContent(filepath);
 	return 0;
 }
 

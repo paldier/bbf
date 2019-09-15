@@ -13,7 +13,7 @@
 #include <ctype.h>
 #include <uci.h>
 #include <unistd.h>
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmuci.h"
 #include "dmubus.h"
 #include "dmcommon.h"

@@ -12,8 +12,7 @@
 #ifndef _USERS_H
 #define _USERS_H
 
-#include "dmcwmp.h"
-
+#include "dmbbf.h"
 
 extern DMOBJ tUsersObj[];
 extern DMLEAF tUsersParams[];

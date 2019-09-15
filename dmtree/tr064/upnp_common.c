@@ -10,7 +10,7 @@
  */
 
 #include "upnp_common.h"
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmuci.h"
 #include "dmubus.h"
 #include "dmjson.h"

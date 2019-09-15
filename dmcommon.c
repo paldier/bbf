@@ -29,7 +29,7 @@
 #include <net/if.h>
 #include <net/if_arp.h>
 
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmuci.h"
 #include "dmubus.h"
 #include "dmcommon.h"

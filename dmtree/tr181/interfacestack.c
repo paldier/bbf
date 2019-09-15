@@ -8,7 +8,7 @@
 *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
 */
 
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmcommon.h"
 #include "dmubus.h"
 #include "dmjson.h"

@@ -12,7 +12,7 @@
 
 #ifndef __DEVICE_INFO_H
 #define __DEVICE_INFO_H
-#include "dmcwmp.h"
+#include "dmbbf.h"
 
 #define UPTIME "/proc/uptime"
 #define DEFAULT_CONFIG_DIR "/etc/config/"

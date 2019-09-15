@@ -9,7 +9,7 @@
  *
  */
 
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "upnp_monitoring.h"
 #include "upnp_common.h"
 #include "dmubus.h"

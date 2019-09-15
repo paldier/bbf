@@ -179,7 +179,7 @@ def cprinttopfile (fp, filename):
 	print >> fp, "*		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>"
 	print >> fp, "*/"
 	print >> fp, ""
-	print >> fp, "#include \"dmcwmp.h\""
+	print >> fp, "#include \"dmbbf.h\""
 	print >> fp, "#include \"dmcommon.h\""
 	print >> fp, "#include \"dmuci.h\""
 	print >> fp, "#include \"dmubus.h\""

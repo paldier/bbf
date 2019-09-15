@@ -9,7 +9,7 @@
  *      Author: Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "firewall.h"
 #include "dmcommon.h"
 #include "dmentry.h"

@@ -11,7 +11,7 @@
 
 #ifndef __TIMES_H
 #define __TIMES_H
-#include "dmcwmp.h"
+#include "dmbbf.h"
 
 extern DMLEAF tTimeParams[];
 

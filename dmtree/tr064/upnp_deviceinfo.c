@@ -10,7 +10,7 @@
  */
 
 #include <stdio.h>
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "upnp_deviceinfo.h"
 #include <sys/utsname.h>
 #include "dmuci.h"

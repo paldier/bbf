@@ -10,7 +10,7 @@
  */
 
 #include <uci.h>
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmuci.h"
 #include "dmubus.h"
 #include "dmcommon.h"

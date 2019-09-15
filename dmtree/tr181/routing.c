@@ -14,7 +14,7 @@
 #include <ctype.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmuci.h"
 #include "dmubus.h"
 #include "dmcommon.h"

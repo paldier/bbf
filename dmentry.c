@@ -11,7 +11,7 @@
  *
  */
 
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmubus.h"
 #include "dmuci.h"
 #include "dmentry.h"

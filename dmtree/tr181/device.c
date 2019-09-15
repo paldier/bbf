@@ -11,7 +11,7 @@
 */
 
 #include "dmuci.h"
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "device.h"
 #include "deviceinfo.h"
 #include "managementserver.h"
@@ -54,7 +54,7 @@
 #include "voice_services.h"
 #endif
 
-/* *** CWMP *** */
+/* *** BBFDM *** */
 DMOBJ tEntry181Obj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
 {(char *)&dmroot, &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, tRoot_181_Obj, tRoot_181_Params, NULL, BBFDM_BOTH},

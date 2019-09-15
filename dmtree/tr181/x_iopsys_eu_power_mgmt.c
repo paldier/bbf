@@ -12,7 +12,7 @@
  */
 
 #include <unistd.h>
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmuci.h"
 #include "dmcommon.h"
 #include "x_iopsys_eu_power_mgmt.h"

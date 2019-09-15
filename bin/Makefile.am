@@ -1,11 +1,10 @@
-CWMP_VERSION = 3.0.0
 LIB_BBFDM_VERSION = 3:0:0
 
 lib_LTLIBRARIES = libbbfdm.la
 
 libbbfdm_la_SOURCES =	\
 	../md5.c			\
-	../dmcwmp.c			\
+	../dmbbf.c			\
 	../dmentry.c		\
 	../dmmem.c			\
 	../dmubus.c			\
@@ -99,9 +98,6 @@ libbbfdm_la_LIBADD =		\
 	$(LIBJSON_LIBS)			\
 	$(LIBTRACE_LIBS)		\
 	$(LBLOBMSG_LIBS)
-
-libbbfdm_la_CFLAGS+=-DCWMP_VERSION=\"$(CWMP_VERSION)\"
-libbbfdm_la_LDFLAGS+=-DCWMP_VERSION=\"$(CWMP_VERSION)\"
 
 libbbfdm_la_CFLAGS+=-I../
 libbbfdm_la_CFLAGS+=-I../dmtree/

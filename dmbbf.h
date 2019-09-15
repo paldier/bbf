@@ -11,8 +11,8 @@
  *
  */
 
-#ifndef __DMCWMP_H__
-#define __DMCWMP_H__
+#ifndef __DMBBF_H__
+#define __DMBBF_H__
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>

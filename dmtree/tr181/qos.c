@@ -8,9 +8,8 @@
 *		Author: Omar Kallel <omar.kallel@pivasoftware.com>
 */
 
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmcommon.h"
-#include "dmcwmp.h"
 #include "dmentry.h"
 #include "dmuci.h"
 #include "qos.h"

@@ -11,7 +11,7 @@
 
 #ifndef __MANAGEMENT_SERVER_H
 #define __MANAGEMENT_SERVER_H
-#include "dmcwmp.h"
+#include "dmbbf.h"
 extern DMLEAF tManagementServerParams[];
 
 int get_management_server_url(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

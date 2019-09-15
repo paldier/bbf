@@ -8,7 +8,7 @@
 *		Author: Omar Kallel <omar.kallel@pivasoftware.com>
 */
 
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmcommon.h"
 #include "usb.h"
 #include <dirent.h>

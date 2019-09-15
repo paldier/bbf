@@ -15,7 +15,7 @@
 #include <libubox/blobmsg_json.h>
 #include <json-c/json.h>
 #include <unistd.h>
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #define NVRAM_FILE "/proc/nvram/WpaKey"
 #define MAX_DHCP_LEASES 256
 #define MAX_PROC_ROUTING 256

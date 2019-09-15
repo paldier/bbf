@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "dmmem.h"
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmuci.h"
 #include "dmubus.h"
 #include "dmcommon.h"

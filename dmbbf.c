@@ -13,7 +13,7 @@
 #include <uci.h>
 #include <ctype.h>
 #include "dmuci.h"
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmmem.h"
 #include "device.h"
 #include "times.h"
@@ -40,7 +40,6 @@
 #include "routing.h"
 #include "nat.h"
 #include "xmpp.h"
-#include "dmcwmp.h"
 #include "dmjson.h"
 #ifdef BBF_TR104
 #include "voice_services.h"
@@ -1915,9 +1914,9 @@ static int get_linker_value_check_param(DMPARAM_ARGS)
  * UPNP entries
  * ******************/
 
-int upnp_map_cwmp_fault(int cwmp_fault)
+int upnp_map_bbf_fault(int bbf_fault)
 {
-	switch (cwmp_fault) {
+	switch (bbf_fault) {
 	case FAULT_9005:
 		return FAULT_UPNP_703;
 	case FAULT_9003:
@@ -1927,9 +1926,9 @@ int upnp_map_cwmp_fault(int cwmp_fault)
 	case FAULT_9008:
 		return FAULT_UPNP_706;
 	}
-	if (cwmp_fault > __FAULT_UPNP_MAX)
+	if (bbf_fault > __FAULT_UPNP_MAX)
 		return FAULT_UPNP_701;
-	return cwmp_fault;
+	return bbf_fault;
 }
 
 int plugin_upnp_structured_obj_match(DMOBJECT_ARGS)
@@ -2221,7 +2220,7 @@ int dm_entry_upnp_get_instances(struct dmctx *dmctx)
 	if (dmctx->findparam)
 		return 0;
 	else
-		return (upnp_map_cwmp_fault(err));
+		return (upnp_map_bbf_fault(err));
 }
 
 static int mparam_upnp_get_instances(DMPARAM_ARGS)
@@ -2275,7 +2274,7 @@ int dm_entry_upnp_get_supported_parameters(struct dmctx *dmctx)
 	if (dmctx->findparam)
 		return 0;
 	else
-		return (upnp_map_cwmp_fault(err));
+		return (upnp_map_bbf_fault(err));
 }
 
 static int mparam_upnp_get_supportedparams(DMPARAM_ARGS)
@@ -2367,7 +2366,7 @@ int dm_entry_upnp_get_selected_values(struct dmctx *dmctx)
 	if (dmctx->findparam)
 		return 0;
 	else
-		return (upnp_map_cwmp_fault(err));
+		return (upnp_map_bbf_fault(err));
 }
 
 static int mparam_upnp_structured_get_value_in_param(DMPARAM_ARGS)
@@ -2434,7 +2433,7 @@ int dm_entry_upnp_get_values(struct dmctx *dmctx)
 	if (findparam_check && dmctx->findparam)
 		return 0;
 	else
-	return (upnp_map_cwmp_fault(err));
+	return (upnp_map_bbf_fault(err));
 }
 
 static int upnp_get_value_obj(DMOBJECT_ARGS)
@@ -2506,7 +2505,7 @@ int dm_entry_upnp_set_values(struct dmctx *dmctx)
 	dmctx->method_param = mparam_upnp_set_value;
 	err = dm_browse(dmctx, &node, root, NULL, NULL);
 	if (dmctx->stop)
-	return (upnp_map_cwmp_fault(err));
+	return (upnp_map_bbf_fault(err));
 	else
 		return FAULT_UPNP_703;
 }
@@ -2581,7 +2580,7 @@ int dm_entry_upnp_delete_instance(struct dmctx *dmctx)
 	dmctx->method_param = upnp_delete_instance_param;
 	err = dm_browse(dmctx, &node, root, NULL, NULL);
 	if (dmctx->stop)
-	return (upnp_map_cwmp_fault(err));
+	return (upnp_map_bbf_fault(err));
 	else
 		return FAULT_UPNP_703;
 }
@@ -2640,7 +2639,7 @@ int dm_entry_upnp_add_instance(struct dmctx *dmctx)
 	dmctx->method_param = mparam_upnp_add_instance;
 	err = dm_browse(dmctx, &node, root, NULL, NULL);
 	if (dmctx->stop)
-	return (upnp_map_cwmp_fault(err));
+	return (upnp_map_bbf_fault(err));
 	else
 		return FAULT_UPNP_703;
 }
@@ -2715,7 +2714,7 @@ int dm_entry_upnp_get_attributes(struct dmctx *dmctx)
 	if (dmctx->findparam)
 		return 0;
 	else
-		return (upnp_map_cwmp_fault(err));
+		return (upnp_map_bbf_fault(err));
 }
 
 static int mparam_upnp_get_attributes(DMPARAM_ARGS)
@@ -2827,7 +2826,7 @@ int dm_entry_upnp_set_attributes(struct dmctx *dmctx)
 	if (dmctx->findparam)
 		return 0;
 	else
-		return (upnp_map_cwmp_fault(err));
+		return (upnp_map_bbf_fault(err));
 }
 
 static int mparam_upnp_set_attributes(DMPARAM_ARGS)
@@ -2921,7 +2920,7 @@ int dm_entry_upnp_get_acl_data(struct dmctx *dmctx)
 	if (dmctx->findparam)
 		return 0;
 	else
-		return (upnp_map_cwmp_fault(err));
+		return (upnp_map_bbf_fault(err));
 }
 
 static int mparam_upnp_get_acldata(DMPARAM_ARGS)
@@ -3016,7 +3015,7 @@ int dm_entry_upnp_get_instance_numbers(struct dmctx *dmctx)
 	if (dmctx->findparam)
 		return 0;
 	else
-		return (upnp_map_cwmp_fault(err));
+		return (upnp_map_bbf_fault(err));
 }
 
 static int mparam_upnp_get_instance_numbers(DMPARAM_ARGS)

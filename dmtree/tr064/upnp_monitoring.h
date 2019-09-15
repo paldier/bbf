@@ -11,7 +11,7 @@
 
 #ifndef UPNP_MONITORING_H
 #define UPNP_MONITORING_H
-#include "dmcwmp.h"
+#include "dmbbf.h"
 struct upnp_ip_usage_args{
 	char *systemName;
 	char *status;

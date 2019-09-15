@@ -13,7 +13,7 @@
 #include <ctype.h>
 #include "dmuci.h"
 #include "dmubus.h"
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmcommon.h"
 #include "dmentry.h"
 #include "dhcpv4.h"
@@ -298,7 +298,7 @@ int browseDHCPv6ClientInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_
 		dhcpv6_client_arg.dhcp_client_dm= p->dmmap_section;
 		dhcpv6_client_arg.ip= strdup(ipv6addr?ipv6addr:"");
 
-		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias, 3, p->dmmap_section, "cwmp_dhcpv6client_instance", "cwmp_dhcpv6client_alias");
+		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias, 3, p->dmmap_section, "bbf_dhcpv6client_instance", "bbf_dhcpv6client_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, &dhcpv6_client_arg, instance) == DM_STOP)
 			break;
 	}
@@ -425,7 +425,7 @@ int browseDHCPv6ServerPoolOptionInst(struct dmctx *dmctx, DMNODE *parent_node, v
 		dhcp_client_opt_args.option_tag= strdup(v1);
 		dhcp_client_opt_args.value= strdup(v2);
 		dhcp_client_opt_args.opt_sect= dmmap_sect;
-		instance= handle_update_instance(1, dmctx, &instnbr, update_instance_alias_bbfdm, 3, dmmap_sect, "cwmp_dhcpv6_servpool_option_instance", "cwmp_dhcpv6_servpool_option_alias");
+		instance= handle_update_instance(1, dmctx, &instnbr, update_instance_alias_bbfdm, 3, dmmap_sect, "bbf_dhcpv6_servpool_option_instance", "bbf_dhcpv6_servpool_option_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, &dhcp_client_opt_args, instance) == DM_STOP)
 			break;
 	}
@@ -489,14 +489,14 @@ int addObjDHCPv6Client(char *refparam, struct dmctx *ctx, void *data, char **ins
 	char *wan_eth, *value, *wanname, *instancepara, *v;
 
 	check_create_dmmap_package("dmmap_dhcpv6");
-	instancepara = get_last_instance_bbfdm("dmmap_dhcpv6", "interface", "cwmp_dhcpv6client_instance");
+	instancepara = get_last_instance_bbfdm("dmmap_dhcpv6", "interface", "bbf_dhcpv6client_instance");
 	dmuci_add_section("network", "interface", &s, &value);
 	dmuci_set_value_by_section(s, "proto", "dhcpv6");
 	dmuci_set_value_by_section(s, "ifname", "@wan");
 	dmuci_set_value_by_section(s, "type", "anywan");
 	dmuci_add_section_bbfdm("dmmap_dhcpv6", "interface", &dmmap_sect, &v);
 	dmuci_set_value_by_section(dmmap_sect, "section_name", section_name(s));
-	*instance = update_instance_bbfdm(dmmap_sect, instancepara, "cwmp_dhcpv6client_instance");
+	*instance = update_instance_bbfdm(dmmap_sect, instancepara, "bbf_dhcpv6client_instance");
 	return 0;
 }
 
@@ -512,8 +512,8 @@ int delObjDHCPv6Client(char *refparam, struct dmctx *ctx, void *data, char *inst
 		case DEL_INST:
 			if(dhcpv6_client_args->dhcp_client_conf != NULL && is_section_unnamed(section_name(dhcpv6_client_args->dhcp_client_conf))){
 				LIST_HEAD(dup_list);
-				delete_sections_save_next_sections("dmmap_dhcpv6", "interface", "cwmp_dhcpv6client_instance", section_name(dhcpv6_client_args->dhcp_client_conf), atoi(instance), &dup_list);
-				update_dmmap_sections(&dup_list, "cwmp_dhcpv6client_instance", "dmmap_dhcpv6", "interface");
+				delete_sections_save_next_sections("dmmap_dhcpv6", "interface", "bbf_dhcpv6client_instance", section_name(dhcpv6_client_args->dhcp_client_conf), atoi(instance), &dup_list);
+				update_dmmap_sections(&dup_list, "bbf_dhcpv6client_instance", "dmmap_dhcpv6", "interface");
 				dmuci_delete_by_section_unnamed(dhcpv6_client_args->dhcp_client_conf, NULL, NULL);
 			} else {
 				get_dmmap_section_of_config_section("dmmap_dhcpv6", "interface", section_name(dhcpv6_client_args->dhcp_client_conf), &dmmap_section);
@@ -645,12 +645,12 @@ int addObjDHCPv6ServerPoolOption(char *refparam, struct dmctx *ctx, void *data, 
 	char *value, *instancepara, *v;
 
 	check_create_dmmap_package("dmmap_dhcpv6");
-	instancepara= get_last_instance_lev2_bbfdm_dmmap_opt("dmmap_dhcpv6", "servpool_option", "cwmp_dhcpv6_servpool_option_instance", "section_name", section_name(dhcp_arg->dhcp_sec));
+	instancepara= get_last_instance_lev2_bbfdm_dmmap_opt("dmmap_dhcpv6", "servpool_option", "bbf_dhcpv6_servpool_option_instance", "section_name", section_name(dhcp_arg->dhcp_sec));
 	dmuci_add_section_bbfdm("dmmap_dhcpv6", "servpool_option", &dmmap_sect, &value);
 	if(dhcp_arg->dhcp_sec != NULL)
 		DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(dhcp_arg->dhcp_sec));
 	DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "option_tag", "0");
-	*instance = update_instance_bbfdm(dmmap_sect, instancepara, "cwmp_dhcpv6_servpool_option_instance");
+	*instance = update_instance_bbfdm(dmmap_sect, instancepara, "bbf_dhcpv6_servpool_option_instance");
 	return 0;
 }
 
@@ -742,7 +742,7 @@ int get_DHCPv6Client_Alias(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	struct dhcpv6_client_args *dhcpv6_client_args = (struct dhcpv6_client_args*)data;
 
-	dmuci_get_value_by_section_string(dhcpv6_client_args->dhcp_client_dm, "cwmp_dhcpv6client_alias", value);
+	dmuci_get_value_by_section_string(dhcpv6_client_args->dhcp_client_dm, "bbf_dhcpv6client_alias", value);
 	return 0;
 }
 
@@ -754,7 +754,7 @@ int set_DHCPv6Client_Alias(char *refparam, struct dmctx *ctx, void *data, char *
 		case VALUECHECK:
 			break;
 		case VALUESET:
-			dmuci_set_value_by_section(dhcpv6_client_args->dhcp_client_dm, "cwmp_dhcpv6client_alias", value);
+			dmuci_set_value_by_section(dhcpv6_client_args->dhcp_client_dm, "bbf_dhcpv6client_alias", value);
 			break;
 	}
 	return 0;
@@ -1957,7 +1957,7 @@ int get_DHCPv6ServerPoolOption_Alias(char *refparam, struct dmctx *ctx, void *da
 {
 	struct dhcpv6_client_option_args* dhcp_client_opt_args= (struct dhcpv6_client_option_args*)data;
 
-	dmuci_get_value_by_section_string(dhcp_client_opt_args->opt_sect, "cwmp_dhcpv6_servpool_option_alias", value);
+	dmuci_get_value_by_section_string(dhcp_client_opt_args->opt_sect, "bbf_dhcpv6_servpool_option_alias", value);
 	return 0;
 
 }
@@ -1970,7 +1970,7 @@ int set_DHCPv6ServerPoolOption_Alias(char *refparam, struct dmctx *ctx, void *da
 		case VALUECHECK:
 			break;
 		case VALUESET:
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dhcp_client_opt_args->opt_sect, "cwmp_dhcpv6_servpool_option_alias", value);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dhcp_client_opt_args->opt_sect, "bbf_dhcpv6_servpool_option_alias", value);
 			break;
 	}
 	return 0;

@@ -15,7 +15,7 @@
 #include <string.h>
 #include <json-c/json.h>
 #include <libubox/blobmsg_json.h>
-#include "dmcwmp.h"
+#include "dmbbf.h"
 
 struct dmjson_arg {
 	char *key;

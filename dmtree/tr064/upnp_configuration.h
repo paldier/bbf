@@ -11,7 +11,7 @@
 
 #ifndef UPNP_CONFIGURATION_H
 #define UPNP_CONFIGURATION_H
-#include "dmcwmp.h"
+#include "dmbbf.h"
 
 struct upnp_configuration_args{
 	struct uci_section *upnpConfiguration_sec;

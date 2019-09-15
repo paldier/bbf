@@ -14,7 +14,7 @@
 #ifndef __DMENTRY_H__
 #define __DMENTRY_H__
 
-#include "dmcwmp.h"
+#include "dmbbf.h"
 extern struct list_head head_package_change;
 extern unsigned char dmcli_timetrack;
 extern unsigned char dmcli_evaluatetest;

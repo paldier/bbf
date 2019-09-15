@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <regex.h>
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmubus.h"
 #include "dmuci.h"
 #include "dmjson.h"
@@ -55,7 +55,7 @@ bool is_str_eq(const char *s1, const char *s2)
 	return false;
 }
 
-static void cwmp_init(struct dmctx *dm_ctx, char *path)
+static void bbf_init(struct dmctx *dm_ctx, char *path)
 {
 	char *uci_amd = NULL, *uci_instance = NULL;
 	int amd = AMD_2, instance = INSTANCE_MODE_ALIAS;
@@ -80,12 +80,12 @@ static void cwmp_init(struct dmctx *dm_ctx, char *path)
 	dm_ctx_init_sub(dm_ctx, DM_CWMP, amd, instance);
 }
 
-static void cwmp_cleanup(struct dmctx *dm_ctx)
+static void bbf_cleanup(struct dmctx *dm_ctx)
 {
 	dm_ctx_clean_sub(dm_ctx);
 }
 
-static bool cwmp_get(int operation, char *path, struct dmctx *dm_ctx)
+static bool bbf_get(int operation, char *path, struct dmctx *dm_ctx)
 {
 	int fault = 0;
 
@@ -109,13 +109,13 @@ static bool cwmp_get(int operation, char *path, struct dmctx *dm_ctx)
 	return true;
 }
 
-static bool cwmp_set_value(char *path, char *value)
+static bool bbf_set_value(char *path, char *value)
 {
 	int fault = 0, res;
 	struct dmctx dm_ctx = {0};
 	struct dmctx *p_dmctx = &dm_ctx;
 
-	cwmp_init(&dm_ctx, path);
+	bbf_init(&dm_ctx, path);
 
 	fault = dm_entry_param_method(&dm_ctx, CMD_SET_VALUE, path, value, NULL);
 
@@ -132,24 +132,24 @@ static bool cwmp_set_value(char *path, char *value)
 	else
 		res = SUCCESS;
 
-	cwmp_cleanup(&dm_ctx);
+	bbf_cleanup(&dm_ctx);
 	return res;
 }
 
-static char *cwmp_get_value_by_id(char *id)
+static char *bbf_get_value_by_id(char *id)
 {
 	struct dmctx dm_ctx = {0};
 	struct dm_parameter *n;
 	char *value = NULL;
 
-	cwmp_init(&dm_ctx, id);
-	if(cwmp_get(CMD_GET_VALUE, id, &dm_ctx)) {
+	bbf_init(&dm_ctx, id);
+	if(bbf_get(CMD_GET_VALUE, id, &dm_ctx)) {
 			list_for_each_entry(n, &dm_ctx.list_parameter, list) {
 				value = dmstrdup(n->data);
 				break;
 			}
 	}
-	cwmp_cleanup(&dm_ctx);
+	bbf_cleanup(&dm_ctx);
 	return value;
 }
 
@@ -167,7 +167,7 @@ static char *get_param_val_from_op_cmd(char *op_cmd, const char *param)
 	strcat(node, param);
 
 	// Get parameter value
-	val = cwmp_get_value_by_id(node);
+	val = bbf_get_value_by_id(node);
 	return val;
 }
 
@@ -256,14 +256,14 @@ static opr_ret_t ap_security_reset(struct dmctx *dmctx, char *path, char *input)
 	strncpy(reset_params[2].value, wpakey, MAXNAMLEN);
 
 	for (i = 0; i < len; i++) {
-		cwmp_set_value(reset_params[i].node, reset_params[i].value);
+		bbf_set_value(reset_params[i].node, reset_params[i].value);
 	}
 	return SUCCESS;
 }
 
 static opr_ret_t dhcp_client_renew(struct dmctx *dmctx, char *path, char *input)
 {
-	if(SUCCESS == cwmp_set_value(path, "true"))
+	if(SUCCESS == bbf_set_value(path, "true"))
 		return SUCCESS;
 	else
 		return FAIL;

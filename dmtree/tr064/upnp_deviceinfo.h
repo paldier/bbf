@@ -11,7 +11,7 @@
 
 #ifndef UPNP_DEVICEINFO_H
 #define UPNP_DEVICEINFO_H
-#include "dmcwmp.h"
+#include "dmbbf.h"
 
 struct upnp_dvinf_args
 {

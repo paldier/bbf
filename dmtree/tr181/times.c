@@ -12,7 +12,7 @@
 #include <uci.h>
 #include <ctype.h>
 #include "dmuci.h"
-#include "dmcwmp.h"
+#include "dmbbf.h"
 #include "dmubus.h"
 #include "dmcommon.h"
 #include "dmentry.h"

@@ -25984,7 +25984,20 @@
 					], 
 					"unit": "seconds", 
 					"read": true, 
-					"write": false
+					"write": false, 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "network.interface", 
+								"method": "status", 
+								"args": {
+									"interface": "@Name"
+								}, 
+								"key": "uptime"
+							}
+						}
+					]
 				}, 
 				"LowerLayers": {
 					"type": "string", 
@@ -26019,6 +26032,19 @@
 						"PendingDisconnect", 
 						"Disconnecting", 
 						"Disconnected"
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "network.interface", 
+								"method": "status", 
+								"args": {
+									"interface": "@Name"
+								}, 
+								"key": "up"
+							}
+						}
 					]
 				}, 
 				"LastConnectionError": {
@@ -26278,7 +26304,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true, 
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "network", 
+									"section": {
+										"type": "interface", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "ac"
+									}
+								}
+							}
+						]
 					}, 
 					"ServiceName": {
 						"type": "string", 
@@ -26287,7 +26328,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true, 
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "network", 
+									"section": {
+										"type": "interface", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "service"
+									}
+								}
+							}
+						]
 					}
 				}, 
 				"Device.PPP.Interface.{i}.IPCP.": {
@@ -26474,7 +26530,20 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": false
+						"write": false, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "network.device", 
+									"method": "status", 
+									"args": {
+										"name": "@Name"
+									}, 
+									"key": "statistics.tx_errors"
+								}
+							}
+						]
 					}, 
 					"ErrorsReceived": {
 						"type": "unsignedInt", 
@@ -26483,7 +26552,20 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": false
+						"write": false, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "network.device", 
+									"method": "status", 
+									"args": {
+										"name": "@Name"
+									}, 
+									"key": "statistics.rx_errors"
+								}
+							}
+						]
 					}, 
 					"UnicastPacketsSent": {
 						"type": "unsignedLong", 
@@ -26510,7 +26592,20 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": false
+						"write": false, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "network.device", 
+									"method": "status", 
+									"args": {
+										"name": "@Name"
+									}, 
+									"key": "statistics.tx_dropped"
+								}
+							}
+						]
 					}, 
 					"DiscardPacketsReceived": {
 						"type": "unsignedInt", 
@@ -26519,7 +26614,20 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": false
+						"write": false, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "network.device", 
+									"method": "status", 
+									"args": {
+										"name": "@Name"
+									}, 
+									"key": "statistics.rx_dropped"
+								}
+							}
+						]
 					}, 
 					"MulticastPacketsSent": {
 						"type": "unsignedLong", 
@@ -26564,7 +26672,20 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": false
+						"write": false, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "network.device", 
+									"method": "status", 
+									"args": {
+										"name": "@Name"
+									}, 
+									"key": "statistics.rx_over_errors"
+								}
+							}
+						]
 					}
 				}, 
 				"Device.PPP.Interface.{i}.PPPoA.": {

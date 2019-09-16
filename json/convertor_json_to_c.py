@@ -72,6 +72,20 @@ def getoptionparam( value, option ):
 				return v
 	return val
 
+def getprotocolsparam( value, option ):
+	val = "BBFDM_BOTH"
+	if isinstance(value,dict):
+		for k,v in value.items():
+			if k == option and isinstance(v, list):
+				if len(v) == 2:
+					return "BBFDM_BOTH"
+				elif v[0] == "usp":
+					return "BBFDM_USP"
+				else:
+					return "BBFDM_CWMP"
+	return val
+
+
 def getargsparam( value ):
 	val1 = "false"
 	val2 = "false"
@@ -498,24 +512,20 @@ def printPARAMline( parentname, dmparam, value ):
 	getvalue = "get_" + commonname
 	mappingparam = getoptionparam(value, "mapping")
 	typeparam = getoptionparam(value, "type")
+	bbfdm = getprotocolsparam(value, "protocols")
 	accessparam = getoptionparam(value, "write")
-	bbfdmparam = getoptionparam(value, "bbfdm")
-	if (accessparam == "false"):
-		access = "&DMREAD"
-		setvalue = "NULL"
-	else:
+
+	if accessparam:
 		access = "&DMWRITE"
 		setvalue = "set_" + commonname
+	else:
+		access = "&DMREAD"
+		setvalue = "NULL"
+
 	if parentname.endswith(".{i}."):
 		instance = "TRUE"
 	else:
 		instance = "FALSE"
-	if bbfdmparam == "cwmp":
-		bbfdm = "BBFDM_CWMP"
-	elif bbfdmparam == "usp":
-		bbfdm = "BBFDM_USP"
-	else:
-		bbfdm = "BBFDM_BOTH"
 
 	cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, parentname, dmparam)
 	hprintGetSetValue(getvalue, setvalue)
@@ -537,38 +547,35 @@ def printOBJline( dmobject, value ):
 	hasparam = objhasparam(value)
 	accessobj = getoptionparam(value, "access")
 	mappingobj = getoptionparam(value, "mapping")
-	bbfdmobj = getoptionparam(value, "bbfdm")
+	bbfdm = getprotocolsparam(value, "protocols")
 
-	if accessobj == "false":
-		access = "&DMREAD"
-		faddobj = "NULL"
-		fdelobj = "NULL"
-	else:
+	if accessobj:
 		access = "&DMWRITE"
 		faddobj = "addObj" + commonname
 		fdelobj = "delObj" + commonname
 		cprintAddDelObj(faddobj, fdelobj, (getlastname(dmobject)).lower(), mappingobj, dmobject)
 		hprintAddDelObj(faddobj, fdelobj)
+	else:
+		access = "&DMREAD"
+		faddobj = "NULL"
+		fdelobj = "NULL"
+
 	if dmobject.endswith(".{i}."):
 		fbrowse = "browse" + commonname + "Inst"
 		cprintBrowseObj(fbrowse, (getlastname(dmobject)).lower(), mappingobj, dmobject)
 		hprintBrowseObj(fbrowse)
 	else:
 		fbrowse = "NULL"
+
 	if hasobj:
 		objchildarray = "t" + commonname + "Obj"
 	else:
 		objchildarray = "NULL"
+
 	if hasparam:
 		paramarray = "t" + commonname + "Params"
 	else:
 		paramarray = "NULL"
-	if bbfdmobj == "cwmp":
-		bbfdm = "BBFDM_CWMP"
-	elif bbfdmobj == "usp":
-		bbfdm = "BBFDM_USP"
-	else:
-		bbfdm = "BBFDM_BOTH"
 
 	fp = open('./.objparamarray.c', 'a')
 	print >> fp,  "{\"%s\", %s, %s, %s, NULL, %s, NULL, NULL, %s, %s, NULL, %s}," % (getlastname(dmobject), access, faddobj, fdelobj, fbrowse, objchildarray, paramarray, bbfdm)

@@ -48,6 +48,8 @@ def check_obj(dmobject):
 			file = "../dmtree/tr181/ip.c"
 		elif "Device.IP.Diagnostics." in dmobject:
 			file = "../dmtree/tr143/diagnostics.c"
+		elif "Device.Services." in dmobject:
+			file = "../dmtree/tr104/voice_services.c"
 		else:
 			file = "../dmtree/tr181/%s.c" % obj[1].lower()
 		if(os.path.isfile(file)):
@@ -83,6 +85,10 @@ def load_param(dmobject):
 		obj = dmobject.split(".")
 		if "Device.IP.Diagnostics." in dmobject:
 			file = "../dmtree/tr143/diagnostics.c"
+		elif "Device.Time." in dmobject:
+			file = "../dmtree/tr181/times.c"
+		elif "Device.Services." in dmobject:
+			file = "../dmtree/tr104/voice_services.c"
 		else:
 			file = "../dmtree/tr181/%s.c" % obj[1].lower()
 		if(os.path.isfile(file)):
@@ -111,6 +117,8 @@ def printusage():
 	print "Examples:"
 	print "  - " + sys.argv[0] + " tr181.json"
 	print "    ==> Generate excel file in tr181.xls"
+	print "  - " + sys.argv[0] + " tr104.json"
+	print "    ==> Generate excel file in tr104.xls"
 
 def object_parse_childs( dmobject , value ):
 	hasobj = objhaschild(value)
@@ -146,9 +154,9 @@ def object_parse_childs( dmobject , value ):
 						if k1 == "type" and v1 == "object":
 							object_parse_childs(k , v)
 
-def generatecfromobj(pobj, pvalue):
+def generatecfromobj(excel_file, pobj, pvalue):
 	removefile("./.tmp")
-	removefile("./tr181.xls")
+	removefile("./"+excel_file)
 	object_parse_childs(pobj, pvalue)
 
 	wb = Workbook()
@@ -171,7 +179,7 @@ def generatecfromobj(pobj, pvalue):
 
 	sheet.col(0).width = 1300*20
 	sheet.col(1).width = 175*20
-	wb.save('tr181.xls') 
+	wb.save(excel_file) 
 	removefile("./.tmp")
 
 ### main ###
@@ -184,9 +192,12 @@ if (sys.argv[1]).lower() == "-h" or (sys.argv[1]).lower() == "--help":
 	exit(1)
 
 model_root_name = "Root"
-json_file = sys.argv[1]
+if "tr181" in sys.argv[1]:
+	excel_file = "tr181.xls"
+elif "tr104" in sys.argv[1]:
+	excel_file = "tr104.xls"
 
-with open(json_file) as file:
+with open(sys.argv[1]) as file:
 	data = json.loads(file.read(), object_pairs_hook=OrderedDict)
 
 for i,(key,value) in enumerate(data.items()):
@@ -198,11 +209,10 @@ for i,(key,value) in enumerate(data.items()):
 		print "Wrong JSON Data model format!"
 		exit(1)
 
-	generatecfromobj(objstart, value)
+	generatecfromobj(excel_file, objstart, value)
 
-
-if (os.path.isfile("tr181.xls")):
-	print "tr181.xls excel file generated"
+if (os.path.isfile(excel_file)):
+	print "%s excel file generated" % excel_file
 else:
 	print "No Excel file generated!"
 

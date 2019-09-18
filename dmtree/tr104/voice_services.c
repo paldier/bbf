@@ -20,36 +20,36 @@
 #include "voice_services.h"
 #include "dmjson.h"
 
-/*** DMROOT.Services. ****/
-DMOBJ tServiceObj[] = {
+/* *** Device.Services. *** */
+DMOBJ tServicesObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"VoiceService", &DMREAD, NULL, NULL, NULL, browseVoiceServiceInst, NULL, NULL, tVoiceServiceObj, tVoiceServiceParam, NULL, BBFDM_BOTH},
+{"VoiceService", &DMREAD, NULL, NULL, NULL, browseVoiceServiceInst, NULL, NULL, tServicesVoiceServiceObj, tServicesVoiceServiceParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-/*** VoiceService.{i}. ****/
-DMOBJ tVoiceServiceObj[] = {
+/* *** Device.Services.VoiceService.{i}. *** */
+DMOBJ tServicesVoiceServiceObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"Capabilities", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tCapabilitiesObj, tCapabilitiesParams, NULL, BBFDM_BOTH},
-{"VoiceProfile", &DMWRITE, add_profile_object, delete_profile_object, NULL, browseProfileInst, NULL, NULL, tProfileObj, tProfileParam, NULL, BBFDM_BOTH},
+{"Capabilities", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceCapabilitiesObj, tServicesVoiceServiceCapabilitiesParams, NULL, BBFDM_BOTH},
+{"VoiceProfile", &DMWRITE, add_profile_object, delete_profile_object, NULL, browseProfileInst, NULL, NULL, tServicesVoiceServiceVoiceProfileObj, tServicesVoiceServiceVoiceProfileParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF tVoiceServiceParam[] = {
+DMLEAF tServicesVoiceServiceParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_service_alias, set_service_alias, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-/*** VoiceService.{i}.Capabilities. ****/
-DMOBJ tCapabilitiesObj[] = {
+/* *** Device.Services.VoiceService.{i}.Capabilities. *** */
+DMOBJ tServicesVoiceServiceCapabilitiesObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"SIP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tSIPParams, NULL, BBFDM_BOTH},
-{"Codecs", &DMREAD, NULL, NULL, NULL, browseCodecsInst, NULL, NULL, NULL, tCodecsParams, NULL, BBFDM_BOTH},
+{"SIP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceCapabilitiesSIPParams, NULL, BBFDM_BOTH},
+{"Codecs", &DMREAD, NULL, NULL, NULL, browseCodecsInst, NULL, NULL, NULL, tServicesVoiceServiceCapabilitiesCodecsParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF tCapabilitiesParams[] = {
+DMLEAF tServicesVoiceServiceCapabilitiesParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"MaxProfileCount", &DMREAD, DMT_UNINT, get_max_profile_count, NULL, NULL, NULL, BBFDM_BOTH},
 {"MaxLineCount", &DMREAD, DMT_UNINT, get_max_line_count, NULL, NULL, NULL, BBFDM_BOTH},
@@ -82,8 +82,8 @@ DMLEAF tCapabilitiesParams[] = {
 {0}
 };
 
-/*** VoiceService.{i}.Capabilities.SIP. ****/
-DMLEAF tSIPParams[] = {
+/* *** Device.Services.VoiceService.{i}.Capabilities.SIP. *** */
+DMLEAF tServicesVoiceServiceCapabilitiesSIPParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Role", &DMREAD, DMT_STRING, get_sip_role, NULL, NULL, NULL, BBFDM_BOTH},
 {"Extensions", &DMREAD, DMT_STRING, get_sip_extension, NULL, NULL, NULL, BBFDM_BOTH},
@@ -97,8 +97,8 @@ DMLEAF tSIPParams[] = {
 {0}
 };
 
-/*** VoiceService.{i}.Capabilities.Codecs.{i}. ****/
-DMLEAF tCodecsParams[] = {
+/* *** Device.Services.VoiceService.{i}.Capabilities.Codecs.{i}. *** */
+DMLEAF tServicesVoiceServiceCapabilitiesCodecsParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_cap_codec_alias, set_cap_codec_alias, NULL, NULL, BBFDM_BOTH},
 {"EntryID", &DMREAD, DMT_UNINT, get_entry_id, NULL, NULL, NULL, BBFDM_BOTH},
@@ -109,18 +109,18 @@ DMLEAF tCodecsParams[] = {
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}. ****/
-DMOBJ tProfileObj[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}. *** */
+DMOBJ tServicesVoiceServiceVoiceProfileObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"SIP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tProfileSIPParams, NULL, BBFDM_BOTH},
-{"ServiceProviderInfo", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServiceProviderInfoParams, NULL, BBFDM_BOTH},
-{"FaxT38", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tFaxT38Params, NULL, BBFDM_BOTH},
-{"RTP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tRTPObj, tRTPParams, NULL, BBFDM_BOTH},
-{"Line", &DMWRITE, add_line_object, delete_line_object, NULL, browseLineInst, NULL, NULL, tLineObj, tLineParams, NULL, BBFDM_BOTH},
+{"SIP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileSIPParams, NULL, BBFDM_BOTH},
+{"ServiceProviderInfo", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileServiceProviderInfoParams, NULL, BBFDM_BOTH},
+{"FaxT38", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileFaxT38Params, NULL, BBFDM_BOTH},
+{"RTP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileRTPObj, tServicesVoiceServiceVoiceProfileRTPParams, NULL, BBFDM_BOTH},
+{"Line", &DMWRITE, add_line_object, delete_line_object, NULL, browseLineInst, NULL, NULL, tServicesVoiceServiceVoiceProfileLineObj, tServicesVoiceServiceVoiceProfileLineParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF tProfileParam[] = {
+DMLEAF tServicesVoiceServiceVoiceProfileParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_voice_profile_alias, set_voice_profile_alias, NULL, NULL, BBFDM_BOTH},
 {"Enable", &DMWRITE, DMT_STRING, get_voice_profile_enable, set_voice_profile_enable, NULL, NULL, BBFDM_BOTH},
@@ -134,8 +134,8 @@ DMLEAF tProfileParam[] = {
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.SIP. ***/
-DMLEAF tProfileSIPParams[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP. *** */
+DMLEAF tServicesVoiceServiceVoiceProfileSIPParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"ProxyServer", &DMWRITE, DMT_STRING, get_voice_profile_sip_proxyserver, set_voice_profile_sip_proxyserver, NULL, NULL, BBFDM_BOTH},
 {"ProxyServerPort", &DMWRITE, DMT_UNINT, get_empty, set_sip_proxy_server_port, NULL, NULL, BBFDM_BOTH},
@@ -156,29 +156,29 @@ DMLEAF tProfileSIPParams[] = {
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.ServiceProviderInfo. ***/
-DMLEAF tServiceProviderInfoParams[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.ServiceProviderInfo. *** */
+DMLEAF tServicesVoiceServiceVoiceProfileServiceProviderInfoParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Name", &DMWRITE, DMT_STRING, get_voice_service_serviceproviderinfo_name, set_voice_service_serviceproviderinfo_name, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.FaxT38. ***/
-DMLEAF tFaxT38Params[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.FaxT38. *** */
+DMLEAF tServicesVoiceServiceVoiceProfileFaxT38Params[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Enable", &DMWRITE, DMT_BOOL, get_sip_fax_t38_enable, set_sip_fax_t38_enable, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.RTP. ***/
-DMOBJ tRTPObj[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP. *** */
+DMOBJ tServicesVoiceServiceVoiceProfileRTPObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"RTCP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tRTCPParams, NULL, BBFDM_BOTH},
-{"SRTP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tSRTPParam, NULL, BBFDM_BOTH},
+{"RTCP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileRTPRTCPParams, NULL, BBFDM_BOTH},
+{"SRTP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileRTPSRTPParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF tRTPParams[] = {
+DMLEAF tServicesVoiceServiceVoiceProfileRTPParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"LocalPortMin", &DMWRITE, DMT_UNINT, get_voice_service_vp_rtp_portmin, set_voice_service_vp_rtp_portmin, NULL, NULL, BBFDM_BOTH},
 {"LocalPortMax", &DMWRITE, DMT_UNINT, get_voice_service_vp_rtp_portmax, set_voice_profile_rtp_localportmax, NULL, NULL, BBFDM_BOTH},
@@ -186,32 +186,32 @@ DMLEAF tRTPParams[] = {
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.RTP.RTCP. ***/
-DMLEAF tRTCPParams[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP.RTCP. *** */
+DMLEAF tServicesVoiceServiceVoiceProfileRTPRTCPParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Enable", &DMREAD, DMT_BOOL, get_voice_service_vp_rtp_rtcp_enable, NULL, NULL, NULL, BBFDM_BOTH},
 {"TxRepeatInterval", &DMWRITE, DMT_UNINT, get_voice_service_vp_rtp_rtcp_txrepeatinterval, set_voice_service_vp_rtp_rtcp_txrepeatinterval, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.RTP.SRTP. ***/
-DMLEAF tSRTPParam[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP.SRTP. *** */
+DMLEAF tServicesVoiceServiceVoiceProfileRTPSRTPParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Enable", &DMWRITE, DMT_BOOL, get_voice_service_vp_rtp_srtp_enable, set_voice_service_vp_rtp_srtp_enable, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.Line.{i}. ***/
-DMOBJ tLineObj[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}. *** */
+DMOBJ tServicesVoiceServiceVoiceProfileLineObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"VoiceProcessing", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tVoiceProcessingParams, NULL, BBFDM_BOTH},
-{"CallingFeatures", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tCallingFeaturesParams, NULL, BBFDM_BOTH},
-{"SIP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tLineSIPParams, NULL, BBFDM_BOTH},
-{"Codec", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tLineCodecObj, NULL, NULL, BBFDM_BOTH},
+{"VoiceProcessing", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileLineVoiceProcessingParams, NULL, BBFDM_BOTH},
+{"CallingFeatures", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileLineCallingFeaturesParams, NULL, BBFDM_BOTH},
+{"SIP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileLineSIPParams, NULL, BBFDM_BOTH},
+{"Codec", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileLineCodecObj, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF tLineParams[] = {
+DMLEAF tServicesVoiceServiceVoiceProfileLineParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_line_alias, set_line_alias, NULL, NULL, BBFDM_BOTH},
 {"Enable", &DMWRITE, DMT_STRING, get_voice_profile_line_enable, set_voice_profile_line_enable, NULL, NULL, BBFDM_BOTH},
@@ -224,23 +224,23 @@ DMLEAF tLineParams[] = {
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.Line.{i}.VoiceProcessing. ***/
-DMLEAF tVoiceProcessingParams[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.VoiceProcessing. *** */
+DMLEAF tServicesVoiceServiceVoiceProfileLineVoiceProcessingParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"EchoCancellationEnable", &DMWRITE, DMT_BOOL, get_line_voice_processing_cancellation_enable, set_line_voice_processing_cancellation_enable, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.Line.{i}.CallingFeatures. ***/
-DMLEAF tCallingFeaturesParams[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.CallingFeatures. *** */
+DMLEAF tServicesVoiceServiceVoiceProfileLineCallingFeaturesParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"CallerIDName", &DMWRITE, DMT_STRING, get_line_calling_features_caller_id_name, set_line_calling_features_caller_id_name, NULL, NULL, BBFDM_BOTH},
 {"CallWaitingEnable", &DMWRITE, DMT_BOOL, get_line_calling_features_callwaiting, set_line_calling_features_callwaiting, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.Line.{i}.SIP. ***/
-DMLEAF tLineSIPParams[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.SIP. *** */
+DMLEAF tServicesVoiceServiceVoiceProfileLineSIPParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"AuthUserName", &DMWRITE, DMT_STRING, get_line_sip_auth_username, set_line_sip_auth_username, NULL, NULL, BBFDM_BOTH},
 {"AuthPassword", &DMWRITE, DMT_STRING, get_empty, set_line_sip_auth_password, NULL, NULL, BBFDM_BOTH},
@@ -248,15 +248,15 @@ DMLEAF tLineSIPParams[] = {
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Codec. ***/
-DMOBJ tLineCodecObj[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Codec. *** */
+DMOBJ tServicesVoiceServiceVoiceProfileLineCodecObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"List", &DMREAD, NULL, NULL, NULL, browseLineCodecListInst, NULL, NULL, NULL, tLineCodecListParams, NULL, BBFDM_BOTH},
+{"List", &DMREAD, NULL, NULL, NULL, browseLineCodecListInst, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileLineCodecListParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-/*** VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Codec.List.{i}. ***/
-DMLEAF tLineCodecListParams[] = {
+/* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Codec.List.{i}. *** */
+DMLEAF tServicesVoiceServiceVoiceProfileLineCodecListParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_line_codec_list_alias, set_line_codec_list_alias, NULL, NULL, BBFDM_BOTH},
 {"EntryID", &DMREAD, DMT_UNINT, get_codec_entry_id, NULL, NULL, NULL, BBFDM_BOTH},

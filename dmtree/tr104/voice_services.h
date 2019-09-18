@@ -14,29 +14,29 @@
 #ifndef __VOICE_H
 #define __VOICE_H
 
-extern DMOBJ tServiceObj[];
-extern DMOBJ tVoiceServiceObj[];
-extern DMLEAF tVoiceServiceParam[];
-extern DMLEAF tCapabilitiesParams[];
-extern DMOBJ tCapabilitiesObj[];
-extern DMLEAF tSIPParams[];
-extern DMLEAF tCodecsParams[] ;
-extern DMOBJ tProfileObj[] ;
-extern DMLEAF tProfileSIPParams[];
-extern DMLEAF tServiceProviderInfoParams[];
-extern DMLEAF tProfileParam[];
-extern DMOBJ tLineObj[];
-extern DMOBJ tLineCodecObj[];
-extern DMLEAF tLineCodecListParams[];
-extern DMLEAF tLineSIPParams[];
-extern DMLEAF tVoiceProcessingParams[];
-extern DMLEAF tCallingFeaturesParams[];
-extern DMLEAF tLineParams[];
-extern DMLEAF tRTPParams[];
-extern DMOBJ tRTPObj[];
-extern DMLEAF tSRTPParam[];
-extern DMLEAF tRTCPParams[];
-extern DMLEAF tFaxT38Params[];
+extern DMOBJ tServicesObj[];
+extern DMOBJ tServicesVoiceServiceObj[];
+extern DMLEAF tServicesVoiceServiceParams[];
+extern DMLEAF tServicesVoiceServiceCapabilitiesParams[];
+extern DMOBJ tServicesVoiceServiceCapabilitiesObj[];
+extern DMLEAF tServicesVoiceServiceCapabilitiesSIPParams[];
+extern DMLEAF tServicesVoiceServiceCapabilitiesCodecsParams[] ;
+extern DMOBJ tServicesVoiceServiceVoiceProfileObj[] ;
+extern DMLEAF tServicesVoiceServiceVoiceProfileSIPParams[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileServiceProviderInfoParams[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileParams[];
+extern DMOBJ tServicesVoiceServiceVoiceProfileLineObj[];
+extern DMOBJ tServicesVoiceServiceVoiceProfileLineCodecObj[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileLineCodecListParams[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileLineSIPParams[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileLineVoiceProcessingParams[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileLineCallingFeaturesParams[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileLineParams[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileRTPParams[];
+extern DMOBJ tServicesVoiceServiceVoiceProfileRTPObj[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileRTPSRTPParams[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileRTPRTCPParams[];
+extern DMLEAF tServicesVoiceServiceVoiceProfileFaxT38Params[];
 
 struct codec_args
 {

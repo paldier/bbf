@@ -1,0 +1,4379 @@
+{
+	"Device.Services.VoiceService.{i}.": {
+		"type": "object", 
+		"protocols": [
+			"cwmp", 
+			"usp"
+		], 
+		"access": false, 
+		"array": true, 
+		"Alias": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true
+		}, 
+		"VoiceProfileNumberOfEntries": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": false
+		}, 
+		"Device.Services.VoiceService.{i}.Capabilities.": {
+			"type": "object", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"access": false, 
+			"array": false, 
+			"MaxProfileCount": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"MaxLineCount": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"MaxSessionsPerLine": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"MaxSessionCount": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"SignalingProtocols": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"Regions": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"RTCP": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"SRTP": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"SRTPKeyingMethods": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"values": [
+					"Null", 
+					"Static", 
+					"SDP", 
+					"IKE"
+				]
+			}, 
+			"SRTPEncryptionKeySizes": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"RTPRedundancy": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"DSCPCoupled": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"EthernetTaggingCoupled": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"PSTNSoftSwitchOver": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"FaxT38": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"FaxPassThrough": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"ModemPassThrough": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"ToneGeneration": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"ToneDescriptionsEditable": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"PatternBasedToneGeneration": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"FileBasedToneGeneration": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"ToneFileFormats": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"values": [
+					"G.711MuLaw", 
+					"G.711ALaw", 
+					"MP3", 
+					"WAV", 
+					"AMR"
+				]
+			}, 
+			"RingGeneration": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"RingDescriptionsEditable": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"PatternBasedRingGeneration": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"RingPatternEditable": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"FileBasedRingGeneration": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"RingFileFormats": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"values": [
+					"MIDI", 
+					"SMAF", 
+					"RTTTL", 
+					"MP3", 
+					"WAV", 
+					"AMR"
+				]
+			}, 
+			"DigitMap": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"NumberingPlan": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"ButtonMap": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"VoicePortTests": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"Device.Services.VoiceService.{i}.Capabilities.SIP.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Role": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"UserAgent", 
+						"BackToBackUserAgents", 
+						"OutboundProxy"
+					]
+				}, 
+				"Extensions": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Transports": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"UDP", 
+						"TCP", 
+						"TLS", 
+						"SCTP"
+					]
+				}, 
+				"URISchemes": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"EventSubscription": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"ResponseMap": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"TLSAuthenticationProtocols": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"Null", 
+						"MD5", 
+						"SHA-1"
+					]
+				}, 
+				"TLSAuthenticationKeySizes": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"TLSEncryptionProtocols": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"Null", 
+						"RC4", 
+						"RC2", 
+						"DES", 
+						"3DES"
+					]
+				}, 
+				"TLSEncryptionKeySizes": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"TLSKeyExchangeProtocols": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"RSA", 
+						"DSS"
+					]
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.Capabilities.MGCP.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Extensions": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.Capabilities.H323.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"FastStart": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"H235AuthenticationMethods": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"dhExch", 
+						"pwdSymEnc", 
+						"pwdHash", 
+						"certSign", 
+						"ipsec", 
+						"tls"
+					]
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.Capabilities.Codecs.{i}.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": true, 
+				"Alias": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"EntryID": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"read": true, 
+					"write": false
+				}, 
+				"Codec": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"G.711MuLaw", 
+						"G.711ALaw", 
+						"G.726", 
+						"G.729", 
+						"G.729a", 
+						"G.729e", 
+						"G.728", 
+						"G.723.1", 
+						"G.722", 
+						"G.722.1", 
+						"G.722.2", 
+						"GSM-FR", 
+						"GSM-HR", 
+						"GSM-EFR", 
+						"iLBC"
+					]
+				}, 
+				"BitRate": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"unit": "bits per second", 
+					"read": true, 
+					"write": false
+				}, 
+				"PacketizationPeriod": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"SilenceSuppression": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}
+			}
+		}, 
+		"Device.Services.VoiceService.{i}.VoiceProfile.{i}.": {
+			"type": "object", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"access": true, 
+			"array": true, 
+			"mapping": {
+				"type": "uci", 
+				"uci": {
+					"file": "voice_client", 
+					"section": {
+						"type": "sip_service_provider"
+					}, 
+					"dmmapfile": "dmmap_voice_client"
+				}
+			}, 
+			"Enable": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"values": [
+					"Disabled", 
+					"Quiescent", 
+					"Enabled"
+				], 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "voice_client", 
+							"section": {
+								"type": "sip_service_provider", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "enabled"
+							}
+						}
+					}
+				]
+			}, 
+			"Alias": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"Reset": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"NumberOfLines": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"mapping": [
+					{
+						"type": "ubus", 
+						"ubus": {
+							"object": "voice.asterisk", 
+							"method": "status", 
+							"args": {}, 
+							"key": "tel.@Name"
+						}
+					}
+				]
+			}, 
+			"Name": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "voice_client", 
+							"section": {
+								"type": "sip_service_provider", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "name"
+							}
+						}
+					}
+				]
+			}, 
+			"SignalingProtocol": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"MaxSessions": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "ubus", 
+						"ubus": {
+							"object": "voice.asterisk", 
+							"method": "lines", 
+							"args": {}, 
+							"key": "num_lines"
+						}
+					}
+				]
+			}, 
+			"DTMFMethod": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"values": [
+					"InBand", 
+					"RFC2833", 
+					"SIPInfo"
+				], 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "voice_client", 
+							"section": {
+								"type": "sip_advanced", 
+								"name": "SIP"
+							}, 
+							"option": {
+								"name": "dtmfmode"
+							}
+						}
+					}
+				]
+			}, 
+			"DTMFMethodG711": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"values": [
+					"InBand", 
+					"RFC2833", 
+					"SIPInfo", 
+					""
+				]
+			}, 
+			"Region": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"DigitMap": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"DigitMapEnable": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"STUNEnable": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"STUNServer": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"NonVoiceBandwidthReservedUpstream": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"unit": "bits per second", 
+				"read": true, 
+				"write": true
+			}, 
+			"NonVoiceBandwidthReservedDownstream": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"unit": "bits per second", 
+				"read": true, 
+				"write": true
+			}, 
+			"PSTNFailOver": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"FaxPassThrough": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"values": [
+					"Disable", 
+					"Auto", 
+					"Force"
+				]
+			}, 
+			"ModemPassThrough": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"values": [
+					"Disable", 
+					"Auto", 
+					"Force"
+				]
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.ServiceProviderInfo.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Name": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"URL": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"ContactPhoneNumber": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"EmailAddress": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"ProxyServer": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_advanced", 
+									"name": "SIP"
+								}, 
+								"option": {
+									"name": "sip_proxy"
+								}
+							}
+						}
+					]
+				}, 
+				"ProxyServerPort": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"ProxyServerTransport": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_service_provider", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "transport"
+								}
+							}
+						}
+					]
+				}, 
+				"RegistrarServer": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_service_provider", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "host"
+								}
+							}
+						}
+					]
+				}, 
+				"RegistrarServerPort": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_service_provider", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "port"
+								}
+							}
+						}
+					]
+				}, 
+				"RegistrarServerTransport": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_service_provider", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "transport"
+								}
+							}
+						}
+					]
+				}, 
+				"UserAgentDomain": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_service_provider", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "domain"
+								}
+							}
+						}
+					]
+				}, 
+				"UserAgentPort": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_advanced", 
+									"name": "SIP"
+								}, 
+								"option": {
+									"name": "bindport"
+								}
+							}
+						}
+					]
+				}, 
+				"UserAgentTransport": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_service_provider", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "transport"
+								}
+							}
+						}
+					]
+				}, 
+				"OutboundProxy": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_service_provider", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "outboundproxy"
+								}
+							}
+						}
+					]
+				}, 
+				"OutboundProxyPort": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_service_provider", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "outboundproxyport"
+								}
+							}
+						}
+					]
+				}, 
+				"Organization": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"RegistrationPeriod": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_advanced", 
+									"name": "SIP"
+								}, 
+								"option": {
+									"name": "defaultexpiry"
+								}
+							}
+						}
+					]
+				}, 
+				"TimerT1": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerT2": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerT4": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerA": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerB": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerC": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerD": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerE": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerF": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerG": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerH": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerI": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerJ": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"TimerK": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"InviteExpires": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"ReInviteExpires": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_advanced", 
+									"name": "SIP"
+								}, 
+								"option": {
+									"name": "registertimeout"
+								}
+							}
+						}
+					]
+				}, 
+				"RegisterExpires": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"RegistersMinExpires": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"RegisterRetryInterval": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"InboundAuth": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"values": [
+						"None", 
+						"Digest"
+					]
+				}, 
+				"InboundAuthUsername": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"InboundAuthPassword": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"UseCodecPriorityInSDPResponse": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"DSCPMark": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "63"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"VLANIDMark": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"EthernetPriorityMark": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"SIPEventSubscribeNumberOfElements": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"SIPResponseMapNumberOfElements": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "999"
+					}, 
+					"read": true, 
+					"write": false
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.EventSubscribe.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": true, 
+					"array": true, 
+					"Alias": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Event": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Notifier": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"NotifierPort": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "65535"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"NotifierTransport": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"ExpireTime": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "seconds", 
+						"read": true, 
+						"write": true
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.ResponseMap.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": true, 
+					"array": true, 
+					"Alias": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"SIPResponseNumber": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "100", 
+							"max": "999"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"TextMessage": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Tone": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.MGCP.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"CallAgent1": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"CallAgentPort1": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"CallAgent2": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"CallAgentPort2": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"RetranIntervalTimer": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"MaxRetranCount": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"RegisterMode": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"values": [
+						"Wildcard", 
+						"Individual"
+					]
+				}, 
+				"LocalPort": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"Domain": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"User": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"DSCPMark": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "63"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"VLANIDMark": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"EthernetPriorityMark": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"AllowPiggybackEvents": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"SendRSIPImmediately": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.H323.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Gatekeeper": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"GatekeeperPort": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"GatekeeperID": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"TimeToLive": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"H235Authentication": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"AuthPassword": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"SendersID": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"DSCPMark": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "63"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"VLANIDMark": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"EthernetPriorityMark": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"read": true, 
+					"write": true
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"LocalPortMin": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"LocalPortMax": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"DSCPMark": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "63"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"VLANIDMark": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"EthernetPriorityMark": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"TelephoneEventPayloadType": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "128"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP.RTCP.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"Enable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"TxRepeatInterval": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "1"
+						}, 
+						"unit": "milliseconds", 
+						"read": true, 
+						"write": true
+					}, 
+					"LocalCName": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP.SRTP.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"Enable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"KeyingMethods": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"EncryptionKeySizes": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP.Redundancy.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"Enable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"PayloadType": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "127"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"BlockPayloadType": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "127"
+						}, 
+						"read": true, 
+						"write": false
+					}, 
+					"FaxAndModemRedundancy": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "-1", 
+							"max": "5"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"ModemRedundancy": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "-1", 
+							"max": "5"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"DTMFRedundancy": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "-1", 
+							"max": "5"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"VoiceRedundancy": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "-1", 
+							"max": "5"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"MaxSessionsUsingRedundancy": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.NumberingPlan.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"MinimumNumberOfDigits": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1", 
+						"max": "40"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"MaximumNumberOfDigits": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1", 
+						"max": "40"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"InterDigitTimerStd": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1", 
+						"max": "50000"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"InterDigitTimerOpen": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1", 
+						"max": "50000"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"InvalidNumberTone": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"PrefixInfoMaxEntries": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"PrefixInfoNumberOfEntries": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.NumberingPlan.PrefixInfo.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": true, 
+					"array": true, 
+					"Alias": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"PrefixRange": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"PrefixMinNumberOfDigits": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "1", 
+							"max": "40"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"PrefixMaxNumberOfDigits": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "1", 
+							"max": "40"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"NumberOfDigitsToRemove": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "40"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"PosOfDigitsToRemove": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "40"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"DialTone": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"FacilityAction": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"FacilityActionArgument": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Tone.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"EventNumberOfEntries": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"DescriptionNumberOfEntries": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"PatternNumberOfEntries": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Tone.Event.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": true, 
+					"Alias": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Function": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false, 
+						"values": [
+							"Busy", 
+							"Confirmation", 
+							"Dial", 
+							"MessageWaiting", 
+							"OffHookWarning", 
+							"RingBack", 
+							"ReOrder", 
+							"Stutterdial", 
+							"CallWaiting1", 
+							"CallWaiting2", 
+							"CallWaiting3", 
+							"CallWaiting4", 
+							"AlertingSignal", 
+							"SpecialDial", 
+							"SpecialInfo", 
+							"Release", 
+							"Congestion", 
+							"UserDefined1", 
+							"UserDefined2", 
+							"UserDefined3", 
+							"UserDefined4"
+						]
+					}, 
+					"ToneID": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Tone.Description.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": true, 
+					"array": true, 
+					"Alias": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"EntryID": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "1"
+						}, 
+						"read": true, 
+						"write": false
+					}, 
+					"ToneEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"ToneName": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"TonePattern": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"ToneFile": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"ToneRepetitions": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "255"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"ToneText": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Tone.Pattern.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": true, 
+					"array": true, 
+					"Alias": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"EntryID": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "1"
+						}, 
+						"read": true, 
+						"write": true
+					}, 
+					"ToneOn": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Frequency1": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "4095"
+						}, 
+						"unit": "hertz", 
+						"read": true, 
+						"write": true
+					}, 
+					"Power1": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "dBm0", 
+						"read": true, 
+						"write": true
+					}, 
+					"Frequency2": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "4095"
+						}, 
+						"unit": "hertz", 
+						"read": true, 
+						"write": true
+					}, 
+					"Power2": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "dBm0", 
+						"read": true, 
+						"write": true
+					}, 
+					"Frequency3": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "4095"
+						}, 
+						"unit": "hertz", 
+						"read": true, 
+						"write": true
+					}, 
+					"Power3": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "dBm0", 
+						"read": true, 
+						"write": true
+					}, 
+					"Frequency4": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "4095"
+						}, 
+						"unit": "herts", 
+						"read": true, 
+						"write": true
+					}, 
+					"Power4": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "dBm0", 
+						"read": true, 
+						"write": true
+					}, 
+					"ModulationFrequency": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "4095"
+						}, 
+						"unit": "hertz", 
+						"read": true, 
+						"write": true
+					}, 
+					"ModulationPower": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "dBm0", 
+						"read": true, 
+						"write": true
+					}, 
+					"Duration": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "milliseconds", 
+						"read": true, 
+						"write": true
+					}, 
+					"NextEntryID": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.ButtonMap.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"NumberOfButtons": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.ButtonMap.Button.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": true, 
+					"Alias": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"ButtonName": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"FacilityAction": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"FacilityActionArgument": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"QuickDialNumber": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"ButtonMessage": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"UserAccess": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.FaxT38.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Enable": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"BitRate": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "2400", 
+						"max": "2400"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"HighSpeedPacketRate": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "10", 
+						"max": "10"
+					}, 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"HighSpeedRedundancy": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "3"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"LowSpeedRedundancy": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "5"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"TCFMethod": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"values": [
+						"Local", 
+						"Network"
+					]
+				}
+			}, 
+			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": true, 
+				"array": true, 
+				"mapping": {
+					"type": "uci", 
+					"uci": {
+						"file": "voice_client", 
+						"section": {
+							"type": "tel_line"
+						}, 
+						"dmmapfile": "dmmap_voice_client"
+					}
+				}, 
+				"Enable": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"values": [
+						"Disabled", 
+						"Quiescent", 
+						"Enabled"
+					]
+				}, 
+				"Alias": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"DirectoryNumber": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"Status": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"Up", 
+						"Initializing", 
+						"Registering", 
+						"Unregistering", 
+						"Error", 
+						"Testing", 
+						"Quiescent", 
+						"Disabled"
+					]
+				}, 
+				"CallState": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"Idle", 
+						"Calling", 
+						"Ringing", 
+						"Connecting", 
+						"InCall", 
+						"Hold", 
+						"Disconnecting"
+					]
+				}, 
+				"PhyReferenceList": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"RingMuteStatus": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"RingVolumeStatus": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "0", 
+						"max": "100"
+					}, 
+					"read": true, 
+					"write": false
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.SIP.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"AuthUserName": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"AuthPassword": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"URI": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"SIPEventSubscribeNumberOfElements": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.SIP.EventSubscribe.{i}.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": false, 
+						"array": true, 
+						"Alias": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"Event": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"AuthUserName": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"AuthPassword": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.MGCP.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"LineName": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.H323.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"H323ID": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Ringer.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"EventNumberOfEntries": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"DescriptionNumberOfEntries": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"PatternNumberOfEntries": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Ringer.Event.{i}.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": false, 
+						"array": true, 
+						"Alias": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"Function": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false, 
+							"values": [
+								"Default", 
+								"RingSplash"
+							]
+						}, 
+						"RingID": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}
+					}, 
+					"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Ringer.Description.{i}.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": true, 
+						"array": true, 
+						"Alias": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"EntryID": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"range": {
+								"min": "1"
+							}, 
+							"read": true, 
+							"write": false
+						}, 
+						"RingEnable": {
+							"type": "boolean", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"RingName": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"RingPattern": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"RingFile": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}
+					}, 
+					"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Ringer.Pattern.{i}.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": true, 
+						"array": true, 
+						"Alias": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"EntryID": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"range": {
+								"min": "1"
+							}, 
+							"read": true, 
+							"write": true
+						}, 
+						"RingerOn": {
+							"type": "boolean", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"Duration": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"unit": "milliseconds", 
+							"read": true, 
+							"write": true
+						}, 
+						"NextEntryID": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.CallingFeatures.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"CallerIDEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallerIDNameEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallerIDName": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallWaitingEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallWaitingStatus": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false, 
+						"values": [
+							"Disabled", 
+							"Idle", 
+							"SecondaryRinging", 
+							"SecondaryConnecting", 
+							"SecondaryConnected"
+						]
+					}, 
+					"MaxSessions": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"ConferenceCallingStatus": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false, 
+						"values": [
+							"Disabled", 
+							"Idle", 
+							"SecondaryCalling", 
+							"SecondaryConnecting", 
+							"SecondaryConnected", 
+							"InConferenceCall"
+						]
+					}, 
+					"ConferenceCallingSessionCount": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "0"
+						}, 
+						"read": true, 
+						"write": false
+					}, 
+					"CallForwardUnconditionalEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallForwardUnconditionalNumber": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallForwardOnBusyEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallForwardOnBusyNumber": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallForwardOnNoAnswerEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallForwardOnNoAnswerNumber": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallForwardOnNoAnswerRingCount": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallTransferEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"MWIEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"MessageWaiting": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"AnonymousCallBlockEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"AnonymousCalEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"DoNotDisturbEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CallReturnEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"RepeatDialEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.VoiceProcessing.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"TransmitGain": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "01. dB", 
+						"read": true, 
+						"write": true
+					}, 
+					"ReceiveGain": {
+						"type": "int", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "0.1 dB", 
+						"read": true, 
+						"write": true
+					}, 
+					"EchoCancellationEnable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"EchoCancellationInUse": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"EchoCancellationTail": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "milliseconds", 
+						"read": true, 
+						"write": false
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Codec.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"TransmitCodec": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false, 
+						"values": [
+							"G.711MuLaw", 
+							"G.711ALaw", 
+							"G.726", 
+							"G.729", 
+							"G.729a", 
+							"G.729e", 
+							"G.728", 
+							"G.723.1", 
+							"G.722", 
+							"G.722.1", 
+							"G.722.2", 
+							"GSM-FR", 
+							"GSM-HR", 
+							"GSM-EFR", 
+							"iLBC"
+						]
+					}, 
+					"ReceiveCodec": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false, 
+						"values": [
+							"G.711MuLaw", 
+							"G.711ALaw", 
+							"G.726", 
+							"G.729", 
+							"G.729a", 
+							"G.729e", 
+							"G.728", 
+							"G.723.1", 
+							"G.722", 
+							"G.722.1", 
+							"G.722.2", 
+							"GSM-FR", 
+							"GSM-HR", 
+							"GSM-EFR", 
+							"iLBC"
+						]
+					}, 
+					"TransmitBitRate": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "bits per second", 
+						"read": true, 
+						"write": false
+					}, 
+					"ReceiveBitRate": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "bits per second", 
+						"read": true, 
+						"write": false
+					}, 
+					"TransmitSilenceSuppression": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"ReceiveSilenceSuppression": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"TransmitPacketizationPeriod": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "milliseconds", 
+						"read": true, 
+						"write": false
+					}, 
+					"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Codec.List.{i}.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": false, 
+						"array": true, 
+						"Alias": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"EntryID": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"range": {
+								"min": "1"
+							}, 
+							"read": true, 
+							"write": false
+						}, 
+						"Codec": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"BitRate": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"unit": "bits per second", 
+							"read": true, 
+							"write": false
+						}, 
+						"PacketizationPeriod": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"SilenceSuppression": {
+							"type": "boolean", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"Enable": {
+							"type": "boolean", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"Priority": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"range": {
+								"min": "1"
+							}, 
+							"read": true, 
+							"write": true
+						}
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Session.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": true, 
+					"SessionStartTime": {
+						"type": "dateTime", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"SessionDuration": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"FarEndIPAddress": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"FarEndUDPPort": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "65535"
+						}, 
+						"read": true, 
+						"write": false
+					}, 
+					"LocalUDPPort": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "65535"
+						}, 
+						"read": true, 
+						"write": false
+					}
+				}, 
+				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Stats.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"ResetStatistics": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"PacketsSent": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"PacketsReceived": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BytesSent": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BytesReceived": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"PacketsLost": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"Overruns": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"Underruns": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"IncomingCallsReceived": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"IncomingCallsAnswered": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"IncomingCallsConnected": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"IncomingCallsFailed": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"OutgoingCallsAttempted": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"OutgoingCallsAnswered": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"OutgoingCallsConnected": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"OutgoingCallsFailed": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"CallsDropped": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"TotalCallTime": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"ServerDownTime": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"ReceivePacketLossRate": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "100"
+						}, 
+						"read": true, 
+						"write": false
+					}, 
+					"FarEndPacketLossRate": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "100"
+						}, 
+						"read": true, 
+						"write": false
+					}, 
+					"ReceiveInterarrivalJitter": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "microseconds", 
+						"read": true, 
+						"write": false
+					}, 
+					"FarEndInterarrivalJitter": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "microseconds", 
+						"read": true, 
+						"write": false
+					}, 
+					"RoundTripDelay": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "microseconds", 
+						"read": true, 
+						"write": false
+					}, 
+					"AverageReceiveInterarrivalJitter": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "microseconds", 
+						"read": true, 
+						"write": false
+					}, 
+					"AverageFarEndInterarrivalJitter": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "microseconds", 
+						"read": true, 
+						"write": false
+					}, 
+					"AverageRoundTripDelay": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"unit": "microseconds", 
+						"read": true, 
+						"write": false
+					}
+				}
+			}
+		}, 
+		"Device.Services.VoiceService.{i}.PhyInterface.{i}.": {
+			"type": "object", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"access": false, 
+			"array": true, 
+			"Alias": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"PhyPort": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"InterfaceID": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"range": {
+					"min": "1"
+				}, 
+				"read": true, 
+				"write": false
+			}, 
+			"Description": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"Device.Services.VoiceService.{i}.PhyInterface.{i}.Tests.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"TestState": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"values": [
+						"None", 
+						"Requested", 
+						"Complete", 
+						"Error_TestNotSupported"
+					]
+				}, 
+				"TestSelector": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"values": [
+						"PhoneConnectivityTest"
+					]
+				}, 
+				"PhoneConnectivity": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}
+			}
+		}
+	}
+}

@@ -223,5 +223,6 @@ int copy_temporary_file_to_original_file(char *f1, char *f2);
 struct uci_section *is_dmmap_section_exist(char* package, char* section);
 struct uci_section *is_dmmap_section_exist_eq(char* package, char* section, char* opt, char* value);
 int isfileexist(char *filepath);
+int isfolderexist(char *folderpath);
 char* readFileContent(char *filepath);
 #endif

@@ -157,7 +157,7 @@ int get_PPPInterface_Reset(char *refparam, struct dmctx *ctx, void *data, char *
 
 int set_PPPInterface_Reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	unsigned char b;
+	bool b;
 	switch (action) {
 		case VALUECHECK:
 			if (string_to_bool(value, &b))

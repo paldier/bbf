@@ -69,65 +69,6 @@
 
 /*** UPNP ***/
 #ifdef BBF_TR064
-DMOBJ tEntry098ObjUPNP[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{(char *)&dmroot, &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, tRoot098ObjUPNP, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMOBJ tRoot098ObjUPNP[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"BBF", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, tRoot098ObjUPNPBBF, NULL, NULL, BBFDM_BOTH},
-{"UPnP", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, tRoot098ObjUPNPDMROOT, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMOBJ tRoot098ObjUPNPDMROOT[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"DM", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, tRoot098ObjUPNPDM, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMOBJ tRoot098ObjUPNPDM[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"DeviceInfo", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,upnpDeviceInfoObj, upnpDeviceInfoParams, NULL, BBFDM_BOTH},
-{"Configuration", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,upnpConfigurationObj, NULL, NULL, BBFDM_BOTH},
-{"Monitoring", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,upnpMonitoringObj, upnpMonitoringParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMOBJ tRoot098ObjUPNPBBF[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"DeviceInfo", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,tDeviceInfoObj, tDeviceInfoParams, NULL, BBFDM_BOTH},
-{"ManagementServer", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,NULL, tManagementServerParams, NULL, BBFDM_BOTH},
-{"Time", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tTimeParams, NULL, BBFDM_BOTH},
-{"UPnP", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tUPnPObj, NULL, NULL, BBFDM_BOTH},
-#if BBF_TR104
-{"VoiceService", &DMREAD, NULL, NULL, NULL, browseVoiceServiceInst, NULL, NULL, tVoiceServiceObj, tVoiceServiceParam, NULL, BBFDM_BOTH},
-#endif
-{CUSTOM_PREFIX"ICE", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_IceParam, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"IGMP", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_IgmpParam, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"IpAccCfg", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tSe_IpAccObj, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"LoginCfg", &DMREAD, NULL, NULL, NULL, NULL,NULL, &DMNONE,NULL, tSe_LoginCfgParam, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"PowerManagement", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_PowerManagementParam, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"SyslogCfg", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_SyslogCfgParam, NULL, BBFDM_BOTH},
-{"SoftwareModules", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tSoftwareModulesObj, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"Owsd", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,XIopsysEuOwsdObj, XIopsysEuOwsdParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"Dropbear", &DMWRITE, add_dropbear_instance, delete_dropbear_instance, NULL, browseXIopsysEuDropbear, NULL, &DMNONE, NULL, X_IOPSYS_EU_DropbearParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"Buttons", &DMREAD, NULL, NULL, NULL, browseXIopsysEuButton, NULL, &DMNONE, NULL, X_IOPSYS_EU_ButtonParams, NULL, BBFDM_BOTH},
-{"LANDevice", &DMREAD, NULL, NULL, NULL, browselandeviceInst, &DMFINFRM, &DMNONE,tLANDeviceObj, tLANDeviceParam, NULL, BBFDM_BOTH},
-{"WANDevice", &DMREAD, NULL, NULL, NULL, browsewandeviceInst, &DMFINFRM, &DMWANConnectionDevicenotif,tWANDeviceObj, tWANDeviceParam, NULL, BBFDM_BOTH},
-{"LANInterfaces", &DMREAD, NULL, NULL, check_laninterfaces, NULL, &DMFINFRM, &DMNONE,tLANInterfacesObj, tLANInterfacesParam, NULL, BBFDM_BOTH},
-{"IPPingDiagnostics", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,NULL, tIPPingDiagnosticsParam, NULL, BBFDM_BOTH},
-{"Layer3Forwarding", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,tLayer3ForwardingObj, tLayer3ForwardingParam, NULL, BBFDM_BOTH},
-{"Layer2Bridging", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,tLayer2BridgingObj, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"Wifi", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,tsewifiObj, NULL, NULL, BBFDM_BOTH},
-{"DownloadDiagnostics", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,NULL, tDownloadDiagnosticsParam, NULL, BBFDM_BOTH},
-{"UploadDiagnostics", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE,NULL, tUploadDiagnosticsParam, NULL, BBFDM_BOTH},
-{"XMPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL,tXMPPObj, tXMPPParams, NULL, BBFDM_BOTH},
-{0}
-};
-
 DMOBJ tEntry181ObjUPNP[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
 {(char *)&dmroot, &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, tRoot181ObjUPNP, NULL, NULL, BBFDM_BOTH},
@@ -191,38 +132,6 @@ DMOBJ tRoot181ObjUPNPBBF[] = {
 };
 
 UPNP_SUPPORTED_DM tUPNPSupportedDM[];
-UPNP_SUPPORTED_DM tUPNPSupportedDM_098[] = {
-{"/UPnP/DM/DeviceInfo/", "urn:UPnP:Parent Device:1:ConfigurationManagement:2", DMROOT_URL_098, "UPnP DeviceInfo from "DMROOT_DESC_098, ""},
-{"/UPnP/DM/Configuration/", "urn:UPnP:Parent Device:1:ConfigurationManagement:2", DMROOT_URL_098, "Configuration from "DMROOT_DESC_098, ""},
-{"/UPnP/DM/Monitoring/", "urn:UPnP:Parent Device:1:ConfigurationManagement:2", DMROOT_URL_098, "Monitoring from "DMROOT_DESC_098, ""},
-{"/BBF/DeviceInfo/", DMROOT_URI_098, DMROOT_URL_098, "DeviceInfo from "DMROOT_DESC_098, ""},
-{"/BBF/ManagementServer/", DMROOT_URI_098, DMROOT_URL_098, "ManagementServer from "DMROOT_DESC_098, ""},
-{"/BBF/Time/", DMROOT_URI_098, DMROOT_URL_098, "Time from "DMROOT_DESC_098, ""},
-{"/BBF/UPnP/", DMROOT_URI_098, DMROOT_URL_098, "UPnP from "DMROOT_DESC_098, ""},
-{"/BBF/VoiceService/", "urn:broadband-forum-org:wt-104-2-0-0", "https://www.broadband-forum.org/cwmp/tr-104-2-0-0.html", "TR-104 Voice:2 Service Object definition", ""},
-{"/BBF/"CUSTOM_PREFIX"ICE/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for ICE", ""},
-{"/BBF/"CUSTOM_PREFIX"IGMP/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for ICE", ""},
-{"/BBF/"CUSTOM_PREFIX"IpAccCfg/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for IGMP", ""},
-{"/BBF/"CUSTOM_PREFIX"LoginCfg/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for LoginCfg", ""},
-{"/BBF/"CUSTOM_PREFIX"PowerManagement/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for PowerManagement", ""},
-{"/BBF/"CUSTOM_PREFIX"SyslogCfg/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for SyslogCfg", ""},
-{"/BBF/SoftwareModules/", DMROOT_URI_098, DMROOT_URL_098, "SoftwareModules from "DMROOT_DESC_098, ""},
-{"/BBF/"CUSTOM_PREFIX"Owsd/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for Owsd", ""},
-{"/BBF/"CUSTOM_PREFIX"Dropbear/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for Dropbear", ""},
-{"/BBF/"CUSTOM_PREFIX"Buttons/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for Buttons", ""},
-{"/BBF/LANDevice/", DMROOT_URI_098, DMROOT_URL_098, "LANDevice from "DMROOT_DESC_098, ""},
-{"/BBF/WANDevice/", DMROOT_URI_098, DMROOT_URL_098, "WANDevice from "DMROOT_DESC_098, ""},
-{"/BBF/LANInterfaces/", DMROOT_URI_098, DMROOT_URL_098, "LANInterfaces from "DMROOT_DESC_098, ""},
-{"/BBF/IPPingDiagnostics/", DMROOT_URI_098, DMROOT_URL_098, "IPPingDiagnostics from "DMROOT_DESC_098, ""},
-{"/BBF/Layer3Forwarding/", DMROOT_URI_098, DMROOT_URL_098, "Layer3Forwarding from "DMROOT_DESC_098, ""},
-{"/BBF/Layer2Bridging/", DMROOT_URI_098, DMROOT_URL_098, "Layer2Bridging from "DMROOT_DESC_098, ""},
-{"/BBF/"CUSTOM_PREFIX"Wifi/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for WiFi", ""},
-{"/BBF/DownloadDiagnostics/", DMROOT_URI_098, DMROOT_URL_098, "DownloadDiagnostics from "DMROOT_DESC_098, ""},
-{"/BBF/UploadDiagnostics/", DMROOT_URI_098, DMROOT_URL_098, "UploadDiagnostics from "DMROOT_DESC_098, ""},
-{"/BBF/XMPP/", DMROOT_URI_098, DMROOT_URL_098, "XMPP from "DMROOT_DESC_098, ""},
-{0}
-};
-
 UPNP_SUPPORTED_DM tUPNPSupportedDM_181[] = {
 {"/UPnP/DM/DeviceInfo/", "urn:UPnP:Parent Device:1:ConfigurationManagement:2", DMROOT_URL_181, "UPnP DeviceInfo from "DMROOT_DESC_181, ""},
 {"/UPnP/DM/Configuration/", "urn:UPnP:Parent Device:1:ConfigurationManagement:2", DMROOT_URL_181, "Configuration from "DMROOT_DESC_181, ""},
@@ -258,6 +167,5 @@ UPNP_SUPPORTED_DM tUPNPSupportedDM_181[] = {
 {0}
 };
 
-size_t tr98_size  = sizeof(tUPNPSupportedDM_098);
 size_t tr181_size = sizeof(tUPNPSupportedDM_181);
 #endif

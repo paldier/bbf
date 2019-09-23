@@ -87,46 +87,22 @@ static int dm_ctx_init_custom(struct dmctx *ctx, unsigned int dm_type, unsigned 
 	ctx->dm_type = dm_type;
 #ifdef BBF_TR064
 	if (dm_type == DM_UPNP) {
-		if(uci_data_model == DM_TR098) {
-			strcpy(dmroot, DMROOT_UPNP);
-			dm_delim = DMDELIM_UPNP;
-			ctx->dm_entryobj = tEntry098ObjUPNP;
-			ctx->user_mask = upnp_in_user_mask;
-		}
-		else {
-			strcpy(dmroot, DMROOT_UPNP);
-			dm_delim = DMDELIM_UPNP;
-			ctx->dm_entryobj = tEntry181ObjUPNP;
-			ctx->user_mask = upnp_in_user_mask;
-		}
+		strcpy(dmroot, DMROOT_UPNP);
+		dm_delim = DMDELIM_UPNP;
+		ctx->dm_entryobj = tEntry181ObjUPNP;
+		ctx->user_mask = upnp_in_user_mask;
 	}
 	else {
-		if(uci_data_model == DM_TR098) {
-			strcpy(dmroot, "InternetGatewayDevice");
-			dm_delim = DMDELIM_CWMP;
-			ctx->dm_entryobj = tEntry098Obj;
-		}
-		else {
-			strcpy(dmroot, "Device");
-			dm_delim = DMDELIM_CWMP;
-			ctx->dm_entryobj = tEntry181Obj;
-		}
+		strcpy(dmroot, "Device");
+		dm_delim = DMDELIM_CWMP;
+		ctx->dm_entryobj = tEntry181Obj;
 	}
 
-	if(uci_data_model == DM_TR098) {
-		tUPNPSupportedDM = malloc(tr98_size);
-		if (tUPNPSupportedDM == NULL) {
-			exit(0);
-		}
-		tUPNPSupportedDM = tUPNPSupportedDM_098;
+	tUPNPSupportedDM = malloc(tr181_size);
+	if (tUPNPSupportedDM == NULL) {
+		exit(0);
 	}
-	else {
-		tUPNPSupportedDM = malloc(tr181_size);
-		if (tUPNPSupportedDM == NULL) {
-			exit(0);
-		}
-		tUPNPSupportedDM = tUPNPSupportedDM_181;
-	}
+	tUPNPSupportedDM = tUPNPSupportedDM_181;
 
 	free(tUPNPSupportedDM);
 #else

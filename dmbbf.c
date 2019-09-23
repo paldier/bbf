@@ -41,6 +41,8 @@
 #include "nat.h"
 #include "xmpp.h"
 #include "dmjson.h"
+#include "dmentry.h"
+#include "dmoperate.h"
 #ifdef BBF_TR104
 #include "voice_services.h"
 #endif

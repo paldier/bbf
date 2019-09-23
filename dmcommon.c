@@ -1759,14 +1759,16 @@ char* int_period_to_date_time_format(int time)
 	return datetime;
 }
 
-int isfileexist(char *filepath){
+int isfileexist(char *filepath)
+{
 	if( access( filepath, F_OK ) != -1 )
 	    return 1;
 	else
 		return 0;
 }
 
-int isfolderexist(char *folderpath){
+int isfolderexist(char *folderpath)
+{
 	DIR* dir = opendir(folderpath);
 	if (dir) {
 	    closedir(dir);

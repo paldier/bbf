@@ -53,6 +53,9 @@
 #ifdef BBF_TR104
 #include "voice_services.h"
 #endif
+#ifdef BBF_TR157
+#include "bulkdata.h"
+#endif
 
 /* *** BBFDM *** */
 DMOBJ tEntry181Obj[] = {
@@ -109,5 +112,8 @@ DMOBJ tRoot_181_Obj[] = {
 {"USB", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tUSBObj, tUSBParams, NULL, BBFDM_BOTH},
 //{"QoS", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tQoSObj, tQoSParams, NULL, BBFDM_BOTH},
 {"XMPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL,tXMPPObj, tXMPPParams, NULL, BBFDM_BOTH},
+#ifdef BBF_TR157
+{"BulkData", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataObj, tBulkDataParams, NULL, BBFDM_BOTH},
+#endif
 {0}
 };

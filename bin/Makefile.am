@@ -67,6 +67,11 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr143/diagnostics.c
 endif
 
+if BBF_TR157
+libbbfdm_la_SOURCES +=							\
+	../dmtree/tr157/bulkdata.c
+endif
+
 if BBF_TR064
 libbbfdm_la_SOURCES +=							\
 	../dmtree/tr064/upnp_device.c 				\
@@ -104,4 +109,5 @@ libbbfdm_la_CFLAGS+=-I../dmtree/
 libbbfdm_la_CFLAGS+=-I../dmtree/tr181
 libbbfdm_la_CFLAGS+=-I../dmtree/tr104
 libbbfdm_la_CFLAGS+=-I../dmtree/tr143
+libbbfdm_la_CFLAGS+=-I../dmtree/tr157
 libbbfdm_la_CFLAGS+=-I../dmtree/tr064

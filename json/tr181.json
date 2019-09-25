@@ -46755,7 +46755,22 @@
 					"usp"
 				], 
 				"read": true, 
-				"write": true
+				"write": true,
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "cwmp_bulkdata", 
+							"section": {
+								"type": "bulkdata", 
+								"name": "bulkdata"
+							}, 
+							"option": {
+								"name": "enable"
+							}
+						}
+					}
+				]
 			}, 
 			"Status": {
 				"type": "string", 
@@ -46769,6 +46784,21 @@
 					"Enabled", 
 					"Disabled", 
 					"Error"
+				],
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "cwmp_bulkdata", 
+							"section": {
+								"type": "bulkdata", 
+								"name": "bulkdata"
+							}, 
+							"option": {
+								"name": "enable"
+							}
+						}
+					}
 				]
 			}, 
 			"MinReportingInterval": {
@@ -46850,7 +46880,18 @@
 					"usp"
 				], 
 				"read": true, 
-				"write": false
+				"write": false,
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "cwmp_bulkdata", 
+							"section": {
+								"type": "profile"
+							}
+						}
+					}
+				]
 			}, 
 			"Device.BulkData.Profile.{i}.": {
 				"type": "object", 
@@ -46859,7 +46900,17 @@
 					"usp"
 				], 
 				"access": true, 
-				"array": true, 
+				"array": true,
+				"mapping": {
+					"type": "uci", 
+					"uci": {
+						"file": "cwmp_bulkdata", 
+						"section": {
+							"type": "profile"
+						}, 
+						"dmmapfile": "dmmap_cwmp_profile"
+					}
+				}, 
 				"Enable": {
 					"type": "boolean", 
 					"protocols": [
@@ -46867,7 +46918,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "enable"
+								}
+							}
+						}
+					]
 				}, 
 				"Alias": {
 					"type": "string", 
@@ -46876,7 +46942,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "profile_alias"
+								}
+							}
+						}
+					]
 				}, 
 				"Name": {
 					"type": "string", 
@@ -46885,7 +46966,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "name"
+								}
+							}
+						}
+					]
 				}, 
 				"NumberOfRetainedFailedReports": {
 					"type": "int", 
@@ -46897,7 +46993,22 @@
 						"min": "-1"
 					}, 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "nbre_of_retained_failed_reports"
+								}
+							}
+						}
+					]
 				}, 
 				"Protocol": {
 					"type": "string", 
@@ -46906,7 +47017,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "protocol"
+								}
+							}
+						}
+					]
 				}, 
 				"EncodingType": {
 					"type": "string", 
@@ -46915,7 +47041,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "encoding_type"
+								}
+							}
+						}
+					]
 				}, 
 				"ReportingInterval": {
 					"type": "unsignedInt", 
@@ -46928,7 +47069,22 @@
 					}, 
 					"unit": "seconds", 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "reporting_interval"
+								}
+							}
+						}
+					]
 				}, 
 				"TimeReference": {
 					"type": "dateTime", 
@@ -46937,7 +47093,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "time_reference"
+								}
+							}
+						}
+					]
 				}, 
 				"StreamingHost": {
 					"type": "string", 
@@ -47017,7 +47188,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile_parameter"
+								}
+							}
+						}
+					]
 				}, 
 				"Controller": {
 					"type": "string", 
@@ -47035,6 +47217,16 @@
 					], 
 					"access": true, 
 					"array": true, 
+					"mapping": {
+						"type": "uci", 
+						"uci": {
+							"file": "cwmp_bulkdata", 
+							"section": {
+								"type": "profile_parameter"
+							}, 
+							"dmmapfile": "dmmap_cwmp_profile_parameter"
+						}
+					},
 					"Name": {
 						"type": "string", 
 						"protocols": [
@@ -47042,7 +47234,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile_parameter", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "name"
+									}
+								}
+							}
+						]
 					}, 
 					"Reference": {
 						"type": "string", 
@@ -47051,7 +47258,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile_parameter", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "reference"
+									}
+								}
+							}
+						]
 					}
 				}, 
 				"Device.BulkData.Profile.{i}.CSVEncoding.": {
@@ -47069,7 +47291,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "csv_encoding_field_separator"
+									}
+								}
+							}
+						]
 					}, 
 					"RowSeparator": {
 						"type": "string", 
@@ -47078,7 +47315,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "csv_encoding_row_separator"
+									}
+								}
+							}
+						]
 					}, 
 					"EscapeCharacter": {
 						"type": "string", 
@@ -47087,7 +47339,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "csv_encoding_escape_character"
+									}
+								}
+							}
+						]
 					}, 
 					"ReportFormat": {
 						"type": "string", 
@@ -47100,6 +47367,21 @@
 						"values": [
 							"ParameterPerRow", 
 							"ParameterPerColumn"
+						],
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "csv_encoding_report_format"
+									}
+								}
+							}
 						]
 					}, 
 					"RowTimestamp": {
@@ -47114,6 +47396,21 @@
 							"Unix-Epoch", 
 							"ISO-8601", 
 							"None"
+						],
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "csv_encoding_row_time_stamp"
+									}
+								}
+							}
 						]
 					}
 				}, 
@@ -47136,6 +47433,21 @@
 						"values": [
 							"ObjectHierarchy", 
 							"NameValuePair"
+						],
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "json_encoding_report_format"
+									}
+								}
+							}
 						]
 					}, 
 					"ReportTimestamp": {
@@ -47150,6 +47462,21 @@
 							"Unix-Epoch", 
 							"ISO-8601", 
 							"None"
+						],
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "json_encoding_report_time_stamp"
+									}
+								}
+							}
 						]
 					}
 				}, 
@@ -47168,7 +47495,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_url"
+									}
+								}
+							}
+						]
 					}, 
 					"Username": {
 						"type": "string", 
@@ -47177,7 +47519,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_username"
+									}
+								}
+							}
+						]
 					}, 
 					"Password": {
 						"type": "string", 
@@ -47186,7 +47543,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_password"
+									}
+								}
+							}
+						]
 					}, 
 					"CompressionsSupported": {
 						"type": "string", 
@@ -47209,7 +47581,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_compression"
+									}
+								}
+							}
+						]
 					}, 
 					"MethodsSupported": {
 						"type": "string", 
@@ -47231,7 +47618,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_method"
+									}
+								}
+							}
+						]
 					}, 
 					"UseDateHeader": {
 						"type": "boolean", 
@@ -47240,7 +47642,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_use_date_header"
+									}
+								}
+							}
+						]
 					}, 
 					"RetryEnable": {
 						"type": "boolean", 
@@ -47249,7 +47666,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_retry_enable"
+									}
+								}
+							}
+						]
 					}, 
 					"RetryMinimumWaitInterval": {
 						"type": "unsignedInt", 
@@ -47262,7 +47694,22 @@
 							"max": "65535"
 						}, 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_retry_minimum_wait_interval"
+									}
+								}
+							}
+						]
 					}, 
 					"RetryIntervalMultiplier": {
 						"type": "unsignedInt", 
@@ -47275,7 +47722,22 @@
 							"max": "65535"
 						}, 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_retry_interval_multiplier"
+									}
+								}
+							}
+						]
 					}, 
 					"RequestURIParameterNumberOfEntries": {
 						"type": "unsignedInt", 
@@ -47284,7 +47746,18 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": false
+						"write": false,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile_http_request_uri_parameter"
+									}
+								}
+							}
+						]
 					}, 
 					"PersistAcrossReboot": {
 						"type": "boolean", 
@@ -47293,7 +47766,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "cwmp_bulkdata", 
+									"section": {
+										"type": "profile", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "http_persist_across_reboot"
+									}
+								}
+							}
+						]
 					}, 
 					"Device.BulkData.Profile.{i}.HTTP.RequestURIParameter.{i}.": {
 						"type": "object", 
@@ -47303,6 +47791,16 @@
 						], 
 						"access": true, 
 						"array": true, 
+						"mapping": {
+							"type": "uci", 
+							"uci": {
+								"file": "cwmp_bulkdata", 
+								"section": {
+									"type": "profile_http_request_uri_parameter"
+								}, 
+								"dmmapfile": "dmmap_cwmp_profile_http_request_uri_parameter"
+							}
+						},
 						"Name": {
 							"type": "string", 
 							"protocols": [
@@ -47310,7 +47808,22 @@
 								"usp"
 							], 
 							"read": true, 
-							"write": true
+							"write": true,
+							"mapping": [
+								{
+									"type": "uci", 
+									"uci": {
+										"file": "cwmp_bulkdata", 
+										"section": {
+											"type": "profile_http_request_uri_parameter", 
+											"index": "@i-1"
+										}, 
+										"option": {
+											"name": "name"
+										}
+									}
+								}
+							]
 						}, 
 						"Reference": {
 							"type": "string", 
@@ -47319,7 +47832,22 @@
 								"usp"
 							], 
 							"read": true, 
-							"write": true
+							"write": true,
+							"mapping": [
+								{
+									"type": "uci", 
+									"uci": {
+										"file": "cwmp_bulkdata", 
+										"section": {
+											"type": "profile_http_request_uri_parameter", 
+											"index": "@i-1"
+										}, 
+										"option": {
+											"name": "reference"
+										}
+									}
+								}
+							]
 						}
 					}
 				}

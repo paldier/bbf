@@ -12,6 +12,9 @@ AM_CONDITIONAL([BBF_TR104],[test "x$enable_tr104" = "xyes"])
 AC_ARG_ENABLE(tr143, [AS_HELP_STRING([--enable-tr143], [enable tr143 diagnostics feature])], AC_DEFINE(BBF_TR143),)
 AM_CONDITIONAL([BBF_TR143],[test "x$enable_tr143" = "xyes"])
 
+AC_ARG_ENABLE(tr157, [AS_HELP_STRING([--enable-tr157], [enable tr157 bulkdata collector feature])], AC_DEFINE(BBF_TR157),)
+AM_CONDITIONAL([BBF_TR157],[test "x$enable_tr157" = "xyes"])
+
 AC_ARG_ENABLE(tr064, [AS_HELP_STRING([--enable-tr064], [enable tr064 upnp feature])], AC_DEFINE(BBF_TR064),)
 AM_CONDITIONAL([BBF_TR064],[test "x$enable_tr064" = "xyes"])
 

@@ -18,6 +18,7 @@
 #include <libubus.h>
 #include <libubox/blobmsg_json.h>
 #include <json-c/json.h>
+#include <json-c/bits.h>
 #include <stdio.h>
 #include "dmubus.h"
 #include "dmmem.h"

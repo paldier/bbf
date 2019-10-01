@@ -806,7 +806,7 @@ int set_br_port_tpid(char *refparam, struct dmctx *ctx, void *data, char *instan
 /**************************************************************************
 * GET STAT
 ***************************************************************************/
-inline int get_bridge_port_statistics(void *data, char *stat_mod, char **value)
+static inline int get_bridge_port_statistics(void *data, char *stat_mod, char **value)
 {
 	json_object *res;
 	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", value);

@@ -243,7 +243,7 @@ int set_ppp_password(char *refparam, struct dmctx *ctx, void *data, char *instan
 	return 0;
 }
 
-inline int ubus_get_wan_stats(void *data, char *instance, json_object *res, char **value, char *stat_mod)
+static inline int ubus_get_wan_stats(void *data, char *instance, json_object *res, char **value, char *stat_mod)
 {
 	char *ifname, *proto;
 	dmuci_get_value_by_section_string(((struct uci_section *)data), "ifname", &ifname);

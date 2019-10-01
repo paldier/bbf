@@ -196,7 +196,7 @@ int get_atm_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *ins
 	return 0;
 }
 
-inline int ubus_atm_stats(json_object *res, char **value, char *stat_mod, void *data)
+static inline int ubus_atm_stats(json_object *res, char **value, char *stat_mod, void *data)
 {
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct atm_args *)data)->ifname, String}}, 1, &res);
 	DM_ASSERT(res, *value = "");

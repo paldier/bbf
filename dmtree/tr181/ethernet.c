@@ -769,7 +769,7 @@ int get_EthernetInterface_EEECapability(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-inline int get_ubus_ethernet_interface_stats(json_object *res, char **value, char *stat_mod, void *data)
+static inline int get_ubus_ethernet_interface_stats(json_object *res, char **value, char *stat_mod, void *data)
 {
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct eth_port_args *)data)->ifname, String}}, 1, &res);
 	DM_ASSERT(res, *value = "0");
@@ -1036,7 +1036,7 @@ int get_EthernetLink_MACAddress(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-inline int get_ubus_ethernet_link_stats(json_object *res, char **value, char *stat_mod, void *data)
+static inline int get_ubus_ethernet_link_stats(json_object *res, char **value, char *stat_mod, void *data)
 {
 	char *device;
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "device", &device);
@@ -1365,7 +1365,7 @@ int set_EthernetVLANTermination_TPID(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-inline int get_ubus_ethernet_vlan_termination_stats(json_object *res, char **value, char *stat_mod, void *data)
+static inline int get_ubus_ethernet_vlan_termination_stats(json_object *res, char **value, char *stat_mod, void *data)
 {
 	char *ifname;
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);

@@ -18,8 +18,8 @@
 
 /* *** Device.BulkData. *** */
 DMOBJ tBulkDataObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"Profile", &DMWRITE, addObjBulkDataProfile, delObjBulkDataProfile, NULL, browseBulkDataProfileInst, NULL, NULL, tBulkDataProfileObj, tBulkDataProfileParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"Profile", &DMWRITE, addObjBulkDataProfile, delObjBulkDataProfile, NULL, browseBulkDataProfileInst, NULL, NULL, NULL, tBulkDataProfileObj, tBulkDataProfileParams, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -39,11 +39,11 @@ DMLEAF tBulkDataParams[] = {
 
 /* *** Device.BulkData.Profile.{i}. *** */
 DMOBJ tBulkDataProfileObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"Parameter", &DMWRITE, addObjBulkDataProfileParameter, delObjBulkDataProfileParameter, NULL, browseBulkDataProfileParameterInst, NULL, NULL, NULL, tBulkDataProfileParameterParams, NULL, BBFDM_BOTH},
-{"CSVEncoding", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataProfileCSVEncodingParams, NULL, BBFDM_BOTH},
-{"JSONEncoding", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataProfileJSONEncodingParams, NULL, BBFDM_BOTH},
-{"HTTP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataProfileHTTPObj, tBulkDataProfileHTTPParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"Parameter", &DMWRITE, addObjBulkDataProfileParameter, delObjBulkDataProfileParameter, NULL, browseBulkDataProfileParameterInst, NULL, NULL, NULL, NULL, tBulkDataProfileParameterParams, NULL, BBFDM_BOTH},
+{"CSVEncoding", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataProfileCSVEncodingParams, NULL, BBFDM_BOTH},
+{"JSONEncoding", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataProfileJSONEncodingParams, NULL, BBFDM_BOTH},
+{"HTTP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataProfileHTTPObj, tBulkDataProfileHTTPParams, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -98,8 +98,8 @@ DMLEAF tBulkDataProfileJSONEncodingParams[] = {
 
 /* *** Device.BulkData.Profile.{i}.HTTP. *** */
 DMOBJ tBulkDataProfileHTTPObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"RequestURIParameter", &DMWRITE, addObjBulkDataProfileHTTPRequestURIParameter, delObjBulkDataProfileHTTPRequestURIParameter, NULL, browseBulkDataProfileHTTPRequestURIParameterInst, NULL, NULL, NULL, tBulkDataProfileHTTPRequestURIParameterParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"RequestURIParameter", &DMWRITE, addObjBulkDataProfileHTTPRequestURIParameter, delObjBulkDataProfileHTTPRequestURIParameter, NULL, browseBulkDataProfileHTTPRequestURIParameterInst, NULL, NULL, NULL, NULL, tBulkDataProfileHTTPRequestURIParameterParams, NULL, BBFDM_BOTH},
 {0}
 };
 

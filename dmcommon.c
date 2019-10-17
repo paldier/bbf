@@ -1801,7 +1801,8 @@ int copy_temporary_file_to_original_file(char *f1, char *f2)
 	return 1;
 }
 
-char* readFileContent(char *filepath){
+char* readFileContent(char *filepath)
+{
 	char *str=NULL, *tmp= NULL, *res= NULL;
 	FILE *f = fopen(filepath, "rb");
 	int i, j= 0;

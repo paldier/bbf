@@ -22,8 +22,8 @@
 
 /* *** Device.PPP. *** */
 DMOBJ tPPPObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"Interface", &DMWRITE, add_ppp_interface, delete_ppp_interface, NULL, browseInterfaceInst, NULL, NULL, tPPPInterfaceObj, tPPPInterfaceParams, get_linker_ppp_interface, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"Interface", &DMWRITE, add_ppp_interface, delete_ppp_interface, NULL, browseInterfaceInst, NULL, NULL, NULL, tPPPInterfaceObj, tPPPInterfaceParams, get_linker_ppp_interface, BBFDM_BOTH},
 {0}
 };
 
@@ -35,9 +35,9 @@ DMLEAF tPPPParams[] = {
 
 /* *** Device.PPP.Interface.{i}. *** */
 DMOBJ tPPPInterfaceObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"PPPoE", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tPPPInterfacePPPoEParams, NULL, BBFDM_BOTH},
-{"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tPPPInterfaceStatsParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"PPPoE", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tPPPInterfacePPPoEParams, NULL, BBFDM_BOTH},
+{"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tPPPInterfaceStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -58,7 +58,7 @@ DMLEAF tPPPInterfaceParams[] = {
 
 /* *** Device.PPP.Interface.{i}.PPPoE. *** */
 DMLEAF tPPPInterfacePPPoEParams[] = {
-		/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"SessionID", &DMREAD, DMT_UNINT, get_PPPInterfacePPPoE_SessionID, NULL, NULL, NULL, BBFDM_BOTH},
 {"ACName", &DMWRITE, DMT_STRING, get_PPPInterfacePPPoE_ACName, set_PPPInterfacePPPoE_ACName, NULL, NULL, BBFDM_BOTH},
 {"ServiceName", &DMWRITE, DMT_STRING, get_PPPInterfacePPPoE_ServiceName, set_PPPInterfacePPPoE_ServiceName, NULL, NULL, BBFDM_BOTH},

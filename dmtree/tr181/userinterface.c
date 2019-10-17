@@ -22,8 +22,8 @@
 
 /* *** Device.UserInterface. *** */
 DMOBJ tUserInterfaceObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"RemoteAccess", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUserInterfaceRemoteAccessParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"RemoteAccess", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUserInterfaceRemoteAccessParams, NULL, BBFDM_BOTH},
 {0}
 };
 

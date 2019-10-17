@@ -22,8 +22,8 @@
 
 /* *** Device.Hosts. *** */
 DMOBJ tHostsObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"Host", &DMREAD, NULL, NULL, NULL, browsehostInst, NULL, NULL, NULL, tHostsHostParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"Host", &DMREAD, NULL, NULL, NULL, browsehostInst, NULL, NULL, NULL, NULL, tHostsHostParams, NULL, BBFDM_BOTH},
 {0}
 };
 

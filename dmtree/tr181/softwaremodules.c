@@ -20,8 +20,8 @@
 
 /* *** Device.SoftwareModules. *** */
 DMOBJ tSoftwareModulesObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"DeploymentUnit", &DMREAD, NULL, NULL, NULL, browsesoftwaremodules_deploymentunitInst, NULL, NULL, NULL, tSoftwareModulesDeploymentUnitParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"DeploymentUnit", &DMREAD, NULL, NULL, NULL, browsesoftwaremodules_deploymentunitInst, NULL, NULL, NULL, NULL, tSoftwareModulesDeploymentUnitParams, NULL, BBFDM_BOTH},
 {0}
 };
 

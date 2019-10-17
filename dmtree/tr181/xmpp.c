@@ -20,8 +20,8 @@
 
 /* *** Device.XMPP. *** */
 DMOBJ tXMPPObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"Connection", &DMWRITE, add_xmpp_connection, delete_xmpp_connection, NULL, browsexmpp_connectionInst, NULL, NULL, tXMPPConnectionObj, tXMPPConnectionParams, get_xmpp_connection_linker, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"Connection", &DMWRITE, add_xmpp_connection, delete_xmpp_connection, NULL, browsexmpp_connectionInst, NULL, NULL, NULL, tXMPPConnectionObj, tXMPPConnectionParams, get_xmpp_connection_linker, BBFDM_BOTH},
 {0}
 };
 
@@ -34,8 +34,8 @@ DMLEAF tXMPPParams[] = {
 
 /* *** Device.XMPP.Connection.{i}. *** */
 DMOBJ tXMPPConnectionObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"Server", &DMREAD, NULL, NULL, NULL, browsexmpp_connection_serverInst, NULL, NULL, NULL, tXMPPConnectionServerParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"Server", &DMREAD, NULL, NULL, NULL, browsexmpp_connection_serverInst, NULL, NULL, NULL, NULL, tXMPPConnectionServerParams, NULL, BBFDM_BOTH},
 {0}
 };
 

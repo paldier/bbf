@@ -122,7 +122,7 @@ typedef struct dm_leaf_s {
 } DMLEAF;
 
 typedef struct dm_obj_s {
-	/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type(12)*/
+	/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type(13)*/
 	char *obj;
 	struct dm_permession_s *permission;
 	int (*addobj)(char *refparam, struct dmctx *ctx, void *data, char **instance);
@@ -131,6 +131,7 @@ typedef struct dm_obj_s {
 	int (*browseinstobj)(struct dmctx *dmctx, struct dmnode *node, void *data, char *instance);
 	struct dm_forced_inform_s *forced_inform;
 	struct dm_notif_s *notification;
+	struct dm_obj_s *nextjsonobj;
 	struct dm_obj_s *nextobj;
 	struct dm_leaf_s *leaf;
 	int (*get_linker)(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker);
@@ -186,6 +187,17 @@ struct dm_parameter {
 	unsigned int flags;
 };
 
+struct dm_json_parameter {
+	struct list_head list;
+	char *name;
+	char *arg1;
+	char *arg2;
+	char *arg3;
+	char *arg4;
+	char *arg5;
+	char *arg6;
+};
+
 struct dmctx
 {
 	bool stop;
@@ -197,6 +209,7 @@ struct dmctx
 	struct list_head list_parameter;
 	struct list_head set_list_tmp;
 	struct list_head list_fault_param;
+	struct list_head list_json_parameter;
 	DMOBJ *dm_entryobj;
 	bool nextlevel;
 	int depth;

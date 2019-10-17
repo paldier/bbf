@@ -18,8 +18,8 @@
 
 /*** DMROOT.X_IOPSYS_EU_WiFiLife. ****/
 DMOBJ X_IOPSYS_EU_WiFiLifeObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"Steering", &DMREAD, NULL, NULL, NULL, browseWifiLifeSteeringObj, NULL, NULL, NULL, WiFiLifeSteeringParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"Steering", &DMREAD, NULL, NULL, NULL, browseWifiLifeSteeringObj, NULL, NULL, NULL, NULL, WiFiLifeSteeringParams, NULL, BBFDM_BOTH},
 {0}
 };
 

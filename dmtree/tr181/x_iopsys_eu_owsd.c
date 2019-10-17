@@ -28,9 +28,9 @@ DMLEAF XIopsysEuOwsdParams[] = {
 };
 
 DMOBJ XIopsysEuOwsdObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{CUSTOM_PREFIX"UbusProxy", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, UbusProxyParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"ListenObj", &DMWRITE, add_owsd_listen, delete_owsd_listen_instance, NULL, browseXIopsysEuOwsdListenObj, NULL, NULL, NULL, X_IOPSYS_EU_ListenObjParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{CUSTOM_PREFIX"UbusProxy", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, UbusProxyParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"ListenObj", &DMWRITE, add_owsd_listen, delete_owsd_listen_instance, NULL, browseXIopsysEuOwsdListenObj, NULL, NULL, NULL, NULL, X_IOPSYS_EU_ListenObjParams, NULL, BBFDM_BOTH},
 {0}
 };
 

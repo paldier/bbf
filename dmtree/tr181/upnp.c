@@ -20,8 +20,8 @@
 
 /* *** Device.UPnP. *** */
 DMOBJ tUPnPObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{"Device", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUPnPDeviceParams, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{"Device", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUPnPDeviceParams, NULL, BBFDM_BOTH},
 {0}
 };
 

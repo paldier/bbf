@@ -12,7 +12,9 @@ libbbfdm_la_SOURCES =	\
 	../dmuci.c			\
 	../dmcommon.c		\
 	../dmoperate.c		\
-	../dmdiagnostics.c		\
+	../dmdiagnostics.c	\
+	../dmentryjson.c 	\
+	../dmmemjson.c 		\
 	../wepkey.c
 
 if BBF_TR181

@@ -281,65 +281,89 @@ int dm_browse_leaf(struct dmctx *dmctx, DMNODE *parent_node, DMLEAF *leaf, void 
 	return err;
 }
 
+void dm_browse_entry(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, void *data, char *instance, char *parent_obj, int *err)
+{
+	DMNODE node = {0};
+
+	node.obj = entryobj;
+	node.parent = parent_node;
+	node.instance_level = parent_node->instance_level;
+	node.matched = parent_node->matched;
+	dmasprintf(&(node.current_object), "%s%s%c", parent_obj, entryobj->obj, dm_delim);
+
+	if (entryobj->bbfdm_type != bbfdatamodel_type &&  entryobj->bbfdm_type != BBFDM_BOTH)
+		return;
+
+	if (dmctx->checkobj) {
+		*err = dmctx->checkobj(dmctx, &node, entryobj->permission, entryobj->addobj, entryobj->delobj, entryobj->forced_inform, entryobj->notification, entryobj->get_linker, data, instance);
+		if (*err)
+			return;
+	}
+
+	*err = dmctx->method_obj(dmctx, &node, entryobj->permission, entryobj->addobj, entryobj->delobj, entryobj->forced_inform, entryobj->notification, entryobj->get_linker, data, instance);
+	if (dmctx->stop)
+		return;
+
+	if (entryobj->checkobj && ((entryobj->checkobj)(dmctx, data) == false) ) {
+		return;
+	}
+
+	if (entryobj->browseinstobj) {
+		if (dmctx->instance_wildchar) {
+			dm_link_inst_obj(dmctx, &node, data, dmctx->instance_wildchar);
+			return;
+		}
+		else {
+			entryobj->browseinstobj(dmctx, &node, data, instance);
+			*err = dmctx->faultcode;
+			return;
+		}
+	}
+
+	if (entryobj->leaf) {
+		if (dmctx->checkleaf) {
+			*err = dmctx->checkleaf(dmctx, &node, entryobj->permission, entryobj->addobj, entryobj->delobj, entryobj->forced_inform, entryobj->notification, entryobj->get_linker, data, instance);
+			if (!*err) {
+				*err = dm_browse_leaf(dmctx, &node, entryobj->leaf, data, instance);
+				if (dmctx->stop)
+					return;
+			}
+		} else {
+			*err = dm_browse_leaf(dmctx, &node, entryobj->leaf, data, instance);
+			if (dmctx->stop)
+				return;
+		}
+	}
+
+	if (entryobj->nextobj || entryobj->nextjsonobj) {
+		*err = dm_browse(dmctx, &node, entryobj->nextobj, data, instance);
+	}
+}
+
 int dm_browse(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, void *data, char *instance)
 {
+	DMOBJ *jentryobj;
 	int err = 0;
-	if (!entryobj)
-		return 0;
+
 	char *parent_obj = parent_node->current_object;
-	for (; entryobj->obj; entryobj++) {
-		DMNODE node = {0};
-		node.obj = entryobj;
-		node.parent = parent_node;
-		node.instance_level = parent_node->instance_level;
-		node.matched = parent_node->matched;
-		dmasprintf(&(node.current_object), "%s%s%c", parent_obj, entryobj->obj, dm_delim);
-		if (entryobj->bbfdm_type != bbfdatamodel_type &&  entryobj->bbfdm_type != BBFDM_BOTH)
-			continue;
-		if (dmctx->checkobj) {
-			err = dmctx->checkobj(dmctx, &node, entryobj->permission, entryobj->addobj, entryobj->delobj, entryobj->forced_inform, entryobj->notification, entryobj->get_linker, data, instance);
-			if (err)
-				continue;
-		}
-		err = dmctx->method_obj(dmctx, &node, entryobj->permission, entryobj->addobj, entryobj->delobj, entryobj->forced_inform, entryobj->notification, entryobj->get_linker, data, instance);
-		if (dmctx->stop)
-			return err;
-		if (entryobj->checkobj && ((entryobj->checkobj)(dmctx, data) == false) ){
-			continue;
-		}
-		if (entryobj->browseinstobj) {
-			if (dmctx->instance_wildchar) {
-				dm_link_inst_obj(dmctx, &node, data, dmctx->instance_wildchar);
-				continue;
-			}
-			else {
-				entryobj->browseinstobj(dmctx, &node, data, instance);
-				err = dmctx->faultcode;
-				if (dmctx->stop)
-					return err;
-				continue;
-			}
-		}
-		if (entryobj->leaf) {
-			if (dmctx->checkleaf) {
-				err = dmctx->checkleaf(dmctx, &node, entryobj->permission, entryobj->addobj, entryobj->delobj, entryobj->forced_inform, entryobj->notification, entryobj->get_linker, data, instance);
-				if (!err) {
-					err = dm_browse_leaf(dmctx, &node, entryobj->leaf, data, instance);
-					if (dmctx->stop)
-						return err;
-				}
-			} else {
-				err = dm_browse_leaf(dmctx, &node, entryobj->leaf, data, instance);
-				if (dmctx->stop)
-					return err;
-			}
-		}
-		if (entryobj->nextobj) {
-			err = dm_browse(dmctx, &node, entryobj->nextobj, data, instance);
+
+	if (entryobj) {
+		for (; entryobj->obj; entryobj++) {
+			dm_browse_entry(dmctx, parent_node, entryobj, data, instance, parent_obj, &err);
 			if (dmctx->stop)
 				return err;
 		}
 	}
+
+	if (parent_node->obj) {
+		jentryobj = parent_node->obj->nextjsonobj;
+		for (; (jentryobj && jentryobj->obj); jentryobj++) {
+			dm_browse_entry(dmctx, parent_node, jentryobj, data, instance, parent_obj, &err);
+			if (dmctx->stop)
+				return err;
+		}
+	}
+
 	return err;
 }
 
@@ -401,7 +425,6 @@ int rootcmp(char *inparam, char *rootobj)
 	return cmp;
 }
 
-//END//
 /***************************
  * update instance & alias
  ***************************/
@@ -1037,9 +1060,7 @@ int string_to_bool(char *v, bool *b)
  *****************/
 int dm_entry_operate(struct dmctx *dmctx)
 {
-	int res;
-
-	res = operate_on_node(dmctx, dmctx->in_param, dmctx->in_value);
+	int res = operate_on_node(dmctx, dmctx->in_param, dmctx->in_value);
 	return res;
 }
 

@@ -11,17 +11,18 @@
  *
  */
 
+#include <unistd.h>
+#include <ctype.h>
+#include <sys/wait.h>
 #include "dmbbf.h"
 #include "dmubus.h"
 #include "dmuci.h"
 #include "dmentry.h"
 #include "device.h"
 #include "wepkey.h"
-#include <unistd.h>
-#include <sys/wait.h>
-#include <ctype.h>
 #include "dmcommon.h"
 #include "dmoperate.h"
+#include "dmentryjson.h"
 
 LIST_HEAD(head_package_change);
 unsigned char dmcli_timetrack = 0;
@@ -106,7 +107,6 @@ static int dm_ctx_init_custom(struct dmctx *ctx, unsigned int dm_type, unsigned 
 
 	free(tUPNPSupportedDM);
 #else
-	strcpy(dmroot, "Device");
 	dm_delim = DMDELIM_CWMP;
 	ctx->dm_entryobj = tEntry181Obj;
 #endif
@@ -177,10 +177,12 @@ void dmentry_instance_lookup_inparam(struct dmctx *ctx)
 int dm_entry_param_method(struct dmctx *ctx, int cmd, char *inparam, char *arg1, char *arg2)
 {
 	int fault = 0;
-	bool setnotif = true;
-	bool alarm = false, event = false;
+	bool setnotif = true, alarm = false, event = false;
 	int err, err2;
 	
+	if (check_stats_folder(JSON_FOLDER_PATH))
+		load_json_dynamic_arrays(ctx);
+
 	if (!inparam) inparam = "";
 	ctx->in_param = inparam;
 	dmentry_instance_lookup_inparam(ctx);

@@ -20,9 +20,9 @@
 
 /*** DMROOT.X_IOPSYS_EU_IpAccCfg. ***/
 DMOBJ tSe_IpAccObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextobj, leaf, linker, bbfdm_type*/
-{CUSTOM_PREFIX"IpAccListCfgObj", &DMWRITE, add_ipacccfg_rule, delete_ipacccfg_rule, NULL, browseAccListInst, NULL, NULL, NULL, tSe_IpAccCfgParam, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"PortForwarding", &DMWRITE, add_ipacccfg_port_forwarding, delete_ipacccfg_port_forwarding, NULL, browseport_forwardingInst, NULL, NULL, NULL, tSe_PortForwardingParam, NULL, BBFDM_BOTH},
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+{CUSTOM_PREFIX"IpAccListCfgObj", &DMWRITE, add_ipacccfg_rule, delete_ipacccfg_rule, NULL, browseAccListInst, NULL, NULL, NULL, NULL, tSe_IpAccCfgParam, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"PortForwarding", &DMWRITE, add_ipacccfg_port_forwarding, delete_ipacccfg_port_forwarding, NULL, browseport_forwardingInst, NULL, NULL, NULL, NULL, tSe_PortForwardingParam, NULL, BBFDM_BOTH},
 {0}
 };
 

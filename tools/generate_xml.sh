@@ -1,5 +1,13 @@
 #!/bin/sh
 
+#      This program is free software: you can redistribute it and/or modify
+#      it under the terms of the GNU General Public License as published by
+#      the Free Software Foundation, either version 2 of the License, or
+#      (at your option) any later version.
+#
+#      Copyright (C) 2019 iopsys Software Solutions AB
+#		Author: Omar Kallel <omar.kallel@pivasoftware.com>
+#		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
 
 # USAGE:
 # ./generate_xml.sh <data model> <scripts path> <product class> <device protocol> <model name> <software version>
@@ -74,14 +82,10 @@ get_param_type(){
 }
 
 get_leaf_obj_line_number(){
-	if [ "$1" !=  "root.c" ]; then
+	if [ "$1" !=  "device.c" ]; then
 		echo `grep -nE DMOBJ\|DMLEAF $1 | grep -v UPNP |cut -f1 -d: | tr "\n" " "`
 	else
-		if [ $DATA_MODEL == "tr098" ]; then
-			echo `grep -nE DMOBJ\|DMLEAF $1 |grep "098" |grep -v UPNP | cut -f1 -d: | tr "\n" " "`
-		else
-			echo `grep -nE DMOBJ\|DMLEAF $1 |grep "181" |grep -v UPNP | cut -f1 -d: | tr "\n" " "`
-		fi
+		echo `grep -nE DMOBJ\|DMLEAF $1 |grep "181" |grep -v UPNP | cut -f1 -d: | tr "\n" " "`
 	fi
 }
 
@@ -143,7 +147,7 @@ gen_dm_tree(){
 		done
 	
 		######## Create Childs list
-		while IFS=, read -r f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11; do
+		while IFS=, read -r f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13; do
 			name=`echo ${f1//{} | sed 's/^"\(.*\)"$/\1/'`
 			permission=${f2// &}
 			type=${f3// }
@@ -152,9 +156,6 @@ gen_dm_tree(){
 				instance="true"
 			else
 				instance="false"
-			fi
-			if [ "$name" == "(char *)&dmroot"  ]; then
-				name=${ROOT_PATH}
 			fi
 			if [ "$o_found" == "1" ]; then
 				name=`set_obj_object_child "$father_name" "$name"`
@@ -174,8 +175,8 @@ gen_dm_tree(){
 				echo $pname >> $TREE_TXT
 			fi
 			if [ -n "$str" ]; then
-				child_objects=${f9// }
-				child_parameters=${f10// }
+				child_objects=${f10// }
+				child_parameters=${f11// }
 				obj_name=${name}
 				#Add the actual object to the list of objects looking for their children objects ########
 				if [ "$child_objects" != "NULL" ]; then
@@ -320,77 +321,37 @@ echo "    </dataModel>"
 echo "</deviceType>"
 }
 
-
-
-
-# MAIN ####################################################################################################
-# CONSTANTS ######
+############################################### MAIN ######################################################
 CURRENT_PATH=`pwd`
 OUT_STREAM="tmp.txt"
-ROOT_FILE="root.c"
+ROOT_FILE="device.c"
 TREE_TXT=$CURRENT_PATH"/"$OUT_STREAM
-
-DM_98="tr098"
-DM_181="tr181"
 DM_PATH=${2:-"$(pwd)/../dmtree/"}
 PRODUCT_CLASS=${3:-"DG301"}
 DEVICE_PROTOCOL=${4:-"DEVICE_PROTOCOL_DSLFTR069v1"}
 MODEL_NAME=${5:-"DG301-A"}
 SOFTWARE_VERSION=${6:-"1.2.3.4B"}
-
-SCRIPTS_PATH_COMMON=${DM_PATH}/"common/"
 cnt_obj=0
 cnt_param=0
-### GEN TR098 TREE ####
-DATA_MODEL=$DM_98
-SCRIPTS_PATH=${DM_PATH}/${DATA_MODEL}
-DIR_LIST="$SCRIPTS_PATH_COMMON $SCRIPTS_PATH"
-XML_OUT_STREAM_098="iopsys_tr098.xml"
-ROOT_PATH="InternetGatewayDevice"
-####
-
-echo "Start Generation of TR098..."
-echo "Please wait..."
-rm -rf $OUT_STREAM
-rm -rf $XML_OUT_STREAM_098
-echo "object,false,root,$ROOT_PATH," > $OUT_STREAM
-cd "$SCRIPTS_PATH_COMMON"
-gen_dm_tree $ROOT_FILE
-for dir in $DIR_LIST; do
-	cd $dir
-	files=`ls *.c |grep -v $ROOT_FILE`
-	for file in $files; do
-		gen_dm_tree "$file"
-	done
-done
-cd $CURRENT_PATH
-
-sort -k 4 $OUT_STREAM > tmp2.txt
-cat tmp2.txt | tr -d "[:blank:]" > $OUT_STREAM
-
-gen_data_model_xml_file > $XML_OUT_STREAM_098
-cnt_obj=`grep -c "object," tmp.txt`
-cnt_param=`grep -c "parameter," tmp.txt`
-echo "Number of TR098 objects is $cnt_obj"
-echo "Number of TR098 parameters is $cnt_param"
-echo "End of TR098 Generation"
-
-### GEN TR181 TREE ##################################
-cnt_obj=0
-cnt_param=0
-DATA_MODEL=$DM_181
-SCRIPTS_PATH=${DM_PATH}/${DATA_MODEL}
-DIR_LIST="$SCRIPTS_PATH_COMMON $SCRIPTS_PATH"
-XML_OUT_STREAM_181="iopsys_tr181.xml"
+DM_TR181="tr181"
+DM_TR104="tr104"
+DM_TR143="tr143"
+DM_TR157="tr157"
+SCRIPTS_PATH_TR181=${DM_PATH}/${DM_TR181}
+SCRIPTS_PATH_TR104=${DM_PATH}/${DM_TR104}
+SCRIPTS_PATH_TR143=${DM_PATH}/${DM_TR143}
+SCRIPTS_PATH_TR157=${DM_PATH}/${DM_TR157}
+DIR_LIST="$SCRIPTS_PATH_TR181 $SCRIPTS_PATH_TR104 $SCRIPTS_PATH_TR143 $SCRIPTS_PATH_TR157"
+XML_OUT_STREAM_BBF="iopsys.xml"
 ROOT_PATH="Device"
-########
 
-echo "Start Generation of TR0181..."
+############## GEN BBF Data Models TREE ##############
+echo "Start Generation of BBF Data Models..."
 echo "Please wait..."
 rm -rf $OUT_STREAM
-rm -rf $XML_OUT_STREAM_181
+rm -rf $XML_OUT_STREAM_BBF
 echo "object,false,root,$ROOT_PATH," > $OUT_STREAM
-cd "$SCRIPTS_PATH_COMMON"
+cd "$SCRIPTS_PATH_TR181"
 gen_dm_tree $ROOT_FILE
 for dir in $DIR_LIST; do
 	cd $dir
@@ -404,10 +365,11 @@ cd $CURRENT_PATH
 sort -k 4 $OUT_STREAM > tmp2.txt
 cat tmp2.txt | tr -d "[:blank:]" > $OUT_STREAM
 rm -rf tmp2.txt
-gen_data_model_xml_file > $XML_OUT_STREAM_181
+gen_data_model_xml_file > $XML_OUT_STREAM_BBF
 cnt_obj=`grep -c "object," tmp.txt`
 cnt_param=`grep -c "parameter," tmp.txt`
-echo "Number of TR181 objects is $cnt_obj"
-echo "Number of TR181 parameters is $cnt_param"
-echo "End of TR181 Generation"
+
+echo "Number of BBF Data Models objects is $cnt_obj"
+echo "Number of BBF Data Models parameters is $cnt_param"
+echo "End of BBF Data Models Generation"
 rm -rf tmp.txt

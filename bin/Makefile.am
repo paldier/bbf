@@ -56,7 +56,8 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/interfacestack.c			\	
 	../dmtree/tr181/qos.c						\
 	../dmtree/tr181/usb.c 						\
-	../dmtree/tr181/datamodelversion.c
+	../dmtree/tr181/datamodelversion.c			\
+	../dmtree/tr181/gre.c
 endif
 
 if BBF_TR104

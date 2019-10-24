@@ -355,10 +355,10 @@ SCRIPTS_PATH_TR143=${DM_PATH}/${DM_TR143}
 SCRIPTS_PATH_TR157=${DM_PATH}/${DM_TR157}
 DIR_LIST="$SCRIPTS_PATH_TR181 $SCRIPTS_PATH_TR104 $SCRIPTS_PATH_TR143 $SCRIPTS_PATH_TR157"
 ROOT_PATH="Device"
-DM_HEAD="$ROOT_PATH-2.12"
-DM_FILE="tr-181-2-12-0-cwmp-full.xml"
-DM_VERSION="tr-181-2-12-0-cwmp"
-model_name="$ROOT_PATH:2.12"
+DM_HEAD="$ROOT_PATH-2.13"
+DM_FILE="tr-181-2-13-0-cwmp-full.xml"
+DM_VERSION="tr-181-2-13-0-cwmp"
+model_name="$ROOT_PATH:2.13"
 XML_OUT_STREAM_BBF="iopsys_bbf.xml"
 ############## GEN BBF Data Models TREE ##############
 echo "Start Generation of BBF Data Models..."

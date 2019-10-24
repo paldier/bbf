@@ -240,15 +240,15 @@ def printPARAM( dmparam ):
 def printusage():
 	print "Usage: " + sys.argv[0] + " <xml data model> [Object path]...[Object path]"
 	print "Examples:"
-	print "  - " + sys.argv[0] + " tr-181-2-12-0-cwmp-full.xml Device.WiFi."
+	print "  - " + sys.argv[0] + " tr-181-2-13-0-cwmp-full.xml Device.WiFi."
 	print "    ==> Generate the json file of the sub tree Device.WiFi. in wifi.json"
-	print "  - " + sys.argv[0] + " tr-181-2-12-0-cwmp-full.xml Device.IP.Diagnostics."
+	print "  - " + sys.argv[0] + " tr-181-2-13-0-cwmp-full.xml Device.IP.Diagnostics."
 	print "    ==> Generate the json file of the sub tree Device.IP.Diagnostics. in ipdiagnostics.json"
-	print "  - " + sys.argv[0] + " tr-181-2-12-0-cwmp-full.xml Device.WiFi. Device.Time."
+	print "  - " + sys.argv[0] + " tr-181-2-13-0-cwmp-full.xml Device.WiFi. Device.Time."
 	print "    ==> Generate the json file of the sub tree Device.IP. and Device.WiFi. in time.json and wifi.json"
-	print "  - " + sys.argv[0] + " tr-181-2-12-0-cwmp-full.xml Device."
+	print "  - " + sys.argv[0] + " tr-181-2-13-0-cwmp-full.xml Device."
 	print "    ==> Generate the json file of all data model in rootdevice.json"
-	print "Example of xml data model file: https://www.broadband-forum.org/cwmp/tr-181-2-12-0-cwmp-full.xml"
+	print "Example of xml data model file: https://www.broadband-forum.org/cwmp/tr-181-2-13-0-cwmp-full.xml"
 
 def getobjectpointer( objname ):
 	obj = None

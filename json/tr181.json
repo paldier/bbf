@@ -33,6 +33,22 @@
 			"read": true, 
 			"write": false
 		}, 
+		"IoTCapabilityNumberOfEntries": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"usp"
+			], 
+			"read": true, 
+			"write": false
+		}, 
+		"NodeNumberOfEntries": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"usp"
+			], 
+			"read": true, 
+			"write": false
+		}, 
 		"Device.Services.": {
 			"type": "object", 
 			"protocols": [
@@ -958,6 +974,7 @@
 					"values": [
 						"", 
 						"CWMP", 
+						"USP", 
 						"OMA-DM", 
 						"SNMP", 
 						"UPnP", 
@@ -9250,6 +9267,413 @@
 						"read": true, 
 						"write": false
 					}
+				}, 
+				"Device.DSL.Diagnostics.SELTUER.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp"
+					], 
+					"access": false, 
+					"array": false, 
+					"DiagnosticsState": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Interface": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"UERMaxMeasurementDuration": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp"
+						], 
+						"range": {
+							"min": "5", 
+							"max": "240"
+						}, 
+						"unit": "seconds", 
+						"read": true, 
+						"write": true
+					}, 
+					"ExtendedBandwidthOperation": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"UER": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"UERScaleFactor": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"UERGroupSize": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp"
+						], 
+						"range": {
+							"min": "1", 
+							"max": "2"
+						}, 
+						"unit": "subcarriers", 
+						"read": true, 
+						"write": false
+					}, 
+					"UERVar": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}
+				}, 
+				"Device.DSL.Diagnostics.SELTQLN.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp"
+					], 
+					"access": false, 
+					"array": false, 
+					"DiagnosticsState": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Interface": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"QLNMaxMeasurementDuration": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp"
+						], 
+						"range": {
+							"min": "1", 
+							"max": "240"
+						}, 
+						"unit": "seconds", 
+						"read": true, 
+						"write": true
+					}, 
+					"ExtendedBandwidthOperation": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"QLN": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"QLNGroupSize": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp"
+						], 
+						"range": {
+							"min": "1", 
+							"max": "2"
+						}, 
+						"unit": "subcarriers", 
+						"read": true, 
+						"write": false
+					}
+				}, 
+				"Device.DSL.Diagnostics.SELTP.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp"
+					], 
+					"access": false, 
+					"array": false, 
+					"DiagnosticsState": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Interface": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CapacityEstimateEnabling": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CapacitySignalPSD": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CapacityNoisePSD": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CapacityTargetMargin": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "310"
+						}, 
+						"unit": "0.1 dB", 
+						"read": true, 
+						"write": true
+					}, 
+					"LoopTermination": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"LoopLength": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "16383"
+						}, 
+						"unit": "meters", 
+						"read": true, 
+						"write": false
+					}, 
+					"LoopTopology": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"AttenuationCharacteristics": {
+						"type": "string", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"MissingFilter": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"CapacityEstimate": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp"
+						], 
+						"unit": "kbit/s", 
+						"read": true, 
+						"write": false
+					}
+				}
+			}
+		}, 
+		"Device.PacketCaptureDiagnostics.": {
+			"type": "object", 
+			"protocols": [
+				"cwmp"
+			], 
+			"access": false, 
+			"array": false, 
+			"DiagnosticsState": {
+				"type": "string", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"PacketCaptureResultNumberOfEntries": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"Interface": {
+				"type": "string", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"Format": {
+				"type": "string", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": false, 
+				"values": [
+					"libpcap", 
+					"pcapng"
+				]
+			}, 
+			"Duration": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp"
+				], 
+				"range": {
+					"min": "1"
+				}, 
+				"unit": "seconds", 
+				"read": true, 
+				"write": true
+			}, 
+			"PacketCount": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"ByteCount": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"FileTarget": {
+				"type": "string", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"FilterExpression": {
+				"type": "string", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"Username": {
+				"type": "string", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"Password": {
+				"type": "string", 
+				"protocols": [
+					"cwmp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"Device.PacketCaptureDiagnostics.PacketCaptureResult.{i}.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp"
+				], 
+				"access": false, 
+				"array": true, 
+				"FileLocation": {
+					"type": "string", 
+					"protocols": [
+						"cwmp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"StartTime": {
+					"type": "dateTime", 
+					"protocols": [
+						"cwmp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"EndTime": {
+					"type": "dateTime", 
+					"protocols": [
+						"cwmp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Count": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp"
+					], 
+					"read": true, 
+					"write": false
 				}
 			}
 		}, 
@@ -12271,6 +12695,15 @@
 			], 
 			"access": false, 
 			"array": false, 
+			"WoLSupported": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
 			"InterfaceNumberOfEntries": {
 				"type": "unsignedInt", 
 				"protocols": [
@@ -13718,6 +14151,39 @@
 					"unit": "packets", 
 					"read": true, 
 					"write": false
+				}
+			}, 
+			"Device.Ethernet.WoL.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"SendMagicPacket": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"MACAddress": {
+					"type": "string", 
+					"protocols": [
+						"cwmp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"Password": {
+					"type": "string", 
+					"protocols": [
+						"cwmp"
+					], 
+					"read": true, 
+					"write": true
 				}
 			}, 
 			"Device.Ethernet.LAG.{i}.": {
@@ -17703,76 +18169,6 @@
 						], 
 						"read": true, 
 						"write": true
-					}, 
-					"Interface": {
-						"type": "string", 
-						"protocols": [
-							"cwmp"
-						], 
-						"read": true, 
-						"write": true
-					}, 
-					"DiagnoseMACAddress": {
-						"type": "string", 
-						"protocols": [
-							"cwmp"
-						], 
-						"read": true, 
-						"write": true
-					}, 
-					"PHYThroughputResultNumberOfEntries": {
-						"type": "unsignedInt", 
-						"protocols": [
-							"cwmp"
-						], 
-						"read": true, 
-						"write": false
-					}, 
-					"Device.Ghn.Diagnostics.PHYThroughput.Result.{i}.": {
-						"type": "object", 
-						"protocols": [
-							"cwmp"
-						], 
-						"access": false, 
-						"array": true, 
-						"DestinationMACAddress": {
-							"type": "string", 
-							"protocols": [
-								"cwmp"
-							], 
-							"read": true, 
-							"write": false
-						}, 
-						"LinkState": {
-							"type": "string", 
-							"protocols": [
-								"cwmp"
-							], 
-							"read": true, 
-							"write": false, 
-							"values": [
-								"Direct", 
-								"NonDirect"
-							]
-						}, 
-						"TxPhyRate": {
-							"type": "unsignedInt", 
-							"protocols": [
-								"cwmp"
-							], 
-							"unit": "Mbps", 
-							"read": true, 
-							"write": false
-						}, 
-						"RxPhyRate": {
-							"type": "unsignedInt", 
-							"protocols": [
-								"cwmp"
-							], 
-							"unit": "Mbps", 
-							"read": true, 
-							"write": false
-						}
 					}
 				}, 
 				"Device.Ghn.Diagnostics.PerformanceMonitoring.": {
@@ -19339,6 +19735,2038 @@
 				"read": true, 
 				"write": true
 			}, 
+			"Device.WiFi.MultiAP.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"APDeviceNumberOfEntries": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Device.WiFi.MultiAP.SteeringSummaryStats.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"NoCandidateAPFailures": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BlacklistAttempts": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BlacklistSuccesses": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BlacklistFailures": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BTMAttempts": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BTMSuccesses": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BTMFailures": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BTMQueryResponses": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}
+				}, 
+				"Device.WiFi.MultiAP.APDevice.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": true, 
+					"MACAddress": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"Manufacturer": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"ManufacturerOUI": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"ProductClass": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"SerialNumber": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"SoftwareVersion": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"LastContactTime": {
+						"type": "dateTime", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"AssocIEEE1905DeviceRef": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BackhaulLinkType": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false, 
+						"values": [
+							"None", 
+							"Wi-Fi", 
+							"MoCA", 
+							"Ethernet", 
+							"G.hn", 
+							"HPNA", 
+							"HomePlug", 
+							"UPA"
+						]
+					}, 
+					"BackhaulMACAddress": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BackhaulBytesSent": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BackhaulBytesReceived": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"BackhaulLinkUtilization": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"max": "100"
+						}, 
+						"unit": "%", 
+						"read": true, 
+						"write": false
+					}, 
+					"BackhaulSignalStrength": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"max": "255"
+						}, 
+						"unit": "dBm", 
+						"read": true, 
+						"write": false
+					}, 
+					"RadioNumberOfEntries": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"Device.WiFi.MultiAP.APDevice.{i}.Radio.{i}.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": false, 
+						"array": true, 
+						"MACAddress": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"OperatingFrequencyBand": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false, 
+							"values": [
+								"2.4GHz", 
+								"5GHz"
+							]
+						}, 
+						"OperatingStandards": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false, 
+							"values": [
+								"a", 
+								"b", 
+								"g", 
+								"n", 
+								"ac", 
+								"ax"
+							]
+						}, 
+						"Channel": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"range": {
+								"min": "1", 
+								"max": "255"
+							}, 
+							"read": true, 
+							"write": false
+						}, 
+						"ExtensionChannel": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false, 
+							"values": [
+								"None", 
+								"AboveControlChannel", 
+								"BelowControlChannel"
+							]
+						}, 
+						"CurrentOperatingChannelBandwidth": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false, 
+							"values": [
+								"20MHz", 
+								"40MHz", 
+								"80MHz", 
+								"160MHz"
+							]
+						}, 
+						"MCS": {
+							"type": "int", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"range": {
+								"min": "0", 
+								"max": "15"
+							}, 
+							"read": true, 
+							"write": false
+						}, 
+						"TransmitPower": {
+							"type": "int", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"range": {
+								"min": "-1", 
+								"max": "100"
+							}, 
+							"unit": "percentage", 
+							"read": true, 
+							"write": false
+						}, 
+						"APNumberOfEntries": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"Device.WiFi.MultiAP.APDevice.{i}.Radio.{i}.AP.{i}.": {
+							"type": "object", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"access": false, 
+							"array": true, 
+							"BSSID": {
+								"type": "string", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"SSID": {
+								"type": "string", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"BlacklistAttempts": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"BTMAttempts": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"BTMQueryResponses": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"AssociatedDeviceNumberOfEntries": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"Device.WiFi.MultiAP.APDevice.{i}.Radio.{i}.AP.{i}.AssociatedDevice.{i}.": {
+								"type": "object", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"access": false, 
+								"array": true, 
+								"MACAddress": {
+									"type": "string", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"OperatingStandard": {
+									"type": "string", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false, 
+									"values": [
+										"a", 
+										"b", 
+										"g", 
+										"n", 
+										"ac", 
+										"ax"
+									]
+								}, 
+								"Active": {
+									"type": "boolean", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"AssociationTime": {
+									"type": "dateTime", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"LastDataDownlinkRate": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"unit": "kbps", 
+									"read": true, 
+									"write": false
+								}, 
+								"LastDataUplinkRate": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"unit": "kbps", 
+									"read": true, 
+									"write": false
+								}, 
+								"SignalStrength": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"range": {
+										"max": "255"
+									}, 
+									"unit": "dBm", 
+									"read": true, 
+									"write": false
+								}, 
+								"Noise": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"range": {
+										"max": "255"
+									}, 
+									"read": true, 
+									"write": false
+								}, 
+								"SteeringHistoryNumberOfEntries": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"Device.WiFi.MultiAP.APDevice.{i}.Radio.{i}.AP.{i}.AssociatedDevice.{i}.Stats.": {
+									"type": "object", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"access": false, 
+									"array": false, 
+									"BytesSent": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"BytesReceived": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"PacketsSent": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"PacketsReceived": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"ErrorsSent": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"ErrorsReceived": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"RetransCount": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}
+								}, 
+								"Device.WiFi.MultiAP.APDevice.{i}.Radio.{i}.AP.{i}.AssociatedDevice.{i}.SteeringSummaryStats.": {
+									"type": "object", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"access": false, 
+									"array": false, 
+									"NoCandidateAPFailures": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"BlacklistAttempts": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"BlacklistSuccesses": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"BlacklistFailures": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"BTMAttempts": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"BTMSuccesses": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"BTMFailures": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"BTMQueryResponses": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"LastSteerTime": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"unit": "seconds", 
+										"read": true, 
+										"write": false
+									}
+								}, 
+								"Device.WiFi.MultiAP.APDevice.{i}.Radio.{i}.AP.{i}.AssociatedDevice.{i}.SteeringHistory.{i}.": {
+									"type": "object", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"access": false, 
+									"array": true, 
+									"Time": {
+										"type": "dateTime", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"APOrigin": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"TriggerEvent": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false, 
+										"values": [
+											"Unknown", 
+											"Wi-Fi Channel Utilization", 
+											"Wi-Fi Link Quality", 
+											"Backhaul Link Utilization"
+										]
+									}, 
+									"SteeringApproach": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false, 
+										"values": [
+											"Blacklist", 
+											"BTM Request", 
+											"Async BTM Query"
+										]
+									}, 
+									"APDestination": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"SteeringDuration": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"unit": "seconds", 
+										"read": true, 
+										"write": false
+									}
+								}
+							}
+						}
+					}
+				}
+			}, 
+			"Device.WiFi.DataElements.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Device.WiFi.DataElements.Network.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"ID": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"TimeStamp": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"ControllerID": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"DeviceNumberOfEntries": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"Device.WiFi.DataElements.Network.Device.{i}.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": false, 
+						"array": true, 
+						"ID": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"MultiAPCapabilities": {
+							"type": "base64", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"CollectionInterval": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"unit": "milliseconds", 
+							"read": true, 
+							"write": false
+						}, 
+						"RadioNumberOfEntries": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.": {
+							"type": "object", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"access": false, 
+							"array": true, 
+							"ID": {
+								"type": "base64", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"Enabled": {
+								"type": "boolean", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"Noise": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"range": {
+									"max": "255"
+								}, 
+								"read": true, 
+								"write": false
+							}, 
+							"Utilization": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"range": {
+									"min": "0", 
+									"max": "255"
+								}, 
+								"read": true, 
+								"write": false
+							}, 
+							"Transmit": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"range": {
+									"min": "0", 
+									"max": "255"
+								}, 
+								"read": true, 
+								"write": false
+							}, 
+							"ReceiveSelf": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"range": {
+									"max": "255"
+								}, 
+								"read": true, 
+								"write": false
+							}, 
+							"ReceiveOther": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"range": {
+									"min": "0", 
+									"max": "255"
+								}, 
+								"read": true, 
+								"write": false
+							}, 
+							"CurrentOperatingClassProfileNumberOfEntries": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"UnassociatedSTANumberOfEntries": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"BSSNumberOfEntries": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"ScanResultNumberOfEntries": {
+								"type": "unsignedInt", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"read": true, 
+								"write": false
+							}, 
+							"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.BackhaulSta.": {
+								"type": "object", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"access": false, 
+								"array": false, 
+								"MACAddress": {
+									"type": "string", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}
+							}, 
+							"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.Capabilities.": {
+								"type": "object", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"access": false, 
+								"array": false, 
+								"HTCapabilities": {
+									"type": "base64", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"VHTCapabilities": {
+									"type": "base64", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"HECapabilities": {
+									"type": "base64", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"CapableOperatingClassProfileNumberOfEntries": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.Capabilities.CapableOperatingClassProfile.{i}.": {
+									"type": "object", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"access": false, 
+									"array": true, 
+									"Class": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"range": {
+											"max": "255"
+										}, 
+										"read": true, 
+										"write": false
+									}, 
+									"MaxTxPower": {
+										"type": "int", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"range": {
+											"min": "-127", 
+											"max": "127"
+										}, 
+										"unit": "dBm", 
+										"read": true, 
+										"write": false
+									}, 
+									"NonOperable": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"range": {
+											"max": "255"
+										}, 
+										"read": true, 
+										"write": false
+									}, 
+									"NumberOfNonOperChan": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}
+								}
+							}, 
+							"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.CurrentOperatingClassProfile.{i}.": {
+								"type": "object", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"access": false, 
+								"array": true, 
+								"Class": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"range": {
+										"max": "255"
+									}, 
+									"read": true, 
+									"write": false
+								}, 
+								"Channel": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"range": {
+										"max": "255"
+									}, 
+									"read": true, 
+									"write": false
+								}, 
+								"TxPower": {
+									"type": "int", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"range": {
+										"min": "-127", 
+										"max": "127"
+									}, 
+									"unit": "dBm", 
+									"read": true, 
+									"write": false
+								}, 
+								"TimeStamp": {
+									"type": "string", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}
+							}, 
+							"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.BSS.{i}.": {
+								"type": "object", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"access": false, 
+								"array": true, 
+								"BSSID": {
+									"type": "string", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"SSID": {
+									"type": "string", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"Enabled": {
+									"type": "boolean", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"LastChange": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"unit": "seconds", 
+									"read": true, 
+									"write": false
+								}, 
+								"TimeStamp": {
+									"type": "string", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"UnicastBytesSent": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"UnicastBytesReceived": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"MulticastBytesSent": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"MulticastBytesReceived": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"BroadcastBytesSent": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"BroadcastBytesReceived": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"EstServiceParametersBE": {
+									"type": "base64", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"EstServiceParametersBK": {
+									"type": "base64", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"EstServiceParametersVI": {
+									"type": "base64", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"EstServiceParametersVO": {
+									"type": "base64", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"STANumberOfEntries": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.BSS.{i}.STA.{i}.": {
+									"type": "object", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"access": false, 
+									"array": true, 
+									"MACAddress": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"TimeStamp": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"HTCapabilities": {
+										"type": "base64", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"VHTCapabilities": {
+										"type": "base64", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"HECapabilities": {
+										"type": "base64", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"LastDataDownlinkRate": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"unit": "kbps", 
+										"read": true, 
+										"write": false
+									}, 
+									"LastDataUplinkRate": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"unit": "kbps", 
+										"read": true, 
+										"write": false
+									}, 
+									"UtilizationReceive": {
+										"type": "unsignedLong", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"unit": "milliseconds", 
+										"read": true, 
+										"write": false
+									}, 
+									"UtilizationTransmit": {
+										"type": "unsignedLong", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"unit": "milliseconds", 
+										"read": true, 
+										"write": false
+									}, 
+									"EstMACDataRateDownlink": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"unit": "Mbps", 
+										"read": true, 
+										"write": false
+									}, 
+									"EstMACDataRateUplink": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"unit": "Mbps", 
+										"read": true, 
+										"write": false
+									}, 
+									"SignalStrength": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"range": {
+											"max": "255"
+										}, 
+										"unit": "dBm", 
+										"read": true, 
+										"write": false
+									}, 
+									"LastConnectTime": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"unit": "seconds", 
+										"read": true, 
+										"write": false
+									}, 
+									"BytesSent": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"BytesReceived": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"PacketsSent": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"PacketsReceived": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"ErrorsSent": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"ErrorsReceived": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"RetransCount": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"MeasurementReport": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"NumberOfMeasureReports": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"IPV4Address": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"IPV6Address": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"Hostname": {
+										"type": "string", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}
+								}
+							}, 
+							"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.ScanResult.{i}.": {
+								"type": "object", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"access": false, 
+								"array": true, 
+								"TimeStamp": {
+									"type": "string", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"OpClassScanNumberOfEntries": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.ScanResult.{i}.OpClassScan.{i}.": {
+									"type": "object", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"access": false, 
+									"array": true, 
+									"OperatingClass": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"range": {
+											"max": "255"
+										}, 
+										"read": true, 
+										"write": false
+									}, 
+									"ChannelScanNumberOfEntries": {
+										"type": "unsignedInt", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"read": true, 
+										"write": false
+									}, 
+									"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.ScanResult.{i}.OpClassScan.{i}.ChannelScan.{i}.": {
+										"type": "object", 
+										"protocols": [
+											"cwmp", 
+											"usp"
+										], 
+										"access": false, 
+										"array": true, 
+										"Channel": {
+											"type": "unsignedInt", 
+											"protocols": [
+												"cwmp", 
+												"usp"
+											], 
+											"range": {
+												"max": "255"
+											}, 
+											"read": true, 
+											"write": false
+										}, 
+										"TimeStamp": {
+											"type": "string", 
+											"protocols": [
+												"cwmp", 
+												"usp"
+											], 
+											"read": true, 
+											"write": false
+										}, 
+										"Utilization": {
+											"type": "unsignedInt", 
+											"protocols": [
+												"cwmp", 
+												"usp"
+											], 
+											"range": {
+												"max": "255"
+											}, 
+											"read": true, 
+											"write": false
+										}, 
+										"Noise": {
+											"type": "unsignedInt", 
+											"protocols": [
+												"cwmp", 
+												"usp"
+											], 
+											"range": {
+												"max": "255"
+											}, 
+											"read": true, 
+											"write": false
+										}, 
+										"NeighborBSSNumberOfEntries": {
+											"type": "unsignedInt", 
+											"protocols": [
+												"cwmp", 
+												"usp"
+											], 
+											"read": true, 
+											"write": false
+										}, 
+										"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.ScanResult.{i}.OpClassScan.{i}.ChannelScan.{i}.NeighborBSS.{i}.": {
+											"type": "object", 
+											"protocols": [
+												"cwmp", 
+												"usp"
+											], 
+											"access": false, 
+											"array": true, 
+											"BSSID": {
+												"type": "string", 
+												"protocols": [
+													"cwmp", 
+													"usp"
+												], 
+												"read": true, 
+												"write": false
+											}, 
+											"SSID": {
+												"type": "string", 
+												"protocols": [
+													"cwmp", 
+													"usp"
+												], 
+												"read": true, 
+												"write": false
+											}, 
+											"SignalStrength": {
+												"type": "unsignedInt", 
+												"protocols": [
+													"cwmp", 
+													"usp"
+												], 
+												"range": {
+													"max": "255"
+												}, 
+												"unit": "dBm", 
+												"read": true, 
+												"write": false
+											}, 
+											"ChannelBandwidth": {
+												"type": "string", 
+												"protocols": [
+													"cwmp", 
+													"usp"
+												], 
+												"read": true, 
+												"write": false
+											}, 
+											"ChannelUtilization": {
+												"type": "unsignedInt", 
+												"protocols": [
+													"cwmp", 
+													"usp"
+												], 
+												"range": {
+													"max": "255"
+												}, 
+												"read": true, 
+												"write": false
+											}, 
+											"StationCount": {
+												"type": "unsignedInt", 
+												"protocols": [
+													"cwmp", 
+													"usp"
+												], 
+												"read": true, 
+												"write": false
+											}
+										}
+									}
+								}
+							}, 
+							"Device.WiFi.DataElements.Network.Device.{i}.Radio.{i}.UnassociatedSTA.{i}.": {
+								"type": "object", 
+								"protocols": [
+									"cwmp", 
+									"usp"
+								], 
+								"access": false, 
+								"array": true, 
+								"MACAddress": {
+									"type": "string", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"read": true, 
+									"write": false
+								}, 
+								"SignalStrength": {
+									"type": "unsignedInt", 
+									"protocols": [
+										"cwmp", 
+										"usp"
+									], 
+									"range": {
+										"max": "255"
+									}, 
+									"unit": "dBm", 
+									"read": true, 
+									"write": false
+								}
+							}
+						}
+					}
+				}, 
+				"Device.WiFi.DataElements.AssociationEvent.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"AssociationEventDataNumberOfEntries": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"Device.WiFi.DataElements.AssociationEvent.AssociationEventData.{i}.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": false, 
+						"array": true, 
+						"BSSID": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"MACAddress": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"StatusCode": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"HTCapabilities": {
+							"type": "base64", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"VHTCapabilities": {
+							"type": "base64", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"HECapabilities": {
+							"type": "base64", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"TimeStamp": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}
+					}
+				}, 
+				"Device.WiFi.DataElements.DisassociationEvent.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"DisassociationEventDataNumberOfEntries": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"Device.WiFi.DataElements.DisassociationEvent.DisassociationEventData.{i}.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": false, 
+						"array": true, 
+						"BSSID": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"MACAddress": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"ReasonCode": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"BytesSent": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"BytesReceived": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"PacketsSent": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"PacketsReceived": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"ErrorsSent": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"ErrorsReceived": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"RetransCount": {
+							"type": "unsignedInt", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
+						"TimeStamp": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}
+					}
+				}
+			}, 
 			"Device.WiFi.Radio.{i}.": {
 				"type": "object", 
 				"protocols": [
@@ -19529,7 +21957,8 @@
 						"b", 
 						"g", 
 						"n", 
-						"ac"
+						"ac", 
+						"ax"
 					], 
 					"mapping": [
 						{
@@ -19782,6 +22211,7 @@
 						"40MHz", 
 						"80MHz", 
 						"160MHz", 
+						"80+80MHz", 
 						"Auto"
 					], 
 					"mapping": [
@@ -19843,7 +22273,8 @@
 						"20MHz", 
 						"40MHz", 
 						"80MHz", 
-						"160MHz"
+						"160MHz", 
+						"80+80MHz"
 					], 
 					"mapping": [
 						{
@@ -19882,8 +22313,28 @@
 					"values": [
 						"400nsec", 
 						"800nsec", 
+						"1600nsec", 
+						"3200nsec", 
 						"Auto"
 					]
+				}, 
+				"CenterFrequencySegement0": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"CenterFrequencySegement1": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
 				}, 
 				"MCS": {
 					"type": "int", 
@@ -20621,7 +23072,10 @@
 							"WPA-WPA2", 
 							"WPA-Enterprise", 
 							"WPA2-Enterprise", 
-							"WPA-WPA2-Enterprise"
+							"WPA-WPA2-Enterprise", 
+							"WPA3-SAE", 
+							"WPA2-PSK-WPA3-SAE", 
+							"WPA3-Enterprise"
 						]
 					}, 
 					"EncryptionMode": {
@@ -20660,7 +23114,8 @@
 							"b", 
 							"g", 
 							"n", 
-							"ac"
+							"ac", 
+							"ax"
 						]
 					}, 
 					"OperatingStandards": {
@@ -21511,9 +23966,12 @@
 							"WEP-128", 
 							"WPA-Personal", 
 							"WPA2-Personal", 
+							"WPA3-Personal", 
 							"WPA-WPA2-Personal", 
+							"WPA3-Personal-Transition", 
 							"WPA-Enterprise", 
 							"WPA2-Enterprise", 
+							"WPA3-Enterprise", 
 							"WPA-WPA2-Enterprise"
 						]
 					}, 
@@ -21577,6 +24035,15 @@
 								}
 							}
 						]
+					}, 
+					"SAEPassphrase": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
 					}, 
 					"RadiusServerIPAddr": {
 						"type": "string", 
@@ -21860,7 +24327,8 @@
 							"b", 
 							"g", 
 							"n", 
-							"ac"
+							"ac", 
+							"ax"
 						]
 					}, 
 					"AuthenticationState": {
@@ -22600,9 +25068,12 @@
 							"WEP-128", 
 							"WPA-Personal", 
 							"WPA2-Personal", 
+							"WPA3-Personal", 
 							"WPA-WPA2-Personal", 
+							"WPA3-Personal-Transition", 
 							"WPA-Enterprise", 
 							"WPA2-Enterprise", 
+							"WPA3-Enterprise", 
 							"WPA-WPA2-Enterprise"
 						]
 					}
@@ -22729,6 +25200,15 @@
 							"write": true
 						}, 
 						"KeyPassphrase": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"SAEPassphrase": {
 							"type": "string", 
 							"protocols": [
 								"cwmp", 
@@ -34527,12 +37007,24 @@
 					"read": true, 
 					"write": true
 				}, 
+				"DADTransmits": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
 				"RetransTimer": {
 					"type": "unsignedInt", 
 					"protocols": [
 						"cwmp", 
 						"usp"
 					], 
+					"range": {
+						"min": "1"
+					}, 
 					"unit": "milliseconds", 
 					"read": true, 
 					"write": true
@@ -34543,6 +37035,9 @@
 						"cwmp", 
 						"usp"
 					], 
+					"range": {
+						"min": "4000"
+					}, 
 					"unit": "milliseconds", 
 					"read": true, 
 					"write": true
@@ -37379,6 +39874,25 @@
 					"read": true, 
 					"write": false
 				}, 
+				"InterfaceType": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"Ethernet", 
+						"G.hn", 
+						"HPNA", 
+						"HomePlug", 
+						"MoCA", 
+						"UPA", 
+						"Wi-Fi", 
+						"Other"
+					]
+				}, 
 				"VendorClassID": {
 					"type": "string", 
 					"protocols": [
@@ -38325,6 +40839,32 @@
 						"cwmp", 
 						"usp"
 					], 
+					"read": true, 
+					"write": true
+				}, 
+				"TCPTranslationTimeout": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"UDPTranslationTimeout": {
+					"type": "int", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "-1"
+					}, 
+					"unit": "seconds", 
 					"read": true, 
 					"write": true
 				}
@@ -40158,6 +42698,20 @@
 						], 
 						"read": true, 
 						"write": true
+					}, 
+					"AllowedDevices": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true, 
+						"values": [
+							"All", 
+							"Known", 
+							"Unknown"
+						]
 					}, 
 					"MinAddress": {
 						"type": "string", 
@@ -49316,6 +51870,15 @@
 							"read": true, 
 							"write": false
 						}, 
+						"AssocWiFiNetworkDeviceRef": {
+							"type": "string", 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"read": true, 
+							"write": false
+						}, 
 						"VendorPropertiesNumberOfEntries": {
 							"type": "unsignedInt", 
 							"protocols": [
@@ -50012,7 +52575,8 @@
 					"write": false, 
 					"values": [
 						"3.1", 
-						"3.1.1"
+						"3.1.1", 
+						"5.0"
 					]
 				}, 
 				"TransportProtocolSupported": {
@@ -50109,103 +52673,11 @@
 						"Error"
 					]
 				}, 
-				"ClientID": {
-					"type": "string", 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"read": true, 
-					"write": true
-				}, 
-				"Username": {
-					"type": "string", 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"read": true, 
-					"write": true
-				}, 
-				"Password": {
-					"type": "string", 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"read": true, 
-					"write": true
-				}, 
-				"TransportProtocol": {
-					"type": "string", 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"read": true, 
-					"write": true
-				}, 
 				"ProtocolVersion": {
 					"type": "string", 
 					"protocols": [
 						"cwmp", 
 						"usp"
-					], 
-					"read": true, 
-					"write": true
-				}, 
-				"CleanSession": {
-					"type": "boolean", 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"read": true, 
-					"write": true
-				}, 
-				"MessageRetryTime": {
-					"type": "unsignedInt", 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"range": {
-						"min": "1"
-					}, 
-					"unit": "seconds", 
-					"read": true, 
-					"write": true
-				}, 
-				"ConnectRetryTime": {
-					"type": "unsignedInt", 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"range": {
-						"min": "1"
-					}, 
-					"unit": "seconds", 
-					"read": true, 
-					"write": true
-				}, 
-				"KeepAliveTime": {
-					"type": "unsignedInt", 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"range": {
-						"max": "65535"
-					}, 
-					"unit": "seconds", 
-					"read": true, 
-					"write": true
-				}, 
-				"ForceReconnect": {
-					"type": "boolean", 
-					"protocols": [
-						"cwmp"
 					], 
 					"read": true, 
 					"write": true
@@ -50232,7 +52704,16 @@
 					"read": true, 
 					"write": true
 				}, 
-				"WillEnable": {
+				"TransportProtocol": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"CleanSession": {
 					"type": "boolean", 
 					"protocols": [
 						"cwmp", 
@@ -50241,8 +52722,8 @@
 					"read": true, 
 					"write": true
 				}, 
-				"WillTopic": {
-					"type": "string", 
+				"CleanStart": {
+					"type": "boolean", 
 					"protocols": [
 						"cwmp", 
 						"usp"
@@ -50250,8 +52731,8 @@
 					"read": true, 
 					"write": true
 				}, 
-				"WillValue": {
-					"type": "string", 
+				"WillEnable": {
+					"type": "boolean", 
 					"protocols": [
 						"cwmp", 
 						"usp"
@@ -50281,7 +52762,259 @@
 					"read": true, 
 					"write": true
 				}, 
+				"KeepAliveTime": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"max": "65535"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"ForceReconnect": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"SessionExpiryInterval": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"ReceiveMaximum": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"MaximumPacketSize": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"unit": "byte", 
+					"read": true, 
+					"write": true
+				}, 
+				"TopicAliasMaximum": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"RequestResponseInfo": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"RequestProblemInfo": {
+					"type": "boolean", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"AuthenticationMethod": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"ClientID": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"WillDelayInterval": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"WillMessageExpiryInterval": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"WillContentType": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"WillResponseTopic": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"WillTopic": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"WillValue": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"Username": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"Password": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"PublishMessageExpiryInterval": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"MessageRetryTime": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"ConnectRetryTime": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"ConnectRetryIntervalMultiplier": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1000", 
+						"max": "65535"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"ConnectRetryMaxInterval": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"range": {
+						"min": "1"
+					}, 
+					"unit": "seconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"ResponseInformation": {
+					"type": "string", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
 				"SubscriptionNumberOfEntries": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"UserPropertyNumberOfEntries": {
 					"type": "unsignedInt", 
 					"protocols": [
 						"cwmp", 
@@ -50353,6 +53086,73 @@
 						}, 
 						"read": true, 
 						"write": true
+					}
+				}, 
+				"Device.MQTT.Client.{i}.UserProperty.{i}.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": true, 
+					"array": true, 
+					"Alias": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Enable": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Name": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"Value": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"PacketType": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true, 
+						"values": [
+							"AUTH", 
+							"CONNECT", 
+							"DISCONNECT", 
+							"PUBLISH", 
+							"PUBACK", 
+							"PUBREC", 
+							"PUBREL", 
+							"PUBCOMP", 
+							"SUBSCRIBE", 
+							"UNSUBSCRIBE", 
+							"WILL"
+						]
 					}
 				}, 
 				"Device.MQTT.Client.{i}.Stats.": {
@@ -50616,6 +53416,63 @@
 							"Error"
 						]
 					}, 
+					"ProtocolVersion": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"TransportProtocol": {
+						"type": "string", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CleanSession": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"CleanStart": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"KeepAliveTime": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"range": {
+							"max": "65535"
+						}, 
+						"unit": "seconds", 
+						"read": true, 
+						"write": true
+					}, 
+					"ForceReconnect": {
+						"type": "boolean", 
+						"protocols": [
+							"cwmp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
 					"ClientID": {
 						"type": "string", 
 						"protocols": [
@@ -50636,33 +53493,6 @@
 					}, 
 					"Password": {
 						"type": "string", 
-						"protocols": [
-							"cwmp", 
-							"usp"
-						], 
-						"read": true, 
-						"write": true
-					}, 
-					"TransportProtocol": {
-						"type": "string", 
-						"protocols": [
-							"cwmp", 
-							"usp"
-						], 
-						"read": true, 
-						"write": true
-					}, 
-					"ProtocolVersion": {
-						"type": "string", 
-						"protocols": [
-							"cwmp", 
-							"usp"
-						], 
-						"read": true, 
-						"write": true
-					}, 
-					"CleanSession": {
-						"type": "boolean", 
 						"protocols": [
 							"cwmp", 
 							"usp"
@@ -50693,27 +53523,6 @@
 							"min": "1"
 						}, 
 						"unit": "seconds", 
-						"read": true, 
-						"write": true
-					}, 
-					"KeepAliveTime": {
-						"type": "unsignedInt", 
-						"protocols": [
-							"cwmp", 
-							"usp"
-						], 
-						"range": {
-							"max": "65535"
-						}, 
-						"unit": "seconds", 
-						"read": true, 
-						"write": true
-					}, 
-					"ForceReconnect": {
-						"type": "boolean", 
-						"protocols": [
-							"cwmp"
-						], 
 						"read": true, 
 						"write": true
 					}, 
@@ -53511,7 +56320,8 @@
 				"values": [
 					"CoAP", 
 					"WebSocket", 
-					"STOMP"
+					"STOMP", 
+					"MQTT"
 				]
 			}, 
 			"SupportedFingerprintAlgorithms": {
@@ -53527,6 +56337,21 @@
 					"SHA-256", 
 					"SHA-384", 
 					"SHA-512"
+				]
+			}, 
+			"SupportedThresholdOperator": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"values": [
+					"Rise", 
+					"Fall", 
+					"Cross", 
+					"Eq", 
+					"NotEq"
 				]
 			}, 
 			"AdvertisedDeviceSubtypes": {
@@ -53550,6 +56375,14 @@
 				"write": true
 			}, 
 			"MTPNumberOfEntries": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"ThresholdNumberOfEntries": {
 				"type": "unsignedInt", 
 				"protocols": [
 					"usp"
@@ -53760,6 +56593,118 @@
 						"read": true, 
 						"write": true
 					}
+				}, 
+				"Device.LocalAgent.MTP.{i}.MQTT.": {
+					"type": "object", 
+					"protocols": [
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"Reference": {
+						"type": "string", 
+						"protocols": [
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"ResponseTopicConfigured": {
+						"type": "string", 
+						"protocols": [
+							"usp"
+						], 
+						"read": true, 
+						"write": true
+					}, 
+					"ResponseTopicDiscovered": {
+						"type": "string", 
+						"protocols": [
+							"usp"
+						], 
+						"read": true, 
+						"write": false
+					}, 
+					"PublishQoS ": {
+						"type": "unsignedInt", 
+						"protocols": [
+							"usp"
+						], 
+						"range": {
+							"min": "0", 
+							"max": "2"
+						}, 
+						"read": true, 
+						"write": true
+					}
+				}
+			}, 
+			"Device.LocalAgent.Threshold.{i}.": {
+				"type": "object", 
+				"protocols": [
+					"usp"
+				], 
+				"access": true, 
+				"array": true, 
+				"Alias": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"Enable": {
+					"type": "boolean", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"OperatingMode": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true, 
+					"values": [
+						"Normal", 
+						"Single"
+					]
+				}, 
+				"ReferencePath": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"ThresholdParam": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"ThresholdOperator": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"ThresholdValue": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
 				}
 			}, 
 			"Device.LocalAgent.Controller.{i}.": {
@@ -54078,6 +57023,30 @@
 								"min": "1000", 
 								"max": "65535"
 							}, 
+							"read": true, 
+							"write": true
+						}
+					}, 
+					"Device.LocalAgent.Controller.{i}.MTP.{i}.MQTT.": {
+						"type": "object", 
+						"protocols": [
+							"usp"
+						], 
+						"access": false, 
+						"array": false, 
+						"Reference": {
+							"type": "string", 
+							"protocols": [
+								"usp"
+							], 
+							"read": true, 
+							"write": true
+						}, 
+						"Topic": {
+							"type": "string", 
+							"protocols": [
+								"usp"
+							], 
 							"read": true, 
 							"write": true
 						}
@@ -55011,6 +57980,586 @@
 				], 
 				"read": true, 
 				"write": true
+			}, 
+			"Type": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"Description": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"Name": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"Online": {
+				"type": "boolean", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"LastTimeContacted": {
+				"type": "dateTime", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"InterfaceReference": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"ProxyProtocol": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"values": [
+					"Z-Wave", 
+					"ZigBee", 
+					"UPnP-DM"
+				]
+			}, 
+			"NodeNumberOfEntries": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"Device.ProxiedDevice.{i}.Node.{i}.": {
+				"type": "object", 
+				"protocols": [
+					"usp"
+				], 
+				"access": false, 
+				"array": true, 
+				"Alias": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"Type": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Description": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}
+			}
+		}, 
+		"Device.IoTCapability.{i}.": {
+			"type": "object", 
+			"protocols": [
+				"usp"
+			], 
+			"access": false, 
+			"array": true, 
+			"Alias": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"Name": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"Class": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"values": [
+					"BinaryControl", 
+					"LevelControl", 
+					"EnumControl", 
+					"BinarySensor", 
+					"LevelSensor", 
+					"MultiLevelSensor", 
+					"EnumSensor"
+				]
+			}, 
+			"Device.IoTCapability.{i}.BinaryControl.": {
+				"type": "object", 
+				"protocols": [
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Type": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"Switch", 
+						"Locked"
+					]
+				}, 
+				"Description": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Value": {
+					"type": "boolean", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}
+			}, 
+			"Device.IoTCapability.{i}.LevelControl.": {
+				"type": "object", 
+				"protocols": [
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Type": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Description": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Value": {
+					"type": "decimal", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"Unit": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"MinValue": {
+					"type": "decimal", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"MaxValue": {
+					"type": "decimal", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"StepValue": {
+					"type": "decimal", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}
+			}, 
+			"Device.IoTCapability.{i}.EnumControl.": {
+				"type": "object", 
+				"protocols": [
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Type": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Description": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Value": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"ValidValues": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}
+			}, 
+			"Device.IoTCapability.{i}.BinarySensor.": {
+				"type": "object", 
+				"protocols": [
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Type": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"CarbonDioxideDetected", 
+						"CarbonMonoxideDetected", 
+						"DoorOpen", 
+						"MotionDetected", 
+						"SmokeDetected", 
+						"WindowOpen", 
+						"WaterDetected"
+					]
+				}, 
+				"Description": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Value": {
+					"type": "boolean", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"LastChange": {
+					"type": "dateTime", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Sensitivity": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"usp"
+					], 
+					"range": {
+						"max": "100"
+					}, 
+					"read": true, 
+					"write": true
+				}, 
+				"HoldTime": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"usp"
+					], 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}, 
+				"RestTime": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"usp"
+					], 
+					"unit": "milliseconds", 
+					"read": true, 
+					"write": true
+				}
+			}, 
+			"Device.IoTCapability.{i}.LevelSensor.": {
+				"type": "object", 
+				"protocols": [
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Type": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Description": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Value": {
+					"type": "decimal", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"LastChange": {
+					"type": "dateTime", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Unit": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"LowLevel": {
+					"type": "boolean", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"LowLevelThreshold": {
+					"type": "decimal", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}, 
+				"HighLevel": {
+					"type": "boolean", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"HighLevelThreshold": {
+					"type": "decimal", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": true
+				}
+			}, 
+			"Device.IoTCapability.{i}.MultiLevelSensor.": {
+				"type": "object", 
+				"protocols": [
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Type": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"values": [
+						"RGB", 
+						"Location"
+					]
+				}, 
+				"Description": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Values": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"ValueNames": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"LastChange": {
+					"type": "dateTime", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Unit": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}
+			}, 
+			"Device.IoTCapability.{i}.EnumSensor.": {
+				"type": "object", 
+				"protocols": [
+					"usp"
+				], 
+				"access": false, 
+				"array": false, 
+				"Type": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Description": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"Value": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"LastChange": {
+					"type": "dateTime", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}, 
+				"ValidValues": {
+					"type": "string", 
+					"protocols": [
+						"usp"
+					], 
+					"read": true, 
+					"write": false
+				}
+			}
+		}, 
+		"Device.Node.{i}.": {
+			"type": "object", 
+			"protocols": [
+				"usp"
+			], 
+			"access": false, 
+			"array": true, 
+			"Alias": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": true
+			}, 
+			"Type": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false
+			}, 
+			"Description": {
+				"type": "string", 
+				"protocols": [
+					"usp"
+				], 
+				"read": true, 
+				"write": false
 			}
 		}
 	}

@@ -394,7 +394,7 @@ def printusage():
 	if "tr-181" in sys.argv[1]:
 		print "Usage: " + sys.argv[0] + " <tr-181 cwmp xml data model> <tr-181 usp xml data model> [Object path]"
 		print "Examples:"
-		print "  - " + sys.argv[0] + " tr-181-2-12-0-cwmp-full.xml tr-181-2-12-0-usp-full.xml Device."
+		print "  - " + sys.argv[0] + " tr-181-2-13-0-cwmp-full.xml tr-181-2-13-0-usp-full.xml Device."
 		print "    ==> Generate the json file of the sub tree Device. in tr181.json"
 	else:
 		print "Usage: " + sys.argv[0] + " <xml data model> [Object path]"
@@ -405,7 +405,7 @@ def printusage():
 		print "    ==> Generate the json file of the sub tree Device. in tr106.json"
 
 	print ""
-	print "Example of xml data model file: https://www.broadband-forum.org/cwmp/tr-181-2-12-0-cwmp-full.xml"
+	print "Example of xml data model file: https://www.broadband-forum.org/cwmp/tr-181-2-13-0-cwmp-full.xml"
 
 def getobjectpointer( objname ):
 	obj = None

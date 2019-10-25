@@ -22,7 +22,7 @@
 /* *** Device.GRE. *** */
 DMOBJ tGREObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nexjsontobj, nextobj, leaf, linker, bbfdm_type*/
-{"Tunnel", &DMWRITE, addObjGRETunnel, delObjGRETunnel, NULL, browseGRETunnelInst, NULL, NULL, NULL, NULL, tGRETunnelObj, tGRETunnelParams, NULL, BBFDM_BOTH},
+{"Tunnel", &DMWRITE, addObjGRETunnel, delObjGRETunnel, NULL, browseGRETunnelInst, NULL, NULL, NULL, tGRETunnelObj, tGRETunnelParams, NULL, BBFDM_BOTH},
 {"Filter", &DMWRITE, addObjGREFilter, delObjGREFilter, NULL, browseGREFilterInst, NULL, NULL, NULL, NULL, tGREFilterParams, NULL, BBFDM_BOTH},
 {0}
 };

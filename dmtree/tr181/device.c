@@ -51,6 +51,7 @@
 #include "usb.h"
 #include "datamodelversion.h"
 #include "gre.h"
+#include "dynamicdns.h"
 #ifdef BBF_TR104
 #include "voice_services.h"
 #endif
@@ -112,6 +113,7 @@ DMOBJ tRoot_181_Obj[] = {
 {"InterfaceStack", &DMREAD, NULL, NULL, NULL, browseInterfaceStackInst, NULL, NULL, NULL, NULL, tInterfaceStackParams, NULL, BBFDM_BOTH},
 {"USB", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUSBObj, tUSBParams, NULL, BBFDM_BOTH},
 {"GRE", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL,  NULL, tGREObj, tGREParams, NULL, BBFDM_BOTH},
+{"DynamicDNS", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDynamicDNSObj, tDynamicDNSParams, NULL, BBFDM_BOTH},
 //{"QoS", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tQoSObj, tQoSParams, NULL, BBFDM_BOTH},
 {"XMPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tXMPPObj, tXMPPParams, NULL, BBFDM_BOTH},
 #ifdef BBF_TR157

@@ -53882,6 +53882,16 @@
 				], 
 				"access": true, 
 				"array": true, 
+				"mapping": {
+					"type": "uci", 
+					"uci": {
+						"file": "ddns", 
+						"section": {
+							"type": "service"
+						}, 
+						"dmmapfile": "dmmap_ddns"
+					}
+				}, 
 				"Enable": {
 					"type": "boolean", 
 					"protocols": [
@@ -53889,7 +53899,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "enabled"
+								}
+							}
+						}
+					]
 				}, 
 				"Status": {
 					"type": "string", 
@@ -53906,6 +53931,21 @@
 						"Error_Misconfigured", 
 						"Error", 
 						"Disabled"
+					],
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "enabled"
+								}
+							}
+						}
 					]
 				}, 
 				"Alias": {
@@ -53942,7 +53982,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "service_name"
+								}
+							}
+						}
+					]
 				}, 
 				"Interface": {
 					"type": "string", 
@@ -53951,7 +54006,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "interface"
+								}
+							}
+						}
+					]
 				}, 
 				"Username": {
 					"type": "string", 
@@ -53960,7 +54030,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "username"
+								}
+							}
+						}
+					]
 				}, 
 				"Password": {
 					"type": "string", 
@@ -53969,7 +54054,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "password"
+								}
+							}
+						}
+					]
 				}, 
 				"HostnameNumberOfEntries": {
 					"type": "unsignedInt", 
@@ -53995,7 +54095,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "ddns", 
+									"section": {
+										"type": "service", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "enabled"
+									}
+								}
+							}
+						]
 					}, 
 					"Status": {
 						"type": "string", 
@@ -54011,6 +54126,21 @@
 							"Updating", 
 							"Error", 
 							"Disabled"
+						],
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "ddns", 
+									"section": {
+										"type": "service", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "enabled"
+									}
+								}
+							}
 						]
 					}, 
 					"Name": {
@@ -54020,7 +54150,22 @@
 							"usp"
 						], 
 						"read": true, 
-						"write": true
+						"write": true,
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "ddns", 
+									"section": {
+										"type": "service", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "domain"
+									}
+								}
+							}
+						]
 					}, 
 					"LastUpdate": {
 						"type": "dateTime", 
@@ -54041,6 +54186,16 @@
 				], 
 				"access": true, 
 				"array": true, 
+				"mapping": {
+					"type": "uci", 
+					"uci": {
+						"file": "ddns", 
+						"section": {
+							"type": "service"
+						}, 
+						"dmmapfile": "dmmap_ddns"
+					}
+				}, 
 				"Enable": {
 					"type": "string", 
 					"protocols": [
@@ -54048,7 +54203,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "enabled"
+								}
+							}
+						}
+					]
 				}, 
 				"Name": {
 					"type": "string", 
@@ -54075,7 +54245,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "service_name"
+								}
+							}
+						}
+					]
 				}, 
 				"ServerAddress": {
 					"type": "string", 
@@ -54084,7 +54269,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "dns_server"
+								}
+							}
+						}
+					]
 				}, 
 				"ServerPort": {
 					"type": "unsignedInt", 
@@ -54097,7 +54297,22 @@
 						"max": "65535"
 					}, 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "dns_server"
+								}
+							}
+						}
+					]
 				}, 
 				"SupportedProtocols": {
 					"type": "string", 
@@ -54119,7 +54334,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "use_https"
+								}
+							}
+						}
+					]
 				}, 
 				"CheckInterval": {
 					"type": "unsignedInt", 
@@ -54129,7 +54359,22 @@
 					], 
 					"unit": "seconds", 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "check_interval"
+								}
+							}
+						}
+					]
 				}, 
 				"RetryInterval": {
 					"type": "unsignedInt", 
@@ -54139,7 +54384,22 @@
 					], 
 					"unit": "seconds", 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "retry_interval"
+								}
+							}
+						}
+					]
 				}, 
 				"MaxRetries": {
 					"type": "unsignedInt", 
@@ -54148,7 +54408,22 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "retry_count"
+								}
+							}
+						}
+					]
 				}
 			}
 		}, 

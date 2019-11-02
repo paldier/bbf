@@ -86,6 +86,12 @@ struct package_change {
 		section != NULL; \
 		section = dmuci_walk_section(package, stype, option, val, CMP_OPTION_EQUAL, NULL, section, GET_NEXT_SECTION))
 
+#define uci_foreach_option_eq_safe(package, stype, option, val, _tmp, section) \
+	for (section = dmuci_walk_section(package, stype, option, val, CMP_OPTION_EQUAL, NULL, NULL, GET_FIRST_SECTION), \
+		_tmp = (section) ? dmuci_walk_section(package, stype, option, val, CMP_OPTION_EQUAL, NULL, section, GET_NEXT_SECTION) : NULL;	\
+		section != NULL; \
+		section = _tmp, _tmp = (section) ?  dmuci_walk_section(package, stype, option, val, CMP_OPTION_EQUAL, NULL, section, GET_NEXT_SECTION) : NULL)
+
 #define uci_foreach_option_cont(package, stype, option, val, section) \
 	for (section = dmuci_walk_section(package, stype, option, val, CMP_OPTION_CONTAINING, NULL, NULL, GET_FIRST_SECTION); \
 		section != NULL; \

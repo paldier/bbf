@@ -37,6 +37,8 @@
 
 #define GLOB_EXPR "[=><]+"
 
+static uint8_t wifi_neighbor_count = 0;
+
 bool match(const char *string, const char *pattern)
 {
 	regex_t re;
@@ -318,10 +320,12 @@ static opr_ret_t vendor_conf_restore(struct dmctx *dmctx, char *path, char *inpu
 
 static void fill_wireless_scan_results(struct dmctx *dmctx, char *radio)
 {
-	json_object *res, *obj;
+	json_object *scan, *res, *obj;
 	struct neighboring_wiFi_diagnostic neighboring = {0};
 	char *ssid, *bssid, *channel, *frequency, *signal_stregth, *noise;
 
+	dmubus_call(ROUTER_WIRELESS_UBUS_PATH, "scan", UBUS_ARGS{{"radio", radio, String}}, 1, &scan);
+	sleep(2); // Wait for results to get populated in scanresults
 	dmubus_call(ROUTER_WIRELESS_UBUS_PATH, "scanresults", UBUS_ARGS{{"radio", radio, String}}, 1, &res);
 
 	if(!json_object_object_get_ex(res,"access_points", &obj)) {
@@ -330,6 +334,7 @@ static void fill_wireless_scan_results(struct dmctx *dmctx, char *radio)
 
 	uint8_t len = json_object_array_length(obj);
 	for (uint8_t j = 0; j < len; j++ ) {
+		wifi_neighbor_count++;
 		json_object *array_obj = json_object_array_get_idx(obj, j);
 		neighboring.ssid = dmjson_get_value(array_obj, 1, "ssid");
 		neighboring.bssid = dmjson_get_value(array_obj, 1, "bssid");
@@ -338,19 +343,20 @@ static void fill_wireless_scan_results(struct dmctx *dmctx, char *radio)
 		neighboring.signal_strength = dmjson_get_value(array_obj, 1, "rssi");
 		neighboring.noise = dmjson_get_value(array_obj, 1, "snr");
 
-		dmasprintf(&ssid, "Result.%d.SSID", j+1);
-		dmasprintf(&bssid, "Result.%d.BSSID", j+1);
-		dmasprintf(&channel, "Result.%d.Channel", j+1);
-		dmasprintf(&frequency, "Result.%d.OperatingFrequencyBand", j+1);
-		dmasprintf(&signal_stregth, "Result.%d.SignalStrength", j+1);
-		dmasprintf(&noise, "Result.%d.Noise", j+1);
 
-		add_list_paramameter(dmctx, ssid, neighboring.ssid, "string­", NULL, 0);
-		add_list_paramameter(dmctx, bssid, neighboring.bssid, "string­", NULL, 0);
-		add_list_paramameter(dmctx, channel, neighboring.channel, "unsignedInt­", NULL, 0);
-		add_list_paramameter(dmctx, frequency, neighboring.frequency, "string­", NULL, 0);
-		add_list_paramameter(dmctx, signal_stregth, neighboring.signal_strength, "int­", NULL, 0);
-		add_list_paramameter(dmctx, noise, neighboring.noise, "int­", NULL, 0);
+		dmasprintf(&ssid, "Result.%d.SSID", wifi_neighbor_count);
+		dmasprintf(&bssid, "Result.%d.BSSID", wifi_neighbor_count);
+		dmasprintf(&channel, "Result.%d.Channel", wifi_neighbor_count);
+		dmasprintf(&frequency, "Result.%d.OperatingFrequencyBand", wifi_neighbor_count);
+		dmasprintf(&signal_stregth, "Result.%d.SignalStrength", wifi_neighbor_count);
+		dmasprintf(&noise, "Result.%d.Noise", wifi_neighbor_count);
+
+		add_list_paramameter(dmctx, ssid, neighboring.ssid, "string", NULL, 0);
+		add_list_paramameter(dmctx, bssid, neighboring.bssid, "string", NULL, 0);
+		add_list_paramameter(dmctx, channel, neighboring.channel, "unsignedInt", NULL, 0);
+		add_list_paramameter(dmctx, frequency, neighboring.frequency, "string", NULL, 0);
+		add_list_paramameter(dmctx, signal_stregth, neighboring.signal_strength, "int", NULL, 0);
+		add_list_paramameter(dmctx, noise, neighboring.noise, "int", NULL, 0);
 	}
 }
 
@@ -362,7 +368,7 @@ static opr_ret_t fetch_neighboring_wifi_diagnostic(struct dmctx *dmctx, char *pa
 	json_object_object_foreach(res, key, val) {
 		fill_wireless_scan_results(dmctx, key);
 	}
-
+	wifi_neighbor_count = 0;
 	return SUCCESS;
 }
 

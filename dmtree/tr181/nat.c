@@ -304,7 +304,7 @@ int set_nat_interface_setting_interface(char *refparam, struct dmctx *ctx, void 
 				adm_entry_get_linker_value(ctx, pch, &iface);
 				if (iface) {
 					dmuci_add_list_value_by_section((struct uci_section *)data, "network", iface);
-					free(iface);
+					dmfree(iface);
 				}
 			}
 			return 0;

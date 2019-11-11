@@ -18,7 +18,6 @@
 #include "dmentry.h"
 #include "gre.h"
 
-
 /* *** Device.GRE. *** */
 DMOBJ tGREObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nexjsontobj, nextobj, leaf, linker, bbfdm_type*/
@@ -139,6 +138,7 @@ int browseGRETunnelInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_dat
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)p, gretun_inst) == DM_STOP)
 			break;
 	}
+	free_dmmap_config_dup_list(&dup_list);
 	return 0;
 }
 
@@ -148,10 +148,11 @@ int browseGREFilterInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_dat
 	return 0;
 }
 
-struct uci_section *has_tunnel_interface_route(char *interface){
+struct uci_section *has_tunnel_interface_route(char *interface)
+{
 	struct uci_section *s;
 
-	uci_foreach_option_eq("network", "route", "interface", interface, s){
+	uci_foreach_option_eq("network", "route", "interface", interface, s) {
 		return s;
 	}
 	return NULL;
@@ -159,11 +160,11 @@ struct uci_section *has_tunnel_interface_route(char *interface){
 
 int browseGRETunnelInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	char *greiface_inst= NULL, *greiface_inst_last= NULL;
+	char *greiface_inst= NULL, *greiface_inst_last= NULL, *ifname= NULL;
 	struct dmmap_dup *p, *dm= (struct dmmap_dup *)prev_data;
-	LIST_HEAD(dup_list);
-	char *ifname= NULL;
 	struct uci_section *s;
+
+	LIST_HEAD(dup_list);
 	dmasprintf(&ifname, "@%s", section_name(dm->config_section));
 	synchronize_specific_config_sections_with_dmmap_eq("network", "interface", "dmmap_network", "ifname", ifname, &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
@@ -174,6 +175,7 @@ int browseGRETunnelInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void 
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)p, greiface_inst) == DM_STOP)
 			break;
 	}
+	free_dmmap_config_dup_list(&dup_list);
 	return 0;
 }
 
@@ -241,7 +243,7 @@ int delObjGRETunnel(char *refparam, struct dmctx *ctx, void *data, char *instanc
 
 int addObjGREFilter(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
-	struct dmmap_dup *p, *dm= (struct dmmap_dup *)data;
+	struct dmmap_dup *dm = (struct dmmap_dup *)data;
 	return 0;
 }
 

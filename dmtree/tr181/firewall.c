@@ -677,14 +677,14 @@ int get_rule_icmp_type(char *refparam, struct dmctx *ctx, void *data, char *inst
 	dmuci_get_value_by_section_list((struct uci_section *)data, "icmp_type", &v);
 	if (v != NULL) {
 		uci_foreach_element(v, e) {
-			ptr= dmstrdup(*value);
-			free(*value);
+			ptr = dmstrdup(*value);
+			dmfree(*value);
 
 			if(strlen(ptr)==0)
 				dmasprintf(value, "%s", e->name);
-			else{
+			else {
 				dmasprintf(value, "%s %s", ptr, e->name);
-				free(ptr);
+				dmfree(ptr);
 			}
 		}
 	}

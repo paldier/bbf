@@ -78,7 +78,7 @@ int __dmasprintfjson(char **s, const char *format, ...)
 	va_start(arg,format);
 	ret = vsprintf(buf, format, arg);
 	va_end(arg);
-	*s = __dmstrdup(buf);
+	*s = __dmstrdupjson(buf);
 	if (*s == NULL) return -1;
 	return 0;	
 }

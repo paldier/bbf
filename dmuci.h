@@ -172,8 +172,9 @@ struct uci_section *dmuci_walk_section(char *package, char *stype, void *arg1, v
 struct uci_section *dmuci_walk_state_section(char *package, char *stype, void *arg1, void *arg2, int cmp , int (*filter)(struct uci_section *s, void *value), struct uci_section *prev_section, int walk);
 struct uci_section *dmuci_walk_section_bbfdm(char *package, char *stype, void *arg1, void *arg2, int cmp , int (*filter)(struct uci_section *s, void *value), struct uci_section *prev_section, int walk);
 char *dmuci_set_value_by_section_bbfdm(struct uci_section *s, char *option, char *value);
-
+int dmuci_delete_by_section_unnamed_bbfdm(struct uci_section *s, char *option, char *value);
 int dmuci_add_section_bbfdm(char *package, char *stype, struct uci_section **s, char **value);
+int dmuci_delete_bbfdm(char *package, char *section, char *option, char *value);
 int dmuci_add_state_section(char *package, char *stype, struct uci_section **s, char **value);
 char *dmuci_set_varstate_value(char *package, char *section, char *option, char *value);
 char *dmuci_set_value_bbfdm(char *package, char *section, char *option, char *value);

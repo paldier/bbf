@@ -56,6 +56,42 @@ static int get_stats_folder(char *folder_path, int *file_count, unsigned long *s
 	return 0;
 }
 
+void add_json_data_to_list(struct list_head *dup_list, char *name, char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5, const char *arg6)
+{
+	struct dm_json_parameter *dm_json_parameter;
+	dm_json_parameter = dmcallocjson(1, sizeof(struct dm_json_parameter));
+	list_add_tail(&dm_json_parameter->list, dup_list);
+	if(name) dm_json_parameter->name = dmstrdupjson(name);
+	if (arg1) dm_json_parameter->arg1 = dmstrdupjson(arg1);
+	if (arg2) dm_json_parameter->arg2 = dmstrdupjson(arg2);
+	if (arg3) dm_json_parameter->arg3 = dmstrdupjson(arg3);
+	if (arg4) dm_json_parameter->arg4 = dmstrdupjson(arg4);
+	if (arg5) dm_json_parameter->arg5 = dmstrdupjson(arg5);
+	if (arg6) dm_json_parameter->arg6 = dmstrdupjson(arg6);
+}
+
+void delete_json_data_from_list(struct dm_json_parameter *dm_json_parameter)
+{
+	list_del(&dm_json_parameter->list);
+	if (dm_json_parameter->name) dmfreejson(dm_json_parameter->name);
+	if (dm_json_parameter->arg1) dmfreejson(dm_json_parameter->arg1);
+	if (dm_json_parameter->arg2) dmfreejson(dm_json_parameter->arg2);
+	if (dm_json_parameter->arg3) dmfreejson(dm_json_parameter->arg3);
+	if (dm_json_parameter->arg4) dmfreejson(dm_json_parameter->arg4);
+	if (dm_json_parameter->arg5) dmfreejson(dm_json_parameter->arg5);
+	if (dm_json_parameter->arg6) dmfreejson(dm_json_parameter->arg6);
+	if (dm_json_parameter) dmfreejson(dm_json_parameter);
+}
+
+void free_json_data_from_list(struct list_head *dup_list)
+{
+	struct dm_json_parameter *dm_json_parameter;
+	while (dup_list->next != dup_list) {
+		dm_json_parameter = list_entry(dup_list->next, struct dm_json_parameter, list);
+		delete_json_data_from_list(dm_json_parameter);
+	}
+}
+
 int dm_browse_node_object_tree(DMNODE *parent_node, DMOBJ *entryobj)
 {
 	if (!entryobj)
@@ -273,42 +309,6 @@ int check_root_obj(struct dmctx *ctx, char *in_param_json, DMOBJ **root_entry)
 	return 0;
 }
 
-void add_json_data_to_list(struct list_head *dup_list, char *name, char *arg1, char *arg2, char *arg3, char *arg4, char *arg5, char *arg6)
-{
-	struct dm_json_parameter *dm_json_parameter;
-	dm_json_parameter = dmcallocjson(1, sizeof(struct dm_json_parameter));
-	list_add_tail(&dm_json_parameter->list, dup_list);
-	if(name) dm_json_parameter->name = dmstrdupjson(name);
-	if (arg1) dm_json_parameter->arg1 = dmstrdupjson(arg1);
-	if (arg2) dm_json_parameter->arg2 = dmstrdupjson(arg2);
-	if (arg3) dm_json_parameter->arg3 = dmstrdupjson(arg3);
-	if (arg4) dm_json_parameter->arg4 = dmstrdupjson(arg4);
-	if (arg5) dm_json_parameter->arg5 = dmstrdupjson(arg5);
-	if (arg6) dm_json_parameter->arg6 = dmstrdupjson(arg6);
-}
-
-void delete_json_data_from_list(struct dm_json_parameter *dm_json_parameter)
-{
-	list_del(&dm_json_parameter->list);
-	if (dm_json_parameter->name) dmfreejson(dm_json_parameter->name);
-	if (dm_json_parameter->arg1) dmfreejson(dm_json_parameter->arg1);
-	if (dm_json_parameter->arg2) dmfreejson(dm_json_parameter->arg2);
-	if (dm_json_parameter->arg3) dmfreejson(dm_json_parameter->arg3);
-	if (dm_json_parameter->arg4) dmfreejson(dm_json_parameter->arg4);
-	if (dm_json_parameter->arg5) dmfreejson(dm_json_parameter->arg5);
-	if (dm_json_parameter->arg6) dmfreejson(dm_json_parameter->arg6);
-	if (dm_json_parameter) dmfreejson(dm_json_parameter);
-}
-
-void free_json_data_from_list(struct list_head *dup_list)
-{
-	struct dm_json_parameter *dm_json_parameter;
-	while (dup_list->next != dup_list) {
-		dm_json_parameter = list_entry(dup_list->next, struct dm_json_parameter, list);
-		delete_json_data_from_list(dm_json_parameter);
-	}
-}
-
 int browse_obj(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	//UCI: arg1=type :: arg2=uci_file :: arg3=uci_section_type :: arg4=uci_dmmap_file :: arg5="" :: arg6=""
@@ -384,8 +384,8 @@ static int add_obj(char *refparam, struct dmctx *ctx, void *data, char **instanc
 		}
 
 		if(arg2 && arg3 && arg4) {
-			char *inst = NULL, *sect_name = NULL;
-			struct uci_section *section = NULL, *dmmap = NULL, *v;
+			char *inst = NULL, *sect_name = NULL, *v;
+			struct uci_section *section = NULL, *dmmap = NULL;
 
 			check_create_dmmap_package(arg4);
 			inst = get_last_instance_bbfdm(arg4, arg3, buf_instance);

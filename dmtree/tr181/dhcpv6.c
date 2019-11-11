@@ -273,31 +273,22 @@ inline int init_dhcpv6_args(struct dhcpv6_args *args, struct uci_section *s, cha
 /*#Device.DHCPv6.Client.{i}.!UCI:network/interface/dmmap_dhcpv6*/
 int browseDHCPv6ClientInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
 	struct dhcpv6_client_args dhcpv6_client_arg = {0};
 	json_object *res, *jobj;
-	char *instance, *instnbr = NULL, *proto= NULL, *ipv6addr;
+	char *instance, *instnbr = NULL, *ipv6addr;
 	LIST_HEAD(dup_list);
 
 	synchronize_specific_config_sections_with_dmmap_eq_no_delete("network", "interface", "dmmap_dhcpv6", "proto", "dhcpv6", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
-
 		dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", section_name(p->config_section), String}}, 1, &res);
-
-		if (res)
-		{
-
+		if (res) {
 			jobj = dmjson_select_obj_in_array_idx(res, 0, 1, "ipv6-address");
-
 			ipv6addr = dmjson_get_value(jobj, 1, "address");
-
 		}
 		dhcpv6_client_arg.dhcp_client_conf = p->config_section;
-
-		dhcpv6_client_arg.dhcp_client_dm= p->dmmap_section;
-		dhcpv6_client_arg.ip= strdup(ipv6addr?ipv6addr:"");
-
+		dhcpv6_client_arg.dhcp_client_dm = p->dmmap_section;
+		dhcpv6_client_arg.ip = dmstrdup(ipv6addr?ipv6addr:"");
 		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias, 3, p->dmmap_section, "bbf_dhcpv6client_instance", "bbf_dhcpv6client_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, &dhcpv6_client_arg, instance) == DM_STOP)
 			break;
@@ -408,10 +399,10 @@ int browseDHCPv6ServerPoolOptionInst(struct dmctx *dmctx, DMNODE *parent_node, v
 			if(length>2){
 				for(j=2; j<length; j++){
 					tmp=dmstrdup(optionvalue);
-					free(optionvalue);
+					dmfree(optionvalue);
 					optionvalue= NULL;
 					dmasprintf(&optionvalue, "%s,%s", tmp, tagvalue[j]);
-					free(tmp);
+					dmfree(tmp);
 					tmp= NULL;
 				}
 			}
@@ -422,9 +413,9 @@ int browseDHCPv6ServerPoolOptionInst(struct dmctx *dmctx, DMNODE *parent_node, v
 		dmuci_get_value_by_section_string(dmmap_sect, "option_tag", &v1);
 		dmuci_get_value_by_section_string(dmmap_sect, "option_value", &v2);
 		dhcp_client_opt_args.client_sect= curr_dhcp_args->dhcp_sec;
-		dhcp_client_opt_args.option_tag= strdup(v1);
-		dhcp_client_opt_args.value= strdup(v2);
-		dhcp_client_opt_args.opt_sect= dmmap_sect;
+		dhcp_client_opt_args.option_tag = dmstrdup(v1);
+		dhcp_client_opt_args.value = dmstrdup(v2);
+		dhcp_client_opt_args.opt_sect = dmmap_sect;
 		instance= handle_update_instance(1, dmctx, &instnbr, update_instance_alias_bbfdm, 3, dmmap_sect, "bbf_dhcpv6_servpool_option_instance", "bbf_dhcpv6_servpool_option_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, &dhcp_client_opt_args, instance) == DM_STOP)
 			break;

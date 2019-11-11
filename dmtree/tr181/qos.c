@@ -278,8 +278,6 @@ int get_linker_qos_queue(char *refparam, struct dmctx *dmctx, void *data, char *
 int browseQoSClassificationInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *wnum = NULL, *wnum_last = NULL;
-	char buf[12];
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 
@@ -315,8 +313,6 @@ int browseQoSPolicerInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_da
 int browseQoSQueueInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *wnum = NULL, *wnum_last = NULL;
-	char buf[12];
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 

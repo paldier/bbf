@@ -50,6 +50,7 @@
 static char *get_parameter_notification(struct dmctx *ctx, char *param);
 static int remove_parameter_notification(char *param);
 static int set_parameter_notification(struct dmctx *ctx, char *param,char *value);
+int dm_browse(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, void *data, char *instance);
 static int get_value_obj(DMOBJECT_ARGS);
 static int get_value_param(DMPARAM_ARGS);
 static int mobj_get_value_in_param(DMOBJECT_ARGS);

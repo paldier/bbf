@@ -1033,7 +1033,8 @@ struct uci_section *get_dup_section_in_dmmap_opt(char *dmmap_package, char *sect
 	return NULL;
 }
 
-struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* section_type, char*sect_name, char *opt_name, char* opt_value){
+struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* section_type, char*sect_name, char *opt_name, char* opt_value)
+{
 	struct uci_section *s;
 	char *v;
 
@@ -1304,7 +1305,19 @@ bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *s
 	return found;
 }
 
-void synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, struct list_head *dup_list)
+void add_sysfs_sectons_list_paramameter(struct list_head *dup_list, struct uci_section *dmmap_section, char *file_name, char* filepath)
+{
+	struct sysfs_dmsection *dmmap_sysfs;
+	struct list_head *ilist;
+
+	dmmap_sysfs = dmcalloc(1, sizeof(struct sysfs_dmsection));
+	list_add_tail(&dmmap_sysfs->list, dup_list);
+	dmmap_sysfs->dm = dmmap_section;
+	dmmap_sysfs->sysfs_folder_name= dmstrdup(file_name);
+	dmmap_sysfs->sysfs_folder_path= dmstrdup(filepath);
+}
+
+int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
 	FILE *fp;
@@ -1362,9 +1375,11 @@ void synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_packa
 			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
 		}
 	}
+	return 0;
 }
 
-void get_dmmap_section_of_config_section(char* dmmap_package, char* section_type, char *section_name, struct uci_section **dmmap_section){
+void get_dmmap_section_of_config_section(char* dmmap_package, char* section_type, char *section_name, struct uci_section **dmmap_section)
+{
 	struct uci_section* s;
 
 	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, "section_name", section_name, s){
@@ -1446,7 +1461,7 @@ void delete_sections_save_next_sections(char* dmmap_package, char *section_type,
 	char *v=NULL, *lsectname= NULL, *tmp= NULL;
 	int inst;
 
-	asprintf(&lsectname, "%s", section_name);
+	dmasprintf(&lsectname, "%s", section_name);
 
 	uci_path_foreach_sections(bbfdm, dmmap_package, section_type, s) {
 		dmuci_get_value_by_section_string(s, instancename, &v);
@@ -1454,15 +1469,15 @@ void delete_sections_save_next_sections(char* dmmap_package, char *section_type,
 		if(inst>instance){
 			dmuci_get_value_by_section_string(s, "section_name", &tmp);
 			add_dmmap_list_section(dup_list, lsectname, v);
-			free(lsectname);
+			dmfree(lsectname);
 			lsectname= NULL;
-			asprintf(&lsectname, "%s", tmp);
-			free(tmp);
+			dmasprintf(&lsectname, "%s", tmp);
+			dmfree(tmp);
 			tmp= NULL;
 		}
 	}
 
-	if(lsectname != NULL) free(lsectname);
+	if(lsectname != NULL) dmfree(lsectname);
 
 
 	uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
@@ -1735,7 +1750,7 @@ int command_exec_output_to_array(char *cmd, char **output, int *length)
 
 	/* Read the output line by line and store it in output array. */
 	while (fgets(out, sizeof(out)-1, fp) != NULL)
-		asprintf(&output[i++], "%s", out);
+		dmasprintf(&output[i++], "%s", out);
 
 	*length = i;
 
@@ -1813,7 +1828,7 @@ char* readFileContent(char *filepath)
 	long fsize = ftell(f);
 	fseek(f, 0, SEEK_SET); //same as rewind(f);
 
-	char *filecontent = malloc(fsize + 1);
+	char *filecontent = dmmalloc(fsize + 1);
 	fread(filecontent, 1, fsize, f);
 	fclose(f);
 
@@ -1834,16 +1849,16 @@ char* readFileContent(char *filepath)
 		j++;
 		dmasprintf(&str, "%s%c", tmp, filecontent[i]);
 		if(tmp){
-			free(tmp);
+			dmfree(tmp);
 			tmp= NULL;
 		}
 		tmp= dmstrdup(str);
 		if(str!=NULL){
-			free(str);
+			dmfree(str);
 			str= NULL;
 		}
 	}
-	res= (char *)malloc((j+1)*sizeof(char));
+	res= (char *)dmmalloc((j+1)*sizeof(char));
 	strcpy(res, tmp);
 	res[j]= 0;
 	return res;

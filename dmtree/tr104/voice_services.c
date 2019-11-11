@@ -148,7 +148,7 @@ DMLEAF tServicesVoiceServiceVoiceProfileSIPParams[] = {
 {"UserAgentTransport", &DMWRITE, DMT_STRING, get_sip_user_agent_transport, set_sip_user_agent_transport, NULL, NULL, BBFDM_BOTH},
 {"OutboundProxy", &DMWRITE, DMT_STRING, get_sip_outbound_proxy, set_sip_outbound_proxy, NULL, NULL, BBFDM_BOTH},
 {"OutboundProxyPort", &DMWRITE, DMT_UNINT, get_sip_outbound_proxy_port, set_sip_outbound_proxy_port, NULL, NULL, BBFDM_BOTH},
-{"RegistrationPeriod", &DMWRITE, DMT_UNINT, get_sip_registration_period, set_sip_registration_period, NULL, NULL, BBFDM_BOTH, BBFDM_BOTH},
+{"RegistrationPeriod", &DMWRITE, DMT_UNINT, get_sip_registration_period, set_sip_registration_period, NULL, NULL, BBFDM_BOTH},
 {"ReInviteExpires", &DMWRITE, DMT_UNINT, get_sip_re_invite_expires, set_sip_re_invite_expires, NULL, NULL, BBFDM_BOTH},
 {"RegisterExpires", &DMWRITE, DMT_UNINT, get_sip_re_invite_expires, set_sip_re_invite_expires, NULL, NULL, BBFDM_BOTH},
 {"RegisterRetryInterval", &DMWRITE, DMT_UNINT, get_sip_re_invite_expires, set_sip_re_invite_expires, NULL, NULL, BBFDM_BOTH},
@@ -486,8 +486,7 @@ int add_profile_object(char *refparam, struct dmctx *ctx, void *data, char **ins
 
 int delete_associated_line_instances(char *sip_id, char* profile_key)
 {
-	struct uci_section *s;
-	char *stmp;
+	struct uci_section *s = NULL, *stmp = NULL;
 
 	uci_foreach_option_eq("voice_client", "tel_line", "sip_account", sip_id, s) {
 		dmuci_set_value_by_section(s, "sip_account", "-");

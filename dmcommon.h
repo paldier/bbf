@@ -79,7 +79,6 @@ do { \
         if ((dir = opendir(path)) == NULL) return 0; \
         while ((ent = readdir (dir)) != NULL) \
 
-
 enum notification_enum {
 	notification_none,
 	notification_passive,
@@ -196,7 +195,8 @@ void synchronize_specific_config_sections_with_dmmap_eq_no_delete(char *package,
 void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *section_type, char *dmmap_package,char* option_name, char* option_value, struct list_head *dup_list);
 bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list);
 bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char* opt_diff_name, char* opt_diff_value, void* additional_attribute, struct list_head *dup_list);
-void synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, struct list_head *dup_list);
+void add_sysfs_sectons_list_paramameter(struct list_head *dup_list, struct uci_section *dmmap_section, char *file_name, char* filepath);
+int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, struct list_head *dup_list);
 void get_dmmap_section_of_config_section(char* dmmap_package, char* section_type, char *section_name, struct uci_section **dmmap_section);
 void get_dmmap_section_of_config_section_eq(char* dmmap_package, char* section_type, char *opt, char* value, struct uci_section **dmmap_section);
 void get_config_section_of_dmmap_section(char* package, char* section_type, char *section_name, struct uci_section **config_section);
@@ -212,6 +212,7 @@ char *get_device(char *ifname);
 int is_elt_exit_in_str_list(char *str_list, char *elt);
 void add_elt_to_str_list(char **str_list, char *elt);
 void remove_elt_from_str_list(char **iface_list, char *ifname);
+struct uci_section *get_dup_section_in_dmmap_opt(char *dmmap_package, char *section_type, char *opt_name, char *opt_value);
 struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* section_type, char*sect_name, char *opt_name, char* opt_value);
 int is_array_elt_exist(char **str_array, char *str, int length);
 int get_shift_time_time(int shift_time, char *local_time, int size);
@@ -225,4 +226,5 @@ struct uci_section *is_dmmap_section_exist_eq(char* package, char* section, char
 int isfileexist(char *filepath);
 int isfolderexist(char *folderpath);
 char* readFileContent(char *filepath);
+void writeFileContent(const char *filepath, const char *data);
 #endif

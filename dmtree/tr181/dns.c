@@ -317,8 +317,8 @@ int add_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char **i
 
 int delete_client_server(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct uci_section *s = NULL, *ss = NULL;
-	char *interface, *ip, *str, *stmp;
+	struct uci_section *s = NULL, *ss = NULL, *stmp = NULL;
+	char *interface, *ip, *str;
 	struct uci_list *v;
 	struct uci_element *e, *tmp;
 
@@ -354,8 +354,8 @@ int delete_client_server(char *refparam, struct dmctx *ctx, void *data, char *in
 
 int delete_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct uci_section *s = NULL, *ss = NULL;
-	char *interface, *ip, *str, *stmp;
+	struct uci_section *s = NULL, *ss = NULL, *stmp = NULL;
+	char *interface, *ip, *str;
 	struct uci_list *v;
 	struct uci_element *e, *tmp;
 

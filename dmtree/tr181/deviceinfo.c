@@ -18,10 +18,10 @@
 #include <sys/klog.h>
 #include "dmbbf.h"
 #include "dmuci.h"
-#include "dmubus.h"
 #include "dmcommon.h"
 #include "deviceinfo.h"
 #include "dmjson.h"
+#include "dmubus.h"
 
 /* *** Device.DeviceInfo. *** */
 DMOBJ tDeviceInfoObj[] = {
@@ -133,7 +133,6 @@ inline int init_process_args(struct process_args *args, char *pid, char *command
 	args->cputime= cputime;
 	return 0;
 }
-
 
 /*
  *DeviceInfo. functions
@@ -606,7 +605,8 @@ int get_vlf_persistent(char *refparam, struct dmctx *ctx, void *data, char *inst
 }
 
 /*#Device.DeviceInfo.MemoryStatus.Total!UBUS:router.system/info//memoryKB.total*/
-int get_memory_status_total(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_memory_status_total(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	json_object *res;
 
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
@@ -615,7 +615,8 @@ int get_memory_status_total(char* refparam, struct dmctx *ctx, void *data, char 
 }
 
 /*#Device.DeviceInfo.MemoryStatus.Free!UBUS:router.system/info//memoryKB.free*/
-int get_memory_status_free(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_memory_status_free(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	json_object *res;
 
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
@@ -624,7 +625,8 @@ int get_memory_status_free(char* refparam, struct dmctx *ctx, void *data, char *
 }
 
 /*#Device.DeviceInfo.ProcessStatus.CPUUsage!UBUS:router.system/info//system.cpu_per*/
-int get_process_cpu_usage(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_process_cpu_usage(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	json_object *res;
 
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
@@ -632,37 +634,42 @@ int get_process_cpu_usage(char* refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
-int get_process_number_of_entries(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_process_number_of_entries(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	json_object *res,  *processes;
 	int nbre_process = 0;
 
 	dmubus_call("router.system", "processes", UBUS_ARGS{{}}, 0, &res);
-	processes = json_object_object_get(res, "processes");
+	json_object_object_get_ex(res, "processes", &processes);
 	nbre_process= json_object_array_length(processes);
 	dmasprintf(value,"%d",nbre_process);
 	return 0;
 }
 
-int get_process_pid(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_process_pid(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct process_args *proc_args= (struct process_args*) data;
 	*value= proc_args->pid;
 	return 0;
 }
 
-int get_process_command(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_process_command(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct process_args *proc_args= (struct process_args*) data;
 	*value= proc_args->command;
 	return 0;
 }
 
-int get_process_size(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_process_size(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct process_args *proc_args= (struct process_args*) data;
 	if(proc_args->size!=NULL) *value= proc_args->size;
 	else *value= "0";
 	return 0;
 }
 
-int get_process_priority(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_process_priority(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct process_args *proc_args= (struct process_args*) data;
 	long val;
 
@@ -675,13 +682,15 @@ int get_process_priority(char* refparam, struct dmctx *ctx, void *data, char *in
 	return 0;
 }
 
-int get_process_cpu_time(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_process_cpu_time(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct process_args *proc_args= (struct process_args*) data;
 	if(proc_args->cputime!=NULL) *value= proc_args->cputime;
 	return 0;
 }
 
-int get_process_state(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_process_state(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct process_args *proc_args= (struct process_args*) data;
 	if(strchr(proc_args->state, 'S')!=NULL) *value="Sleeping";
 	else if(strchr(proc_args->state, 'R')!=NULL) *value= "Running";
@@ -693,15 +702,16 @@ int get_process_state(char* refparam, struct dmctx *ctx, void *data, char *insta
 	return 0;
 }
 
-int browsePocessEntriesInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance){
+int browsePocessEntriesInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+{
 	json_object *res,  *processes, *fields, *process;
 	char *pid_field, *command_field, *state_field, *mem_size_field, *cpu_time_field, *priority_field, *pid, *command, *mem_size, *state, *cpu_time, *priority, *idx, *idx_last= NULL;
 	int i, id=0;
 	struct process_args proc_args={};
 
 	dmubus_call("router.system", "processes", UBUS_ARGS{{}}, 0, &res);
-	fields = json_object_object_get(res, "fields");
-	processes = json_object_object_get(res, "processes");
+	json_object_object_get_ex(res, "fields", &fields);
+	json_object_object_get_ex(res, "processes", &processes);
 	size_t nbre_process = json_object_array_length(processes);
 	pid_field = (char *)dmjson_get_value_in_array_idx(fields, 0, 0, NULL);
 	command_field = (char *)dmjson_get_value_in_array_idx(fields, 7, 0, NULL);

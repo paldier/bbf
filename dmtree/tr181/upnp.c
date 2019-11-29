@@ -36,8 +36,11 @@ DMLEAF tUPnPDeviceParams[] = {
 /*#Device.UPnP.Device.Enable!UCI:upnpd/upnpd,config/enabled*/
 int get_upnp_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_option_value_string("upnpd","config","enabled", value);
-	if ((*value)[0] == '\0') {
+	pid_t pid = get_pid("miniupnpd");
+	if (pid < 0) {
+		*value = "0";
+	}
+	else {
 		*value = "1";
 	}
 	return 0;
@@ -54,10 +57,13 @@ int set_upnp_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value("upnpd", "config", "enabled", "");
-			else 
+			if(b){
+				dmuci_set_value("upnpd", "config", "enabled", "1");
+				dmuci_set_value("upnpd", "config", "enable_natpmp", "1");
+				dmuci_set_value("upnpd", "config", "enable_upnp", "1");
+			} else {
 				dmuci_set_value("upnpd", "config", "enabled", "0");
+			}
 			return 0;
 	}
 	return 0;

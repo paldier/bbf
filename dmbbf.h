@@ -47,7 +47,7 @@
 #endif
 
 #ifndef FREE
-#define FREE(x) do { free(x); x = NULL; } while (0)
+#define FREE(x) do { if(x) {free(x); x = NULL;} } while (0)
 #endif
 
 extern struct dm_permession_s DMREAD;

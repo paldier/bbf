@@ -1,6 +1,6 @@
 #!/bin/sh
 # Copyright (C) 2019 iopsys Software Solutions AB
-# 	Author: AMIN Ben Ramdhane <amin.benramdhane@pivasoftware.com>
+# Author: AMIN Ben Ramdhane <amin.benramdhane@pivasoftware.com>
 
 
 UCI_CONFIG_DIR="/etc/config/"

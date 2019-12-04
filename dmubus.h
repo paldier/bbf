@@ -1,14 +1,14 @@
 /*
- *	This program is free software: you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, either version 2 of the License, or
- *	(at your option) any later version.
+ * Copyright (C) 2019 iopsys Software Solutions AB
  *
- *	Copyright (C) 2019 iopsys Software Solutions AB
- *		Author: Imen Bhiri <imen.bhiri@pivasoftware.com>
- *		Author: Feten Besbes <feten.besbes@pivasoftware.com>
- *		Author: Mohamed Kallel <mohamed.kallel@pivasoftware.com>
- *		Author: Anis Ellouze <anis.ellouze@pivasoftware.com>
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation
+ *
+ *	Author: Imen Bhiri <imen.bhiri@pivasoftware.com>
+ *	Author: Feten Besbes <feten.besbes@pivasoftware.com>
+ *	Author: Mohamed Kallel <mohamed.kallel@pivasoftware.com>
+ *	Author: Anis Ellouze <anis.ellouze@pivasoftware.com>
  */
 
 #ifndef __UBUS_H

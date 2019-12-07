@@ -1444,7 +1444,6 @@ int is_section_unnamed(char *section_name)
         return 1;
 }
 
-
 void add_dmmap_list_section(struct list_head *dup_list, char* section_name, char* instance)
 {
 	struct dmmap_sect *dmsect;

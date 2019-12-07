@@ -162,10 +162,18 @@ static inline json_object *ubus_call_req(char *obj, char *method, struct ubus_ar
 		sprintf(p, "{");
 		for (i = 0; i < u_args_size; i++) {
 			p += strlen(p);
-			if (i == 0)
-				sprintf(p, "\"%s\": \"%s\"", u_args[i].key, u_args[i].val);
-			else
-				sprintf(p, ", \"%s\": \"%s\"", u_args[i].key, u_args[i].val);
+			if (i == 0){
+				if(u_args[i].type != Integer)
+					sprintf(p, "\"%s\": \"%s\"", u_args[i].key, u_args[i].val);
+				else
+					sprintf(p, "\"%s\": %s", u_args[i].key, u_args[i].val);
+			}
+			else{
+				if(u_args[i].type != Integer)
+					sprintf(p, ", \"%s\": \"%s\"", u_args[i].key, u_args[i].val);
+				else
+					sprintf(p, ", \"%s\": %s", u_args[i].key, u_args[i].val);
+			}
 		}
 		p += strlen(p);
 		sprintf(p, "}");

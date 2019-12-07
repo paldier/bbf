@@ -2776,7 +2776,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": true
+					"write": true,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].status"
+							}
+						}
+					]
 				}, 
 				"Status": {
 					"type": "string", 
@@ -2790,6 +2801,17 @@
 						"Up", 
 						"Error", 
 						"Disabled"
+					],
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].status"
+							}
+						}
 					]
 				}, 
 				"Reset": {
@@ -2816,7 +2838,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].name"
+							}
+						}
+					]
 				}, 
 				"Type": {
 					"type": "string", 
@@ -2825,7 +2858,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].type"
+							}
+						}
+					]
 				}, 
 				"InitialRunLevel": {
 					"type": "unsignedInt", 
@@ -2884,7 +2928,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].vendor"
+							}
+						}
+					]
 				}, 
 				"Version": {
 					"type": "string", 
@@ -2893,7 +2948,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].version"
+							}
+						}
+					]
 				}, 
 				"ParentExecEnv": {
 					"type": "string", 
@@ -2915,7 +2981,18 @@
 					}, 
 					"unit": "kilobytes", 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].allocateddiskspace"
+							}
+						}
+					]
 				}, 
 				"AvailableDiskSpace": {
 					"type": "int", 
@@ -2928,7 +3005,18 @@
 					}, 
 					"unit": "kilobytes", 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].availablediskspace"
+							}
+						}
+					]
 				}, 
 				"AllocatedMemory": {
 					"type": "int", 
@@ -2941,7 +3029,18 @@
 					}, 
 					"unit": "kilobytes", 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].allocatedmemory"
+							}
+						}
+					]
 				}, 
 				"AvailableMemory": {
 					"type": "int", 
@@ -2954,7 +3053,18 @@
 					}, 
 					"unit": "kilobytes", 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "environment", 
+								"args": {}, 
+								"key": "environment[i-1].availablememory"
+							}
+						}
+					]
 				}, 
 				"ActiveExecutionUnits": {
 					"type": "string", 
@@ -2990,7 +3100,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "du_list", 
+								"args": {}, 
+								"key": "deployment_unit[i-1].uuid"
+							}
+						}
+					]
 				}, 
 				"DUID": {
 					"type": "string", 
@@ -2999,7 +3120,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "du_list", 
+								"args": {}, 
+								"key": "deployment_unit[i-1].duid"
+							}
+						}
+					]
 				}, 
 				"Alias": {
 					"type": "string", 
@@ -3017,7 +3149,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "du_list", 
+								"args": {}, 
+								"key": "deployment_unit[i-1].name"
+							}
+						}
+					]
 				}, 
 				"Status": {
 					"type": "string", 
@@ -3051,7 +3194,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "du_list", 
+								"args": {}, 
+								"key": "deployment_unit[i-1].url"
+							}
+						}
+					]
 				}, 
 				"Description": {
 					"type": "string", 
@@ -3060,7 +3214,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "du_list", 
+								"args": {}, 
+								"key": "deployment_unit[i-1].description"
+							}
+						}
+					]
 				}, 
 				"Vendor": {
 					"type": "string", 
@@ -3069,7 +3234,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "du_list", 
+								"args": {}, 
+								"key": "deployment_unit[i-1].vendor"
+							}
+						}
+					]
 				}, 
 				"Version": {
 					"type": "string", 
@@ -3078,7 +3254,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "du_list", 
+								"args": {}, 
+								"key": "deployment_unit[i-1].version"
+							}
+						}
+					]
 				}, 
 				"VendorLogList": {
 					"type": "string", 
@@ -3114,7 +3301,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "du_list", 
+								"args": {}, 
+								"key": "deployment_unit[i-1].environment"
+							}
+						}
+					]
 				}
 			}, 
 			"Device.SoftwareModules.ExecutionUnit.{i}.": {
@@ -3132,7 +3330,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "eu_list", 
+								"args": {}, 
+								"key": "execution_unit[i-1].euid"
+							}
+						}
+					]
 				}, 
 				"Alias": {
 					"type": "string", 
@@ -3150,7 +3359,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "eu_list", 
+								"args": {}, 
+								"key": "execution_unit[i-1].name"
+							}
+						}
+					]
 				}, 
 				"ExecEnvLabel": {
 					"type": "string", 
@@ -3159,7 +3379,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "eu_list", 
+								"args": {}, 
+								"key": "execution_unit[i-1].name"
+							}
+						}
+					]
 				}, 
 				"Status": {
 					"type": "string", 
@@ -3243,7 +3474,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "eu_list", 
+								"args": {}, 
+								"key": "execution_unit[i-1].vendor"
+							}
+						}
+					]
 				}, 
 				"Version": {
 					"type": "string", 
@@ -3252,7 +3494,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "eu_list", 
+								"args": {}, 
+								"key": "execution_unit[i-1].version"
+							}
+						}
+					]
 				}, 
 				"Description": {
 					"type": "string", 
@@ -3261,7 +3514,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "eu_list", 
+								"args": {}, 
+								"key": "execution_unit[i-1].description"
+							}
+						}
+					]
 				}, 
 				"DiskSpaceInUse": {
 					"type": "int", 
@@ -3274,7 +3538,18 @@
 					}, 
 					"unit": "kilobytes", 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "eu_list", 
+								"args": {}, 
+								"key": "execution_unit[i-1].disk_space"
+							}
+						}
+					]
 				}, 
 				"MemoryInUse": {
 					"type": "int", 
@@ -3287,7 +3562,18 @@
 					}, 
 					"unit": "kilobytes", 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "eu_list", 
+								"args": {}, 
+								"key": "execution_unit[i-1].memory_space"
+							}
+						}
+					]
 				}, 
 				"References": {
 					"type": "string", 
@@ -3340,7 +3626,18 @@
 						"usp"
 					], 
 					"read": true, 
-					"write": false
+					"write": false,
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "softwaremanagement", 
+								"method": "eu_list", 
+								"args": {}, 
+								"key": "execution_unit[i-1].environment"
+							}
+						}
+					]
 				}, 
 				"Device.SoftwareModules.ExecutionUnit.{i}.Extensions.": {
 					"type": "object", 

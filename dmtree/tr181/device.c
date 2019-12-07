@@ -23,7 +23,6 @@
 #include "x_iopsys_eu_logincfg.h"
 #include "x_iopsys_eu_power_mgmt.h"
 #include "x_iopsys_eu_syslog.h"
-#include "softwaremodules.h"
 #include "xmpp.h"
 #include "x_iopsys_eu_owsd.h"
 #include "x_iopsys_eu_dropbear.h"
@@ -57,6 +56,7 @@
 #endif
 #ifdef BBF_TR157
 #include "bulkdata.h"
+#include "softwaremodules.h"
 #endif
 
 /* *** BBFDM *** */
@@ -88,7 +88,6 @@ DMOBJ tRoot_181_Obj[] = {
 {CUSTOM_PREFIX"LoginCfg", &DMREAD, NULL, NULL, NULL, NULL,NULL, &DMNONE, NULL, NULL, tSe_LoginCfgParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"PowerManagement", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, NULL, tSe_PowerManagementParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"SyslogCfg", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, NULL, tSe_SyslogCfgParam, NULL, BBFDM_BOTH},
-{"SoftwareModules", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, tSoftwareModulesObj, NULL, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Owsd", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, XIopsysEuOwsdObj, XIopsysEuOwsdParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Dropbear", &DMWRITE, add_dropbear_instance, delete_dropbear_instance, NULL, browseXIopsysEuDropbear, NULL, &DMNONE, NULL, NULL, X_IOPSYS_EU_DropbearParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Buttons", &DMREAD, NULL, NULL, NULL, browseXIopsysEuButton, NULL, &DMNONE, NULL, NULL, X_IOPSYS_EU_ButtonParams, NULL, BBFDM_BOTH},
@@ -118,6 +117,7 @@ DMOBJ tRoot_181_Obj[] = {
 {"XMPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tXMPPObj, tXMPPParams, NULL, BBFDM_BOTH},
 #ifdef BBF_TR157
 {"BulkData", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataObj, tBulkDataParams, NULL, BBFDM_BOTH},
+{"SoftwareModules", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, tSoftwareModulesObj, tSoftwareModulesParams, NULL, BBFDM_BOTH},
 #endif
 {0}
 };

@@ -22,7 +22,6 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/device.c					\
 	../dmtree/tr181/deviceinfo.c				\
 	../dmtree/tr181/managementserver.c			\
-	../dmtree/tr181/softwaremodules.c			\
 	../dmtree/tr181/times.c						\
 	../dmtree/tr181/upnp.c						\
 	../dmtree/tr181/x_iopsys_eu_ice.c 			\
@@ -73,7 +72,8 @@ endif
 
 if BBF_TR157
 libbbfdm_la_SOURCES +=							\
-	../dmtree/tr157/bulkdata.c
+	../dmtree/tr157/bulkdata.c 					\
+	../dmtree/tr157/softwaremodules.c
 endif
 
 if BBF_TR064

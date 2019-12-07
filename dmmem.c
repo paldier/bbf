@@ -125,7 +125,7 @@ const char *file, const char *func, int line,
 char **s, const char *format, ...
 )
 {
-	char buf[512];
+	char buf[2048];
 	va_list arg;
 	int ret;
 	va_start(arg,format);
@@ -148,7 +148,7 @@ const char *file, const char *func, int line,
 char **s, char *obj, char *lastname
 )
 {
-	char buf[512];
+	char buf[2048];
 	int olen = strlen(obj);
 	memcpy(buf, obj, olen);
 	int llen = strlen(lastname) + 1;

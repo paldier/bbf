@@ -175,7 +175,8 @@ int browseSoftwareModulesDeploymentUnitInst(struct dmctx *dmctx, DMNODE *parent_
 					break;
 			}
 			if (incr != 100) break;
-		}
+		} else
+			break;
 	}
 	return 0;
 }
@@ -884,7 +885,8 @@ int get_SoftwareModulesExecutionUnit_References(char *refparam, struct dmctx *ct
 				}
 			}
 			if (incr != 100) break;
-		}
+		} else
+			break;
 	}
 	return 0;
 }
@@ -985,7 +987,8 @@ void get_deployment_unit_name_version(char *uuid, char **name, char **version, c
 				}
 			}
 			if (incr != 100) break;
-		}
+		} else
+			break;
 	}
 }
 
@@ -1009,8 +1012,8 @@ char *get_softwaremodules_uuid(char *url)
 				}
 			}
 			if (incr != 100) break;
-		}
-
+		} else
+			break;
 	}
 	return uuid;
 }
@@ -1035,7 +1038,8 @@ char *get_softwaremodules_url(char *uuid)
 				}
 			}
 			if (incr != 100) break;
-		}
+		} else
+			break;
 	}
 	return url;
 }

@@ -409,7 +409,7 @@ int set_GRETunnel_Alias(char *refparam, struct dmctx *ctx, void *data, char *ins
 	struct uci_section *dmmap_section;
 	struct dmmap_dup *dm= (struct dmmap_dup *)data;
 
-	get_dmmap_section_of_config_section("dmmap_network", "intarface", section_name(dm->config_section), &dmmap_section);
+	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(dm->config_section), &dmmap_section);
 	switch (action)	{
 		case VALUECHECK:
 			break;

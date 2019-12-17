@@ -1929,7 +1929,7 @@ int get_line_sip_uri(char *refparam, struct dmctx *ctx, void *data, char *instan
 
 	dmuci_get_value_by_section_string(telargs->sip_section, "domain", &domain);
 	dmuci_get_value_by_section_string(telargs->sip_section, "user", &user);
-	if (user && domain)
+	if (user && user[0] != '\0' && domain && domain[0] != '\0')
 		dmasprintf(value, "%s@%s", user, domain); // MEM WILL BE FREED IN DMMEMCLEAN
 	else
 		*value = "";

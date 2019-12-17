@@ -1288,7 +1288,6 @@ int get_WiFiRadioStats_Noise(char *refparam, struct dmctx *ctx, void *data, char
 	if(res)
 		*value = dmjson_get_value(res, 1, "noise");
 	return 0;
-	return 0;
 }
 
 /*#Device.WiFi.SSID.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
@@ -3498,7 +3497,7 @@ int browseWifiNeighboringWiFiDiagnosticResultInst(struct dmctx *dmctx, DMNODE *p
 				frequency=dmjson_get_value(neighboring_wifi_obj, 1, "frequency");
 				if(frequency!=NULL && strlen(frequency)>0)
 					dmasprintf(&(cur_wifi_neighboring_diagnostic_args.operatingfrequencyband),dmjson_get_value(neighboring_wifi_obj, 1, "frequency"));
-				noise=dmjson_get_value(neighboring_wifi_obj, 1, "noise");
+				noise=dmjson_get_value(neighboring_wifi_obj, 1, "snr");
 				if(noise!=NULL && strlen(noise)>0)
 					cur_wifi_neighboring_diagnostic_args.noise= atoi(noise);
 				else

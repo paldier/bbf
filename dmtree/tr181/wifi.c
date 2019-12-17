@@ -691,7 +691,8 @@ int get_radio_operating_channel_bandwidth(char *refparam, struct dmctx *ctx, voi
 	json_object *res;
 	char *wlan_name;
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "bandwidth", value);
-	if ((*value)[0] == '\0') {
+
+	if (value[0] == NULL) {
 		wlan_name = section_name(((struct wifi_radio_args *)data)->wifi_radio_sec);
 		dmubus_call("router.wireless", "status", UBUS_ARGS{{"vif", wlan_name, String}}, 1, &res);
 		DM_ASSERT(res, *value = "");
@@ -1695,8 +1696,7 @@ int get_WiFiAccessPoint_AllowedMACAddress(char *refparam, struct dmctx *ctx, voi
 
 int set_WiFiAccessPoint_AllowedMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	size_t length;
-	int i;
+	size_t length, i;
 	char **arr;
 	switch (action)	{
 		case VALUECHECK:

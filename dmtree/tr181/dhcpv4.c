@@ -1852,11 +1852,13 @@ int set_DHCPv4Client_PassthroughDHCPPool(char *refparam, struct dmctx *ctx, void
 /*#Device.DHCPv4.Client.{i}.SentOptionNumberOfEntries!UCI:network/interface,@i-1/sendopts*/
 int get_DHCPv4Client_SentOptionNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
+	struct dhcp_client_args* dhcp_client_args= (struct dhcp_client_args*)data;
 	char *v = NULL;
 	size_t length;
 
-	if (((struct dhcp_client_args *)data)->dhcp_client_conf != NULL)
-		dmuci_get_value_by_section_string(((struct dhcp_client_args *)data)->dhcp_client_conf, "sendopts", &v);
+	if(dhcp_client_args->dhcp_client_conf != NULL)
+		dmuci_get_value_by_section_string(dhcp_client_args->dhcp_client_conf, "sendopts", &v);
+
 	if (v == NULL) {
 		*value = "0";
 		return 0;
@@ -2102,6 +2104,7 @@ int get_DHCPv4ClientReqOption_Tag(char *refparam, struct dmctx *ctx, void *data,
 int set_DHCPv4ClientReqOption_Tag(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *pch, *spch, *list, *v;
+	size_t length;
 
 	switch (action)	{
 		case VALUECHECK:
@@ -2520,8 +2523,7 @@ int set_DHCPv4RelayForwarding_VendorClassIDMode(char *refparam, struct dmctx *ct
 int get_DHCPv4RelayForwarding_Chaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *mac, **macarray, *res = NULL, *tmp = "";
-	size_t length;
-	int i;
+	size_t length, i;
 
 	if (((struct dhcp_client_args *)data)->macclassifier == NULL) {
 		*value = "";
@@ -2564,8 +2566,7 @@ int set_DHCPv4RelayForwarding_Chaddr(char *refparam, struct dmctx *ctx, void *da
 int get_DHCPv4RelayForwarding_ChaddrMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *mac, **macarray, *res = NULL, *tmp = "";
-	size_t length;
-	int i;
+	size_t length, i;
 
 	if (((struct dhcp_client_args *)data)->macclassifier == NULL) {
 		*value= "";
@@ -2974,8 +2975,7 @@ int browseDHCPv4ClientSentOptionInst(struct dmctx *dmctx, DMNODE *parent_node, v
 	struct uci_section *dmmap_sect;
 	struct dhcp_client_option_args dhcp_client_opt_args = {0};
 	char *instance, *instnbr = NULL, *v1, *v2, **sentopts = NULL, **buf = NULL, *tmp, *optionvalue, *v = NULL;
-	size_t length = 0, lgh2;
-	int i, j;
+	size_t length = 0, lgh2, i, j;
 
 	if (dhcp_client_args->dhcp_client_conf != NULL)
 		dmuci_get_value_by_section_string(dhcp_client_args->dhcp_client_conf, "sendopts", &v);
@@ -3024,8 +3024,7 @@ int browseDHCPv4ClientReqOptionInst(struct dmctx *dmctx, DMNODE *parent_node, vo
 	struct uci_section *dmmap_sect;
 	struct dhcp_client_option_args dhcp_client_opt_args = {0};
 	char *instance, *instnbr = NULL, *v1, **reqtopts = NULL, *v = NULL;
-	size_t length = 0;
-	int i;
+	size_t length = 0, i, j;
 
 	if (dhcp_client_args->dhcp_client_conf != NULL)
 		dmuci_get_value_by_section_string(dhcp_client_args->dhcp_client_conf, "reqopts", &v);
@@ -3060,8 +3059,7 @@ int browseDHCPv4ServerPoolOptionInst(struct dmctx *dmctx, DMNODE *parent_node, v
 	struct dhcp_args *curr_dhcp_args = (struct dhcp_args*)prev_data;
 	struct uci_section *dmmap_sect;
 	char **tagvalue = NULL, *instance, *instnbr = NULL, *optionvalue = NULL, *tmp, *v1, *v2, *v;
-	size_t length;
-	int j;
+	size_t length, j;
 	struct dhcp_client_option_args dhcp_client_opt_args = {0};
 
 	dmuci_get_value_by_section_list(curr_dhcp_args->dhcp_sec, "dhcp_option", &dhcp_options_list);
@@ -3111,8 +3109,7 @@ char *get_dhcp_network_from_relay_list(char *net_list)
 {
 	struct uci_section *s;
 	char **net_list_arr, *v;
-	int i;
-	size_t length;
+	size_t length, i;
 
 	net_list_arr = strsplit(net_list, " ", &length);
 	uci_foreach_sections("network", "interface", s) {

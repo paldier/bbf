@@ -594,13 +594,13 @@ char *update_instance_alias(int action, char **last_inst, void *argv[])
 char *update_instance_without_section(int action, char **last_inst, void *argv[])
 {
 	char *instance, buf[64] = {0};
-	int instnbr = (int) argv[0];
+	long instnbr = (long) argv[0];
 
 	if (action == INSTANCE_MODE_ALIAS) {
-		snprintf(buf, sizeof(buf), "[cpe-%d]", instnbr);
+		sprintf(buf, "[cpe-%ld]", instnbr);
 		instance = dmstrdup(buf);
 	} else {
-		snprintf(buf, sizeof(buf), "%d", instnbr);
+		sprintf(buf, "%ld", instnbr);
 		instance = dmstrdup(buf);
 	}
 	return instance;

@@ -372,8 +372,7 @@ int browseDHCPv6ServerPoolOptionInst(struct dmctx *dmctx, DMNODE *parent_node, v
 	struct dhcpv6_args *curr_dhcp_args = (struct dhcpv6_args*)prev_data;
 	struct uci_section *dmmap_sect;
 	char **tagvalue = NULL, *instance, *instnbr = NULL, *optionvalue= NULL, *tmp, *v1, *v2, *v;
-	size_t length;
-	int j;
+	size_t length, j;
 	struct dhcpv6_client_option_args dhcp_client_opt_args = {0};
 
 	dmuci_get_value_by_section_list(curr_dhcp_args->dhcp_sec, "dhcp_option", &dhcp_options_list);
@@ -1418,8 +1417,7 @@ int get_DHCPv6ServerPool_SourceAddress(char *refparam, struct dmctx *ctx, void *
 {
 	struct uci_section *macaddrclassifier;
 	char *mac, **macarray, *res = NULL, *tmp = "";
-	int i;
-	size_t length;
+	size_t length, i;
 
 	macaddrclassifier = get_dhcpv6_classifier("mac", ((struct dhcpv6_args *)data)->interface);
 	if (macaddrclassifier == NULL) {
@@ -1463,8 +1461,7 @@ int get_DHCPv6ServerPool_SourceAddressMask(char *refparam, struct dmctx *ctx, vo
 {
 	struct uci_section *macaddrclassifier;
 	char *mac, **macarray, *res = NULL, *tmp = "";
-	int i;
-	size_t length;
+	size_t length, i;
 
 	macaddrclassifier = get_dhcpv6_classifier("mac", ((struct dhcpv6_args *)data)->interface);
 	if (macaddrclassifier == NULL) {

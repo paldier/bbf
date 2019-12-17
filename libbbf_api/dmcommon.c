@@ -11,6 +11,30 @@
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
+#define _XOPEN_SOURCE  /* for strptime */
+#include <time.h>
+#include <arpa/inet.h>
+#include <glob.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <uci.h>
+#include <ctype.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <net/if_arp.h>
+
+#include "dmbbf.h"
+#include "dmuci.h"
+#include "dmubus.h"
 #include "dmcommon.h"
 
 char *array_notifcation_char[__MAX_notification] = {

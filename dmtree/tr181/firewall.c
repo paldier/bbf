@@ -1201,9 +1201,8 @@ int set_rule_source_port_range_max(char *refparam, struct dmctx *ctx, void *data
 
 int set_rule_icmp_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	int i;
-	size_t length;
 	char **devices = NULL;
+	size_t length, i;
 
 	switch (action) {
 		case VALUECHECK:

@@ -354,12 +354,20 @@ int addObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, char **ins
 
 int delObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
+	char *sect_name= NULL;
+	struct uci_section *s = NULL;
 	switch (del_action) {
 		case DEL_INST:
-			dmuci_delete_by_section(((struct dm_args *)data)->section, NULL, NULL);
+			dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "section_name", &sect_name);
+			get_config_section_of_dmmap_section("network", "interface", sect_name, &s);
+			if(!s) {
+				dmuci_delete_by_section(((struct dm_args *)data)->section, NULL, NULL);
+				return 0;
+			}
+			return FAULT_9005;
 			break;
 		case DEL_ALL:
-			DMUCI_DEL_SECTION(bbfdm, DMMAP, "link", NULL, NULL);
+			return FAULT_9005;
 			break;
 	}
 

@@ -477,12 +477,14 @@ int set_instance_mode(char *refparam, struct dmctx *ctx, void *data, char *insta
  * STUN parameters
  */
 /*#Device.ManagementServer.UDPConnectionRequestAddress!UCI:cwmp_stun/stun,stun/crudp_address*/
-int get_upd_cr_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_upd_cr_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	dmuci_get_varstate_string("cwmp_stun", "stun", "crudp_address", value);
 	return 0;
 }
 
-int get_stun_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_stun_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	char *path = "/etc/rc.d/*icwmp_stund";
 	if (check_file(path))
 		*value = "1";
@@ -491,7 +493,8 @@ int get_stun_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	return 0;
 }
 
-int set_stun_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int set_stun_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	bool b;
 
 	switch (action) {
@@ -513,12 +516,14 @@ int set_stun_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 }
 
 /*#Device.ManagementServer.STUNServerAddress!UCI:cwmp_stun/stun,stun/server_address*/
-int get_stun_server_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_stun_server_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	dmuci_get_option_value_string("cwmp_stun", "stun", "server_address", value);
 	return 0;
 }
 
-int set_stun_server_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int set_stun_server_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -530,12 +535,14 @@ int set_stun_server_address(char *refparam, struct dmctx *ctx, void *data, char 
 }
 
 /*#Device.ManagementServer.STUNServerPort!UCI:cwmp_stun/stun,stun/server_port*/
-int get_stun_server_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_stun_server_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	dmuci_get_option_value_string("cwmp_stun", "stun", "server_port", value);
 	return 0;
 }
 
-int set_stun_server_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int set_stun_server_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -547,12 +554,14 @@ int set_stun_server_port(char *refparam, struct dmctx *ctx, void *data, char *in
 }
 
 /*#Device.ManagementServer.STUNUsername!UCI:cwmp_stun/stun,stun/username*/
-int get_stun_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_stun_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	dmuci_get_option_value_string("cwmp_stun", "stun", "username", value);
 	return 0;
 }
 
-int set_stun_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int set_stun_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -564,12 +573,14 @@ int set_stun_username(char *refparam, struct dmctx *ctx, void *data, char *insta
 }
 
 /*#Device.ManagementServer.STUNPassword!UCI:cwmp_stun/stun,stun/password*/
-int get_stun_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
-	dmuci_get_option_value_string("cwmp_stun", "stun", "password", value);
+int get_stun_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = "";
 	return 0;
 }
 
-int set_stun_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int set_stun_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -581,12 +592,14 @@ int set_stun_password(char *refparam, struct dmctx *ctx, void *data, char *insta
 }
 
 /*#Device.ManagementServer.STUNMaximumKeepAlivePeriod!UCI:cwmp_stun/stun,stun/max_keepalive*/
-int get_stun_maximum_keepalive_period(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_stun_maximum_keepalive_period(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	dmuci_get_option_value_string("cwmp_stun", "stun", "max_keepalive", value);
 	return 0;
 }
 
-int set_stun_maximum_keepalive_period(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int set_stun_maximum_keepalive_period(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -598,12 +611,14 @@ int set_stun_maximum_keepalive_period(char *refparam, struct dmctx *ctx, void *d
 }
 
 /*#Device.ManagementServer.STUNMinimumKeepAlivePeriod!UCI:cwmp_stun/stun,stun/min_keepalive*/
-int get_stun_minimum_keepalive_period(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_stun_minimum_keepalive_period(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	dmuci_get_option_value_string("cwmp_stun", "stun", "min_keepalive", value);
 	return 0;
 }
 
-int set_stun_minimum_keepalive_period(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int set_stun_minimum_keepalive_period(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -626,10 +641,8 @@ int get_nat_detected(char *refparam, struct dmctx *ctx, void *data, char *instan
 	else {
 		*value = "false";
 	}
-
 	return 0;
 }
-
 
 /*
  * XMPP parameters
@@ -681,7 +694,7 @@ int get_management_server_conn_req_xmpp_connection(char *refparam, struct dmctx 
 	char *id;
 
 	dmuci_get_option_value_string("cwmp_xmpp", "xmpp", "id", &id);
-	dmasprintf(value, "Device.XMPP.Connection.%s", id);
+	if (strlen(id)) dmasprintf(value, "Device.XMPP.Connection.%s", id);
 	return 0;
 }
 
@@ -694,7 +707,7 @@ int set_management_server_conn_req_xmpp_connection(char *refparam, struct dmctx 
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			if (str = strstr(value, "Device.XMPP.Connection.")) {
+			if ((str = strstr(value, "Device.XMPP.Connection."))) {
 				value = dmstrdup(str + sizeof("Device.XMPP.Connection.") - 1); //MEM WILL BE FREED IN DMMEMCLEAN
 			}
 			uci_foreach_sections("cwmp_xmpp", "xmpp_connection", s) {

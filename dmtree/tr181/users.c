@@ -160,7 +160,7 @@ int get_user_username(char *refparam, struct dmctx *ctx, void *data, char *insta
 /*#Device.Users.User.{i}.Password!UCI:users/user,@i-1/password*/
 int get_user_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "password", value);
+	*value = "";
     return 0;
 }
 

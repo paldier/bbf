@@ -30,7 +30,7 @@ struct dm_forced_inform_s IPv6INFRM = {0, get_ipv6_finform};
 /* *** Device.IP. *** */
 DMOBJ tIPObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
-{"Interface", &DMWRITE, add_ip_interface, delete_ip_interface, NULL, browseIPIfaceInst, NULL, NULL, NULL, tInterfaceObj, tIPintParams, get_linker_ip_interface, BBFDM_BOTH},
+{"Interface", &DMWRITE, add_ip_interface, delete_ip_interface, NULL, browseIPIfaceInst, NULL, NULL, NULL, tIPInterfaceObj, tIPInterfaceParams, get_linker_ip_interface, BBFDM_BOTH},
 #ifdef BBF_TR143
 {"Diagnostics", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tIPDiagnosticsObj, tIPDiagnosticsParams, NULL, BBFDM_BOTH},
 #endif
@@ -51,17 +51,17 @@ DMLEAF tIPParams[] = {
 };
 
 /* *** Device.IP.Interface. *** */
-DMOBJ tInterfaceObj[] = {
+DMOBJ tIPInterfaceObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
-{"IPv4Address", &DMWRITE, add_ipv4, delete_ipv4, NULL, browseIfaceIPv4Inst, NULL, NULL, NULL, NULL, tIPv4Params, NULL, BBFDM_BOTH},
-{"IPv6Address", &DMWRITE, add_ipv6, delete_ipv6, NULL, browseIfaceIPv6Inst, NULL, NULL, NULL, NULL, tIPv6Params, NULL, BBFDM_BOTH},
-{"IPv6Prefix", &DMWRITE, add_ipv6_prefix, delete_ipv6_prefix, NULL, browseIfaceIPv6PrefixInst, NULL, NULL, NULL, NULL, tIPv6PrefixParams, get_linker_ipv6_prefix, BBFDM_BOTH},
+{"IPv4Address", &DMWRITE, add_ipv4, delete_ipv4, NULL, browseIfaceIPv4Inst, NULL, NULL, NULL, NULL, tIPInterfaceIPv4AddressParams, NULL, BBFDM_BOTH},
+{"IPv6Address", &DMWRITE, add_ipv6, delete_ipv6, NULL, browseIfaceIPv6Inst, NULL, NULL, NULL, NULL, tIPInterfaceIPv6AddressParams, NULL, BBFDM_BOTH},
+{"IPv6Prefix", &DMWRITE, add_ipv6_prefix, delete_ipv6_prefix, NULL, browseIfaceIPv6PrefixInst, NULL, NULL, NULL, NULL, tIPInterfaceIPv6PrefixParams, get_linker_ipv6_prefix, BBFDM_BOTH},
 {"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tIPInterfaceStatsParams, NULL, BBFDM_BOTH},
 {"TWAMPReflector", &DMWRITE, addObjIPInterfaceTWAMPReflector, delObjIPInterfaceTWAMPReflector, NULL, browseIPInterfaceTWAMPReflectorInst, NULL, NULL, NULL, NULL, tIPInterfaceTWAMPReflectorParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF tIPintParams[] = {
+DMLEAF tIPInterfaceParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Enable", &DMWRITE, DMT_BOOL, get_IPInterface_Enable, set_IPInterface_Enable, NULL, NULL, BBFDM_BOTH},
 {"IPv4Enable", &DMWRITE, DMT_BOOL, get_IPInterface_IPv4Enable, set_IPInterface_IPv4Enable, NULL, NULL, BBFDM_BOTH},
@@ -84,7 +84,7 @@ DMLEAF tIPintParams[] = {
 };
 
 /* *** Device.IP.Interface.{i}.IPv4Address.{i}. *** */
-DMLEAF tIPv4Params[] = {
+DMLEAF tIPInterfaceIPv4AddressParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Enable", &DMWRITE, DMT_BOOL, get_IPInterface_Enable, set_IPInterface_Enable, &IPv4INFRM, NULL, BBFDM_BOTH},
 {"Status", &DMREAD, DMT_STRING, get_IPInterface_Status, NULL, &IPv4INFRM, NULL, BBFDM_BOTH},
@@ -97,7 +97,7 @@ DMLEAF tIPv4Params[] = {
 };
 
 /* *** Device.IP.Interface.{i}.IPv6Address.{i}. *** */
-DMLEAF tIPv6Params[] = {
+DMLEAF tIPInterfaceIPv6AddressParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Enable", &DMWRITE, DMT_BOOL, get_IPInterfaceIPv6Address_Enable, set_IPInterfaceIPv6Address_Enable, &IPv6INFRM, NULL, BBFDM_BOTH},
 {"Status", &DMREAD, DMT_STRING, get_IPInterfaceIPv6Address_Status, NULL, &IPv6INFRM, NULL, BBFDM_BOTH},
@@ -112,7 +112,7 @@ DMLEAF tIPv6Params[] = {
 };
 
 /* *** Device.IP.Interface.{i}.IPv6Prefix.{i}. *** */
-DMLEAF tIPv6PrefixParams[] = {
+DMLEAF tIPInterfaceIPv6PrefixParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Enable", &DMWRITE, DMT_BOOL, get_IPInterfaceIPv6Prefix_Enable, set_IPInterfaceIPv6Prefix_Enable, NULL, NULL, BBFDM_BOTH},
 {"Status", &DMREAD, DMT_STRING, get_IPInterfaceIPv6Prefix_Status, NULL, NULL, NULL, BBFDM_BOTH},

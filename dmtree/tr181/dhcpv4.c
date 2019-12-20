@@ -24,10 +24,10 @@
 #define DELIMITOR ","
 
 /*** DHCPv4. ***/
-DMOBJ tDhcpv4Obj[] = {
+DMOBJ tDHCPv4Obj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
 {"Client", &DMWRITE, addObjDHCPv4Client, delObjDHCPv4Client, NULL, browseDHCPv4ClientInst, NULL, NULL, NULL, tDHCPv4ClientObj, tDHCPv4ClientParams, NULL, BBFDM_BOTH},
-{"Server", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDhcpv4ServerObj, tDHCPv4ServerParams, NULL, BBFDM_BOTH},
+{"Server", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDHCPv4ServerObj, tDHCPv4ServerParams, NULL, BBFDM_BOTH},
 {"Relay", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDHCPv4RelayObj, tDHCPv4RelayParams, NULL, BBFDM_BOTH},
 {0}
 };
@@ -96,30 +96,30 @@ DMLEAF tDHCPv4ServerParams[] = {
 };
 
 /*** DHCPv4.Server. ***/
-DMOBJ tDhcpv4ServerObj[] = {
+DMOBJ tDHCPv4ServerObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
-{"Pool", &DMWRITE, add_dhcp_server, delete_dhcp_server, NULL, browseDhcpInst, NULL, NULL, NULL, tDhcpServerPoolObj, tDhcpServerPoolParams, NULL, BBFDM_BOTH},
+{"Pool", &DMWRITE, add_dhcp_server, delete_dhcp_server, NULL, browseDhcpInst, NULL, NULL, NULL, tDHCPv4ServerPoolObj, tDHCPv4ServerPoolParams, NULL, BBFDM_BOTH},
 {0}
 };
 
 /*** DHCPv4.Server.Pool.{i}. ***/
-DMOBJ tDhcpServerPoolObj[] = {
+DMOBJ tDHCPv4ServerPoolObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
-{"StaticAddress", &DMWRITE, add_dhcp_staticaddress, delete_dhcp_staticaddress, NULL, browseDhcpStaticInst, NULL, NULL, NULL, NULL, tDhcpServerPoolAddressParams, NULL, BBFDM_BOTH},
+{"StaticAddress", &DMWRITE, add_dhcp_staticaddress, delete_dhcp_staticaddress, NULL, browseDhcpStaticInst, NULL, NULL, NULL, NULL, tDHCPv4ServerPoolAddressParams, NULL, BBFDM_BOTH},
 {"Option", &DMWRITE, addObjDHCPv4ServerPoolOption, delObjDHCPv4ServerPoolOption, NULL, browseDHCPv4ServerPoolOptionInst, NULL, NULL, NULL, NULL, tDHCPv4ServerPoolOptionParams, NULL, BBFDM_BOTH},
-{"Client", &DMREAD, NULL, NULL, NULL, browseDhcpClientInst, NULL, NULL, NULL, tDhcpServerPoolClientObj, tDhcpServerPoolClientParams, get_dhcp_client_linker},
+{"Client", &DMREAD, NULL, NULL, NULL, browseDhcpClientInst, NULL, NULL, NULL, tDHCPv4ServerPoolClientObj, tDHCPv4ServerPoolClientParams, get_dhcp_client_linker},
 {0}
 };
 
 /*** DHCPv4.Server.Pool.{i}.Client.{i}. ***/
-DMOBJ tDhcpServerPoolClientObj[] = {
+DMOBJ tDHCPv4ServerPoolClientObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
-{"IPv4Address", &DMREAD, NULL, NULL, NULL, browseDhcpClientIPv4Inst, NULL, NULL, NULL, NULL, tDhcpServerPoolClientIPv4AddressParams, NULL, BBFDM_BOTH},
+{"IPv4Address", &DMREAD, NULL, NULL, NULL, browseDhcpClientIPv4Inst, NULL, NULL, NULL, NULL, tDHCPv4ServerPoolClientIPv4AddressParams, NULL, BBFDM_BOTH},
 {"Option", &DMREAD, NULL, NULL, NULL, browseDHCPv4ServerPoolClientOptionInst, NULL, NULL, NULL, NULL, tDHCPv4ServerPoolClientOptionParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF tDhcpServerPoolParams[] = {
+DMLEAF tDHCPv4ServerPoolParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING,  get_server_pool_alias, set_server_pool_alias, NULL, NULL, BBFDM_BOTH},
 {"DNSServers", &DMWRITE, DMT_STRING,  get_dns_server, set_dns_server, NULL, NULL, BBFDM_BOTH},
@@ -142,7 +142,7 @@ DMLEAF tDhcpServerPoolParams[] = {
 };
 
 /*** DHCPv4.Server.Pool.{i}.StaticAddress.{i}. ***/
-DMLEAF tDhcpServerPoolAddressParams[] = {
+DMLEAF tDHCPv4ServerPoolAddressParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_dhcp_static_alias, set_dhcp_static_alias, NULL, NULL, BBFDM_BOTH},
 {"Chaddr", &DMWRITE, DMT_STRING,  get_dhcp_staticaddress_chaddr, set_dhcp_staticaddress_chaddr, NULL, NULL, BBFDM_BOTH},
@@ -151,7 +151,7 @@ DMLEAF tDhcpServerPoolAddressParams[] = {
 };
 
 /*** DHCPv4.Server.Pool.{i}.Client.{i}. ***/
-DMLEAF tDhcpServerPoolClientParams[] = {
+DMLEAF tDHCPv4ServerPoolClientParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Chaddr", &DMREAD, DMT_STRING,  get_dhcp_client_chaddr, NULL, NULL, NULL, BBFDM_BOTH},
 {"Active", &DMREAD, DMT_STRING,  get_dhcp_client_active, NULL, NULL, NULL, BBFDM_BOTH},
@@ -159,7 +159,7 @@ DMLEAF tDhcpServerPoolClientParams[] = {
 };
 
 /*** DHCPv4.Server.Pool.{i}.Client.{i}.IPv4Address.{i}. ***/
-DMLEAF tDhcpServerPoolClientIPv4AddressParams[] = {
+DMLEAF tDHCPv4ServerPoolClientIPv4AddressParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"LeaseTimeRemaining", &DMREAD, DMT_TIME,  get_dhcp_client_ipv4address_leasetime, NULL, NULL, NULL, BBFDM_BOTH},
 {"IPAddress", &DMREAD, DMT_TIME,  get_dhcp_client_ipv4address_ip_address, NULL, NULL, NULL, BBFDM_BOTH},

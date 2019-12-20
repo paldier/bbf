@@ -32,6 +32,7 @@ def objhasparam( value ):
 	return 0
 
 def check_obj(dmobject):
+	dmobject = dmobject.replace(".{i}.", ".")
 	obj = dmobject.split(".")
 	if dmobject.count('.') == 2:
 		cmd = 'awk \'/DMOBJ tRoot_181_Obj/,/^{0}$/\' ../dmtree/tr181/device.c'
@@ -45,10 +46,13 @@ def check_obj(dmobject):
 			file = "../dmtree/tr143/diagnostics.c"
 		elif "Device.Services." in dmobject:
 			file = "../dmtree/tr104/voice_services.c"
+		elif "Device.SoftwareModules." in dmobject:
+			file = "../dmtree/tr157/softwaremodules.c"
+		elif "Device.BulkData." in dmobject:
+			file = "../dmtree/tr157/bulkdata.c"
 		else:
 			file = "../dmtree/tr181/%s.c" % obj[1].lower()
 		if(os.path.isfile(file)):
-			dmobject = dmobject.replace(".{i}.", ".")
 			count = dmobject.count('.')
 			obj1 = dmobject.split(".")
 			for i in range(count-2):
@@ -84,6 +88,10 @@ def load_param(dmobject):
 			file = "../dmtree/tr181/times.c"
 		elif "Device.Services." in dmobject:
 			file = "../dmtree/tr104/voice_services.c"
+		elif "Device.SoftwareModules." in dmobject:
+			file = "../dmtree/tr157/softwaremodules.c"
+		elif "Device.BulkData." in dmobject:
+			file = "../dmtree/tr157/bulkdata.c"
 		else:
 			file = "../dmtree/tr181/%s.c" % obj[1].lower()
 		if(os.path.isfile(file)):
@@ -96,7 +104,6 @@ def load_param(dmobject):
 			res = os.popen(cmd).read()
 		else:
 			res = ""
-
 	if res == "":
 		return "", 0
 	else:
@@ -104,7 +111,7 @@ def load_param(dmobject):
 
 def printOBJPARAM(obj, supported):
 	fp = open('./.tmp', 'a')
-	print >> fp,  "%s::%s" % (obj, supported)
+	print >> fp,  "%s::%s::" % (obj, supported)
 	fp.close()
 
 def printusage():
@@ -167,7 +174,7 @@ def generatecfromobj(excel_file, pobj, pvalue):
 		param = line.split("::")
 		i += 1
 		sheet.write(i, 0, param[0])
-		if param[1] == "false\n":
+		if param[1] == "false":
 			sheet.write(i, 1, "Not Supported", style1)
 		else:
 			sheet.write(i, 1, "Supported", style2)

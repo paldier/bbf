@@ -39,11 +39,11 @@ struct ipv6prefix_args
 
 extern DMOBJ tIPObj[];
 extern DMLEAF tIPParams[];
-extern DMOBJ tInterfaceObj[];
-extern DMLEAF tIPintParams[];
-extern DMLEAF tIPv4Params[];
-extern DMLEAF tIPv6Params[];
-extern DMLEAF tIPv6PrefixParams[];
+extern DMOBJ tIPInterfaceObj[];
+extern DMLEAF tIPInterfaceParams[];
+extern DMLEAF tIPInterfaceIPv4AddressParams[];
+extern DMLEAF tIPInterfaceIPv6AddressParams[];
+extern DMLEAF tIPInterfaceIPv6PrefixParams[];
 extern DMLEAF tIPInterfaceStatsParams[];
 extern DMLEAF tIPInterfaceTWAMPReflectorParams[];
 

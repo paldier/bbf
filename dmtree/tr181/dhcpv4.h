@@ -54,14 +54,14 @@ struct dhcp_client_option_args {
 	char *value;
 };
 
-extern DMOBJ tDhcpv4Obj[];
-extern DMOBJ tDhcpv4ServerObj[];
-extern DMOBJ tDhcpServerPoolObj[];
-extern DMOBJ tDhcpServerPoolClientObj[];
-extern DMLEAF tDhcpServerPoolParams[];
-extern DMLEAF tDhcpServerPoolAddressParams[];
-extern DMLEAF tDhcpServerPoolClientParams[];
-extern DMLEAF tDhcpServerPoolClientIPv4AddressParams[];
+extern DMOBJ tDHCPv4Obj[];
+extern DMOBJ tDHCPv4ServerObj[];
+extern DMOBJ tDHCPv4ServerPoolObj[];
+extern DMOBJ tDHCPv4ServerPoolClientObj[];
+extern DMLEAF tDHCPv4ServerPoolParams[];
+extern DMLEAF tDHCPv4ServerPoolAddressParams[];
+extern DMLEAF tDHCPv4ServerPoolClientParams[];
+extern DMLEAF tDHCPv4ServerPoolClientIPv4AddressParams[];
 
 extern DMLEAF tDHCPv4Params[];
 extern DMOBJ tDHCPv4ClientObj[];

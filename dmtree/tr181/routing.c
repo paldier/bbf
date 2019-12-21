@@ -105,7 +105,7 @@ DMLEAF tRoutingRouteInformationInterfaceSettingParams[] = {
 /********************************
  * init function
  ********************************/
-inline int init_args_ipv4forward(struct routingfwdargs *args, struct uci_section *s, char *permission, int type)
+static inline int init_args_ipv4forward(struct routingfwdargs *args, struct uci_section *s, char *permission, int type)
 {
 	args->permission = permission;
 	args->routefwdsection = s;
@@ -113,7 +113,7 @@ inline int init_args_ipv4forward(struct routingfwdargs *args, struct uci_section
 	return 0;
 }
 
-inline int init_args_ipv6forward(struct routingfwdargs *args, struct uci_section *s, char *permission, int type)
+static inline int init_args_ipv6forward(struct routingfwdargs *args, struct uci_section *s, char *permission, int type)
 {
 	args->permission = permission;
 	args->routefwdsection = s;

@@ -111,7 +111,7 @@ DMLEAF tDeviceInfoVendorLogFileParams[] = {
 /*************************************************************
 * INIT
 **************************************************************/
-inline int init_process_args(struct process_args *args, char *pid, char *command, char* size, char* priority, char *cputime, char *state)
+static inline int init_process_args(struct process_args *args, char *pid, char *command, char* size, char* priority, char *cputime, char *state)
 {
 	args->pid = pid;
 	args->command= command;

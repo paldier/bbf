@@ -387,13 +387,13 @@ int get_linker_associated_device(char *refparam, struct dmctx *dmctx, void *data
 /**************************************************************************
 * INIT
 ***************************************************************************/
-inline int init_wifi_radio(struct wifi_radio_args *args, struct uci_section *s)
+static inline int init_wifi_radio(struct wifi_radio_args *args, struct uci_section *s)
 {
 	args->wifi_radio_sec = s;
 	return 0;
 }
 
-inline int init_wifi_ssid(struct wifi_ssid_args *args, struct uci_section *s, char *wiface, char *linker)
+static inline int init_wifi_ssid(struct wifi_ssid_args *args, struct uci_section *s, char *wiface, char *linker)
 {
 	args->wifi_ssid_sec = s;
 	args->ifname = wiface;
@@ -401,14 +401,14 @@ inline int init_wifi_ssid(struct wifi_ssid_args *args, struct uci_section *s, ch
 	return 0;
 }
 
-inline int init_wifi_acp(struct wifi_acp_args *args, struct uci_section *s, char *wiface)
+static inline int init_wifi_acp(struct wifi_acp_args *args, struct uci_section *s, char *wiface)
 {
 	args->wifi_acp_sec = s;
 	args->ifname = wiface;
 	return 0;
 }
 
-inline int init_wifi_enp(struct wifi_enp_args *args, struct uci_section *s, char *wiface)
+static inline int init_wifi_enp(struct wifi_enp_args *args, struct uci_section *s, char *wiface)
 {
 	args->wifi_enp_sec = s;
 	args->ifname = wiface;

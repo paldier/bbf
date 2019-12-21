@@ -161,7 +161,7 @@ DMLEAF tEthernetVLANTerminationStatsParams[] = {
 /*************************************************************
 * INIT
 **************************************************************/
-inline int init_eth_port(struct eth_port_args *args, struct uci_section *s, char *ifname)
+static inline int init_eth_port(struct eth_port_args *args, struct uci_section *s, char *ifname)
 {
 	args->eth_port_sec = s;
 	args->ifname = ifname;

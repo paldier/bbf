@@ -149,7 +149,7 @@ int get_linker_br_vlan(char *refparam, struct dmctx *dmctx, void *data, char *in
 /**************************************************************************
 * INIT
 ***************************************************************************/
-inline int init_bridging_args(struct bridging_args *args, struct uci_section *s, char *last_instance, char *ifname, char *br_instance)
+static inline int init_bridging_args(struct bridging_args *args, struct uci_section *s, char *last_instance, char *ifname, char *br_instance)
 {
 	args->bridge_sec = s;
 	args->br_key = last_instance;
@@ -158,7 +158,7 @@ inline int init_bridging_args(struct bridging_args *args, struct uci_section *s,
 	return 0;
 }
 
-inline int init_bridging_port_args(struct bridging_port_args *args, struct uci_section *s, struct uci_section *bs, bool vlan, char *ifname)
+static inline int init_bridging_port_args(struct bridging_port_args *args, struct uci_section *s, struct uci_section *bs, bool vlan, char *ifname)
 {
 	args->bridge_port_sec = s;
 	args->bridge_sec = bs;
@@ -167,7 +167,7 @@ inline int init_bridging_port_args(struct bridging_port_args *args, struct uci_s
 	return 0;
 }
 
-inline int init_bridging_vlan_args(struct bridging_vlan_args *args, struct uci_section *s, struct uci_section *bs, char *vlan_port, char *br_inst)
+static inline int init_bridging_vlan_args(struct bridging_vlan_args *args, struct uci_section *s, struct uci_section *bs, char *vlan_port, char *br_inst)
 {
 	args->bridge_vlan_sec = s;
 	args->bridge_sec = bs;

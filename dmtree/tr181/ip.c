@@ -167,14 +167,14 @@ unsigned char get_ipv6_finform(char *refparam, struct dmctx *dmctx, void *data, 
 /*************************************************************
 * INIT
 **************************************************************/
-inline int init_ip_args(struct ip_args *args, struct uci_section *s, char *ip_4address)
+static inline int init_ip_args(struct ip_args *args, struct uci_section *s, char *ip_4address)
 {
 	args->ip_sec = s;
 	args->ip_4address = ip_4address;
 	return 0;
 }
 
-inline int init_ipv6_args(struct ipv6_args *args, struct uci_section *s, char *ip_6address, char *ip_6mask, char *ip_6preferred, char *ip_6valid)
+static inline int init_ipv6_args(struct ipv6_args *args, struct uci_section *s, char *ip_6address, char *ip_6mask, char *ip_6preferred, char *ip_6valid)
 {
 	args->ip_sec = s;
 	args->ip_6address = ip_6address;
@@ -184,7 +184,7 @@ inline int init_ipv6_args(struct ipv6_args *args, struct uci_section *s, char *i
 	return 0;
 }
 
-inline int init_ipv6prefix_args(struct ipv6prefix_args *args, struct uci_section *s, char *ip_6prefixaddress, char *ip_6prefixmask, char *ip_6prefixpreferred, char *ip_6prefixvalid)
+static inline int init_ipv6prefix_args(struct ipv6prefix_args *args, struct uci_section *s, char *ip_6prefixaddress, char *ip_6prefixmask, char *ip_6prefixpreferred, char *ip_6prefixvalid)
 {
 	args->ip_sec = s;
 	args->ip_6prefixaddress = ip_6prefixaddress;

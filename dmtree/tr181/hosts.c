@@ -47,7 +47,7 @@ DMLEAF tHostsHostParams[] = {
 /*************************************************************
 * INIT
 **************************************************************/
-inline int init_host_args(struct host_args *args, json_object *clients, char *key)
+static inline int init_host_args(struct host_args *args, json_object *clients, char *key)
 {
 	args->client = clients;
 	args->key = key;

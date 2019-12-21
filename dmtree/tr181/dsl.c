@@ -286,13 +286,13 @@ int get_dsl_channel_linker(char *refparam, struct dmctx *dmctx, void *data, char
 /**************************************************************************
 * INIT
 ***************************************************************************/
-inline int init_dsl_line(struct dsl_line_args *args, struct uci_section *s)
+static inline int init_dsl_line(struct dsl_line_args *args, struct uci_section *s)
 {
 	args->line_sec = s;
 	return 0;
 }
 
-inline int init_dsl_channel(struct dsl_channel_args *args, struct uci_section *s)
+static inline int init_dsl_channel(struct dsl_channel_args *args, struct uci_section *s)
 {
 	args->channel_sec = s;
 	return 0;

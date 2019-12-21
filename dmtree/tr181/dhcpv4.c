@@ -228,20 +228,20 @@ int get_dhcp_client_linker(char *refparam, struct dmctx *dmctx, void *data, char
 /*************************************************************
 * INIT
 **************************************************************/
-inline int init_dhcp_args(struct dhcp_args *args, struct uci_section *s, char *interface)
+static inline int init_dhcp_args(struct dhcp_args *args, struct uci_section *s, char *interface)
 {
 	args->interface = interface;
 	args->dhcp_sec = s;
 	return 0;
 }
 
-inline int init_args_dhcp_host(struct dhcp_static_args *args, struct uci_section *s)
+static inline int init_args_dhcp_host(struct dhcp_static_args *args, struct uci_section *s)
 {
 	args->dhcpsection = s;
 	return 0;
 }
 
-inline int init_dhcp_client_args(struct client_args *args, json_object *client, char *key)
+static inline int init_dhcp_client_args(struct client_args *args, json_object *client, char *key)
 {
 	args->client = client;
 	args->key = key;

@@ -204,7 +204,7 @@ struct uci_section* get_dhcpv6_classifier(char *classifier_name, char *network)
 	return NULL;
 }
 
-inline int init_dhcpv6_client_args(struct clientv6_args *args, json_object *client, json_object *client_param, int i)
+static inline int init_dhcpv6_client_args(struct clientv6_args *args, json_object *client, json_object *client_param, int i)
 {
 	args->client = client;
 	args->clientparam = client_param;
@@ -258,7 +258,7 @@ int set_section_dhcp6_order(char *package, char *dmpackage, char* sect_type, str
 
 }
 
-inline int init_dhcpv6_args(struct dhcpv6_args *args, struct uci_section *s, char *interface)
+static inline int init_dhcpv6_args(struct dhcpv6_args *args, struct uci_section *s, char *interface)
 {
 	args->interface = interface;
 	args->dhcp_sec = s;

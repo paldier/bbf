@@ -64,7 +64,7 @@ int get_atm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instan
 /**************************************************************************
 * INIT
 ***************************************************************************/
-inline int init_atm_link(struct atm_args *args, struct uci_section *s, char *ifname)
+static inline int init_atm_link(struct atm_args *args, struct uci_section *s, char *ifname)
 {
 	args->atm_sec = s;
 	args->ifname = ifname;

@@ -62,7 +62,7 @@ int get_ptm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instan
 /**************************************************************************
 * INIT
 ***************************************************************************/
-inline int init_ptm_link(struct ptm_args *args, struct uci_section *s, char *ifname)
+static inline int init_ptm_link(struct ptm_args *args, struct uci_section *s, char *ifname)
 {
 	args->ptm_sec = s;
 	args->ifname = ifname;

@@ -578,13 +578,16 @@ int get_process_cpu_usage(char* refparam, struct dmctx *ctx, void *data, char *i
 
 int get_process_number_of_entries(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res,  *processes;
+	json_object *res = NULL, *processes = NULL;
 	int nbre_process = 0;
 
 	dmubus_call("router.system", "processes", UBUS_ARGS{{}}, 0, &res);
-	DM_ASSERT(res, *value = "0");
-	json_object_object_get_ex(res, "processes", &processes);
-	nbre_process = json_object_array_length(processes);
+	if (res) {
+		json_object_object_get_ex(res, "processes", &processes);
+		if (processes)
+			nbre_process= json_object_array_length(processes);
+	}
+
 	dmasprintf(value, "%d", nbre_process);
 	return 0;
 }
@@ -641,16 +644,25 @@ int get_process_state(char* refparam, struct dmctx *ctx, void *data, char *insta
 
 int browsePocessEntriesInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	json_object *res,  *processes, *fields, *process;
+	json_object *res = NULL,  *processes = NULL;
+	json_object *fields = NULL, *process = NULL;
 	char *pid_field, *command_field, *state_field, *mem_size_field, *cpu_time_field, *priority_field, *pid, *command, *mem_size, *state, *cpu_time, *priority, *idx, *idx_last= NULL;
 	int i, id = 0;
 	struct process_args proc_args = {0};
+	size_t nbre_process = 0;
 
 	dmubus_call("router.system", "processes", UBUS_ARGS{{}}, 0, &res);
-	if (!res) return 0;
+
+	if (res) {
+		json_object_object_get_ex(res, "processes", &processes);
+		if (processes)
+			nbre_process = json_object_array_length(processes);
+	}
+
 	json_object_object_get_ex(res, "fields", &fields);
-	json_object_object_get_ex(res, "processes", &processes);
-	size_t nbre_process = json_object_array_length(processes);
+	if (fields == NULL)
+		return 0;
+
 	pid_field = (char *)dmjson_get_value_in_array_idx(fields, 0, 0, NULL);
 	command_field = (char *)dmjson_get_value_in_array_idx(fields, 7, 0, NULL);
 	state_field = (char *)dmjson_get_value_in_array_idx(fields, 3, 0, NULL);

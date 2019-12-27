@@ -1629,7 +1629,7 @@ char* readFileContent(char *filepath)
 	fseek(f, 0, SEEK_SET);
 
 	char *filecontent = dmmalloc(fsize + 1);
-	fread(filecontent, 1, fsize, f);
+	fsize = fread(filecontent, 1, fsize, f);
 	fclose(f);
 
 	filecontent[fsize] = 0;

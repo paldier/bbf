@@ -259,4 +259,5 @@ int isfolderexist(char *folderpath);
 char* readFileContent(char *filepath);
 void writeFileContent(const char *filepath, const char *data);
 bool match(const char *string, const char *pattern);
+char * dmmap_file_path_get(const char *dmmap_package);
 #endif

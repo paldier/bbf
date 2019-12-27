@@ -417,6 +417,26 @@ void remove_vid_interfaces_from_ifname(char *vid, char *ifname, char *new_ifname
 	dmfree(ifname);
 }
 
+char * dmmap_file_path_get(const char *dmmap_package)
+{
+	char *path;
+	int rc;
+
+	rc = dmasprintf(&path, "/etc/bbfdm/%s", dmmap_package);
+	if (rc == -1)
+		return NULL;
+
+	if (access(path, F_OK)) {
+		/*
+		 *File does not exist
+		 **/
+		FILE *fp = fopen(path, "w"); // new empty file
+		if (fp)
+			fclose(fp);
+	}
+	return path;
+}
+
 void update_section_option_list(char *config, char *section, char *option, char *option_2,char *val, char *val_2, char *name)
 {
 	char *add_value, *baseifname;
@@ -851,14 +871,8 @@ void synchronize_specific_config_sections_with_dmmap(char *package, char *sectio
 	FILE *fp;
 	char *v, *dmmap_file_path;
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
+	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+
 	uci_foreach_sections(package, section_type, s) {
 		/*
 		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
@@ -891,14 +905,8 @@ void synchronize_specific_config_sections_with_dmmap_eq(char *package, char *sec
 	FILE *fp;
 	char *v, *dmmap_file_path;
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
+	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+
 	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
 		/*
 		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
@@ -931,14 +939,8 @@ void synchronize_specific_config_sections_with_dmmap_eq_no_delete(char *package,
 	FILE *fp;
 	char *v, *dmmap_file_path;
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
+	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+
 	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
 		/*
 		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
@@ -964,14 +966,8 @@ void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *s
 	FILE *fp;
 	char *v, *dmmap_file_path;
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
+	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+
 	uci_foreach_option_cont(package, section_type, option_name, option_value, s) {
 		/*
 		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
@@ -1006,14 +1002,7 @@ bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *sectio
 	char *v, *dmmap_file_path, *pack, *sect;
 	bool found = false;
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
+	dmmap_file_path = dmmap_file_path_get(dmmap_package);
 
 	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
 		found = true;
@@ -1057,14 +1046,7 @@ bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *s
 	char *v, *dmmap_file_path, *pack, *sect, *optval;
 	bool found= false;
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
+	dmmap_file_path = dmmap_file_path_get(dmmap_package);
 
 	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
 		found = true;
@@ -1125,14 +1107,7 @@ int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_packag
 	struct sysfs_dmsection *p;
 	LIST_HEAD(dup_list_no_inst);
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
+	dmmap_file_path = dmmap_file_path_get(dmmap_package);
 
 	sysfs_foreach_file(sysfsrep, dir, ent) {
 		if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
@@ -1214,16 +1189,8 @@ void get_config_section_of_dmmap_section(char* package, char* section_type, char
 void check_create_dmmap_package(char *dmmap_package)
 {
 	FILE *fp;
-	char *dmmap_file_path;
+	char *dmmap_file_path = dmmap_file_path_get(dmmap_package);
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
 	dmfree(dmmap_file_path);
 }
 

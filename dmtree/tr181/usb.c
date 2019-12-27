@@ -297,15 +297,8 @@ int synchronize_usb_devices_with_dmmap_opt_recursively(char *sysfsrep, char *dmm
 	regcomp(&regex2, "^[0-9][0-9]*-[0-9]*[0-9]\\.[0-9]*[0-9]$", 0);
 
 	LIST_HEAD(dup_list_no_inst);
+	dmmap_file_path = dmmap_file_path_get(dmmap_package);
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
 	sysfs_foreach_file(sysfsrep, dir, ent) {
 		if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
 			continue;

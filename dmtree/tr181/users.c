@@ -72,7 +72,7 @@ int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instanc
 	dmuci_rename_section_by_section(s, username);
 	dmuci_set_value_by_section(s, "enabled", "1");
 	dmuci_set_value_by_section(s, "password", username);
-
+	check_create_dmmap_package("dmmap_users");
 	dmuci_add_section_bbfdm("dmmap_users", "user", &dmmap_user, &v);
 	dmuci_set_value_by_section(dmmap_user, "section_name", sect_name);
 	*instance = update_instance_bbfdm(dmmap_user, last_inst, "user_instance");

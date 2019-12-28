@@ -669,23 +669,24 @@ int set_management_server_conn_rep_allowed_jabber_id(char *refparam, struct dmct
 int get_management_server_conn_req_jabber_id(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s;
-	char *username, *domain, *resource, *tmpPtr, *strResponse = "";
-	*value = "";
+	char *username, *domain, *resource, *tmpPtr = NULL, *strResponse = NULL;
 
 	uci_foreach_sections("cwmp_xmpp", "xmpp_connection", s) {
 		dmuci_get_value_by_section_string(s, "username", &username);
 		dmuci_get_value_by_section_string(s, "domain", &domain);
 		dmuci_get_value_by_section_string(s, "resource", &resource);
 		if(*username != '\0' || *domain != '\0' || *resource != '\0') {
-			if(*strResponse == '\0')
+			if(!strResponse)
 				dmasprintf(&strResponse, "%s@%s/%s", username, domain, resource);
 			else {
 				tmpPtr = dmstrdup(strResponse);
-				dmasprintf(&strResponse, "%s, %s@%s/%s", tmpPtr, username, domain, resource);
+				dmfree(strResponse);
+				dmasprintf(&strResponse, "%s,%s@%s/%s", tmpPtr, username, domain, resource);
+				dmfree(tmpPtr);
 			}
 		}
 	}
-	*value = dmstrdup(strResponse);
+	*value = strResponse ? strResponse : "";
 	return 0;
 }
 
@@ -717,7 +718,6 @@ int set_management_server_conn_req_xmpp_connection(char *refparam, struct dmctx 
 					break;
 				}
 			}
-			cwmp_set_end_session(END_SESSION_RELOAD);
 			return 0;
 	}
 	return 0;

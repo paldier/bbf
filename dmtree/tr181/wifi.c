@@ -779,6 +779,7 @@ int get_radio_supported_standard(char *refparam, struct dmctx *ctx, void *data, 
 	json_object *res;
 	dmubus_call("router.wireless", "radios", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
+
 	json_object_object_foreach(res, key, radio_obj) {
 		if (strcmp(section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), key) == 0) {
 			*value = dmjson_get_value_array_all(radio_obj, DELIMITOR, 1, "hwmodes");
@@ -1089,7 +1090,7 @@ int get_WiFiRadio_RegulatoryDomain(char *refparam, struct dmctx *ctx, void *data
 
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "country", &country);
 	arr = strsplit(country, "/", &length);
-	if (strlen(arr[0]) > 0)
+	if(arr && arr[0])
 		dmasprintf(value, "%s", arr[0]);
 	else
 		*value= "";

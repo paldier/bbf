@@ -1072,7 +1072,7 @@ int get_IPInterfaceIPv6Prefix_ParentPrefix(char *refparam, struct dmctx *ctx, vo
 	char *linker;
 	dmasprintf(&linker, "%s/%s", ((struct ipv6prefix_args *)data)->ip_6prefixaddress, ((struct ipv6prefix_args *)data)->ip_6prefixmask);
 	if(linker[0] != '\0')
-		adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%Interface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
 	if (*value == NULL)
 		*value = "";
 	return 0;

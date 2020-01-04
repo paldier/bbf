@@ -1133,6 +1133,9 @@ int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_packag
 		else
 			add_sysfs_sectons_list_paramameter(dup_list, dmmap_sect, ent->d_name, sysfs_rep_path);
 	}
+	if (dir)
+		closedir(dir);
+
 	/*
 	 * fusion two lists
 	 */

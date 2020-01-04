@@ -467,6 +467,7 @@ int get_USB_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, void *da
 				nbre++;
 		}
 	}
+	closedir(dir);
 	dmasprintf(value, "%d", nbre);
 	return 0;
 }

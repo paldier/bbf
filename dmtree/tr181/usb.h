@@ -31,8 +31,6 @@ extern DMLEAF tUSBUSBHostsHostDeviceConfigurationInterfaceParams[];
 
 #define SYSFS_USB_DEVICES_PATH "/sys/bus/usb/devices"
 
-regex_t regex1, regex2;
-
 struct usb_port
 {
 	struct uci_section *dm_usb_port;

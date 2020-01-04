@@ -331,6 +331,7 @@ int dmuci_commit(void)
 	char **configs = NULL;
 	char **bbfdm_configs = NULL;
 	char **p;
+	int rc = 0;
 
 	if ((uci_list_configs(uci_ctx, &configs) != UCI_OK) || !configs) {
 		return -1;
@@ -338,18 +339,19 @@ int dmuci_commit(void)
 	for (p = configs; *p; p++) {
 		dmuci_commit_package(*p);
 	}
-	if(uci_ctx_bbfdm)
-	{
+	if(uci_ctx_bbfdm) {
 		if ((uci_list_configs(uci_ctx_bbfdm, &bbfdm_configs) != UCI_OK) || !bbfdm_configs) {
-			return -1;
+			rc = -1;
+			goto out;
 		}
 		for (p = bbfdm_configs; *p; p++) {
 			DMUCI_COMMIT_PACKAGE(bbfdm, *p);
 		}
 	}
+out:
 	free(configs);
 	free(bbfdm_configs);
-	return 0;
+	return rc;
 }
 
 /**** UCI REVERT *****/
@@ -378,6 +380,7 @@ int dmuci_revert(void)
 	for (p = configs; *p; p++) {
 		dmuci_revert_package(*p);
 	}
+	free(configs);
 	return 0;
 }
 

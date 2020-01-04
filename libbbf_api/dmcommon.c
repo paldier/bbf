@@ -1326,28 +1326,24 @@ char **strsplit(const char* str, const char* delim, size_t* numtokens)
 	char *s = strdup(str);
 	size_t tokens_alloc = 1;
 	size_t tokens_used = 0;
-	char **tokens = calloc(tokens_alloc, sizeof(char*));
+	char **tokens = dmcalloc(tokens_alloc, sizeof(char*));
 	char *token, *strtok_ctx;
-	for (token = strtok_r(s, delim, &strtok_ctx); token != NULL; token = strtok_r(NULL, delim, &strtok_ctx)) {
+
+	for (token = strtok_r(s, delim, &strtok_ctx);
+		token != NULL;
+		token = strtok_r(NULL, delim, &strtok_ctx)) {
+
 		if (tokens_used == tokens_alloc) {
 			tokens_alloc *= 2;
-			char **new_tokens = realloc(tokens, tokens_alloc * sizeof(char*));
-			if (new_tokens == NULL)
-				FREE(tokens);
-			else
-				tokens = new_tokens;
+			tokens = dmrealloc(tokens, tokens_alloc * sizeof(char*));
 		}
-		tokens[tokens_used++] = strdup(token);
+		tokens[tokens_used++] = dmstrdup(token);
 	}
 	if (tokens_used == 0) {
-		free(tokens);
+		dmfree(tokens);
 		tokens = NULL;
 	} else {
-		char **new_tokens = realloc(tokens, tokens_used * sizeof(char*));
-		if (new_tokens == NULL)
-			FREE(tokens);
-		else
-			tokens = new_tokens;
+		tokens = dmrealloc(tokens, tokens_used * sizeof(char*));
 	}
 	*numtokens = tokens_used;
 	free(s);

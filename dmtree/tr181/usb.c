@@ -429,20 +429,23 @@ int get_USB_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, void *da
 {
 	DIR *dir;
 	struct dirent *ent;
-	char filename[100];
-	char *buffer= NULL;
-	int size = 100;
+	char filename[128];
+	char buffer[64];
 	int nbre= 0;
+	ssize_t rc;
 
 	if ((dir = opendir ("/sys/class/net")) == NULL)
 		return 0;
+
 	while ((ent = readdir (dir)) != NULL) {
-		buffer= (char*)dmmalloc(100*sizeof(char));
-		snprintf(filename, sizeof(filename), "/sys/class/net/%s", ent->d_name);
-		readlink (filename, buffer, size);
-		if(strstr(buffer, "/usb") == NULL)
-			continue;
-		nbre++;
+		sprintf(filename, "/sys/class/net/%s", ent->d_name);
+		rc = readlink (filename, buffer, sizeof(buffer) - 1);
+		if (rc > 0) {
+			buffer[rc] = 0;
+
+			if(!strstr(buffer, "/usb") == NULL)
+				nbre++;
+		}
 	}
 	dmasprintf(value, "%d", nbre);
 	return 0;

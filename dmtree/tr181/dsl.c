@@ -1169,6 +1169,8 @@ static char *get_dsl_link_encapsulation_standard(char *str)
 		dsl_link_encapsulation_standard = "G.993.2_Annex_K_PTM";
 	else if(strcmp(str, "auto") == 0)
 		dsl_link_encapsulation_standard = "G.994.1";
+	else
+		dsl_link_encapsulation_standard = "unknown";
 
 	return dsl_link_encapsulation_standard;
 }

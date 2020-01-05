@@ -683,12 +683,12 @@ static void parse_obj(char *object, json_object *jobj, DMOBJ *pobj, int index, s
 	pobj[index].obj = obj_str;
 
 	//nextobj
-	if (obj_number != 0) {
+	if (obj_number != 0)
 		next_obj = dmcallocjson(obj_number+1, sizeof(struct dm_obj_s));
-		pobj[index].nextobj = next_obj;
-	} else {
-		pobj[index].nextobj = NULL;
-	}
+	else
+		next_obj = NULL;
+
+	pobj[index].nextobj = next_obj;
 
 	//leaf
 	if (param_number != 0) {

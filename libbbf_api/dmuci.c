@@ -405,7 +405,7 @@ int dmuci_change_packages(struct list_head *clist)
 }
 
 /**** UCI SET *****/
-char *dmuci_set_value(char *package, char *section, char *option, char *value)
+const char *dmuci_set_value(char *package, char *section, char *option, char *value)
 {
 	struct uci_ptr ptr = {0};
 
@@ -422,13 +422,13 @@ char *dmuci_set_value(char *package, char *section, char *option, char *value)
 	return "";
 }
 
-char *dmuci_set_varstate_value(char *package, char *section, char *option, char *value)
+const char *dmuci_set_varstate_value(char *package, char *section, char *option, char *value)
 {
 	struct uci_ptr ptr = {0};
 
 	uci_add_delta_path(uci_varstate_ctx, uci_varstate_ctx->savedir);
 	uci_set_savedir(uci_varstate_ctx, VARSTATE_CONFIG);
-	
+
 	if (dmuci_lookup_ptr(uci_varstate_ctx, &ptr, package, section, option, value)) {
 		return "";
 	}
@@ -471,29 +471,27 @@ int dmuci_del_list_value(char *package, char *section, char *option, char *value
 }
 
 /****** UCI ADD *******/
-int dmuci_add_section(char *package, char *stype, struct uci_section **s, char **value)
+const char * dmuci_add_section(char *package, char *stype, struct uci_section **s, char **value)
 {
 	struct uci_ptr ptr = {0};
+	const char *val = "";
+
 	*s = NULL;
 
-	if (dmuci_lookup_ptr(uci_ctx, &ptr, package, NULL, NULL, NULL)) {
-		*value = "";
-		return -1;
-	}
-	if (uci_add_section(uci_ctx, ptr.p, stype, s) != UCI_OK) {
-		*value = "";
-		return -1;
-	}
+	if (dmuci_lookup_ptr(uci_ctx, &ptr, package, NULL, NULL, NULL) == 0
+		&& uci_add_section(uci_ctx, ptr.p, stype, s) == UCI_OK)
+		val = dmstrdup((*s)->e.name);
 
-	*value = dmstrdup((*s)->e.name); // MEM WILL BE FREED IN DMMEMCLEAN
-	return 0;
+	*value = val;
+	return val;
 }
 
-int dmuci_add_section_and_rename(char *package, char *stype, struct uci_section **s, char **value)
+const char * dmuci_add_section_and_rename(char *package, char *stype, struct uci_section **s, char **value)
 {
-	int r = dmuci_add_section(package, stype, s, value);
-	dmuci_rename_section_by_section(*s, *value);
-	return r;
+	const char *name = dmuci_add_section(package, stype, s, value);
+
+	dmuci_rename_section_by_section(*s, name);
+	return name;
 }
 
 int dmuci_add_state_section(char *package, char *stype, struct uci_section **s, char **value)
@@ -639,7 +637,7 @@ int dmuci_get_value_by_section_list(struct uci_section *s, char *option, struct 
 }
 
 /**** UCI SET by section pointer ****/
-char *dmuci_set_value_by_section(struct uci_section *s, char *option, char *value)
+const char *dmuci_set_value_by_section(struct uci_section *s, char *option, char *value)
 {
 	struct uci_ptr up = {0};
 

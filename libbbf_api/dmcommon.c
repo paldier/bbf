@@ -1574,14 +1574,6 @@ char* int_period_to_date_time_format(int time)
 	return datetime;
 }
 
-int isfileexist(char *filepath)
-{
-	if( access( filepath, F_OK ) != -1 )
-	    return 1;
-	else
-		return 0;
-}
-
 int isfolderexist(char *folderpath)
 {
 	DIR* dir = opendir(folderpath);
@@ -1613,64 +1605,6 @@ int copy_temporary_file_to_original_file(char *f1, char *f2)
 	fclose(ftmp);
 	fclose(fp);
 	return 1;
-}
-
-char* readFileContent(char *filepath)
-{
-	char *str = NULL, *tmp = NULL, *res = NULL;
-	int i, j = 0;
-
-	FILE *f = fopen(filepath, "rb");
-	if (f == NULL)
-		return "";
-	fseek(f, 0, SEEK_END);
-	long fsize = ftell(f);
-	fseek(f, 0, SEEK_SET);
-
-	char *filecontent = dmmalloc(fsize + 1);
-	fsize = fread(filecontent, 1, fsize, f);
-	fclose(f);
-
-	filecontent[fsize] = 0;
-	for (i = 0; i < strlen(filecontent); i++) {
-		if (filecontent[i] < 48 || (filecontent[i] > 57 && filecontent[i] < 65) || (filecontent[i] > 90 && filecontent[i] < 91) || filecontent[i] > 122) {
-			if (!j)
-				continue;
-			else
-				break;
-		}
-		if (!tmp) {
-			dmasprintf(&str, "%c", filecontent[i]);
-			j++;
-			tmp = dmstrdup(str);
-			continue;
-		}
-		j++;
-		dmasprintf(&str, "%s%c", tmp, filecontent[i]);
-		if(tmp){
-			dmfree(tmp);
-			tmp = NULL;
-		}
-		tmp = dmstrdup(str);
-		if (str != NULL) {
-			dmfree(str);
-			str = NULL;
-		}
-	}
-	res = (char *)dmmalloc((j+1)*sizeof(char));
-	strcpy(res, tmp);
-	res[j] = 0;
-	return res;
-
-}
-
-void writeFileContent(const char *filepath, const char *data)
-{
-    FILE *fp = fopen(filepath, "ab");
-    if (fp != NULL) {
-        fputs(data, fp);
-        fclose(fp);
-    }
 }
 
 bool match(const char *string, const char *pattern)

@@ -11,6 +11,8 @@
 #include "dmentry.h"
 #include "usb.h"
 
+#include <fcntl.h>
+
 /* *** Device.USB. *** */
 DMOBJ tUSBObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
@@ -174,64 +176,175 @@ DMLEAF tUSBUSBHostsHostDeviceConfigurationInterfaceParams[] = {
 /*************************************************************
 * INIT
 *************************************************************/
-void init_usb_port(struct uci_section *dm, char *folder_name, char *folder_path, struct usb_port *port)
+static void init_usb_port(struct uci_section *dm, char *folder_name, char *folder_path, struct usb_port *port)
 {
-	port->dm_usb_port = dm;
-	port->folder_name = dmstrdup(folder_name);
-	port->folder_path = dmstrdup(folder_path);
+	port->dm_usb_port= dm;
+	port->folder_name= dmstrdup(folder_name);
+	port->folder_path= dmstrdup(folder_path);
 }
 
-void init_usb_interface(struct uci_section *dm, char *iface_name, char *iface_path, char *statistics_path, char *portlink, struct usb_interface *iface)
+static void init_usb_interface(struct uci_section *dm, char *iface_name, char *iface_path, char *statistics_path, char *portlink, struct usb_interface *iface)
 {
-	iface->dm_usb_iface = dm;
-	iface->iface_name = dmstrdup(iface_name);
-	iface->iface_path = dmstrdup(iface_path);
-	iface->portlink = dmstrdup(portlink);
-	iface->statistics_path = dmstrdup(statistics_path);
+	iface->dm_usb_iface= dm;
+	iface->iface_name= dmstrdup(iface_name);
+	iface->iface_path= dmstrdup(iface_path);
+	iface->portlink= dmstrdup(portlink);
+	iface->statistics_path= dmstrdup(statistics_path);
 }
 
 /*************************************************************
-* ENTRY METHOD
+ * ENTRY METHOD
 *************************************************************/
+static inline int char_is_valid(char c)
+{
+	return c > 0x20 && c < 0x7f;
+}
+
+static int __read_sysfs_file(const char *file, char *dst, unsigned len)
+{
+	char *content;
+	int fd;
+	int rlen;
+	int i, n;
+	int rc = 0;
+
+	content = alloca(len);
+	dst[0] = 0;
+
+	fd = open(file, O_RDONLY);
+	if (fd == -1)
+		return -1;
+
+	rlen = read(fd, content, len - 1);
+	if (rlen == -1) {
+		rc = -1;
+		goto out;
+	}
+
+	content[rlen] = 0;
+	for (i = 0, n = 0; i < rlen; i++) {
+		if (!char_is_valid(content[i])) {
+			if (i == 0)
+				continue;
+			else
+				break;
+		}
+		dst[n++] = content[i];
+	}
+	dst[n] = 0;
+
+out:
+	close(fd);
+	return rc;
+}
+
+static int read_sysfs_file(const char *file, char **value)
+{
+	char buf[128];
+	int rc;
+
+	rc =  __read_sysfs_file(file, buf, sizeof(buf));
+	*value = dmstrdup(buf);
+
+	return rc;
+}
+
+static int read_sysfs(const char *path, const char *name, char **value)
+{
+	char file[256];
+
+	snprintf(file, sizeof(file), "%s/%s", path, name);
+	return read_sysfs_file(file, value);
+}
+
+static int __read_sysfs(const char *path, const char *name, char *dst, unsigned len)
+{
+	char file[256];
+
+	snprintf(file, sizeof(file), "%s/%s", path, name);
+	return __read_sysfs_file(file, dst, len);
+}
+
+static int read_sysfs_usb_port(const struct usb_port *port, const char *name, char **value)
+{
+	return read_sysfs(port->folder_path, name, value);
+}
+
+static int read_sysfs_usb_iface(const struct usb_interface *iface, const char *name, char **value)
+{
+	return read_sysfs(iface->iface_path, name, value);
+}
+
+static int __read_sysfs_usb_port(const struct usb_port *port, const char *name, char *dst, unsigned len)
+{
+	return __read_sysfs(port->folder_path, name, dst, len);
+}
+
+static int __read_sysfs_usb_iface(const struct usb_interface *iface, const char *name, char *dst, unsigned len)
+{
+	return __read_sysfs(iface->iface_path, name, dst, len);
+}
+
+static void writeFileContent(const char *filepath, const char *data)
+{
+	FILE *fp = fopen(filepath, "ab");
+
+	if (fp != NULL) {
+		fputs(data, fp);
+		fclose(fp);
+	}
+}
+
 int browseUSBInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	DIR *dir;
 	struct dirent *ent;
-	char *netfolderpath, *iface_name, *iface_path, *statistics_path, *port_link, *instnbr = NULL, *instance = NULL;
+	char *iface_path, *statistics_path, *v, *instnbr = NULL, *instance = NULL;
 	size_t length;
 	char **foldersplit;
-	struct usb_interface iface = {};
+	struct uci_section *s;
+	struct usb_interface iface= {};
 	LIST_HEAD(dup_list);
 	struct sysfs_dmsection *p;
 
 	synchronize_system_folders_with_dmmap_opt(SYSFS_USB_DEVICES_PATH, "dmmap_usb", "dmmap_interface", "port_link", "usb_iface_instance", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
-		dmasprintf(&netfolderpath, "%s/%s/net", SYSFS_USB_DEVICES_PATH, p->sysfs_folder_name);
+		char netfolderpath[256];
+		char port_link[128];
+		char iface_name[64];
+
+		port_link[0] = 0;
+		iface_name[0] = 0;
+
+		snprintf(netfolderpath, sizeof(netfolderpath), "%s/%s/net", SYSFS_USB_DEVICES_PATH, p->sysfs_folder_name);
 		if(!isfolderexist(netfolderpath)){
 			//dmuci_delete_by_section_unnamed_bbfdm(p->dm, NULL, NULL);
 			continue;
 		}
 		if(p->dm){
 			foldersplit= strsplit(p->sysfs_folder_name, ":", &length);
-			dmasprintf(&port_link, "%s", foldersplit[0]);
+			snprintf(port_link, sizeof(port_link), "%s", foldersplit[0]);
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, p->dm, "port_link", port_link);
 		}
 		sysfs_foreach_file(netfolderpath, dir, ent) {
 			if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
 				continue;
-			dmasprintf(&iface_name, "%s", ent->d_name);
+
+			snprintf(iface_name, sizeof(iface_name), "%s", ent->d_name);
 			break;
 		}
-		if (dir) closedir(dir);
+		if (dir)
+			closedir(dir);
+
 		dmasprintf(&iface_path, "%s/%s", netfolderpath, iface_name);
 		dmasprintf(&statistics_path, "%s/statistics", iface_path);
 		init_usb_interface(p->dm, iface_name, iface_path, statistics_path, port_link, &iface);
 		instance =  handle_update_instance(1, dmctx, &instnbr, update_instance_alias, 3, p->dm, "usb_iface_instance", "usb_iface_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, &iface, instance) == DM_STOP)
 			break;
-    }
-    free_dmmap_config_dup_list(&dup_list);
-    return 0;
+	}
+	free_dmmap_config_dup_list(&dup_list);
+	return 0;
 }
 
 int browseUSBPortInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
@@ -279,15 +392,15 @@ int browseUSBUSBHostsHostInst(struct dmctx *dmctx, DMNODE *parent_node, void *pr
 	check_create_dmmap_package("dmmap_usb");
 	synchronize_system_folders_with_dmmap_opt(SYSFS_USB_DEVICES_PATH, "dmmap_usb", "dmmap_host", "port_link", "usb_host_instance", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
-		if(strstr(p->sysfs_folder_name, "usb") != p->sysfs_folder_name){
-			dmuci_delete_by_section_unnamed_bbfdm(p->dm, NULL, NULL);
+		if(!strstr(p->sysfs_folder_name, "usb"))
 			continue;
-		}
+
 		init_usb_port(p->dm, p->sysfs_folder_name, p->sysfs_folder_path, &port);
 		port.dmsect= p->dm;
-		instance =  handle_update_instance(1, dmctx, &instnbr, update_instance_alias_bbfdm, 3, p->dm, "usb_host_instance", "usb_host_alias");
+		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias_bbfdm, 3, p->dm, "usb_host_instance", "usb_host_alias");
+
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, &port, instance) == DM_STOP)
-			return 0;
+			break;
 	}
 	free_dmmap_config_dup_list(&dup_list);
 	return 0;
@@ -301,7 +414,6 @@ int synchronize_usb_devices_with_dmmap_opt_recursively(char *sysfsrep, char *dmm
 	struct dirent *ent;
 	char *v, *dmmap_file_path, *sysfs_rep_path, *instance= NULL;
 	struct sysfs_dmsection *p;
-	char *deviceClassFile = NULL, *deviceClass = NULL, *hubpath;
 	regex_t regex1 = {};
 	regex_t regex2 = {};
 
@@ -314,11 +426,18 @@ int synchronize_usb_devices_with_dmmap_opt_recursively(char *sysfsrep, char *dmm
 	sysfs_foreach_file(sysfsrep, dir, ent) {
 		if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
 			continue;
-		if(regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) ==0) {
-			dmasprintf(&deviceClassFile, "%s/%s/bDeviceClass", sysfsrep, ent->d_name);
-			deviceClass= readFileContent(deviceClassFile);
+
+		if(regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) ==0){
+			char deviceClassFile[256];
+			char deviceClass[16];
+
+			snprintf(deviceClassFile, sizeof(deviceClassFile), "%s/%s/bDeviceClass", sysfsrep, ent->d_name);
+			__read_sysfs_file(deviceClassFile, deviceClass, sizeof(deviceClass));
+
 			if(strncmp(deviceClass, "09", 2) == 0){
-				dmasprintf(&hubpath, "%s/%s", sysfsrep, ent->d_name);
+				char hubpath[256];
+
+				snprintf(hubpath, sizeof(hubpath), "%s/%s", sysfsrep, ent->d_name);
 				synchronize_usb_devices_with_dmmap_opt_recursively(hubpath, dmmap_package, dmmap_section, opt_name, inst_opt, 0, dup_list);
 			}
 			/*
@@ -386,15 +505,17 @@ int browseUSBUSBHostsHostDeviceInst(struct dmctx *dmctx, DMNODE *parent_node, vo
 
 int browseUSBUSBHostsHostDeviceConfigurationInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	struct usb_port *usb_dev = (struct usb_port*)prev_data;
-	struct usb_port port = {0};
+	const struct usb_port *usb_dev = prev_data;
+	struct usb_port port= {};
 	struct uci_section *s;
-	char *v, *instnbr = NULL, *nbre, *filepath = NULL;
+	char *v, *instance, *instnbr = NULL;
+	char *filepath= NULL;
+	char nbre[16];
 
-	dmasprintf(&filepath, "%s/bNumConfigurations", usb_dev->folder_path);
-	nbre = readFileContent(filepath);
-	if (nbre[0] == '0')
+	__read_sysfs_usb_port(usb_dev, "bNumConfigurations", nbre, sizeof(nbre));
+	if(nbre[0] == '0')
 		return 0;
+
 	check_create_dmmap_package("dmmap_usb");
 	s = is_dmmap_section_exist("dmmap_usb", "usb_device_conf");
 	if (!s) dmuci_add_section_bbfdm("dmmap_usb", "usb_device_conf", &s, &v);
@@ -463,7 +584,7 @@ int get_USB_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, void *da
 		if (rc > 0) {
 			buffer[rc] = 0;
 
-			if(!strstr(buffer, "/usb") == NULL)
+			if(strstr(buffer, "/usb"))
 				nbre++;
 		}
 	}
@@ -497,18 +618,21 @@ int get_USB_PortNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
+static int isfileexist(const char *filepath)
+{
+	return access(filepath, F_OK) == 0;
+}
+
 int get_USBInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL, *carrier;
-	dmasprintf(&filepath, "%s/carrier", usbiface->iface_path);
-	if(!isfileexist(filepath)){
-		*value= "0";
-		return 0;
-	}
-	carrier= readFileContent(filepath);
-	*value= carrier[0]=='0'?"0":"1";
-	return 0;
+	char carrier[8];
+
+	__read_sysfs_usb_iface(data, "carrier", carrier, sizeof(carrier));
+
+	if (carrier[0] == '1')
+		*value = "1";
+	else
+		*value = "0";
 }
 
 int set_USBInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
@@ -525,12 +649,14 @@ int set_USBInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char 
 
 int get_USBInterface_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL, *carrier;
-	dmasprintf(&filepath, "%s/carrier", usbiface->iface_path);
-	carrier= readFileContent(filepath);
-	*value= carrier[0]=='0'?"Down":"Up";
-	return 0;
+	char carrier[8];
+
+	__read_sysfs_usb_iface(data, "carrier", carrier, sizeof(carrier));
+
+	if (carrier[0] == '1')
+		*value = "up";
+	else
+		*value = "down";
 }
 
 int get_USBInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -568,8 +694,9 @@ int get_USBInterface_LastChange(char *refparam, struct dmctx *ctx, void *data, c
 
 int get_USBInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *iface= (struct usb_interface *)data;
-	adm_entry_get_linker_param(ctx, dm_print_path("%s%Ethernet%Interface%c", dmroot, dm_delim, dm_delim, dm_delim), iface->iface_name, value);
+	const struct usb_interface *iface = data;
+
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), iface->iface_name, value);
 	return 0;
 }
 
@@ -593,20 +720,12 @@ int get_USBInterface_Upstream(char *refparam, struct dmctx *ctx, void *data, cha
 
 int get_USBInterface_MACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/address", usbiface->iface_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "address", value);
 }
 
 int get_USBInterface_MaxBitRate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/queues/tx-0/tx_maxrate", usbiface->iface_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "queues/tx-0/tx_maxrate", value);
 }
 
 int get_USBInterface_Port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -617,56 +736,32 @@ int get_USBInterface_Port(char *refparam, struct dmctx *ctx, void *data, char *i
 
 int get_USBInterfaceStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/tx_bytes", usbiface->statistics_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "tx_bytes", value);
 }
 
 int get_USBInterfaceStats_BytesReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/rx_bytes", usbiface->statistics_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "rx_bytes", value);
 }
 
 int get_USBInterfaceStats_PacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/tx_packets", usbiface->statistics_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "tx_packets", value);
 }
 
 int get_USBInterfaceStats_PacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/rx_packets", usbiface->statistics_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "rx_packets", value);
 }
 
 int get_USBInterfaceStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/tx_errors", usbiface->statistics_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "tx_errors", value);
 }
 
 int get_USBInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/rx_errors", usbiface->statistics_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "rx_errors", value);
 }
 
 int get_USBInterfaceStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -685,20 +780,12 @@ int get_USBInterfaceStats_UnicastPacketsReceived(char *refparam, struct dmctx *c
 
 int get_USBInterfaceStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/tx_dropped", usbiface->statistics_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "tx_dropped", value);
 }
 
 int get_USBInterfaceStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/rx_dropped", usbiface->statistics_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_iface(data, "rx_dropped", value);
 }
 
 int get_USBInterfaceStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -757,33 +844,30 @@ int set_USBPort_Alias(char *refparam, struct dmctx *ctx, void *data, char *insta
 
 int get_USBPort_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* port=(struct usb_port *)data;
+	const struct usb_port *port = data;
 	*value= dmstrdup(port->folder_name);
 	return 0;
 }
 
 int get_USBPort_Standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* port= (struct usb_port *) data;
-	char *filepath= NULL, *bcddev, *strhex;
+	char buf[16];
 
-	dmasprintf(&filepath, "%s/bcdDevice", port->folder_path);
-	bcddev= readFileContent(filepath);
-	int bcdusb = (int)strtol(bcddev, NULL, 16);
-	dmasprintf(&strhex, "%04X", bcdusb);
-	dmasprintf(value, "%c.%c", strhex[1], strhex[2]);
+	__read_sysfs_usb_port(data, "bcdDevice", buf, sizeof(buf));
+	dmasprintf(value, "%c.%c", buf[0], buf[0]);
 	return 0;
 }
 
 int get_USBPort_Type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL, *deviceclass;
-	dmasprintf(&filepath, "%s/bDeviceClass", port->folder_path);
-	deviceclass= readFileContent(filepath);
-	if(strstr(port->folder_name,"usb") == port->folder_name)
+	const struct usb_port *port = data;
+	char deviceclass[32];
+
+	__read_sysfs_usb_port(port, "bDeviceClass", deviceclass, sizeof(deviceclass));
+
+	if(strstr(port->folder_name, "usb") == port->folder_name)
 		*value= "Host";
-	else if(strcmp(deviceclass, "09") ==0)
+	else if (strcmp(deviceclass, "09") == 0)
 		*value= "Hub";
 	else
 		*value= "Device";
@@ -797,10 +881,10 @@ int get_USBPort_Receptacle(char *refparam, struct dmctx *ctx, void *data, char *
 
 int get_USBPort_Rate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL, *speed;
-	dmasprintf(&filepath, "%s/speed", port->folder_path);
-	speed= readFileContent(filepath);
+	char speed[16];
+
+	__read_sysfs_usb_port(data, "speed", speed, sizeof(speed));
+
 	if(strcmp(speed, "1.5") == 0)
 		*value= "Low";
 	else if(strcmp(speed, "12") == 0)
@@ -814,21 +898,17 @@ int get_USBPort_Rate(char *refparam, struct dmctx *ctx, void *data, char *instan
 
 int get_USBPort_Power(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL, *folderpath= NULL, *powercontrol;
+	char pwrctl[16];
 
-	dmasprintf(&folderpath, "%s/power", port->folder_path);
-	if(!isfolderexist(folderpath))
-	{
-		*value= "";
-		return 0;
-	}
-	dmasprintf(&filepath, "%s/power/control", port->folder_path);
-	powercontrol= readFileContent(filepath);
-	if(strcmp(powercontrol, "auto") == 0)
+	__read_sysfs_usb_port(data, "power/control", pwrctl, sizeof(pwrctl));
+
+	if (pwrctl[0] == 0)
+		*value = "";
+	else if (!strcmp(pwrctl, "auto"))
 		*value="Self";
 	else
 		*value="Bus";
+
 	return 0;
 }
 
@@ -869,12 +949,10 @@ int set_USBUSBHostsHost_Alias(char *refparam, struct dmctx *ctx, void *data, cha
 
 int get_USBUSBHostsHost_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *usbhost= (struct usb_port *)data;
-	char *filepath= NULL, *up;
-	dmasprintf(&filepath, "%s/power/wakeup", usbhost->folder_path);
-	up= readFileContent(filepath);
-	*value= strcmp(up, "enabled") == 0 ?"1":"0";
-	return 0;
+	char up[32];
+
+	__read_sysfs_usb_port(data, "power/wakeup", up, sizeof(up));
+	*value = strcmp(up, "enabled") == 0 ? "1" : "0";
 }
 
 int set_USBUSBHostsHost_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
@@ -907,10 +985,10 @@ int get_USBUSBHostsHost_Name(char *refparam, struct dmctx *ctx, void *data, char
 
 int get_USBUSBHostsHost_Type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *host= (struct usb_port *)data;
-	char *filepath= NULL, *serial;
-	dmasprintf(&filepath, "%s/serial", host->folder_path);
-	serial= readFileContent(filepath);
+	char serial[64];
+
+	__read_sysfs_usb_port(data, "serial", serial, sizeof(serial));
+
 	if(strcasestr(serial, "ohci")!=NULL)
 		*value= "OHCI";
 	else if(strcasestr(serial, "ehci")!=NULL)
@@ -942,15 +1020,11 @@ int set_USBUSBHostsHost_Reset(char *refparam, struct dmctx *ctx, void *data, cha
 
 int get_USBUSBHostsHost_PowerManagementEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *host= (struct usb_port *)data;
-	char *filepath= NULL, *power;
-	dmasprintf(&filepath, "%s/power/level", host->folder_path);
-	if(!isfileexist(filepath)){
-		*value= "false";
-		return 0;
-	}
-	power= readFileContent(filepath);
-	if(strcmp(power, "suspend") == 0)
+	char power[64];
+
+	__read_sysfs_usb_port(data, "power/level", power, sizeof(power));
+
+	if(power[0] == 0 || strcmp(power, "suspend") == 0)
 		*value= "false";
 	else
 		*value= "true";
@@ -982,21 +1056,20 @@ int set_USBUSBHostsHost_PowerManagementEnable(char *refparam, struct dmctx *ctx,
 
 int get_USBUSBHostsHost_USBVersion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *usbhost= (struct usb_port *)data;
-	char *strhex, *filepath= NULL;
+	const struct usb_port *port = data;
+	char file[256];
+	char buf[16] = { 0, 0 };
 
-	dmasprintf(&filepath, "%s/bcdDevice", usbhost->folder_path);
-	strhex= readFileContent(filepath);
+	snprintf(file, sizeof(file), "%s/bcdDevice", port->folder_path);
+	__read_sysfs_file(file, buf, sizeof(buf));
 
-	dmasprintf(value, "%c.%c", strhex[1], strhex[2]);
-	return 0;
+	dmasprintf(value, "%c.%c", buf[1], buf[2]);
 }
 
 int get_number_devices(char *folderpath, int *nbre)
 {
 	DIR *dir;
 	struct dirent *ent;
-	char *deviceClassFile = NULL, *deviceClass = NULL, *hubpath;
 	regex_t regex1 = {};
 	regex_t regex2 = {};
 
@@ -1004,11 +1077,17 @@ int get_number_devices(char *folderpath, int *nbre)
 	regcomp(&regex2, "^[0-9][0-9]*-[0-9]*[0-9]\\.[0-9]*[0-9]$", 0);
 
 	sysfs_foreach_file(folderpath, dir, ent) {
-		if (regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) == 0) {
-			dmasprintf(&deviceClassFile, "%s/%s/bDeviceClass", folderpath, ent->d_name);
-			deviceClass = readFileContent(deviceClassFile);
-			if (strncmp(deviceClass, "09", 2) == 0) {
-				dmasprintf(&hubpath, "%s/%s", folderpath, ent->d_name);
+		if(regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) ==0){
+			char deviceClassFile[256];
+			char deviceClass[16];
+
+			snprintf(deviceClassFile, sizeof(deviceClassFile), "%s/%s/bDeviceClass", folderpath, ent->d_name);
+			__read_sysfs_file(deviceClassFile, deviceClass, sizeof(deviceClass));
+
+			if(strncmp(deviceClass, "09", 2) == 0){
+				char hubpath[256];
+
+				snprintf(hubpath, sizeof(hubpath), "%s/%s", folderpath, ent->d_name);
 				get_number_devices(hubpath, nbre);
 			}
 			(*nbre)++;
@@ -1044,38 +1123,17 @@ int get_USBUSBHostsHostDevice_DeviceNumber(char *refparam, struct dmctx *ctx, vo
 
 int get_USBUSBHostsHostDevice_USBVersion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* usbdev= (struct usb_port *) data;
-	char *strhex, *filepath;
-
-	dmasprintf(&filepath,"%s/bcdDevice", usbdev->folder_path);
-	strhex= readFileContent(filepath);
-	dmasprintf(value, "%c.%c", strhex[1], strhex[2]);
-	return 0;
+	return read_sysfs_usb_port(data, "bcdDevice", value);
 }
 
 int get_USBUSBHostsHostDevice_DeviceClass(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* usbdev= (struct usb_port *) data;
-	char *bDevCls, *filepath;
-
-	dmasprintf(&filepath,"%s/bDeviceClass", usbdev->folder_path);
-	bDevCls= readFileContent(filepath);
-
-	dmasprintf(value, "%c%c", bDevCls[0], bDevCls[1]);
-	return 0;
+	return read_sysfs_usb_port(data, "bDeviceClass", value);
 }
 
 int get_USBUSBHostsHostDevice_DeviceSubClass(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* usbdev= (struct usb_port *) data;
-	char *bDevCls, *filepath;
-
-	dmasprintf(&filepath,"%s/bDeviceSubClass", usbdev->folder_path);
-	bDevCls= readFileContent(filepath);
-
-	dmasprintf(value, "%c%c", bDevCls[0], bDevCls[1]);
-
-	return 0;
+	return read_sysfs_usb_port(data, "bDeviceSubClass", value);
 }
 
 int get_USBUSBHostsHostDevice_DeviceVersion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -1086,69 +1144,32 @@ int get_USBUSBHostsHostDevice_DeviceVersion(char *refparam, struct dmctx *ctx, v
 
 int get_USBUSBHostsHostDevice_DeviceProtocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* usbdev= (struct usb_port *) data;
-	char *bDevProto, *filepath;
-
-	dmasprintf(&filepath,"%s/bDeviceProtocol", usbdev->folder_path);
-	bDevProto= readFileContent(filepath);
-
-	dmasprintf(value, "%c%c", bDevProto[0], bDevProto[1]);
-
-	return 0;
+	return read_sysfs_usb_port(data, "bDeviceProtocol", value);
 }
 
 int get_USBUSBHostsHostDevice_ProductID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* usbdev= (struct usb_port *) data;
-	char *idProd, *filepath;
-
-	dmasprintf(&filepath,"%s/idProduct", usbdev->folder_path);
-	idProd= readFileContent(filepath);
-
-	dmasprintf(value, "%c%c%c%c", idProd[0], idProd[1], idProd[2], idProd[3]);
-	return 0;
+	return read_sysfs_usb_port(data, "idProduct", value);
 }
 
 int get_USBUSBHostsHostDevice_VendorID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* usbdev= (struct usb_port *) data;
-	char *idVendor, *filepath;
-
-	dmasprintf(&filepath,"%s/idVendor", usbdev->folder_path);
-	idVendor= readFileContent(filepath);
-
-	dmasprintf(value, "%c%c%c%c", idVendor[0], idVendor[1], idVendor[2], idVendor[3]);
-	return 0;
+	return read_sysfs_usb_port(data, "idVendor", value);
 }
 
 int get_USBUSBHostsHostDevice_Manufacturer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* usbdev= (struct usb_port *) data;
-	char *filepath;
-
-	dmasprintf(&filepath,"%s/manufacturer", usbdev->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "manufacturer", value);
 }
 
 int get_USBUSBHostsHostDevice_ProductClass(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* usbdev= (struct usb_port *) data;
-	char *filepath;
-
-	dmasprintf(&filepath,"%s/product", usbdev->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "product", value);
 }
 
 int get_USBUSBHostsHostDevice_SerialNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port* usbdev= (struct usb_port *) data;
-	char *filepath;
-
-	dmasprintf(&filepath,"%s/urbnum", usbdev->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "urbnum", value);
 }
 
 int get_USBUSBHostsHostDevice_Port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -1183,19 +1204,7 @@ int get_USBUSBHostsHostDevice_USBPort(char *refparam, struct dmctx *ctx, void *d
 
 int get_USBUSBHostsHostDevice_Rate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port = (struct usb_port *)data;
-	char *filepath = NULL, *speed;
-	dmasprintf(&filepath, "%s/speed", port->folder_path);
-	speed = readFileContent(filepath);
-	if (strcmp(speed, "1.5") == 0)
-		*value = "Low";
-	else if (strcmp(speed, "12") == 0)
-		*value = "Full";
-	else if (strcmp(speed, "480") == 0)
-		*value = "High";
-	else
-		*value = "Super";
-	return 0;
+	return get_USBPort_Rate(refparam, ctx, data, instance, value);
 }
 
 int get_USBUSBHostsHostDevice_Parent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -1219,21 +1228,16 @@ out:
 
 int get_USBUSBHostsHostDevice_MaxChildren(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/maxchild", port->folder_path);
-	*value = readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "maxchild", value);
 }
 
 int get_USBUSBHostsHostDevice_IsSuspended(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL, *status;
-	dmasprintf(&filepath, "%s/power/runtime_status", port->folder_path);
-	status = readFileContent(filepath);
-	if (strncmp(status, "suspended", 9) == 0)
-		*value = "1";
+	char status[16];
+
+	__read_sysfs_usb_port(data, "power/runtime_status", status, sizeof(status));
+	if(strncmp(status, "suspended", 9) == 0)
+		*value= "1";
 	else
 		*value = "0";
 	return 0;
@@ -1247,66 +1251,37 @@ int get_USBUSBHostsHostDevice_IsSelfPowered(char *refparam, struct dmctx *ctx, v
 
 int get_USBUSBHostsHostDevice_ConfigurationNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/bNumConfigurations", port->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "bNumConfigurations", value);
 }
 
 int get_USBUSBHostsHostDeviceConfiguration_ConfigurationNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value= "";
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/bConfigurationValue", port->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "bConfigurationValue", value);
 }
 
 int get_USBUSBHostsHostDeviceConfiguration_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/bNumInterfaces", port->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "bNumInterfaces", value);
 }
 
 int get_USBUSBHostsHostDeviceConfigurationInterface_InterfaceNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/bInterfaceNumber", port->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "bInterfaceNumber", value);
 }
 
 int get_USBUSBHostsHostDeviceConfigurationInterface_InterfaceClass(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/bInterfaceClass", port->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "bInterfaceClass", value);
 }
 
 int get_USBUSBHostsHostDeviceConfigurationInterface_InterfaceSubClass(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/bInterfaceSubClass", port->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "bInterfaceSubClass", value);
 }
 
 int get_USBUSBHostsHostDeviceConfigurationInterface_InterfaceProtocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port *)data;
-	char *filepath= NULL;
-	dmasprintf(&filepath, "%s/bInterfaceProtocol", port->folder_path);
-	*value= readFileContent(filepath);
-	return 0;
+	return read_sysfs_usb_port(data, "bInterfaceProtocol", value);
 }
 
 int get_linker_usb_port(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker) {

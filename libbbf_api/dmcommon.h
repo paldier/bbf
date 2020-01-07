@@ -254,10 +254,7 @@ char* int_period_to_date_time_format(int time);
 int copy_temporary_file_to_original_file(char *f1, char *f2);
 struct uci_section *is_dmmap_section_exist(char* package, char* section);
 struct uci_section *is_dmmap_section_exist_eq(char* package, char* section, char* opt, char* value);
-int isfileexist(char *filepath);
 int isfolderexist(char *folderpath);
-char* readFileContent(char *filepath);
-void writeFileContent(const char *filepath, const char *data);
 bool match(const char *string, const char *pattern);
 char * dmmap_file_path_get(const char *dmmap_package);
 #endif

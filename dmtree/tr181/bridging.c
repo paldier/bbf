@@ -1407,7 +1407,7 @@ int check_port_with_ifname (char *ifname, struct uci_section **ss)
 int get_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *mg_port, *pch, *spch, *ifname, *ifname_dup, *p, *linker = "";
-	char buf[16], plinker[32], lbuf[512];
+	char buf[16], plinker[32], lbuf[512] = { 0, 0 };
 	struct uci_section *s = NULL;
 
 	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "mg_port", &mg_port);

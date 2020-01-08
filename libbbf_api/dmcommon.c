@@ -1393,15 +1393,19 @@ char **strsplit_by_str(const char str[], char *delim)
 
 char *get_macaddr(char *interface_name)
 {
-	json_object *res;
-	char *device, *mac = "";
+	char *device = get_device(interface_name);
+	char *mac;
 
-	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", interface_name, String}}, 1, &res);
-	device = dmjson_get_value(res, 1, "device");
-	if(device[0] == '\0')
-		return "";
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", device, String}}, 1, &res);
-	mac = dmjson_get_value(res, 1, "macaddr");
+	if(device[0]) {
+		char file[128];
+		char val[32];
+
+		snprintf(file, sizeof(file), "/sys/class/net/%s/address", device);
+		dm_read_sysfs_file(file, val, sizeof(val));
+		mac = dmstrdup(val);
+	} else {
+		mac = "";
+	}
 	return mac;
 }
 

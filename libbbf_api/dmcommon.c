@@ -1514,7 +1514,7 @@ int get_shift_time_shift(char *local_time, char *shift)
 	return 0;
 }
 
-int get_stats_from_ifconfig_command(char *device, char *direction, char *option)
+int get_stats_from_ifconfig_command(const char *device, char *direction, char *option)
 {
 	char buf[1024], *pch, *pchr, *ret;
 	int pp, stats = 0;

@@ -31,6 +31,7 @@
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <net/if_arp.h>
+#include <fcntl.h>
 
 #include "dmbbf.h"
 #include "dmuci.h"
@@ -1412,11 +1413,9 @@ char *get_macaddr(char *interface_name)
 char *get_device(char *interface_name)
 {
 	json_object *res;
-	char *device = "";
 
 	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", interface_name, String}}, 1, &res);
-	device = dmjson_get_value(res, 1, "device");
-	return device;
+	return dmjson_get_value(res, 1, "device");
 }
 
 /*
@@ -1520,25 +1519,25 @@ int get_shift_time_shift(char *local_time, char *shift)
 
 int get_stats_from_ifconfig_command(const char *device, char *direction, char *option)
 {
-	char buf[1024], *pch, *pchr, *ret;
-	int pp, stats = 0;
+       char buf[1024], *pch, *pchr, *ret;
+       int pp, r, stats = 0;
 
-	pp = dmcmd("ifconfig", 1, device);
-	if (pp) {
-		dmcmd_read(pp, buf, 1024);
-		for(pch = strtok_r(buf, "\n", &pchr); pch != NULL; pch = strtok_r(NULL, "\n", &pchr)) {
-			if(!strstr(pch, direction))
-				continue;
-			ret = strstr(pch, option);
-			if(ret) {
-				strtok_r(ret, ":", &ret);
-				sscanf(ret, "%d", &stats);
-				break;
-			}
-		}
-		close(pp);
-	}
-	return stats;
+       pp = dmcmd("ifconfig", 1, device);
+       if (pp) {
+               r = dmcmd_read(pp, buf, 1024);
+               for(pch = strtok_r(buf, "\n", &pchr); pch != NULL; pch = strtok_r(NULL, "\n", &pchr)) {
+                       if(!strstr(pch, direction))
+                               continue;
+                       ret = strstr(pch, option);
+                       if(ret) {
+                               strtok_r(ret, ":", &ret);
+                               sscanf(ret, "%d", &stats);
+                               break;
+                       }
+               }
+               close(pp);
+       }
+       return stats;
 }
 
 int command_exec_output_to_array(char *cmd, char **output, int *length)
@@ -1619,4 +1618,47 @@ bool match(const char *string, const char *pattern)
 	regfree(&re);
 	if (status != 0) return false;
 	return true;
+}
+
+static inline int char_is_valid(char c)
+{
+	return c > 0x20 && c < 0x7f;
+}
+
+int dm_read_sysfs_file(const char *file, char *dst, unsigned len)
+{
+	char *content;
+	int fd;
+	int rlen;
+	int i, n;
+	int rc = 0;
+
+	content = alloca(len);
+	dst[0] = 0;
+
+	fd = open(file, O_RDONLY);
+	if (fd == -1)
+		return -1;
+
+	rlen = read(fd, content, len - 1);
+	if (rlen == -1) {
+		rc = -1;
+		goto out;
+	}
+
+	content[rlen] = 0;
+	for (i = 0, n = 0; i < rlen; i++) {
+		if (!char_is_valid(content[i])) {
+			if (i == 0)
+				continue;
+			else
+				break;
+		}
+		dst[n++] = content[i];
+	}
+	dst[n] = 0;
+
+out:
+	close(fd);
+	return rc;
 }

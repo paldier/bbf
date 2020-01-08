@@ -257,4 +257,5 @@ struct uci_section *is_dmmap_section_exist_eq(char* package, char* section, char
 int isfolderexist(char *folderpath);
 bool match(const char *string, const char *pattern);
 char * dmmap_file_path_get(const char *dmmap_package);
+int dm_read_sysfs_file(const char *file, char *dst, unsigned len);
 #endif

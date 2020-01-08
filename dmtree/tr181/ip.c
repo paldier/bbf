@@ -197,6 +197,23 @@ static inline int init_ipv6prefix_args(struct ipv6prefix_args *args, struct uci_
 /*************************************************************
 * COMMON Functions
 **************************************************************/
+static int get_ip_iface_sysfs(const struct ip_args *ip, const char *name, char **value)
+{
+	const char *device = get_device(section_name(ip->ip_sec));
+
+	if(device[0]) {
+		char file[256];
+		char val[64];
+
+		snprintf(file, sizeof(file), "/sys/class/net/%s/%s", device, name);
+		dm_read_sysfs_file(file, val, sizeof(val));
+		*value = dmstrdup(val);
+	} else {
+		*value = "0";
+	}
+	return 0;
+}
+
 static char *ubus_call_get_value_with_two_objects(char *interface, char *obj1, char *obj2, char *key)
 {
 	json_object *res, *jobj1 = NULL, *jobj2 = NULL;
@@ -493,22 +510,7 @@ int set_IPInterface_Reset(char *refparam, struct dmctx *ctx, void *data, char *i
 /*#Device.IP.Interface.{i}.MaxMTUSize!UBUS:network.interface/status/interface,@Name/mtu*/
 int get_IPInterface_MaxMTUSize(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res, *diag;
-	char *device= NULL;
-
-	dmuci_get_value_by_section_string(((struct ip_args *)data)->ip_sec, "mtu", value);
-	if(*value[0] == '\0') {
-		dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", section_name(((struct ip_args *)data)->ip_sec), String}}, 1, &res);
-		DM_ASSERT(res, *value = "");
-		device = dmjson_get_value(res, 1, "device");
-		if(device) {
-			dmubus_call("network.device", "status", UBUS_ARGS{{"name", device, String}}, 1, &diag);
-			DM_ASSERT(diag, *value = "");
-			*value = dmjson_get_value(diag, 1, "mtu");
-		}
-		return 0;
-	}
-	return 0;
+	return get_ip_iface_sysfs(data, "mtu", value);
 }
 
 int set_IPInterface_MaxMTUSize(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
@@ -758,28 +760,31 @@ int set_ipv4_addressing_type(char *refparam, struct dmctx *ctx, void *data, char
 int get_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char linker[64] = "", *proto, *device, *mac;
+	const struct ip_args *ip = data;
+	char *section;
 
-	dmuci_get_value_by_section_string(((struct ip_args *)data)->ip_sec, "proto", &proto);
+	dmuci_get_value_by_section_string(ip->ip_sec, "proto", &proto);
 	if (strstr(proto, "ppp")) {
 		snprintf(linker, sizeof(linker), "%s", section_name(((struct ip_args *)data)->ip_sec));
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cPPP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
 		goto end;
 	}
 
-	device = get_device(section_name(((struct ip_args *)data)->ip_sec));
+	section = section_name(ip->ip_sec);
+	device = get_device(section);
 	if (device[0] != '\0') {
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cVLANTermination%c", dmroot, dm_delim, dm_delim, dm_delim), device, value);
 		if (*value != NULL)
 			return 0;
 	}
 
-	mac = get_macaddr(section_name(((struct ip_args *)data)->ip_sec));
+	mac = get_macaddr(section);
 	if (mac[0] != '\0') {
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), mac, value);
 		goto end;
 	}
 
-end :
+end:
 	if (*value == NULL)
 		*value = "";
 	return 0;
@@ -1153,126 +1158,84 @@ int set_IPInterfaceIPv6Prefix_ValidLifetime(char *refparam, struct dmctx *ctx, v
 /*
  * *** Device.IP.Interface.{i}.Stats. ***
  */
-static char *get_ip_interface_statistics(char *interface, char *key)
-{
-	json_object *res, *diag;
-	char *device, *value = "0";
-
-	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", interface, String}}, 1, &res);
-	if (!res) return value;
-	device = dmjson_get_value(res, 1, "device");
-	if(device[0] != '\0') {
-		dmubus_call("network.device", "status", UBUS_ARGS{{"name", device, String}}, 1, &diag);
-		value = dmjson_get_value(diag, 2, "statistics", key);
-	}
-	return value;
-}
-
 int get_ip_interface_statistics_tx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = get_ip_interface_statistics(section_name(((struct ip_args *)data)->ip_sec), "tx_bytes");
-	return 0;
+	return get_ip_iface_sysfs(data, "statistics/tx_bytes", value);
 }
 
 int get_ip_interface_statistics_rx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = get_ip_interface_statistics(section_name(((struct ip_args *)data)->ip_sec), "rx_bytes");
-	return 0;
+	return get_ip_iface_sysfs(data, "statistics/rx_bytes", value);
 }
 
 int get_ip_interface_statistics_tx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = get_ip_interface_statistics(section_name(((struct ip_args *)data)->ip_sec), "tx_packets");
-	return 0;
+	return get_ip_iface_sysfs(data, "statistics/tx_packets", value);
 }
 
 int get_ip_interface_statistics_rx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = get_ip_interface_statistics(section_name(((struct ip_args *)data)->ip_sec), "rx_packets");
-	return 0;
+	return get_ip_iface_sysfs(data, "statistics/rx_packets", value);
 }
 
 int get_ip_interface_statistics_tx_errors(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = get_ip_interface_statistics(section_name(((struct ip_args *)data)->ip_sec), "tx_errors");
-	return 0;
+	return get_ip_iface_sysfs(data, "statistics/tx_errors", value);
 }
 
 int get_ip_interface_statistics_rx_errors(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = get_ip_interface_statistics(section_name(((struct ip_args *)data)->ip_sec), "rx_errors");
-	return 0;
+	return get_ip_iface_sysfs(data, "statistics/rx_errors", value);
 }
 
 int get_ip_interface_statistics_tx_discardpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = get_ip_interface_statistics(section_name(((struct ip_args *)data)->ip_sec), "tx_dropped");
-	return 0;
+	return get_ip_iface_sysfs(data, "statistics/tx_dropped", value);
 }
 
 int get_ip_interface_statistics_rx_discardpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = get_ip_interface_statistics(section_name(((struct ip_args *)data)->ip_sec), "rx_dropped");
-	return 0;
+	return get_ip_iface_sysfs(data, "statistics/rx_dropped", value);
 }
 
 int get_ip_interface_statistics_tx_unicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name(((struct ip_args *)data)->ip_sec));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "TX", "unicast"));
 	return 0;
 }
 
 int get_ip_interface_statistics_rx_unicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name(((struct ip_args *)data)->ip_sec));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "RX", "unicast"));
 	return 0;
 }
 
 int get_ip_interface_statistics_tx_multicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name(((struct ip_args *)data)->ip_sec));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "TX", "multicast"));
 	return 0;
 }
 
 int get_ip_interface_statistics_rx_multicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
-	char *device = get_device(section_name(((struct ip_args *)data)->ip_sec));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "RX", "multicast"));
-	return 0;
+	return get_ip_iface_sysfs(data, "statistics/multicast", value);
 }
 
 int get_ip_interface_statistics_tx_broadcastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name(((struct ip_args *)data)->ip_sec));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "TX", "broadcast"));
 	return 0;
 }
 
 int get_ip_interface_statistics_rx_broadcastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name(((struct ip_args *)data)->ip_sec));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "RX", "broadcast"));
 	return 0;
 }
 
 int get_ip_interface_statistics_rx_unknownprotopackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = get_ip_interface_statistics(section_name(((struct ip_args *)data)->ip_sec), "rx_over_errors");
+	*value = "0";
 	return 0;
 }
 
@@ -1327,6 +1290,7 @@ int set_IPInterfaceTWAMPReflector_Enable(char *refparam, struct dmctx *ctx, void
 					device = dmjson_get_value(res, 1, "device");
 					dmuci_set_value_by_section((struct uci_section *)data, "device", device);
 				}
+				dmuci_set_value_by_section((struct uci_section *)data, "device", get_device(interface));
 			} else {
 				dmuci_set_value_by_section((struct uci_section *)data, "enable", "0");
 			}

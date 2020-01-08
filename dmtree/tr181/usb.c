@@ -11,8 +11,6 @@
 #include "dmentry.h"
 #include "usb.h"
 
-#include <fcntl.h>
-
 /* *** Device.USB. *** */
 DMOBJ tUSBObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
@@ -195,55 +193,12 @@ static void init_usb_interface(struct uci_section *dm, char *iface_name, char *i
 /*************************************************************
  * ENTRY METHOD
 *************************************************************/
-static inline int char_is_valid(char c)
-{
-	return c > 0x20 && c < 0x7f;
-}
-
-static int __read_sysfs_file(const char *file, char *dst, unsigned len)
-{
-	char *content;
-	int fd;
-	int rlen;
-	int i, n;
-	int rc = 0;
-
-	content = alloca(len);
-	dst[0] = 0;
-
-	fd = open(file, O_RDONLY);
-	if (fd == -1)
-		return -1;
-
-	rlen = read(fd, content, len - 1);
-	if (rlen == -1) {
-		rc = -1;
-		goto out;
-	}
-
-	content[rlen] = 0;
-	for (i = 0, n = 0; i < rlen; i++) {
-		if (!char_is_valid(content[i])) {
-			if (i == 0)
-				continue;
-			else
-				break;
-		}
-		dst[n++] = content[i];
-	}
-	dst[n] = 0;
-
-out:
-	close(fd);
-	return rc;
-}
-
 static int read_sysfs_file(const char *file, char **value)
 {
 	char buf[128];
 	int rc;
 
-	rc =  __read_sysfs_file(file, buf, sizeof(buf));
+	rc =  dm_read_sysfs_file(file, buf, sizeof(buf));
 	*value = dmstrdup(buf);
 
 	return rc;
@@ -262,7 +217,7 @@ static int __read_sysfs(const char *path, const char *name, char *dst, unsigned 
 	char file[256];
 
 	snprintf(file, sizeof(file), "%s/%s", path, name);
-	return __read_sysfs_file(file, dst, len);
+	return dm_read_sysfs_file(file, dst, len);
 }
 
 static int read_sysfs_usb_port(const struct usb_port *port, const char *name, char **value)
@@ -432,7 +387,7 @@ int synchronize_usb_devices_with_dmmap_opt_recursively(char *sysfsrep, char *dmm
 			char deviceClass[16];
 
 			snprintf(deviceClassFile, sizeof(deviceClassFile), "%s/%s/bDeviceClass", sysfsrep, ent->d_name);
-			__read_sysfs_file(deviceClassFile, deviceClass, sizeof(deviceClass));
+			dm_read_sysfs_file(deviceClassFile, deviceClass, sizeof(deviceClass));
 
 			if(strncmp(deviceClass, "09", 2) == 0){
 				char hubpath[256];
@@ -1061,7 +1016,7 @@ int get_USBUSBHostsHost_USBVersion(char *refparam, struct dmctx *ctx, void *data
 	char buf[16] = { 0, 0 };
 
 	snprintf(file, sizeof(file), "%s/bcdDevice", port->folder_path);
-	__read_sysfs_file(file, buf, sizeof(buf));
+	dm_read_sysfs_file(file, buf, sizeof(buf));
 
 	dmasprintf(value, "%c.%c", buf[1], buf[2]);
 }
@@ -1082,7 +1037,7 @@ int get_number_devices(char *folderpath, int *nbre)
 			char deviceClass[16];
 
 			snprintf(deviceClassFile, sizeof(deviceClassFile), "%s/%s/bDeviceClass", folderpath, ent->d_name);
-			__read_sysfs_file(deviceClassFile, deviceClass, sizeof(deviceClass));
+			dm_read_sysfs_file(deviceClassFile, deviceClass, sizeof(deviceClass));
 
 			if(strncmp(deviceClass, "09", 2) == 0){
 				char hubpath[256];

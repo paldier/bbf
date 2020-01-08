@@ -405,7 +405,7 @@ int dmuci_change_packages(struct list_head *clist)
 }
 
 /**** UCI SET *****/
-const char *dmuci_set_value(char *package, char *section, char *option, char *value)
+char *dmuci_set_value(char *package, char *section, char *option, char *value)
 {
 	struct uci_ptr ptr = {0};
 
@@ -422,7 +422,7 @@ const char *dmuci_set_value(char *package, char *section, char *option, char *va
 	return "";
 }
 
-const char *dmuci_set_varstate_value(char *package, char *section, char *option, char *value)
+char *dmuci_set_varstate_value(char *package, char *section, char *option, char *value)
 {
 	struct uci_ptr ptr = {0};
 
@@ -471,10 +471,10 @@ int dmuci_del_list_value(char *package, char *section, char *option, char *value
 }
 
 /****** UCI ADD *******/
-const char * dmuci_add_section(char *package, char *stype, struct uci_section **s, char **value)
+char * dmuci_add_section(char *package, char *stype, struct uci_section **s, char **value)
 {
 	struct uci_ptr ptr = {0};
-	const char *val = "";
+	char *val = "";
 
 	*s = NULL;
 
@@ -486,9 +486,9 @@ const char * dmuci_add_section(char *package, char *stype, struct uci_section **
 	return val;
 }
 
-const char * dmuci_add_section_and_rename(char *package, char *stype, struct uci_section **s, char **value)
+char * dmuci_add_section_and_rename(char *package, char *stype, struct uci_section **s, char **value)
 {
-	const char *name = dmuci_add_section(package, stype, s, value);
+	char *name = dmuci_add_section(package, stype, s, value);
 
 	dmuci_rename_section_by_section(*s, name);
 	return name;
@@ -637,7 +637,7 @@ int dmuci_get_value_by_section_list(struct uci_section *s, char *option, struct 
 }
 
 /**** UCI SET by section pointer ****/
-const char *dmuci_set_value_by_section(struct uci_section *s, char *option, char *value)
+char *dmuci_set_value_by_section(struct uci_section *s, char *option, char *value)
 {
 	struct uci_ptr up = {0};
 

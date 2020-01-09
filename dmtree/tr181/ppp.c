@@ -259,135 +259,109 @@ int set_ppp_password(char *refparam, struct dmctx *ctx, void *data, char *instan
 	return 0;
 }
 
-static inline int ubus_get_wan_stats(void *data, char *instance, char **value, char *stat_mod)
+static int ppp_read_sysfs(struct uci_section *sect, const char *name, char **value)
 {
-	char *ifname, *proto;
-	json_object *res;
+	char *proto;
+	int rc = 0;
 
-	dmuci_get_value_by_section_string(((struct uci_section *)data), "ifname", &ifname);
-	dmuci_get_value_by_section_string(((struct uci_section *)data), "proto", &proto);
-	if (strcmp(proto, "pppoe") == 0) {
-		dmubus_call("network.device", "status", UBUS_ARGS{{"name", ifname, String}}, 1, &res);
-		DM_ASSERT(res, *value = "");
-		*value = dmjson_get_value(res, 2, "statistics", stat_mod);
+	dmuci_get_value_by_section_string(sect, "proto", &proto);
+
+	if (!strcmp(proto, "pppoe")) {
+		char *ifname;
+
+		dmuci_get_value_by_section_string(sect, "ifname", &ifname);
+		rc = get_net_device_sysfs(ifname, name, value);
 	}
-	return 0;
+	return rc;
 }
 
 /*#Device.PPP.Interface.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
 int get_ppp_eth_bytes_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	ubus_get_wan_stats(data, instance, value, "rx_bytes");
-	return 0;
+	return ppp_read_sysfs(data, "statistics/rx_bytes", value);
 }
 
 /*#Device.PPP.Interface.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
 int get_ppp_eth_bytes_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	ubus_get_wan_stats(data, instance, value, "tx_bytes");
-	return 0;
+	return ppp_read_sysfs(data, "statistics/tx_bytes", value);
 }
 
 /*#Device.PPP.Interface.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
 int get_ppp_eth_pack_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	ubus_get_wan_stats(data, instance, value, "rx_packets");
-	return 0;
+	return ppp_read_sysfs(data, "statistics/rx_packets", value);
 }
 
 /*#Device.PPP.Interface.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
 int get_ppp_eth_pack_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	ubus_get_wan_stats(data, instance, value, "tx_packets");
-	return 0;
+	return ppp_read_sysfs(data, "statistics/tx_packets", value);
 }
 
 /*#Device.PPP.Interface.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
 int get_PPPInterfaceStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	ubus_get_wan_stats(data, instance, value, "tx_errors");
-	return 0;
+	return ppp_read_sysfs(data, "statistics/tx_errors", value);
 }
 
 /*#Device.PPP.Interface.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
 int get_PPPInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	ubus_get_wan_stats(data, instance, value, "rx_errors");
-	return 0;
+	return ppp_read_sysfs(data, "statistics/rx_errors", value);
 }
 
 int get_PPPInterfaceStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name((struct uci_section *)data));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "TX", "unicast"));
 	return 0;
 }
 
 int get_PPPInterfaceStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name((struct uci_section *)data));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "RX", "unicast"));
 	return 0;
 }
 
 /*#Device.PPP.Interface.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
 int get_PPPInterfaceStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	ubus_get_wan_stats(data, instance, value, "tx_dropped");
-	return 0;
+	return ppp_read_sysfs(data, "statistics/tx_dropped", value);
 }
 
 /*#Device.PPP.Interface.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
 int get_PPPInterfaceStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	ubus_get_wan_stats(data, instance, value, "rx_dropped");
-	return 0;
+	return ppp_read_sysfs(data, "statistics/rx_dropped", value);
 }
 
 int get_PPPInterfaceStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name((struct uci_section *)data));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "TX", "multicast"));
 	return 0;
 }
 
 int get_PPPInterfaceStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
-	char *device = get_device(section_name((struct uci_section *)data));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "RX", "multicast"));
-	return 0;
+	return ppp_read_sysfs(data, "statistics/multicast", value);
 }
 
 int get_PPPInterfaceStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name((struct uci_section *)data));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "TX", "broadcast"));
 	return 0;
 }
 
 int get_PPPInterfaceStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *device = get_device(section_name((struct uci_section *)data));
-	if(device[0] != '\0')
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "RX", "broadcast"));
 	return 0;
 }
 
 /*#Device.PPP.Interface.{i}.Stats.UnknownProtoPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_over_errors*/
 int get_PPPInterfaceStats_UnknownProtoPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	ubus_get_wan_stats(data, instance, value, "rx_over_errors");
+	*value = "0";
 	return 0;
 }
 

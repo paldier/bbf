@@ -797,136 +797,101 @@ int set_br_port_tpid(char *refparam, struct dmctx *ctx, void *data, char *instan
 /**************************************************************************
 * GET STAT
 ***************************************************************************/
-static inline int get_bridge_port_statistics(void *data, char *stat_mod, char **value)
+static int br_get_sysfs(const struct bridging_port_args *br, const char *name, char **value)
 {
-	json_object *res;
-	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", value);
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", *value, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", stat_mod);
-	return 0;
+	char *device;
+
+	dmuci_get_value_by_section_string(br->bridge_port_sec, "ifname", &device);
+	return get_net_device_sysfs(device, name, value);
 }
 
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
 int get_br_port_stats_tx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_bridge_port_statistics(data, "tx_bytes", value);
-	return 0;
+	return br_get_sysfs(data, "statistics/tx_bytes", value);
 }
 
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
 int get_br_port_stats_rx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_bridge_port_statistics(data, "rx_bytes", value);
-	return 0;
+	return br_get_sysfs(data, "statistics/rx_bytes", value);
 }
 
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
 int get_br_port_stats_tx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_bridge_port_statistics(data, "tx_packets", value);
-	return 0;
+	return br_get_sysfs(data, "statistics/tx_packets", value);
 }
 
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
 int get_br_port_stats_rx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_bridge_port_statistics(data, "rx_packets", value);
-	return 0;
+	return br_get_sysfs(data, "statistics/rx_packets", value);
 }
 
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
 int get_br_port_stats_tx_errors(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_bridge_port_statistics(data, "tx_errors", value);
-	return 0;
+	return br_get_sysfs(data, "statistics/tx_errors", value);
 }
 
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
 int get_br_port_stats_rx_errors(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_bridge_port_statistics(data, "rx_errors", value);
-	return 0;
+	return br_get_sysfs(data, "statistics/rx_errors", value);
 }
 
 int get_br_port_stats_tx_unicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", &ifname);
-	if(ifname[0] != '\0' && !strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "TX", "unicast"));
 	return 0;
 }
 
 int get_br_port_stats_rx_unicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", &ifname);
-	if(ifname[0] != '\0' && !strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "RX", "unicast"));
 	return 0;
 }
 
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
 int get_br_port_stats_tx_discard_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_bridge_port_statistics(data, "tx_dropped", value);
-	return 0;
+	return br_get_sysfs(data, "statistics/tx_dropped", value);
 }
 
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
 int get_br_port_stats_rx_discard_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_bridge_port_statistics(data, "rx_dropped", value);
-	return 0;
+	return br_get_sysfs(data, "statistics/rx_dropped", value);
 }
 
 int get_br_port_stats_tx_multicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", &ifname);
-	if(ifname[0] != '\0' && !strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "TX", "multicast"));
 	return 0;
 }
 
 int get_br_port_stats_rx_multicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
-	*value = "0";
-	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", &ifname);
-	if(ifname[0] != '\0' && !strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "RX", "multicast"));
-	return 0;
+	return br_get_sysfs(data, "statistics/multicast", value);
 }
 
 int get_br_port_stats_tx_broadcast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", &ifname);
-	if(ifname[0] != '\0' && !strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "TX", "broadcast"));
 	return 0;
 }
 
 int get_br_port_stats_rx_broadcast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", &ifname);
-	if(ifname[0] != '\0' && !strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "RX", "broadcast"));
 	return 0;
 }
 
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.UnknownProtoPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_over_errors*/
 int get_br_port_stats_rx_unknown_proto_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_bridge_port_statistics(data, "rx_over_errors", value);
+	*value = "0";
 	return 0;
 }
 

@@ -1186,84 +1186,64 @@ int set_radio_auto_channel_enable(char *refparam, struct dmctx *ctx, void *data,
 /*************************************************************
 * GET STAT
 **************************************************************/
+static int radio_read_sysfs(const struct wifi_radio_args *args, const char *name, char **value)
+{
+	const char *device = section_name(args->wifi_radio_sec);
+
+	return get_net_device_sysfs(device, name, value);
+}
+
+static int ssid_read_sysfs(const struct wifi_ssid_args *args, const char *name, char **value)
+{
+	return get_net_device_sysfs(args->ifname, name, value);
+}
+
 /*#Device.WiFi.Radio.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
 int get_radio_statistics_tx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "tx_bytes");
-	return 0;
+	return radio_read_sysfs(data, "statistics/tx_bytes", value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
 int get_radio_statistics_rx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "rx_bytes");
-	return 0;
+	return radio_read_sysfs(data, "statistics/rx_bytes", value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
 int get_radio_statistics_tx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "tx_packets");
-	return 0;
+	return radio_read_sysfs(data, "statistics/tx_packets", value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
 int get_radio_statistics_rx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "rx_packets");
-	return 0;
+	return radio_read_sysfs(data, "statistics/rx_packets", value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
 int get_radio_statistics_tx_errors(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "tx_errors");
-	return 0;
+	return radio_read_sysfs(data, "statistics/tx_errors", value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
 int get_radio_statistics_rx_errors(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "rx_errors");
-	return 0;
+	return radio_read_sysfs(data, "statistics/rx_errors", value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
 int get_radio_statistics_tx_discardpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "tx_dropped");
-	return 0;
+	return radio_read_sysfs(data, "statistics/tx_dropped", value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
 int get_radio_statistics_rx_discardpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "rx_dropped");
-	return 0;
+	return radio_read_sysfs(data, "statistics/rx_dropped", value);
 }
 
 int get_WiFiRadioStats_Noise(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -1279,122 +1259,83 @@ int get_WiFiRadioStats_Noise(char *refparam, struct dmctx *ctx, void *data, char
 /*#Device.WiFi.SSID.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
 int get_ssid_statistics_tx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "tx_bytes");
-	return 0;
+	return ssid_read_sysfs(data, "statistics/tx_bytes", value);
 }
 
 /*#Device.WiFi.SSID.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
 int get_ssid_statistics_rx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "rx_bytes");
-	return 0;
+	return ssid_read_sysfs(data, "statistics/rx_bytes", value);
 }
 
 /*#Device.WiFi.SSID.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
 int get_ssid_statistics_tx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "tx_packets");
-	return 0;
+	return ssid_read_sysfs(data, "statistics/tx_packets", value);
 }
 
 /*#Device.WiFi.SSID.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
 int get_ssid_statistics_rx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "rx_packets");
-	return 0;
+	return ssid_read_sysfs(data, "statistics/rx_packets", value);
 }
 
 /*#Device.WiFi.SSID.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
 int get_WiFiSSIDStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "tx_errors");
-	return 0;
+	return ssid_read_sysfs(data, "statistics/tx_errors", value);
 }
 
 /*#Device.WiFi.SSID.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
 int get_WiFiSSIDStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "rx_errors");
-	return 0;
+	return ssid_read_sysfs(data, "statistics/rx_errors", value);
 }
 
 /*#Device.WiFi.SSID.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
 int get_WiFiSSIDStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "tx_dropped");
-	return 0;
+	return ssid_read_sysfs(data, "statistics/tx_dropped", value);
 }
 
 /*#Device.WiFi.SSID.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
 int get_WiFiSSIDStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", "rx_dropped");
-	return 0;
+	return ssid_read_sysfs(data, "statistics/rx_dropped", value);
 }
 
 int get_WiFiSSIDStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct wifi_ssid_args *)data)->ifname && strlen(((struct wifi_ssid_args *)data)->ifname)>0)
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct wifi_ssid_args *)data)->ifname, "TX", "unicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_WiFiSSIDStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct wifi_ssid_args *)data)->ifname && strlen(((struct wifi_ssid_args *)data)->ifname)>0)
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct wifi_ssid_args *)data)->ifname, "RX", "unicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_WiFiSSIDStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct wifi_ssid_args *)data)->ifname && strlen(((struct wifi_ssid_args *)data)->ifname)>0)
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct wifi_ssid_args *)data)->ifname, "TX", "multicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_WiFiSSIDStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct wifi_ssid_args *)data)->ifname && strlen(((struct wifi_ssid_args *)data)->ifname)>0)
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct wifi_ssid_args *)data)->ifname, "RX", "multicast"));
-	return 0;
+	return ssid_read_sysfs(data, "statistics/multicast", value);
 }
 
 int get_WiFiSSIDStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct wifi_ssid_args *)data)->ifname && strlen(((struct wifi_ssid_args *)data)->ifname)>0)
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct wifi_ssid_args *)data)->ifname, "TX", "broadcast"));
+	*value = "0";
 	return 0;
 }
 
 int get_WiFiSSIDStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct wifi_ssid_args *)data)->ifname && strlen(((struct wifi_ssid_args *)data)->ifname)>0)
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct wifi_ssid_args *)data)->ifname, "RX", "broadcast"));
+	*value = "0";
 	return 0;
 }
 

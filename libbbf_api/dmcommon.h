@@ -248,7 +248,6 @@ struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* secti
 int is_array_elt_exist(char **str_array, char *str, int length);
 int get_shift_time_time(int shift_time, char *local_time, int size);
 int get_shift_time_shift(char *local_time, char *shift);
-int get_stats_from_ifconfig_command(const char *device, char *direction, char *option);
 int command_exec_output_to_array(char *cmd, char **output, int *length);
 char* int_period_to_date_time_format(int time);
 int copy_temporary_file_to_original_file(char *f1, char *f2);

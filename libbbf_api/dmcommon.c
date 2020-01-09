@@ -1517,29 +1517,6 @@ int get_shift_time_shift(char *local_time, char *shift)
 	return 0;
 }
 
-int get_stats_from_ifconfig_command(const char *device, char *direction, char *option)
-{
-       char buf[1024], *pch, *pchr, *ret;
-       int pp, r, stats = 0;
-
-       pp = dmcmd("ifconfig", 1, device);
-       if (pp) {
-               r = dmcmd_read(pp, buf, 1024);
-               for(pch = strtok_r(buf, "\n", &pchr); pch != NULL; pch = strtok_r(NULL, "\n", &pchr)) {
-                       if(!strstr(pch, direction))
-                               continue;
-                       ret = strstr(pch, option);
-                       if(ret) {
-                               strtok_r(ret, ":", &ret);
-                               sscanf(ret, "%d", &stats);
-                               break;
-                       }
-               }
-               close(pp);
-       }
-       return stats;
-}
-
 int command_exec_output_to_array(char *cmd, char **output, int *length)
 {
 	FILE *fp;

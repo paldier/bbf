@@ -230,6 +230,11 @@ static int read_sysfs_usb_iface(const struct usb_interface *iface, const char *n
 	return read_sysfs(iface->iface_path, name, value);
 }
 
+static int read_sysfs_usb_net_iface(const struct usb_interface *iface, const char *name, char **value)
+{
+	return get_net_device_sysfs(iface->iface_name, name, value);
+}
+
 static int __read_sysfs_usb_port(const struct usb_port *port, const char *name, char *dst, unsigned len)
 {
 	return __read_sysfs(port->folder_path, name, dst, len);
@@ -691,89 +696,82 @@ int get_USBInterface_Port(char *refparam, struct dmctx *ctx, void *data, char *i
 
 int get_USBInterfaceStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return read_sysfs_usb_iface(data, "tx_bytes", value);
+	return read_sysfs_usb_net_iface(data, "statistics/tx_bytes", value);
 }
 
 int get_USBInterfaceStats_BytesReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return read_sysfs_usb_iface(data, "rx_bytes", value);
+	return read_sysfs_usb_net_iface(data, "statistics/rx_bytes", value);
 }
 
 int get_USBInterfaceStats_PacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return read_sysfs_usb_iface(data, "tx_packets", value);
+	return read_sysfs_usb_net_iface(data, "statistics/tx_packets", value);
 }
 
 int get_USBInterfaceStats_PacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return read_sysfs_usb_iface(data, "rx_packets", value);
+	return read_sysfs_usb_net_iface(data, "statistics/rx_packets", value);
 }
 
 int get_USBInterfaceStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return read_sysfs_usb_iface(data, "tx_errors", value);
+	return read_sysfs_usb_net_iface(data, "statistics/tx_errors", value);
 }
 
 int get_USBInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return read_sysfs_usb_iface(data, "rx_errors", value);
+	return read_sysfs_usb_net_iface(data, "statistics/rx_errors", value);
 }
 
 int get_USBInterfaceStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(usbiface->iface_name, "TX", "unicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_USBInterfaceStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(usbiface->iface_name, "RX", "unicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_USBInterfaceStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return read_sysfs_usb_iface(data, "tx_dropped", value);
+	return read_sysfs_usb_net_iface(data, "statistics/tx_dropped", value);
 }
 
 int get_USBInterfaceStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return read_sysfs_usb_iface(data, "rx_dropped", value);
+	return read_sysfs_usb_net_iface(data, "statistics/rx_dropped", value);
 }
 
 int get_USBInterfaceStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(usbiface->iface_name, "TX", "multicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_USBInterfaceStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(usbiface->iface_name, "RX", "multicast"));
-	return 0;
+	return read_sysfs_usb_net_iface(data, "statistics/multicast", value);
 }
 
 int get_USBInterfaceStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(usbiface->iface_name, "TX", "broadcast"));
+	*value = "0";
 	return 0;
 }
 
 int get_USBInterfaceStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_interface *usbiface= (struct usb_interface *)data;
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(usbiface->iface_name, "RX", "broadcast"));
+	*value = "0";
 	return 0;
 }
 
 int get_USBInterfaceStats_UnknownProtoPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	//TODO
+	*value = "0";
 	return 0;
 }
 

@@ -171,6 +171,19 @@ static inline int init_eth_port(struct eth_port_args *args, struct uci_section *
 /*************************************************************
 * COMMON Functions
 **************************************************************/
+static int eth_iface_sysfs(const struct dm_args *args, const char *name, char **value)
+{
+	char *device;
+
+	dmuci_get_value_by_section_string(args->section, "device", &device);
+	return get_net_device_sysfs(device, name, value);
+}
+
+static int eth_port_sysfs(const struct eth_port_args *args, const char *name, char **value)
+{
+	return get_net_device_sysfs(args->ifname, name, value);
+}
+
 static int is_mac_exist(char *macaddr)
 {
 	struct uci_section *s = NULL;
@@ -636,12 +649,7 @@ int get_EthernetInterface_Upstream(char *refparam, struct dmctx *ctx, void *data
 /*#Device.Ethernet.Interface.{i}.MACAddress!UBUS:network.device/status/name,@Name/macaddr*/
 int get_EthernetInterface_MACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct eth_port_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "macaddr");
-	return 0;
+	return eth_port_sysfs(data, "address", value);
 }
 
 /*#Device.Ethernet.Interface.{i}.MaxBitRate!UCI:ports/ethport,@i-1/speed*/
@@ -769,111 +777,93 @@ int get_EthernetInterface_EEECapability(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-static inline int get_ubus_ethernet_interface_stats(char **value, char *stat_mod, void *data)
-{
-	json_object *res;
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct eth_port_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", stat_mod);
-	return 0;
-}
-
 /*#Device.Ethernet.Interface.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
 int get_EthernetInterfaceStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_interface_stats(value, "tx_bytes", data);
-	return 0;
+	return eth_port_sysfs(data, "statistics/tx_bytes", value);
 }
 
 /*#Device.Ethernet.Interface.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
 int get_EthernetInterfaceStats_BytesReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_interface_stats(value, "rx_bytes", data);
-	return 0;
+	return eth_port_sysfs(data, "statistics/rx_bytes", value);
 }
 
 /*#Device.Ethernet.Interface.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
 int get_EthernetInterfaceStats_PacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_interface_stats(value, "tx_packets", data);
-	return 0;
+	return eth_port_sysfs(data, "statistics/tx_packets", value);
 }
 
 /*#Device.Ethernet.Interface.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
 int get_EthernetInterfaceStats_PacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_interface_stats(value, "rx_packets", data);
-	return 0;
+	return eth_port_sysfs(data, "statistics/rx_packets", value);
 }
 
 /*#Device.Ethernet.Interface.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
 int get_EthernetInterfaceStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_interface_stats(value, "tx_errors", data);
-	return 0;
+	return eth_port_sysfs(data, "statistics/tx_errors", value);
 }
 
 /*#Device.Ethernet.Interface.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
 int get_EthernetInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_interface_stats(value, "rx_errors", data);
-	return 0;
+	return eth_port_sysfs(data, "statistics/rx_errors", value);
 }
 
 int get_EthernetInterfaceStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct eth_port_args *)data)->ifname, "TX", "unicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_EthernetInterfaceStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct eth_port_args *)data)->ifname, "RX", "unicast"));
+	*value = "0";
 	return 0;
 }
 
 /*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
 int get_EthernetInterfaceStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_interface_stats(value, "tx_dropped", data);
-	return 0;
+	return eth_port_sysfs(data, "statistics/tx_dropped", value);
 }
 
 /*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
 int get_EthernetInterfaceStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_interface_stats(value, "rx_dropped", data);
-	return 0;
+	return eth_port_sysfs(data, "statistics/rx_dropped", value);
 }
 
 int get_EthernetInterfaceStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct eth_port_args *)data)->ifname, "TX", "multicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_EthernetInterfaceStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct eth_port_args *)data)->ifname, "RX", "multicast"));
-	return 0;
+	return eth_port_sysfs(data, "statistics/multicast", value);
 }
 
 int get_EthernetInterfaceStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct eth_port_args *)data)->ifname, "TX", "broadcast"));
+	*value = "0";
 	return 0;
 }
 
 int get_EthernetInterfaceStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(((struct eth_port_args *)data)->ifname, "RX", "broadcast"));
+	*value = "0";
 	return 0;
 }
 
 /*#Device.Ethernet.Interface.{i}.Stats.UnknownProtoPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_over_errors*/
 int get_EthernetInterfaceStats_UnknownProtoPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_interface_stats(value, "rx_over_errors", data);
+	*value = "0";
 	return 0;
 }
 
@@ -1004,117 +994,84 @@ int get_EthernetLink_MACAddress(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-static inline int get_ubus_ethernet_link_stats(char **value, char *stat_mod, void *data)
-{
-	char *device;
-	json_object *res;
-
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "device", &device);
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", device, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", stat_mod);
-	return 0;
-}
-
 int get_EthernetLinkStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_link_stats(value, "tx_bytes", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/tx_bytes", value);
 }
 
 int get_EthernetLinkStats_BytesReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_link_stats(value, "rx_bytes", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/rx_bytes", value);
 }
 
 int get_EthernetLinkStats_PacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_link_stats(value, "tx_packets", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/tx_packets", value);
 }
 
 int get_EthernetLinkStats_PacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_link_stats(value, "rx_packets", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/rx_packets", value);
 }
 
 int get_EthernetLinkStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_link_stats(value, "tx_errors", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/tx_errors", value);
 }
 
 int get_EthernetLinkStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_link_stats(value, "rx_errors", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/rx_errors", value);
 }
 
 int get_EthernetLinkStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *device;
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "device", &device);
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "TX", "unicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_EthernetLinkStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *device;
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "device", &device);
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "RX", "unicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_EthernetLinkStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_link_stats(value, "tx_dropped", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/tx_dropped", value);
 }
 
 int get_EthernetLinkStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_link_stats(value, "rx_dropped", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/rx_dropped", value);
 }
 
 int get_EthernetLinkStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *device;
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "device", &device);
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "TX", "multicast"));
+	*value = "0";
 	return 0;
 }
 
 int get_EthernetLinkStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *device;
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "device", &device);
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "RX", "multicast"));
-	return 0;
+	return eth_iface_sysfs(data, "statistics/multicast", value);
 }
 
 int get_EthernetLinkStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *device;
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "device", &device);
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "TX", "broadcast"));
+	*value = "0";
 	return 0;
 }
 
 int get_EthernetLinkStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *device;
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "device", &device);
-	dmasprintf(value, "%d", get_stats_from_ifconfig_command(device, "RX", "broadcast"));
+	*value = "0";
 	return 0;
 }
 
 int get_EthernetLinkStats_UnknownProtoPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_link_stats(value, "rx_over_errors", data);
+	*value = "0";
 	return 0;
 }
 
@@ -1322,138 +1279,92 @@ int set_EthernetVLANTermination_TPID(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-static inline int get_ubus_ethernet_vlan_termination_stats(char **value, char *stat_mod, void *data)
-{
-	json_object *res;
-	char *ifname;
-
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "statistics", stat_mod);
-	return 0;
-}
-
 /*#Device.Ethernet.VLANTermination.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
 int get_EthernetVLANTerminationStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_vlan_termination_stats(value, "tx_bytes", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/tx_bytes", value);
 }
 
 /*#Device.Ethernet.VLANTermination.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
 int get_EthernetVLANTerminationStats_BytesReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_vlan_termination_stats(value, "rx_bytes", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/rx_bytes", value);
 }
 
 /*#Device.Ethernet.VLANTermination.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
 int get_EthernetVLANTerminationStats_PacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_vlan_termination_stats(value, "tx_packets", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/tx_packets", value);
 }
 
 /*#Device.Ethernet.VLANTermination.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
 int get_EthernetVLANTerminationStats_PacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_vlan_termination_stats(value, "rx_packets", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/rx_packets", value);
 }
 
 /*#Device.Ethernet.VLANTermination.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
 int get_EthernetVLANTerminationStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_vlan_termination_stats(value, "tx_errors", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/tx_errors", value);
 }
 
 /*#Device.Ethernet.VLANTermination.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
 int get_EthernetVLANTerminationStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_vlan_termination_stats(value, "rx_errors", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/rx_errors", value);
 }
 
 int get_EthernetVLANTerminationStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);
-	if(!strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "TX", "unicast"));
 	return 0;
 }
 
 int get_EthernetVLANTerminationStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);
-	if(!strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "RX", "unicast"));
 	return 0;
 }
 
 /*#Device.Ethernet.VLANTermination.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
 int get_EthernetVLANTerminationStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_vlan_termination_stats(value, "tx_dropped", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/tx_dropped", value);
 }
 
 /*#Device.Ethernet.VLANTermination.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
 int get_EthernetVLANTerminationStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_vlan_termination_stats(value, "rx_dropped", data);
-	return 0;
+	return eth_iface_sysfs(data, "statistics/rx_dropped", value);
 }
 
 int get_EthernetVLANTerminationStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);
-	if(!strstr(ifname, "atm") && !strstr(ifname, "ptm")) {
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "TX", "multicast"));
-	}
 	return 0;
 }
 
 int get_EthernetVLANTerminationStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
-	*value = "0";
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);
-	if(!strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "RX", "multicast"));
-	return 0;
+	return eth_iface_sysfs(data, "statistics/multicast", value);
 }
 
 int get_EthernetVLANTerminationStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);
-	if(!strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "TX", "broadcast"));
 	return 0;
 }
 
 int get_EthernetVLANTerminationStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
 	*value = "0";
-	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);
-	if(!strstr(ifname, "atm") && !strstr(ifname, "ptm"))
-		dmasprintf(value, "%d", get_stats_from_ifconfig_command(ifname, "RX", "broadcast"));
 	return 0;
 }
 
 /*#Device.Ethernet.VLANTermination.{i}.Stats.UnknownProtoPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_over_errors*/
 int get_EthernetVLANTerminationStats_UnknownProtoPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	get_ubus_ethernet_vlan_termination_stats(value, "rx_over_errors", data);
+	*value = "0";
 	return 0;
 }

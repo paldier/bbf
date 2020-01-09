@@ -199,19 +199,7 @@ static inline int init_ipv6prefix_args(struct ipv6prefix_args *args, struct uci_
 **************************************************************/
 static int get_ip_iface_sysfs(const struct ip_args *ip, const char *name, char **value)
 {
-	const char *device = get_device(section_name(ip->ip_sec));
-
-	if(device[0]) {
-		char file[256];
-		char val[64];
-
-		snprintf(file, sizeof(file), "/sys/class/net/%s/%s", device, name);
-		dm_read_sysfs_file(file, val, sizeof(val));
-		*value = dmstrdup(val);
-	} else {
-		*value = "0";
-	}
-	return 0;
+	return get_net_iface_sysfs(section_name(ip->ip_sec), name, value);
 }
 
 static char *ubus_call_get_value_with_two_objects(char *interface, char *obj1, char *obj2, char *key)

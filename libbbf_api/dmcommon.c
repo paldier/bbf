@@ -1662,3 +1662,25 @@ out:
 	close(fd);
 	return rc;
 }
+
+int get_net_device_sysfs(const char *device, const char *name, char **value)
+{
+	if (device && device[0]) {
+		char file[256];
+		char val[64];
+
+		snprintf(file, sizeof(file), "/sys/class/net/%s/%s", device, name);
+		dm_read_sysfs_file(file, val, sizeof(val));
+		*value = dmstrdup(val);
+	} else {
+		*value = "0";
+	}
+	return 0;
+}
+
+int get_net_iface_sysfs(const char *uci_iface, const char *name, char **value)
+{
+	const char *device = get_device((char *)uci_iface);
+
+	return get_net_device_sysfs(device, name, value);
+}

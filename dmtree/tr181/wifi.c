@@ -1186,64 +1186,63 @@ int set_radio_auto_channel_enable(char *refparam, struct dmctx *ctx, void *data,
 /*************************************************************
 * GET STAT
 **************************************************************/
-static int radio_read_sysfs(const struct wifi_radio_args *args, const char *name, char **value)
-{
-	const char *device = section_name(args->wifi_radio_sec);
-
-	return get_net_device_sysfs(device, name, value);
-}
-
 static int ssid_read_sysfs(const struct wifi_ssid_args *args, const char *name, char **value)
 {
 	return get_net_device_sysfs(args->ifname, name, value);
 }
 
+static int not_implemented(char **value)
+{
+	*value = "0";
+	return -1;
+}
+
 /*#Device.WiFi.Radio.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
 int get_radio_statistics_tx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return radio_read_sysfs(data, "statistics/tx_bytes", value);
+	return not_implemented(value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
 int get_radio_statistics_rx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return radio_read_sysfs(data, "statistics/rx_bytes", value);
+	return not_implemented(value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
 int get_radio_statistics_tx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return radio_read_sysfs(data, "statistics/tx_packets", value);
+	return not_implemented(value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
 int get_radio_statistics_rx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return radio_read_sysfs(data, "statistics/rx_packets", value);
+	return not_implemented(value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
 int get_radio_statistics_tx_errors(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return radio_read_sysfs(data, "statistics/tx_errors", value);
+	return not_implemented(value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
 int get_radio_statistics_rx_errors(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return radio_read_sysfs(data, "statistics/rx_errors", value);
+	return not_implemented(value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
 int get_radio_statistics_tx_discardpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return radio_read_sysfs(data, "statistics/tx_dropped", value);
+	return not_implemented(value);
 }
 
 /*#Device.WiFi.Radio.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
 int get_radio_statistics_rx_discardpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return radio_read_sysfs(data, "statistics/rx_dropped", value);
+	return not_implemented(value);
 }
 
 int get_WiFiRadioStats_Noise(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)

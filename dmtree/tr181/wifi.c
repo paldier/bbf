@@ -3244,8 +3244,8 @@ int browseWifiSsidInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data
 
 	synchronize_specific_config_sections_with_dmmap("wireless", "wifi-iface", "dmmap_wireless", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
-		dmuci_get_value_by_section_string(p->config_section, "ifname", &ifname);
 		dmuci_get_value_by_section_string(p->config_section, "device", &linker);
+		ifname = get_device_from_wifi_iface(linker, section_name(p->config_section));
 		init_wifi_ssid(&curr_wifi_ssid_args, p->config_section, ifname, linker);
 		wnum =  handle_update_instance(1, dmctx, &ssid_last, update_instance_alias, 3, p->dmmap_section, "ssidinstance", "ssidalias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_wifi_ssid_args, wnum) == DM_STOP)

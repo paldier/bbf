@@ -136,6 +136,19 @@ json_object *dmjson_select_obj(json_object * jobj, char *argv[])
 	return jobj;
 }
 
+const char * __dmjson_get_string(json_object *jobj, const char *name)
+{
+	const char *str = "";
+
+	json_object_object_get_ex(jobj, name, &jobj);
+	if (jobj) {
+		str = json_object_get_string(jobj);
+		if (str == NULL)
+			str = "";
+	}
+	return str;
+}
+
 json_object *____dmjson_select_obj_in_array_idx(json_object *mainjobj, json_object **arrobj, int index, char *argv[])
 {
 	json_object *jobj = NULL;

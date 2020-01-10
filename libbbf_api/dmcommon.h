@@ -259,4 +259,5 @@ char * dmmap_file_path_get(const char *dmmap_package);
 int dm_read_sysfs_file(const char *file, char *dst, unsigned len);
 int get_net_iface_sysfs(const char *uci_iface, const char *name, char **value);
 int get_net_device_sysfs(const char *uci_iface, const char *name, char **value);
+char *get_device_from_wifi_iface(const char *wifi_iface, const char *wifi_section);
 #endif

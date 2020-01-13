@@ -235,6 +235,11 @@ int plugin_leaf_nextlevel_match(DMOBJECT_ARGS)
 	return FAULT_9005;
 }
 
+static int bbfdatamodel_matches(const enum bbfdm_type_enum type)
+{
+	return bbfdatamodel_type == BBFDM_BOTH || type == BBFDM_BOTH || bbfdatamodel_type == type;
+}
+
 int dm_browse_leaf(struct dmctx *dmctx, DMNODE *parent_node, DMLEAF *leaf, void *data, char *instance)
 {
 	int err = 0;
@@ -242,7 +247,7 @@ int dm_browse_leaf(struct dmctx *dmctx, DMNODE *parent_node, DMLEAF *leaf, void 
 		return 0;
 
 	for (; leaf->parameter; leaf++) {
-		if (leaf->bbfdm_type != bbfdatamodel_type &&  leaf->bbfdm_type != BBFDM_BOTH)
+		if (!bbfdatamodel_matches(leaf->bbfdm_type))
 			continue;
 		err = dmctx->method_param(dmctx, parent_node, leaf->parameter, leaf->permission, leaf->type, leaf->getvalue, leaf->setvalue, leaf->forced_inform, leaf->notification, data, instance);
 		if (dmctx->stop)
@@ -261,7 +266,7 @@ void dm_browse_entry(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, 
 	node.matched = parent_node->matched;
 	dmasprintf(&(node.current_object), "%s%s%c", parent_obj, entryobj->obj, dm_delim);
 
-	if (entryobj->bbfdm_type != bbfdatamodel_type &&  entryobj->bbfdm_type != BBFDM_BOTH)
+	if (!bbfdatamodel_matches(entryobj->bbfdm_type))
 		return;
 
 	if (dmctx->checkobj) {

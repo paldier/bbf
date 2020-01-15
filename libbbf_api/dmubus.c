@@ -19,32 +19,12 @@
 #define UBUS_BUFFEER_SIZE 1024 * 8
 
 struct dmubus_ctx dmubus_ctx;
+
 #if DM_USE_LIBUBUS
-struct ubus_context *ubus_ctx;
-
+static struct blob_buf b;
+static struct ubus_context *ubus_ctx;
 static int timeout = 1000;
-const char *ubus_socket = NULL;
-json_object *json_res = NULL;
-
-static inline bool dmblobmsg_add_object(struct blob_buf *b, json_object *obj)
-{
-	json_object_object_foreach(obj, key, val) {
-	if (!blobmsg_add_json_element(b, key, val))
-		return false;
-	}
-	return true;
-}
-
-static inline bool dmblobmsg_json_object_from_uargs(struct blob_buf *b, char *key, char *val)
-{
-	bool status;
-	json_object *jobj = json_object_new_object();
-	json_object *jstring = json_object_new_string(val);
-	json_object_object_add(jobj,key, jstring);
-	status = dmblobmsg_add_object(b, jobj);
-	json_object_put(jobj);
-	return status;
-}
+static json_object *json_res = NULL;
 #endif
 
 static inline int ubus_arg_cmp(struct ubus_arg *src_args, int src_size, struct ubus_arg dst_args[], int dst_size)
@@ -60,22 +40,72 @@ static inline int ubus_arg_cmp(struct ubus_arg *src_args, int src_size, struct u
 }
 
 #if DM_USE_LIBUBUS
-static void receive_call_result_data(struct ubus_request *req, int type, struct blob_attr *msg) 
+
+static void dm_libubus_free()
 {
+	if (ubus_ctx) {
+		ubus_free(ubus_ctx);
+		ubus_ctx = NULL;
+	}
+
+	blob_buf_free(&b);
+	memset(&b, 0, sizeof(b));
+}
+
+static struct ubus_context * dm_libubus_init()
+{
+	return ubus_connect(NULL);
+}
+
+static void receive_call_result_data(struct ubus_request *req, int type, struct blob_attr *msg)
+{
+	const char *str;
+
 	if (!msg)
 		return;
-	char *str = blobmsg_format_json_indent(msg, true, -1);
+
+	str = blobmsg_format_json_indent(msg, true, -1);
 	if (!str) {
 		json_res = NULL;
 		return;
 	}
-	json_res = json_tokener_parse((const char *)str);
-	free(str); //MEM should be free and not dmfree
+
+	json_res = json_tokener_parse(str);
+	free((char *)str); //MEM should be free and not dmfree
 	if (json_res != NULL && (is_error(json_res))) {
 		json_object_put(json_res);
 		json_res = NULL;
 	}
 }
+
+static int __dm_ubus_call(const char *obj, const char *method, const struct ubus_arg u_args[], int u_args_size)
+{
+	uint32_t id;
+	int i = 0;
+	int rc = 0;
+
+	json_res = NULL;
+
+	if (ubus_ctx == NULL) {
+		ubus_ctx = dm_libubus_init();
+		if (ubus_ctx == NULL)
+			return -1;
+	}
+
+	blob_buf_init(&b, 0);
+	for (i = 0; i < u_args_size; i++)
+		blobmsg_add_string(&b, u_args[i].key, u_args[i].val);
+
+	if (!ubus_lookup_id(ubus_ctx, obj, &id))
+		rc = ubus_invoke(ubus_ctx, id, method, b.head, receive_call_result_data, NULL, timeout);
+	else
+		rc = -1;
+
+	return rc;
+}
+
+#else
+static void dm_libubus_free() {}
 #endif
 
 int dmubus_call_set(char *obj, char *method, struct ubus_arg u_args[], int u_args_size)
@@ -109,33 +139,13 @@ int dmubus_call_set(char *obj, char *method, struct ubus_arg u_args[], int u_arg
 	}
 	return 0;
 #else
-	struct blob_buf b = {0};
-	uint32_t id;
-	int ret;
-	json_res = NULL;
+	int rc = __dm_ubus_call(obj, method, u_args, u_args_size);
 
-	ubus_ctx = ubus_connect(ubus_socket);
-	if (!ubus_ctx)
-		return 0;
-
-	blob_buf_init(&b, 0);
-	int i=0;
-	for (i = 0; i < u_args_size; i++) {
-		if (!dmblobmsg_json_object_from_uargs(&b, u_args[i].key, u_args[i].val))
-			goto end_error;
-	}
-	ret = ubus_lookup_id(ubus_ctx, obj, &id);
-	ubus_invoke(ubus_ctx, id, method, b.head, receive_call_result_data, NULL, timeout);
-	blob_buf_free(&b);
 	if (json_res != NULL) {
 		json_object_put(json_res);
 		json_res = NULL;
 	}
-	return 0;
-
-end_error:
-	blob_buf_free(&b);
-	return NULL;
+	return rc;
 #endif
 }
 
@@ -183,29 +193,8 @@ static inline json_object *ubus_call_req(char *obj, char *method, struct ubus_ar
 	return res;
 
 #else
-	struct blob_buf b = {0};
-	uint32_t id;
-	int ret;
-	json_res = NULL;
-
-	ubus_ctx = ubus_connect(ubus_socket);
-	if (!ubus_ctx)
-		return NULL;
-
-	blob_buf_init(&b, 0);
-	int i=0;
-	for (i = 0; i < u_args_size; i++) {
-		if (!dmblobmsg_json_object_from_uargs(&b, u_args[i].key, u_args[i].val))
-			goto end_error;
-	}
-	ret = ubus_lookup_id(ubus_ctx, obj, &id);
-	ubus_invoke(ubus_ctx, id, method, b.head, receive_call_result_data, NULL, timeout);
-	blob_buf_free(&b);
+	__dm_ubus_call(obj, method, u_args, u_args_size);
 	return json_res;
-
-end_error:
-	blob_buf_free(&b);
-	return NULL;
 #endif
 }
 
@@ -309,4 +298,5 @@ void dmubus_ctx_free(struct dmubus_ctx *ctx)
 		dmfree(i->name);
 		dmfree(i);
 	}
+	dm_libubus_free();
 }

@@ -59,7 +59,6 @@ enum ubus_args_enum {
 };
 
 extern struct dmubus_ctx dmubus_ctx;
-extern struct ubus_context *ubus_ctx;
 
 #define dm_ubus_get_value(jobj,ARGC,args...) \
 		dmjson_get_value(jobj, ARGC, ##args)

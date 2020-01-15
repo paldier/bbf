@@ -16,30 +16,26 @@
 #include "dmmem.h"
 #include "dmcommon.h"
 
-#define UBUS_BUFFEER_SIZE 1024 * 8
+static LIST_HEAD(dmubus_cache);
 
-struct dmubus_ctx dmubus_ctx;
+struct dm_ubus_cache_entry {
+	struct list_head list;
+	json_object *data;
+	unsigned hash;
+};
+
+struct dm_ubus_req {
+	const char *obj;
+	const char *method;
+	struct ubus_arg *args;
+	unsigned n_args;
+};
 
 #if DM_USE_LIBUBUS
 static struct blob_buf b;
 static struct ubus_context *ubus_ctx;
 static int timeout = 1000;
 static json_object *json_res = NULL;
-#endif
-
-static inline int ubus_arg_cmp(struct ubus_arg *src_args, int src_size, struct ubus_arg dst_args[], int dst_size)
-{
-	if (src_size != dst_size)
-		return -1;
-	int i;
-	for (i = 0; i < src_size; i++) {
-		if (strcmp( src_args[i].key, dst_args[i].key) != 0 || strcmp( src_args[i].val, dst_args[i].val) != 0)
-			return -1;
-	}
-	return 0;
-}
-
-#if DM_USE_LIBUBUS
 
 static void dm_libubus_free()
 {
@@ -97,7 +93,8 @@ static int __dm_ubus_call(const char *obj, const char *method, const struct ubus
 		blobmsg_add_string(&b, u_args[i].key, u_args[i].val);
 
 	if (!ubus_lookup_id(ubus_ctx, obj, &id))
-		rc = ubus_invoke(ubus_ctx, id, method, b.head, receive_call_result_data, NULL, timeout);
+		rc = ubus_invoke(ubus_ctx, id, method, b.head,
+				receive_call_result_data, NULL, timeout);
 	else
 		rc = -1;
 
@@ -198,105 +195,95 @@ static inline json_object *ubus_call_req(char *obj, char *method, struct ubus_ar
 #endif
 }
 
-int dmubus_call(char *obj, char *method, struct ubus_arg u_args[], int u_args_size, json_object **req_res)
+/* Based on an efficient hash function published by D. J. Bernstein
+ */
+static unsigned int djbhash(unsigned hash, const char *data, unsigned len)
 {
-	struct ubus_obj *i = NULL;
-	struct ubus_meth *j = NULL;
-	struct ubus_msg *k = NULL;
-	json_object **jr;
-	bool found = false;
+	unsigned  i;
 
-	*req_res = NULL;
-	list_for_each_entry(i, &dmubus_ctx.obj_head, list) {
-		if (strcmp(obj, i->name) == 0) {
-			found = true;
+	for (i = 0; i < len; i++)
+		hash = ((hash << 5) + hash) + data[i];
+
+	return (hash & 0x7FFFFFFF);
+}
+
+static unsigned dm_ubus_req_hash(const struct dm_ubus_req *req)
+{
+	unsigned hash = 5381;
+	unsigned i;
+
+	hash = djbhash(hash, req->obj, strlen(req->obj));
+	hash = djbhash(hash, req->method, strlen(req->method));
+
+	for (i = 0; i < req->n_args; i++) {
+		hash = djbhash(hash, req->args[i].key, strlen(req->args[i].key));
+		hash = djbhash(hash, req->args[i].val, strlen(req->args[i].val));
+	}
+	return hash;
+}
+
+static const struct dm_ubus_cache_entry * dm_ubus_cache_lookup(unsigned hash)
+{
+	const struct dm_ubus_cache_entry *entry;
+	const struct dm_ubus_cache_entry *entry_match = NULL;
+
+	list_for_each_entry(entry, &dmubus_cache, list) {
+		if (entry->hash == hash) {
+			entry_match = entry;
 			break;
 		}
 	}
-	if (!found) {
-		i = dmcalloc(1, sizeof(struct ubus_obj));
-		//init method head
-		INIT_LIST_HEAD(&i->method_head);
-		i->name = dmstrdup(obj);
-		list_add(&i->list, &dmubus_ctx.obj_head);
+	return entry_match;
+}
+
+static void dm_ubus_cache_entry_new(unsigned hash, json_object *data)
+{
+	struct dm_ubus_cache_entry *entry = malloc(sizeof(*entry));
+
+	if (entry) {
+		entry->data = data;
+		entry->hash = hash;
+		list_add_tail(&entry->list, &dmubus_cache);
 	}
-	found = false;
-	list_for_each_entry(j, &i->method_head, list) {
-		if (strcmp(method, j->name) == 0) {
-			*req_res = j->res;
-			found = true;
-			break;
-		}
+}
+
+static void dm_ubus_cache_entry_free(struct dm_ubus_cache_entry *entry)
+{
+	list_del(&entry->list);
+	json_object_put(entry->data);
+	free(entry);
+}
+
+int dmubus_call(char *obj, char *method, struct ubus_arg u_args[],
+		int u_args_size, json_object **req_res)
+{
+	const struct dm_ubus_req req = {
+		.obj = obj,
+		.method = method,
+		.args = u_args,
+		.n_args = u_args_size
+	};
+	const unsigned hash = dm_ubus_req_hash(&req);
+	const struct dm_ubus_cache_entry *entry = dm_ubus_cache_lookup(hash);
+	json_object *res;
+
+	if (entry) {
+		res = entry->data;
+	} else {
+		res = ubus_call_req(obj, method, u_args, u_args_size);
+		dm_ubus_cache_entry_new(hash, res);
 	}
-	if (!found) {
-		j = dmcalloc(1, sizeof(struct ubus_meth));
-		//init message head
-		INIT_LIST_HEAD(&j->msg_head);
-		j->name = dmstrdup(method);
-		list_add(&j->list, &i->method_head);
-		jr = &j->res;
-	}
-	// Arguments
-	if (u_args_size != 0) {
-		found = false;
-		list_for_each_entry(k, &j->msg_head, list) {
-			if (ubus_arg_cmp(k->ug, k->ug_size, u_args, u_args_size) == 0) {
-				*req_res = k->res;
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			k = dmcalloc(1, sizeof(struct ubus_msg));
-			list_add(&k->list, &j->msg_head);
-			k->ug = dmcalloc(u_args_size, sizeof(struct ubus_arg));
-			k->ug_size = u_args_size;
-			jr = &k->res;
-			int c;
-			for (c = 0; c < u_args_size; c++) {
-				k->ug[c].key = dmstrdup(u_args[c].key);
-				k->ug[c].val = dmstrdup(u_args[c].val);
-			}
-		}
-	}
-	if (!found) {
-		*jr = ubus_call_req(obj, method, u_args, u_args_size);
-		*req_res = *jr;
-	}
+
+	*req_res = res;
 	return 0;
 }
 
-void dmubus_ctx_free(struct dmubus_ctx *ctx)
+void dmubus_free()
 {
-	struct ubus_obj *i, *_i;
-	struct ubus_meth *j, *_j;
-	struct ubus_msg *k, *_k;
+	struct dm_ubus_cache_entry *entry, *tmp;
 
-	list_for_each_entry_safe(i, _i, &ctx->obj_head, list) {
-		list_for_each_entry_safe(j, _j, &i->method_head, list) {
-			list_for_each_entry_safe(k, _k, &j->msg_head, list) {
-				if (k->ug_size != 0) {
-					int c;
-					for (c = 0; c < k->ug_size; c++) {
-						dmfree(k->ug[c].key);
-						dmfree(k->ug[c].val);
-					}
-					dmfree(k->ug);
-				}
-				list_del(&k->list);
-				if (k->res)
-					json_object_put(k->res);
-				dmfree(k);
-			}
-			list_del(&j->list);
-			if (j->res)
-				json_object_put(j->res);
-			dmfree(j->name);
-			dmfree(j);
-		}
-		list_del(&i->list);
-		dmfree(i->name);
-		dmfree(i);
-	}
+	list_for_each_entry_safe(entry, tmp, &dmubus_cache, list)
+		dm_ubus_cache_entry_free(entry);
+
 	dm_libubus_free();
 }

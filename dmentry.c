@@ -73,8 +73,6 @@ static int dm_ctx_init_custom(struct dmctx *ctx, unsigned int dm_type, unsigned 
 	UPNP_SUPPORTED_DM *tUPNPSupportedDM = NULL;
 #endif
 	if (custom == CTX_INIT_ALL) {
-		memset(&dmubus_ctx, 0, sizeof(struct dmubus_ctx));
-		INIT_LIST_HEAD(&dmubus_ctx.obj_head);
 		uci_ctx = uci_alloc_context();
 		uci_varstate_ctx = uci_alloc_context();
 		DMUCI_INIT(bbfdm);
@@ -124,7 +122,7 @@ static int dm_ctx_clean_custom(struct dmctx *ctx, int custom)
 		if (uci_varstate_ctx) uci_free_context(uci_varstate_ctx);
 		uci_varstate_ctx = NULL;
 		DMUCI_EXIT(bbfdm);
-		dmubus_ctx_free(&dmubus_ctx);
+		dmubus_free();
 		dmcleanmem();
 	}
 	return 0;

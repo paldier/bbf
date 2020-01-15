@@ -11,58 +11,30 @@
  *	Author: Anis Ellouze <anis.ellouze@pivasoftware.com>
  */
 
-#ifndef __UBUS_H
-#define __UBUS_H
+#ifndef __DMUBUS_H
+#define __DMUBUS_H
 
-#include <libubox/list.h>
-#include <libubox/blobmsg_json.h>
 #include <json-c/json.h>
 
 #define UBUS_ARGS (struct ubus_arg[])
-#define SIMPLE_OUTPUT -1
-#define INDENT_OUTPUT 0
-#define JSON_OUTPUT SIMPLE_OUTPUT
 
-struct dmubus_ctx {
-	struct list_head obj_head;
-};
-
-struct ubus_obj {
-	struct list_head list;
-	struct list_head method_head;
-	char *name;
-};
-
-struct ubus_meth {
-	struct list_head list;
-	struct list_head msg_head;
-	char *name;
-	json_object *res;
-};
-
-struct ubus_msg {
-	struct list_head list;
-	struct ubus_arg *ug; // ubus method param
-	int ug_size;
-	json_object *res;
-};
-
-struct ubus_arg{
-	char *key;
-	char *val;
-	int type;
-};
-
-enum ubus_args_enum {
+enum ubus_arg_type {
 	String,
 	Integer,
 };
 
-extern struct dmubus_ctx dmubus_ctx;
+struct ubus_arg {
+	const char *key;
+	const char *val;
+	enum ubus_arg_type type;
+};
 
 #define dm_ubus_get_value(jobj,ARGC,args...) \
 		dmjson_get_value(jobj, ARGC, ##args)
-int dmubus_call(char *obj, char *method, struct ubus_arg u_args[], int u_args_size, json_object **req_res);
+
+int dmubus_call(char *obj, char *method, struct ubus_arg u_args[],
+		int u_args_size, json_object **req_res);
 int dmubus_call_set(char *obj, char *method, struct ubus_arg u_args[], int u_args_size);
-void dmubus_ctx_free(struct dmubus_ctx *ctx);
+void dmubus_free();
+
 #endif

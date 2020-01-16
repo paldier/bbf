@@ -2884,17 +2884,19 @@ static void dhcp_leases_assign_to_interface(struct dhcp_args *dhcp,
 	unsigned iface_addr;
 	unsigned iface_cidr;
 	unsigned iface_net;
+	unsigned iface_bits;
 
 	if (interface_get_ipv4(iface, &iface_addr, &iface_cidr))
 		return;
 
-	iface_net = ntohl(iface_addr) >> iface_cidr;
+	iface_bits = 32 - iface_cidr;
+	iface_net = ntohl(iface_addr) >> iface_bits;
 
 	list_for_each_entry_safe(lease, tmp, src, list) {
 		unsigned addr, net;
 
 		inet_pton(AF_INET, lease->ipaddr, &addr);
-		net = ntohl(addr) >> iface_cidr;
+		net = ntohl(addr) >> iface_bits;
 
 		if (net == iface_net) {
 			list_move_tail(&lease->list, &dhcp->leases);

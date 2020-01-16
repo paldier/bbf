@@ -726,7 +726,7 @@ int browseVcfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, cha
 int browseVlfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *sys_log_sec, *dm_sec;
-	char *instance, *last_instance, *log_file,*log_size;
+	char *log_file,*log_size;
 	int i = 1;
 
 	uci_foreach_sections("system", "system", sys_log_sec) {
@@ -746,6 +746,8 @@ int browseVlfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, cha
 		}
 	}
 	uci_path_foreach_sections(bbfdm, "dmmap", "vlf", dm_sec) {
+		char *instance, *last_instance = NULL;
+
 		instance = handle_update_instance(1, dmctx, &last_instance, update_instance_alias_bbfdm, 3, dm_sec, "vlf_instance", "vlf_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)dm_sec, instance) == DM_STOP){
 			break;

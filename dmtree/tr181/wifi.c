@@ -3505,7 +3505,7 @@ int browseWifiNeighboringWiFiDiagnosticResultInst(struct dmctx *dmctx, DMNODE *p
 				entries++;
 				idx = handle_update_instance(3, dmctx, &idx_last, update_instance_without_section, 1, ++id);
 				if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&cur_wifi_neighboring_diagnostic_args, idx) == DM_STOP)
-					break;
+					return 0;
 			}
 			else
 				break;

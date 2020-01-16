@@ -2855,6 +2855,9 @@ static int interface_get_ipv4(const char *iface, uint32_t *addr, unsigned *bits)
 		json_object *jobj;
 
 		jobj = dmjson_select_obj_in_array_idx(res, 0, 1, "ipv4-address");
+		if (jobj == NULL)
+			return -1;
+
 		json_object_object_foreach(jobj, key, val) {
 			if (!strcmp(key, "address"))
 				addr_str = json_object_get_string(val);

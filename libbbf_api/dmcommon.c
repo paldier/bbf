@@ -1695,3 +1695,26 @@ int get_net_iface_sysfs(const char *uci_iface, const char *name, char **value)
 
 	return get_net_device_sysfs(device, name, value);
 }
+
+int dm_time_format(time_t ts, char **dst)
+{
+	char time_buf[32] = { 0, 0 };
+	struct tm *t_tm;
+
+	*dst = "0001-01-01T00:00:00Z";
+
+	t_tm = localtime(&ts);
+	if (t_tm == NULL)
+		return -1;
+
+	if(strftime(time_buf, sizeof(time_buf), "%FT%T%z", t_tm) == 0)
+		return -1;
+
+	time_buf[25] = time_buf[24];
+	time_buf[24] = time_buf[23];
+	time_buf[22] = ':';
+	time_buf[26] = '\0';
+
+	*dst = dmstrdup(time_buf);
+	return 0;
+}

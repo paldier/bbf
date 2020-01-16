@@ -13,6 +13,49 @@
 #include "dmentry.h"
 #include "dhcpv4.h"
 
+#define DELIMITOR ","
+
+
+struct dhcp_lease {
+	time_t ts;
+	char hwaddr[20];
+	char ipaddr[16];
+	struct list_head list;
+};
+
+struct dhcp_args {
+	struct uci_section *dhcp_sec;
+	char *interface;
+	struct list_head leases;
+	unsigned n_leases;
+};
+
+struct dhcp_static_args {
+	struct uci_section *dhcpsection;
+};
+
+struct client_args {
+	const struct dhcp_lease *lease;
+};
+
+struct dhcp_client_args {
+	struct uci_section *dhcp_client_conf;
+	struct uci_section *dhcp_client_dm;
+	struct uci_section *macclassifier;
+	struct uci_section *vendorclassidclassifier;
+	struct uci_section *userclassclassifier;
+	char *ip;
+	char *mask;
+};
+
+struct dhcp_client_option_args {
+	struct uci_section *opt_sect;
+	struct uci_section *client_sect;
+	char *option_tag;
+	char *value;
+};
+
+
 /*** DHCPv4. ***/
 DMOBJ tDHCPv4Obj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
@@ -216,36 +259,31 @@ DMLEAF tDHCPv4RelayForwardingParams[] = {
 ***************************************************************************/
 int get_dhcp_client_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct client_args *)data)->key) {
-		*linker = ((struct client_args *)data)->key;
-		return 0;
-	} else {
-		*linker = "";
-		return 0;
-	}
+	const struct client_args *args = data;
+
+	*linker = (char *)args->lease->hwaddr;
+	return 0;
 }
 
 /*************************************************************
 * INIT
 **************************************************************/
-static inline int init_dhcp_args(struct dhcp_args *args, struct uci_section *s, char *interface)
+static inline void init_dhcp_args(struct dhcp_args *args, struct uci_section *s, char *interface)
 {
 	args->interface = interface;
 	args->dhcp_sec = s;
-	return 0;
+	INIT_LIST_HEAD(&args->leases);
+	args->n_leases = 0;
 }
 
-static inline int init_args_dhcp_host(struct dhcp_static_args *args, struct uci_section *s)
+static inline void init_args_dhcp_host(struct dhcp_static_args *args, struct uci_section *s)
 {
 	args->dhcpsection = s;
-	return 0;
 }
 
-static inline int init_dhcp_client_args(struct client_args *args, json_object *client, char *key)
+static inline void init_dhcp_client_args(struct client_args *args, const struct dhcp_lease *lease)
 {
-	args->client = client;
-	args->key = key;
-	return 0;
+	args->lease = lease;
 }
 
 /*************************************************************
@@ -304,7 +342,7 @@ int add_dhcp_server(char *refparam, struct dmctx *ctx, void *data, char **instan
 	char *value, *v;
 	char *instance;
 	struct uci_section *s = NULL, *dmmap_dhcp= NULL;
-	
+
 	check_create_dmmap_package("dmmap_dhcp");
 	instance = get_last_instance_bbfdm("dmmap_dhcp", "dhcp", "dhcp_instance");
 	dmuci_add_section("dhcp", "dhcp", &s, &value);
@@ -364,7 +402,7 @@ int add_dhcp_staticaddress(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	char *value, *v, *instance;
 	struct uci_section *s = NULL, *dmmap_dhcp_host= NULL;
-	
+
 	check_create_dmmap_package("dmmap_dhcp");
 	instance = get_last_instance_lev2_bbfdm("dhcp", "host", "dmmap_dhcp", "ldhcpinstance", "dhcp", ((struct dhcp_args *)data)->interface);
 	dmuci_add_section("dhcp", "host", &s, &value);
@@ -892,21 +930,9 @@ int get_option_number_of_entries(char *refparam, struct dmctx *ctx, void *data, 
 
 int get_clients_number_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res = NULL;
-	int i = 0;
-	char *dhcp;
+	const struct dhcp_args *dhcp = data;
 
-	dmubus_call("router.network", "clients", UBUS_ARGS{}, 0, &res);
-	if (res) {
-		json_object_object_foreach(res, key, client_obj) {
-			UNUSED(key);
-			dhcp = dmjson_get_value(client_obj, 1, "dhcp");
-			if (strcmp(dhcp, "true") == 0)
-				i++;
-		}
-	}
-	dmasprintf(value, "%d", i);
-	return 0;
+	dmasprintf(value, "%u", dhcp->n_leases);
 }
 
 /*#Device.DHCPv4.Server.Pool.{i}.Enable!UCI:dhcp/interface,@i-1/ignore*/
@@ -1476,7 +1502,9 @@ int set_dhcp_staticaddress_chaddr(char *refparam, struct dmctx *ctx, void *data,
 /*#Device.DHCPv4.Server.Pool.{i}.StaticAddress.{i}.Yiaddr!UCI:dhcp/host,@i-1/ip*/
 int get_dhcp_staticaddress_yiaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct dhcp_static_args *)data)->dhcpsection, "ip", value);
+	struct dhcp_static_args *dhcpargs = (struct dhcp_static_args *)data;
+
+	dmuci_get_value_by_section_string(dhcpargs->dhcpsection, "ip", value);
 	return 0;
 }
 
@@ -1494,44 +1522,30 @@ int set_dhcp_staticaddress_yiaddr(char *refparam, struct dmctx *ctx, void *data,
 
 int get_dhcp_client_chaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = dmjson_get_value(((struct client_args *)data)->client, 1, "macaddr");
+	const struct client_args *args = data;
+
+	*value = (char *)args->lease->hwaddr;
 	return 0;
 }
 
 int get_dhcp_client_active(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = dmjson_get_value(((struct client_args *)data)->client, 1, "connected");
+	*value = "true";
 	return 0;
 }
 
 int get_dhcp_client_ipv4address_leasetime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char time_buf[27] = {0};
-	struct tm *t_tm;
+	const struct client_args *args = data;
 
-	*value = "0001-01-01T00:00:00Z";
-	time_t t_time = ((struct dhcp_client_ipv4address_args *)data)->leasetime;
-	t_tm = localtime(&t_time);
-	if (t_tm == NULL)
-		return 0;
-	if(strftime(time_buf, sizeof(time_buf), "%FT%T%z", t_tm) == 0)
-		return 0;
-
-	time_buf[25] = time_buf[24];
-	time_buf[24] = time_buf[23];
-	time_buf[22] = ':';
-	time_buf[26] = '\0';
-
-	*value = dmstrdup(time_buf);
-	return 0;
+	return dm_time_format(args->lease->ts, value);
 }
 
 int get_dhcp_client_ipv4address_ip_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct dhcp_client_ipv4address_args *)data)->ip != NULL && strlen(((struct dhcp_client_ipv4address_args *)data)->ip) > 0)
-		*value = dmstrdup(((struct dhcp_client_ipv4address_args *)data)->ip);
-	else
-		*value = "";
+	const struct client_args *args = data;
+
+	*value = (char *)args->lease->ipaddr;
 	return 0;
 }
 
@@ -2804,6 +2818,88 @@ int get_DHCPv4Relay_ForwardingNumberOfEntries(char *refparam, struct dmctx *ctx,
 	return 0;
 }
 
+static void dhcp_leases_load(struct list_head *head)
+{
+	FILE *f = fopen(DHCP_LEASES_FILE, "r");
+	char line[128];
+
+	if (f == NULL)
+		return;
+
+	while (fgets(line, sizeof(line) - 1, f)) {
+		struct dhcp_lease *lease;
+
+		if (line[0] == '\n')
+			continue;
+
+		lease = dmcalloc(1, sizeof(*lease));
+		if (lease == NULL)
+			break;
+
+		sscanf(line, "%" PRId64 "%19s %15s",
+			&lease->ts, lease->hwaddr, lease->ipaddr);
+
+		list_add_tail(&lease->list, head);
+	}
+	fclose(f);
+}
+
+static int interface_get_ipv4(const char *iface, uint32_t *addr, unsigned *bits)
+{
+	json_object *res;
+	const char *addr_str = NULL;
+	int addr_cidr = -1;
+
+	dmubus_call("network.interface", "status", UBUS_ARGS {{"interface", iface, String}}, 1, &res);
+	if (res) {
+		json_object *jobj;
+
+		jobj = dmjson_select_obj_in_array_idx(res, 0, 1, "ipv4-address");
+		json_object_object_foreach(jobj, key, val) {
+			if (!strcmp(key, "address"))
+				addr_str = json_object_get_string(val);
+			else if (!strcmp(key, "mask"))
+				addr_cidr = json_object_get_int(val);
+		}
+	}
+
+	if (addr_str == NULL || addr_cidr == -1)
+		return -1;
+
+	if (inet_pton(AF_INET, addr_str, addr) != 1)
+		return -1;
+
+	*bits = addr_cidr;
+	return 0;
+}
+
+static void dhcp_leases_assign_to_interface(struct dhcp_args *dhcp,
+					struct list_head *src,
+					const char *iface)
+{
+	struct dhcp_lease *lease, *tmp;
+	unsigned iface_addr;
+	unsigned iface_cidr;
+	unsigned iface_net;
+
+	if (interface_get_ipv4(iface, &iface_addr, &iface_cidr))
+		return;
+
+	iface_net = ntohl(iface_addr) >> iface_cidr;
+
+	list_for_each_entry_safe(lease, tmp, src, list) {
+		unsigned addr, net;
+
+		inet_pton(AF_INET, lease->ipaddr, &addr);
+		net = ntohl(addr) >> iface_cidr;
+
+		if (net == iface_net) {
+			list_move_tail(&lease->list, &dhcp->leases);
+			dhcp->n_leases += 1;
+		}
+	}
+}
+
 /*************************************************************
 * ENTRY METHOD
 **************************************************************/
@@ -2813,12 +2909,20 @@ int browseDhcpInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, ch
 	char *interface, *idhcp = NULL, *idhcp_last = NULL, *v;
 	struct dhcp_args curr_dhcp_args = {0};
 	struct dmmap_dup *p;
+	LIST_HEAD(leases);
 	LIST_HEAD(dup_list);
 
 	synchronize_specific_config_sections_with_dmmap("dhcp", "dhcp", "dmmap_dhcp", &dup_list);
+
+	if (!list_empty(&dup_list))
+		dhcp_leases_load(&leases);
+
 	list_for_each_entry(p, &dup_list, list) {
 		dmuci_get_value_by_section_string(p->config_section, "interface", &interface);
 		init_dhcp_args(&curr_dhcp_args, p->config_section, interface);
+
+		dhcp_leases_assign_to_interface(&curr_dhcp_args, &leases, interface);
+
 		idhcp = handle_update_instance(1, dmctx, &idhcp_last, update_instance_alias_bbfdm, 3, p->dmmap_section, "dhcp_instance", "dhcp_alias");
 		dmuci_get_value_by_section_string(p->dmmap_section, "order", &v);
 		if (v == NULL || strlen(v) == 0)
@@ -2851,56 +2955,29 @@ int browseDhcpStaticInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_da
 
 int browseDhcpClientInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	char *dhcp, *network, *idx = NULL, *idx_last = NULL;
-	json_object *res = NULL;
+	const struct dhcp_args *dhcp = prev_data;
+	const struct dhcp_lease *lease;
 	int id = 0;
-	struct client_args curr_dhcp_client_args = {0};
 
-	dmubus_call("router.network", "clients", UBUS_ARGS{}, 0, &res);
-	if (res) {
-		json_object_object_foreach(res, key, client_obj) {
-			dhcp = dmjson_get_value(client_obj, 1, "dhcp");
-			if (strcmp(dhcp, "true") == 0) {
-				network = dmjson_get_value(client_obj, 1, "network");
-				if (strcmp(network, ((struct dhcp_args *)prev_data)->interface) == 0) {
-					init_dhcp_client_args(&curr_dhcp_client_args, client_obj, key);
-					idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, ++id);
-					if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_dhcp_client_args, idx) == DM_STOP)
-						break;
-				}
-			}
-		}
+	list_for_each_entry(lease, &dhcp->leases, list) {
+		struct client_args client_args;
+		char *idx, *idx_last = NULL;
+
+		init_dhcp_client_args(&client_args, lease);
+		idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, ++id);
+
+		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&client_args, idx) == DM_STOP)
+			break;
 	}
 	return 0;
 }
 
 int browseDhcpClientIPv4Inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	unsigned int leasetime;
-	char *idx = NULL, *idx_last = NULL, *macaddr, mac[32], ip[32], buf[512];
-	json_object *passed_args;
-	FILE *fp;
-	struct dhcp_client_ipv4address_args current_dhcp_client_ipv4address_args = {0};
-	int id = 0;
+	char *idx, *idx_last = NULL;
 
-	fp = fopen(DHCP_LEASES_FILE, "r");
-	if (fp == NULL)
-		return 0;
-	while (fgets (buf , 256 , fp) != NULL) {
-		sscanf(buf, "%u %31s %31s", &leasetime, mac, ip);
-		passed_args = ((struct client_args*)prev_data)->client;
-		macaddr = dmjson_get_value(passed_args, 1, "macaddr");
-		if (!strcmp(mac, macaddr)) {
-			current_dhcp_client_ipv4address_args.ip = dmstrdup(ip);
-			current_dhcp_client_ipv4address_args.mac = dmstrdup(macaddr);
-			current_dhcp_client_ipv4address_args.leasetime = leasetime;
-
-			idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, ++id);
-			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&current_dhcp_client_ipv4address_args, idx) == DM_STOP)
-				break;
-		}
-	}
-	fclose(fp);
+	idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, 1);
+	DM_LINK_INST_OBJ(dmctx, parent_node, prev_data, idx);
 	return 0;
 }
 

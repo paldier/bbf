@@ -83,26 +83,7 @@ int get_time_status(char *refparam, struct dmctx *ctx, void *data, char *instanc
 
 int get_time_CurrentLocalTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char time_buf[27] = {0};
-	struct tm *t_tm;
-
-	*value = "0001-01-01T00:00:00Z";
-
-	time_t t_time = time(NULL);
-	t_tm = localtime(&t_time);
-	if (t_tm == NULL)
-		return 0;
-
-	if(strftime(time_buf, sizeof(time_buf), "%FT%T%z", t_tm) == 0)
-		return 0;
-
-	time_buf[25] = time_buf[24];
-	time_buf[24] = time_buf[23];
-	time_buf[22] = ':';
-	time_buf[26] = '\0';
-
-	*value = dmstrdup(time_buf);
-	return 0;
+	return dm_time_format(time(NULL), value);
 }
 
 /*#Device.Time.LocalTimeZone!UCI:system/system,@system[0]/timezone*/

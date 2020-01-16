@@ -14,48 +14,6 @@
 
 #include <libbbf_api/dmcommon.h>
 
-struct dhcp_args
-{
-	struct uci_section *dhcp_sec;
-	char *interface;
-};
-
-struct dhcp_static_args
-{
-	struct uci_section *dhcpsection;
-};
-
-struct client_args
-{
-	json_object *client;
-	char *key;
-};
-
-struct dhcp_client_ipv4address_args
-{
-	char *mac;
-	char *ip;
-	unsigned int leasetime;
-};
-
-struct dhcp_client_args {
-	struct uci_section *dhcp_client_conf;
-	struct uci_section *dhcp_client_dm;
-	struct uci_section *macclassifier;
-	struct uci_section *vendorclassidclassifier;
-	struct uci_section *userclassclassifier;
-	char *ip;
-	char *mask;
-};
-
-struct dhcp_client_option_args
-{
-	struct uci_section *opt_sect;
-	struct uci_section *client_sect;
-	char *option_tag;
-	char *value;
-};
-
 extern DMOBJ tDHCPv4Obj[];
 extern DMOBJ tDHCPv4ServerObj[];
 extern DMOBJ tDHCPv4ServerPoolObj[];

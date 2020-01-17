@@ -1866,11 +1866,13 @@ static int enabled_notify_check_value_change_param(DMPARAM_ARGS)
 		return FAULT_9005;
 	}
 	(get_cmd)(refparam, dmctx, data, instance, &value);
+#if 0
 	if (strcmp(value, dmctx->in_value) != 0) {
 		add_list_value_change(refparam, value, DMT_TYPE[type]);
 		if(dmctx->in_notification[0] =='2')
 			send_active_value_change();
 	}
+#endif
 	dmfree(refparam);
 	return 0;
 }

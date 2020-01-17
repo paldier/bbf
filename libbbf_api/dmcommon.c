@@ -1105,7 +1105,7 @@ int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_packag
 	DIR *dir;
 	struct dirent *ent;
 	char *v, *dmmap_file_path, *sysfs_rep_path, *instance= NULL;
-	struct sysfs_dmsection *p;
+	struct sysfs_dmsection *p, *tmp;
 	LIST_HEAD(dup_list_no_inst);
 
 	dmmap_file_path = dmmap_file_path_get(dmmap_package);
@@ -1140,9 +1140,9 @@ int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_packag
 	/*
 	 * fusion two lists
 	 */
-	list_for_each_entry(p, &dup_list_no_inst, list) {
-		add_sysfs_sectons_list_paramameter(dup_list, p->dm, p->sysfs_folder_name, p->sysfs_folder_path);
-	}
+	list_for_each_entry_safe(p, tmp, &dup_list_no_inst, list)
+		list_move_tail(&p->list, dup_list);
+
 	/*
 	 * Delete unused dmmap sections
 	 */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 iopsys Software Solutions AB
+ * Copyright (C) 2020 iopsys Software Solutions AB
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -14,18 +14,17 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include "dmcommon.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmjson.h"
+#include <libbbf_api/dmcommon.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmjson.h>
 #include "dmentryjson.h"
 #include "dmmemjson.h"
-#include "device.h"
 
 LIST_HEAD(json_list);
 static char json_hash[64] = "";
 
-static int get_stats_folder(char *folder_path, int *file_count, unsigned long *size, unsigned long *date)
+static int get_stats_json_folder(char *folder_path, int *file_count, unsigned long *size, unsigned long *date)
 {
 	struct stat stats;
 	struct dirent *entry;
@@ -56,7 +55,7 @@ static int get_stats_folder(char *folder_path, int *file_count, unsigned long *s
 	return 0;
 }
 
-void add_json_data_to_list(struct list_head *dup_list, char *name, char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5, const char *arg6)
+static void add_json_data_to_list(struct list_head *dup_list, char *name, char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5, const char *arg6)
 {
 	struct dm_json_parameter *dm_json_parameter;
 	dm_json_parameter = dmcallocjson(1, sizeof(struct dm_json_parameter));
@@ -70,7 +69,7 @@ void add_json_data_to_list(struct list_head *dup_list, char *name, char *arg1, c
 	if (arg6) dm_json_parameter->arg6 = dmstrdupjson(arg6);
 }
 
-void delete_json_data_from_list(struct dm_json_parameter *dm_json_parameter)
+static void delete_json_data_from_list(struct dm_json_parameter *dm_json_parameter)
 {
 	list_del(&dm_json_parameter->list);
 	if (dm_json_parameter->name) dmfreejson(dm_json_parameter->name);
@@ -83,7 +82,7 @@ void delete_json_data_from_list(struct dm_json_parameter *dm_json_parameter)
 	if (dm_json_parameter) dmfreejson(dm_json_parameter);
 }
 
-void free_json_data_from_list(struct list_head *dup_list)
+static void free_json_data_from_list(struct list_head *dup_list)
 {
 	struct dm_json_parameter *dm_json_parameter;
 	while (dup_list->next != dup_list) {
@@ -92,13 +91,17 @@ void free_json_data_from_list(struct list_head *dup_list)
 	}
 }
 
-int dm_browse_node_object_tree(DMNODE *parent_node, DMOBJ *entryobj)
+static int dm_browse_node_json_object_tree(DMNODE *parent_node, DMOBJ *entryobj)
 {
 	if (!entryobj)
 		return 0;
 
 	for (; entryobj->obj; entryobj++) {
-		entryobj->nextjsonobj = NULL;
+		if (entryobj->nextdynamicobj) {
+			struct dm_dynamic_obj *next_dyn_array = entryobj->nextdynamicobj + INDX_JSON_OBJ_MOUNT;
+			if (next_dyn_array->nextobj) FREE(next_dyn_array->nextobj);
+		}
+
 		DMNODE node = {0};
 		node.obj = entryobj;
 		node.parent = parent_node;
@@ -106,41 +109,38 @@ int dm_browse_node_object_tree(DMNODE *parent_node, DMOBJ *entryobj)
 		node.matched = parent_node->matched;
 
 		if (entryobj->nextobj)
-			dm_browse_node_object_tree(&node, entryobj->nextobj);
+			dm_browse_node_json_object_tree(&node, entryobj->nextobj);
 	}
 	return 0;
 }
 
-static int free_node_object_tree(void)
+static int free_node_object_tree_dynamic_array(DMOBJ *dm_entryobj)
 {
-	DMOBJ *root = tEntry181Obj;
+	DMOBJ *root = dm_entryobj;
 	DMNODE node = {.current_object = ""};
-	dm_browse_node_object_tree(&node, root);
+	dm_browse_node_json_object_tree(&node, root);
 	return 0;
 }
 
-
-int free_json_dynamic_arrays(void)
+int free_json_dynamic_arrays(DMOBJ *dm_entryobj)
 {
 	free_json_data_from_list(&json_list);
 	dmcleanmemjson();
-	free_node_object_tree();
+	free_node_object_tree_dynamic_array(dm_entryobj);
 	return 0;
 }
 
-int check_stats_folder(char *folder_path)
+int check_stats_json_folder(char *json_folder_path)
 {
 	int file_count = 0;
 	unsigned long size = 0, date = 0;
 	char str[64] = "";
 
-	if (!get_stats_folder(folder_path, &file_count, &size, &date))
+	if (!get_stats_json_folder(json_folder_path, &file_count, &size, &date))
 		return 0;
 	
 	sprintf(str, "count:%d,sizes:%lu,date:%lu", file_count, size, date);
-
 	if (strcmp(str, json_hash)) {
-		free_json_dynamic_arrays();
 		strcpy(json_hash, str);
 		return 1;
 	}
@@ -236,53 +236,7 @@ int get_index_of_available_entry(DMOBJ *jentryobj)
 	return idx;
 }
 
-int plugin_json_obj_match(struct dmctx *dmctx, struct dmnode *node, char *entry_obj, char *full_obj)
-{
-	if (node->matched)
-		return 0;
-
-	if (!dmctx->inparam_isparam && strstr(node->current_object, full_obj) == node->current_object) {
-		node->matched++;
-		dmctx->findparam = 1;
-		return 0;
-	}
-
-	if (strstr(full_obj, node->current_object) == full_obj)
-		return 0;
-
-	return FAULT_9005;
-}
-
-
-void dm_check_obj(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, char *full_obj, char *obj, DMOBJ **root_entry, int *obj_found)
-{
-	int err = 0;
-	if (!entryobj)
-		return;
-	char *parent_obj = parent_node->current_object;
-	for (; entryobj->obj; entryobj++) {
-		DMNODE node = {0};
-		node.obj = entryobj;
-		node.parent = parent_node;
-		node.instance_level = parent_node->instance_level;
-		node.matched = parent_node->matched;
-		dmasprintfjson(&(node.current_object), "%s%s%c", parent_obj, entryobj->obj, dm_delim);
-		if (strcmp(node.current_object, obj) == 0) {
-			*root_entry = entryobj;
-			*obj_found = 1;
-			return;
-		}
-
-		err = plugin_json_obj_match(dmctx, &node, entryobj->obj, full_obj);
-		if (err)
-			continue;
-
-		if (entryobj->nextobj)
-			dm_check_obj(dmctx, &node, entryobj->nextobj, full_obj, obj, root_entry, obj_found);
-	}
-}
-
-int check_root_obj(struct dmctx *ctx, char *in_param_json, DMOBJ **root_entry)
+static int check_json_root_obj(struct dmctx *ctx, char *in_param_json, DMOBJ **root_entry)
 {
 	char *prefix_obj = NULL, *obj = NULL, *full_obj;
 	int prefix_obj_found = 0, obj_found = 0;
@@ -296,9 +250,9 @@ int check_root_obj(struct dmctx *ctx, char *in_param_json, DMOBJ **root_entry)
 	else
 		generate_prefixobj_and_obj_full_obj(full_obj, &prefix_obj, &obj);
 
-	dm_check_obj(ctx, &node, root, full_obj, prefix_obj, root_entry, &prefix_obj_found);
+	dm_check_dynamic_obj(ctx, &node, root, full_obj, prefix_obj, root_entry, &prefix_obj_found);
 	if(prefix_obj_found && *root_entry) {
-		dm_check_obj(ctx, &node, root, full_obj, full_obj, root_entry, &obj_found);
+		dm_check_dynamic_obj(ctx, &node, root, full_obj, full_obj, root_entry, &obj_found);
 		dmfreejson(full_obj);
 		if(obj_found)
 			return 1;
@@ -718,7 +672,7 @@ static void count_obj_param_under_jsonobj(json_object *jsonobj, int *obj_number,
 
 static void parse_obj(char *object, json_object *jobj, DMOBJ *pobj, int index, struct list_head *list)
 {
-	/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type(13)*/
+	/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type(13)*/
 
 	char *full_obj = NULL, *prfix_obj = NULL, *obj_str = NULL;
 	int obj_number = 0, param_number = 0, i = 0, j = 0;
@@ -788,8 +742,8 @@ static void parse_obj(char *object, json_object *jobj, DMOBJ *pobj, int index, s
 			//notification
 			pobj[index].notification = NULL;
 
-			//nextjsonobj
-			pobj[index].nextjsonobj = NULL;
+			//nextdynamicobj
+			pobj[index].nextdynamicobj = NULL;
 
 			//linker
 			pobj[index].get_linker = NULL;
@@ -813,28 +767,39 @@ static void parse_obj(char *object, json_object *jobj, DMOBJ *pobj, int index, s
 
 static void parse_next_obj(struct dmctx *ctx, json_object *jobj)
 {
+	int instance = 0, indx = 0;
+
 	json_object_object_foreach(jobj, key, json_obj) {
 		DMOBJ *dm_entryobj = NULL;
 		if (json_object_get_type(json_obj) == json_type_object && is_obj(key, json_obj)) {
-			int check_obj = check_root_obj(ctx, key, &dm_entryobj);
+			int check_obj = check_json_root_obj(ctx, key, &dm_entryobj);
 			if (check_obj == 0) continue;
 			if (check_obj == 1) {
 				parse_next_obj(ctx, json_obj);
 			} else {
 				if (!dm_entryobj) continue;
-				if (dm_entryobj->nextjsonobj == NULL) {
-					dm_entryobj->nextjsonobj = dmcallocjson(2, sizeof(struct dm_obj_s));
-					parse_obj(key, json_obj, dm_entryobj->nextjsonobj, 0, &json_list);
+
+				if (dm_entryobj->nextdynamicobj == NULL) {
+					dm_entryobj->nextdynamicobj = calloc(__INDX_DYNAMIC_MAX, sizeof(struct dm_dynamic_obj));
+					dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].isstatic = 0;
+				}
+
+				if (dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj == NULL) {
+					dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj = calloc(2, sizeof(struct dm_obj_s *));
+				}
+
+				if (dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0] == NULL) {
+					dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0] = dmcallocjson(2, sizeof(struct dm_obj_s));
+					parse_obj(key, jobj, dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0], 0, &json_list);
 				} else {
-					int idx = get_index_of_available_entry(dm_entryobj->nextjsonobj);
-					dm_entryobj->nextjsonobj = dmreallocjson(dm_entryobj->nextjsonobj, (idx + 2) * sizeof(struct dm_obj_s));
-					memset(dm_entryobj->nextjsonobj + (idx + 1), 0, sizeof(struct dm_obj_s));
-					parse_obj(key, json_obj, dm_entryobj->nextjsonobj, idx, &json_list);
+					int idx = get_index_of_available_entry(dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0]);
+					dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0] = dmreallocjson(dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0], (idx + 2) * sizeof(struct dm_obj_s));
+					memset(dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0] + (idx + 1), 0, sizeof(struct dm_obj_s));
+					parse_obj(key, jobj, dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0], idx, &json_list);
 				}
 			}
 		}
 	}
-
 }
 
 int load_json_dynamic_arrays(struct dmctx *ctx)
@@ -848,28 +813,39 @@ int load_json_dynamic_arrays(struct dmctx *ctx)
 				DMOBJ *dm_entryobj = NULL;
 				json_object *json;
 				char buf[32] = "";
+				int instance = 0, indx = 0;
 				sprintf(buf, "%s/%s", JSON_FOLDER_PATH, ent->d_name);
 				json = json_object_from_file(buf);
 				if (!json) continue;
 
 				json_object_object_foreach(json, key, jobj) {
 					if (!key) break;
-					int check_obj = check_root_obj(ctx, key, &dm_entryobj);
+					int check_obj = check_json_root_obj(ctx, key, &dm_entryobj);
 					if (check_obj == 0) continue;
 					if (check_obj == 1) {
 						parse_next_obj(ctx, jobj);
 						continue;
 					}
 					if (!dm_entryobj) continue;
-					if (dm_entryobj->nextjsonobj == NULL) {
-						dm_entryobj->nextjsonobj = dmcallocjson(2, sizeof(struct dm_obj_s));
-						parse_obj(key, jobj, dm_entryobj->nextjsonobj, 0, &json_list);
-					} else {
-						int idx = get_index_of_available_entry(dm_entryobj->nextjsonobj);
-						dm_entryobj->nextjsonobj = dmreallocjson(dm_entryobj->nextjsonobj, (idx + 2) * sizeof(struct dm_obj_s));
-						memset(dm_entryobj->nextjsonobj + (idx + 1), 0, sizeof(struct dm_obj_s));
-						parse_obj(key, jobj, dm_entryobj->nextjsonobj, idx, &json_list);
 
+					if (dm_entryobj->nextdynamicobj == NULL) {
+						dm_entryobj->nextdynamicobj = calloc(__INDX_DYNAMIC_MAX, sizeof(struct dm_dynamic_obj));
+						dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].isstatic = 0;
+						dm_entryobj->nextdynamicobj[INDX_LIBRARY_OBJ_MOUNT].isstatic = 1;
+					}
+
+					if (dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj == NULL) {
+						dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj = calloc(2, sizeof(struct dm_obj_s *));
+					}
+
+					if (dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0] == NULL) {
+						dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0] = dmcallocjson(2, sizeof(struct dm_obj_s));
+						parse_obj(key, jobj, dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0], 0, &json_list);
+					} else {
+						int idx = get_index_of_available_entry(dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0]);
+						dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0] = dmreallocjson(dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0], (idx + 2) * sizeof(struct dm_obj_s));
+						memset(dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0] + (idx + 1), 0, sizeof(struct dm_obj_s));
+						parse_obj(key, jobj, dm_entryobj->nextdynamicobj[INDX_JSON_OBJ_MOUNT].nextobj[0], idx, &json_list);
 					}
 				}
 				if (json) json_object_put(json);

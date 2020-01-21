@@ -8,17 +8,17 @@
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include "dmbbf.h"
-#include "dmcommon.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmjson.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmcommon.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "softwaremodules.h"
 
 /* *** Device.SoftwareModules. *** */
 DMOBJ tSoftwareModulesObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"ExecEnv", &DMREAD, NULL, NULL, NULL, browseSoftwareModulesExecEnvInst, NULL, NULL, NULL, NULL, tSoftwareModulesExecEnvParams, get_exe_cenv_linker, BBFDM_BOTH},
 {"DeploymentUnit", &DMREAD, NULL, NULL, NULL, browseSoftwareModulesDeploymentUnitInst, NULL, NULL, NULL, NULL, tSoftwareModulesDeploymentUnitParams, get_du_linker, BBFDM_BOTH},
 {"ExecutionUnit", &DMREAD, NULL, NULL, NULL, browseSoftwareModulesExecutionUnitInst, NULL, NULL, NULL, tSoftwareModulesExecutionUnitObj, tSoftwareModulesExecutionUnitParams, NULL, BBFDM_BOTH},
@@ -80,7 +80,7 @@ DMLEAF tSoftwareModulesDeploymentUnitParams[] = {
 
 /* *** Device.SoftwareModules.ExecutionUnit.{i}. *** */
 DMOBJ tSoftwareModulesExecutionUnitObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Extensions", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };

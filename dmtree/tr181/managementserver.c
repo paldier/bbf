@@ -14,13 +14,13 @@
 #include <uci.h>
 #include <stdio.h>
 #include <time.h>
-#include "dmmem.h"
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmmem.h>
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
+#include <libbbf_api/dmjson.h>
 #include "managementserver.h"
-#include "dmjson.h"
 
 #define DEFAULT_ACSURL "http://192.168.1.1:8080/openacs/acs"
 

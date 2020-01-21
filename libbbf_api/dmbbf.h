@@ -8,6 +8,7 @@
  *	  Author MOHAMED Kallel <mohamed.kallel@pivasoftware.com>
  *	  Author Imen Bhiri <imen.bhiri@pivasoftware.com>
  *	  Author Feten Besbes <feten.besbes@pivasoftware.com>
+ *	  Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  *
  */
 
@@ -94,6 +95,11 @@ struct dmnode;
 struct dmctx;
 struct dm_notif_s;
 
+struct dm_dynamic_obj {
+	struct dm_obj_s **nextobj;
+	int isstatic;
+};
+
 struct dm_permession_s {
 	char *val;
 	char *(*get_permission)(char *refparam, struct dmctx *dmctx, void *data, char *instance);
@@ -122,7 +128,7 @@ typedef struct dm_leaf_s {
 } DMLEAF;
 
 typedef struct dm_obj_s {
-	/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type(13)*/
+	/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type(13)*/
 	char *obj;
 	struct dm_permession_s *permission;
 	int (*addobj)(char *refparam, struct dmctx *ctx, void *data, char **instance);
@@ -131,7 +137,7 @@ typedef struct dm_obj_s {
 	int (*browseinstobj)(struct dmctx *dmctx, struct dmnode *node, void *data, char *instance);
 	struct dm_forced_inform_s *forced_inform;
 	struct dm_notif_s *notification;
-	struct dm_obj_s *nextjsonobj;
+	struct dm_dynamic_obj *nextdynamicobj;
 	struct dm_obj_s *nextobj;
 	struct dm_leaf_s *leaf;
 	int (*get_linker)(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker);
@@ -274,6 +280,28 @@ typedef struct execute_end_session {
 	void (*function)(struct execute_end_session *);
 } execute_end_session;
 
+typedef struct lib_map_obj {
+	char *path;
+	struct dm_obj_s *root_obj;
+} LIB_MAP_OBJ;
+
+enum operate_ret_status{
+	UBUS_INVALID_ARGUMENTS,
+	SUCCESS,
+	FAIL,
+	CMD_NOT_FOUND,
+	__STATUS_MAX,
+};
+
+typedef enum operate_ret_status opr_ret_t;
+
+typedef opr_ret_t (*operation) (struct dmctx *dmctx, char *p, char *input);
+
+typedef struct lib_map_operate {
+	char *path;
+	operation operate;
+} LIB_MAP_OPERATE;
+
 enum set_value_action {
 	VALUECHECK,
 	VALUESET
@@ -283,6 +311,7 @@ enum del_action_enum {
 	DEL_INST,
 	DEL_ALL
 };
+
 enum {
 	CMD_GET_VALUE,
 	CMD_GET_NAME,
@@ -469,6 +498,12 @@ enum dm_param_flags_enum{
 	DM_FACTORIZED = 1 << 31
 };
 
+enum {
+	INDX_JSON_OBJ_MOUNT,
+	INDX_LIBRARY_OBJ_MOUNT,
+	__INDX_DYNAMIC_MAX
+};
+
 extern struct list_head list_enabled_notify;
 extern struct list_head list_enabled_lw_notify;
 extern struct list_head list_execute_end_session;
@@ -505,7 +540,7 @@ void add_list_fault_param(struct dmctx *ctx, char *param, int fault);
 void del_list_fault_param(struct param_fault *param_fault);
 void free_all_list_fault_param(struct dmctx *ctx);
 int string_to_bool(char *v, bool *b);
-int dm_entry_operate(struct dmctx *dmctx);
+void dmentry_instance_lookup_inparam(struct dmctx *ctx);
 int dm_entry_get_value(struct dmctx *ctx);
 int dm_entry_get_name(struct dmctx *ctx);
 int dm_entry_get_notification(struct dmctx *ctx);
@@ -548,6 +583,8 @@ void cwmp_set_end_session (unsigned int flag);
 char *dm_print_path(char *fpath, ...);
 void free_all_list_enabled_lwnotify();
 int dm_link_inst_obj(struct dmctx *dmctx, DMNODE *parent_node, void *data, char *instance);
+void dm_check_dynamic_obj(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, char *full_obj, char *obj, DMOBJ **root_entry, int *obj_found);
+int free_dm_browse_node_dynamic_object_tree(DMNODE *parent_node, DMOBJ *entryobj);
 #ifdef BBF_TR064
 void dm_upnp_apply_config(void);
 void add_list_upnp_param_track(struct dmctx *dmctx, struct list_head *pchead, char *param, char *key, char *value, unsigned int isobj);

@@ -12,17 +12,17 @@
 #include <uci.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmbbf.h"
-#include "dmcommon.h"
-#include "hosts.h"
-#include "dmjson.h"
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmcommon.h>
+#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
+#include "hosts.h"
 
 /* *** Device.Hosts. *** */
 DMOBJ tHostsObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Host", &DMREAD, NULL, NULL, NULL, browsehostInst, NULL, NULL, NULL, NULL, tHostsHostParams, NULL, BBFDM_BOTH},
 {0}
 };

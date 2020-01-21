@@ -9,6 +9,7 @@
  *	  Author Imen Bhiri <imen.bhiri@pivasoftware.com>
  *	  Author Feten Besbes <feten.besbes@pivasoftware.com>
  *	  Author Omar Kallel <omar.kallel@pivasoftware.com>
+ *	  Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  *
  */
 
@@ -19,37 +20,8 @@
 #include "dmuci.h"
 #include "dmbbf.h"
 #include "dmmem.h"
-#include "device.h"
-#include "times.h"
-#include "upnp.h"
-#include "deviceinfo.h"
-#include "managementserver.h"
-#include "x_iopsys_eu_igmp.h"
-#include "x_iopsys_eu_ice.h"
-#include "x_iopsys_eu_power_mgmt.h"
-#include "x_iopsys_eu_ipacccfg.h"
-#include "x_iopsys_eu_logincfg.h"
-#include "x_iopsys_eu_syslog.h"
 #include "dmcommon.h"
-#include "wifi.h"
-#include "ethernet.h"
-#include "atm.h"
-#include "ptm.h"
-#include "bridging.h"
-#include "hosts.h"
-#include "dhcpv4.h"
-#include "ip.h"
-#include "ppp.h"
-#include "softwaremodules.h"
-#include "routing.h"
-#include "nat.h"
-#include "xmpp.h"
 #include "dmjson.h"
-#include "dmentry.h"
-#include "dmoperate.h"
-#ifdef BBF_TR104
-#include "voice_services.h"
-#endif
 
 static char *get_parameter_notification(struct dmctx *ctx, char *param);
 static int remove_parameter_notification(char *param);
@@ -340,7 +312,7 @@ void dm_browse_entry(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, 
 		}
 	}
 
-	if (entryobj->nextobj || entryobj->nextjsonobj) {
+	if (entryobj->nextobj || entryobj->nextdynamicobj) {
 		*err = dm_browse(dmctx, &node, entryobj->nextobj, data, instance);
 	}
 }
@@ -348,7 +320,8 @@ void dm_browse_entry(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, 
 int dm_browse(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, void *data, char *instance)
 {
 	DMOBJ *jentryobj;
-	int err = 0;
+	struct dm_dynamic_obj *next_dyn_array;
+	int i, j, err = 0;
 
 	char *parent_obj = parent_node->current_object;
 
@@ -361,11 +334,20 @@ int dm_browse(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, void *d
 	}
 
 	if (parent_node->obj) {
-		jentryobj = parent_node->obj->nextjsonobj;
-		for (; (jentryobj && jentryobj->obj); jentryobj++) {
-			dm_browse_entry(dmctx, parent_node, jentryobj, data, instance, parent_obj, &err);
-			if (dmctx->stop)
-				return err;
+		if (parent_node->obj->nextdynamicobj) {
+			for (i = 0; i < __INDX_DYNAMIC_MAX; i++) {
+				next_dyn_array = parent_node->obj->nextdynamicobj + i;
+				if (next_dyn_array->nextobj) {
+					for (j = 0; next_dyn_array->nextobj[j]; j++) {
+						jentryobj = next_dyn_array->nextobj[j];
+						for (; (jentryobj && jentryobj->obj); jentryobj++) {
+							dm_browse_entry(dmctx, parent_node, jentryobj, data, instance, parent_obj, &err);
+							if (dmctx->stop)
+								return err;
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -419,6 +401,77 @@ int dm_link_inst_obj(struct dmctx *dmctx, DMNODE *parent_node, void *data, char 
 			return err;
 	}
 	return err;
+}
+
+static int plugin_dynamic_obj_match(struct dmctx *dmctx, struct dmnode *node, char *entry_obj, char *full_obj)
+{
+	if (node->matched)
+		return 0;
+
+	if (!dmctx->inparam_isparam && strstr(node->current_object, full_obj) == node->current_object) {
+		node->matched++;
+		dmctx->findparam = 1;
+		return 0;
+	}
+
+	if (strstr(full_obj, node->current_object) == full_obj)
+		return 0;
+
+	return FAULT_9005;
+}
+
+void dm_check_dynamic_obj(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, char *full_obj, char *obj, DMOBJ **root_entry, int *obj_found)
+{
+	int err = 0;
+	if (!entryobj)
+		return;
+	char *parent_obj = parent_node->current_object;
+	for (; entryobj->obj; entryobj++) {
+		DMNODE node = {0};
+		node.obj = entryobj;
+		node.parent = parent_node;
+		node.instance_level = parent_node->instance_level;
+		node.matched = parent_node->matched;
+		dmasprintf(&(node.current_object), "%s%s%c", parent_obj, entryobj->obj, dm_delim);
+		if (strcmp(node.current_object, obj) == 0) {
+			*root_entry = entryobj;
+			*obj_found = 1;
+			return;
+		}
+
+		err = plugin_dynamic_obj_match(dmctx, &node, entryobj->obj, full_obj);
+		if (err)
+			continue;
+
+		if (entryobj->nextobj)
+			dm_check_dynamic_obj(dmctx, &node, entryobj->nextobj, full_obj, obj, root_entry, obj_found);
+	}
+}
+
+int free_dm_browse_node_dynamic_object_tree(DMNODE *parent_node, DMOBJ *entryobj)
+{
+	if (!entryobj)
+		return 0;
+
+	for (; entryobj->obj; entryobj++) {
+		if (entryobj->nextdynamicobj) {
+			for (int i = 0; i < __INDX_DYNAMIC_MAX; i++) {
+				struct dm_dynamic_obj *next_dyn_array = entryobj->nextdynamicobj + i;
+				if (next_dyn_array->nextobj) FREE(next_dyn_array->nextobj);
+			}
+			FREE(entryobj->nextdynamicobj);
+		}
+
+		DMNODE node = {0};
+		node.obj = entryobj;
+		node.parent = parent_node;
+		node.instance_level = parent_node->instance_level;
+		node.matched = parent_node->matched;
+
+		if (entryobj->nextobj)
+			free_dm_browse_node_dynamic_object_tree(&node, entryobj->nextobj);
+	}
+	return 0;
 }
 
 int rootcmp(char *inparam, char *rootobj)
@@ -1060,13 +1113,23 @@ int string_to_bool(char *v, bool *b)
 	return -1;
 }
 
-/******************
- * operate commands
- *****************/
-int dm_entry_operate(struct dmctx *dmctx)
+void dmentry_instance_lookup_inparam(struct dmctx *ctx)
 {
-	int res = operate_on_node(dmctx, dmctx->in_param, dmctx->in_value);
-	return res;
+	char *pch, *spch, *in_param;
+	in_param = dmstrdup(ctx->in_param);
+	int i = 0;
+	char pat[2] = {0};
+	*pat = dm_delim;
+	for (pch = strtok_r(in_param, pat, &spch); pch != NULL; pch = strtok_r(NULL, pat, &spch)) {
+		if (pch[0]== '[') {
+			ctx->alias_register |= (1 << i);
+			i++;
+		} else if (isdigit(pch[0])) {
+			i++;
+		}
+	}
+	dmfree(in_param);
+	ctx->nbrof_instance = i;
 }
 
 /* **********

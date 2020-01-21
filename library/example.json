@@ -1,0 +1,53 @@
+{
+	"Device.IP.Diagnostics.X_IOPSYS_EU_BBKSpeedTest.": {
+		"type": "object", 
+		"protocols": [
+			"cwmp",
+			"usp"
+		], 
+		"access": false,  
+		"DiagnosticsState": {
+			"type": "string", 
+			"protocols": [
+				"cwmp",
+				"usp"
+			], 
+			"read": true, 
+			"write": true
+		}, 
+		"Latency": {
+			"type": "string", 
+			"protocols": [
+				"cwmp",
+				"usp"
+
+			], 
+			"read": true, 
+			"write": false
+		},
+		"Download": {
+			"type": "string", 
+			"protocols": [
+				"cwmp",
+				"usp"
+
+			], 
+			"read": true, 
+			"write": false
+		},
+		"Upload": {
+			"type": "string", 
+			"protocols": [
+				"cwmp",
+				"usp"
+
+			], 
+			"read": true, 
+			"write": false
+		}
+	},
+	"Device.BBKSpeedTest": {
+		"type": "operate"
+	}	
+}
+

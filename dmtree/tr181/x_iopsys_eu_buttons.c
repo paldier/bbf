@@ -12,10 +12,10 @@
 
 #include <uci.h>
 #include <ctype.h>
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_buttons.h"
 
 /*** DMROOT.X_IOPSYS_EU_Buttons.{i}. ****/

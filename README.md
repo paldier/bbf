@@ -9,12 +9,12 @@ The root directory of bbfdm library is **“src”** which is structred as follo
 The bbfdm library offers a tool to generate templates of the source code from json files.
 
 ```plain
-$ ./convertor_json_to_c.py 
-Usage: ./convertor_json_to_c.py <json data model>
+$ python convertor_json_to_c.py 
+Usage: convertor_json_to_c.py <json data model>
 Examples:
-  - ./convertor_json_to_c.py tr181.json
+  - convertor_json_to_c.py tr181.json
     ==> Generate the C code of all data model in tr181/ folder
-  - ./convertor_json_to_c.py tr104.json
+  - convertor_json_to_c.py tr104.json
     ==> Generate the C code of all data model in tr104/ folder
 ```
 **Note:** Any developer can full the json file (**tr181.json** or **tr104.json**) with mapping field according to UCI, UBUS or CLI commands before generating the source code in C.
@@ -95,7 +95,7 @@ Each object in the **DMOBJ** table contains the following arguments:
 | `browseinstobj`     | This function allow to browse all instances under this object |
 | `forced_inform`     | If it's set to `&DMFINFRM` that mean the object contains a force inform parameter in its subtree. The forced inform parameters are the parameter included in the inform message |
 | `notification`      | The notification of the object. Could be **&DMACTIVE**, **&DMACTIVE** or **&DMNONE** |
-| `nextjsonobj`       | Pointer to a **DMOBJ** array which contains a list of the child objects using json file |
+| `nextdynamicobj`       | Pointer to the next of **DMOBJ** which contains a list of the child objects using json files and plugins(libraries) |
 | `nextobj`           | Pointer to a **DMOBJ** array which contains a list of the child objects |
 | `leaf`              | Pointer to a **DMLEAF** array which contains a list of the child objects |
 | `linker`            | This argument is used for LowerLayer parameters or to make reference to other instance object in the tree |
@@ -116,7 +116,10 @@ Each parameter in the **DMLEAF** table contains the following arguments:
 | `notification`      | The notification of the parameter. Could be **&DMACTIVE**, **&DMACTIVE** or **&DMNONE** |
 | `bbfdm_type`        | The bbfdm type of the parameter. Could be **BBFDM_CWMP**, **BBFDM_USP** or **BBFDM_NONE**.If it's `BBFDM_NONE` then we can see this parameter in all protocols (CWMP, USP,...) |
 
-## BBFDM API used for GET/SET/ADD/Delete calls ##
+## BBFDM API ##
+
+The bbfdm API is used for GET/SET/ADD/Delete/Operate calls.
+
 It includes list of `UCI` functions. The most used one are as follow:
 
 **1. dmuci_get_option_value_string:** execute the uci get value
@@ -202,21 +205,25 @@ End of BBF Data Models Generation
 #### JSON generator: ####
 It is a generator of json file from C source code.
 ```plain
-$ ./generator_json_with_backend.py
-Usage: ./generator_json_with_backend.py <tr-181 cwmp xml data model> <tr-181 usp xml data model> [Object path]
+$ python generator_json_with_backend.py
+Usage: generator_json_with_backend.py <tr-181 cwmp xml data model> <tr-181 usp xml data model> [Object path]
 Examples:
-  - ./generator_json_with_backend.py tr-181-2-12-0-cwmp-full.xml tr-181-2-12-0-usp-full.xml Device.
+  - generator_json_with_backend.py tr-181-2-12-0-cwmp-full.xml tr-181-2-12-0-usp-full.xml Device.
     ==> Generate the json file of the sub tree Device. in tr181.json
-  - ./generator_json_with_backend.py tr-104-1-1-0-full.xml VoiceService.
+  - generator_json_with_backend.py tr-104-1-1-0-full.xml VoiceService.
     ==> Generate the json file of the sub tree VoiceService. in tr104.json
-  - ./generator_json_with_backend.py tr-106-1-2-0-full.xml Device.
+  - generator_json_with_backend.py tr-106-1-2-0-full.xml Device.
     ==> Generate the json file of the sub tree Device. in tr106.json
 
 Example of xml data model file: https://www.broadband-forum.org/cwmp/tr-181-2-12-0-cwmp-full.xml
 ```
 
-#### Additional dynamic parameters at run time ####
-The bbfdm library allows all applications installed on the box to import its own tr-181 data model parameters at run time.<br/>
+#### Load additional parameters at run time ####
+
+The bbfdm library allows all applications installed on the box to import its own tr-181 data model parameters at run time in two formats: **JSON files** and **Plugin(library) files**.
+
+#### `JSON Files:` ####
+
 The application should bring its JSON file under **'/etc/bbfdm/json/'** path with **UCI** and **UBUS** mappings. The new added parameters will be automatically shown by icwmp and uspd/obuspa.
 
 **1. Object without instance:**
@@ -394,4 +401,56 @@ The application should bring its JSON file under **'/etc/bbfdm/json/'** path wit
     }
 }
 ```
+#### 
 
+#### `Plugin(library) Files:` ####
+
+The application should bring its plugin(library) file under **'/usr/lib/bbfdm/'** path that contains the sub tree of **Objects/Parameters** and the related functions **Get/Set/Add/Delete/Operate**. The new added objects, parameters and operates will be automatically shown by icwmp and uspd/obuspa.
+
+To build a new library, you can use **example source code** under **library** folder to help you build it.
+
+Each library should contains two Root table named **“tRootDynamicObj”** and **“tRootDynamicOperate”** to define the parant path for each new object and operate.
+
+#### RootDynamicObject definition ####
+![object](/pictures/rootdynamicobj.png)
+
+Each object in the **LIB_MAP_OBJ** table contains two arguments:
+
+|     Argument        |                                                   Description                                                               |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `parentobj`         | A string of the parent object name. Example “Device.IP.Diagnostics.”, “Device.DeviceInfo”, “Device.WiFi.Radio.” |
+| `nextobject`        | Pointer to a **DMOBJ** array which contains a list of the child objects. |
+
+#### RootDynamicOperate definition ####
+![object](/pictures/rootdynamincoperate.png)
+
+Each operate in the **LIB_MAP_OPERATE** table contains two arguments:
+
+|     Argument        |                                                   Description                                                               |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `pathname`         | A string of the path name operate. Example “Device.BBKSpeedTest”, “Device.WiFi.AccessPoint.*.X_IOPSYS_EU_Reset” |
+| `operation`        | The function which return the status of this operate. |
+
+For the other tables, they are defined in the same way as the [Object and Parameter](#object-definition) definition described above.
+
+**Below are the steps for building of a new library using JSON file**
+
+**1. Create the json file:**
+
+Any developer should create a json file containing object requested as defined in the above section of **JSON Files**. You can find an example of json file **example.json** under **library** folder.
+
+**2. Generate the source code:**
+
+The bbfdm library offers a tool to generate templates of the library source code from json file. You can find the tool **generate_library.py** under **library** folder.
+
+```plain
+$ python generate_library.py 
+Usage: generate_library.py <json file>
+Examples:
+  - generate_library.py example.json
+    ==> Generate the C code in example/ folder
+```
+
+**3. Fill the functions of object/parameter:**
+
+After building the templates of source code, a **test.c, test.h and Makefile** files will be generated under **test** folder that contains the functions related to each object, parameter and operate. Then, you have to fill each function with the necessary [bbfdm API](#bbfdm-api) defined above. You can find an example of source code **(example folder)** under **library** folder.

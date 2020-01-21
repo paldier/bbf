@@ -9,17 +9,17 @@
  */
 
 #include <stdbool.h>
-#include "dmbbf.h"
-#include "dmcommon.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmjson.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmcommon.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "dynamicdns.h"
 
 /* *** Device.DynamicDNS. *** */
 DMOBJ tDynamicDNSObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Client", &DMWRITE, addObjDynamicDNSClient, delObjDynamicDNSClient, NULL, browseDynamicDNSClientInst, NULL, NULL, NULL, tDynamicDNSClientObj, tDynamicDNSClientParams, NULL, BBFDM_BOTH},
 {"Server", &DMWRITE, addObjDynamicDNSServer, delObjDynamicDNSServer, NULL, browseDynamicDNSServerInst, NULL, NULL, NULL, NULL, tDynamicDNSServerParams, get_linker_dynamicdns_server, BBFDM_BOTH},
 {0}
@@ -35,7 +35,7 @@ DMLEAF tDynamicDNSParams[] = {
 
 /* *** Device.DynamicDNS.Client.{i}. *** */
 DMOBJ tDynamicDNSClientObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Hostname", &DMWRITE, NULL, NULL, NULL, browseDynamicDNSClientHostnameInst, NULL, NULL, NULL, NULL, tDynamicDNSClientHostnameParams, NULL, BBFDM_BOTH},
 {0}
 };

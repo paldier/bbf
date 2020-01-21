@@ -11,10 +11,10 @@
 
 #include <uci.h>
 #include <ctype.h>
-#include "dmuci.h"
-#include "dmbbf.h"
-#include "dmubus.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
 #include "dmentry.h"
 #include "times.h"
 

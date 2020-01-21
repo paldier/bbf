@@ -1,20 +1,47 @@
 LIB_BBFDM_VERSION = 3:0:0
 
-lib_LTLIBRARIES = libbbfdm.la
+lib_LTLIBRARIES = libbbf_api.la
+
+libbbf_api_la_SOURCES =				\
+	../libbbf_api/dmbbf.c			\
+	../libbbf_api/dmubus.c			\
+	../libbbf_api/dmjson.c			\
+	../libbbf_api/dmuci.c			\
+	../libbbf_api/dmcommon.c 		\
+	../libbbf_api/dmmem.c
+
+libbbf_api_la_CFLAGS =		\
+	$(AM_CFLAGS)			\
+	$(LIBUCI_CFLAGS)		\
+	$(LIBUBOX_CFLAGS)		\
+	$(LIBUBUS_CFLAGS)
+
+libbbf_api_la_LDFLAGS = 	\
+	$(AM_LDFLAGS)			\
+	$(LIBUCI_LDFLAGS)		\
+	$(LIBUBOX_LDFLAGS)		\
+	$(LIBUBUS_LDFLAGS)
+
+libbbf_api_la_LIBADD =		\
+	$(AM_LIBS)				\
+	$(LIBUCI_LIBS)			\
+	$(LIBUBOX_LIBS)			\
+	$(LIBUBUS_LIBS)			\
+	$(LIBJSON_LIBS)			\
+	$(LBLOBMSG_LIBS)
+
+
+lib_LTLIBRARIES += libbbfdm.la
 
 libbbfdm_la_SOURCES =	\
-	../md5.c			\
-	../dmbbf.c			\
-	../dmentry.c		\
-	../dmmem.c			\
-	../dmubus.c			\
-	../dmjson.c			\
-	../dmuci.c			\
-	../dmcommon.c		\
-	../dmoperate.c		\
-	../dmdiagnostics.c	\
+	../dmentry.c 		\
+	../dmentrylibrary.c \
 	../dmentryjson.c 	\
 	../dmmemjson.c 		\
+	../dmoperate.c		\
+	../dmdiagnostics.c	\
+	../dmbbfcommon.c	\
+	../md5.c 			\
 	../wepkey.c
 
 if BBF_TR181
@@ -106,10 +133,10 @@ libbbfdm_la_LIBADD =		\
 	$(LIBUBUS_LIBS)			\
 	$(LIBJSON_LIBS)			\
 	$(LIBTRACE_LIBS)		\
-	$(LBLOBMSG_LIBS)
+	$(LBLOBMSG_LIBS) 		\
+	-lbbf_api
 
 libbbfdm_la_CFLAGS+=-I../
-libbbfdm_la_CFLAGS+=-I../dmtree/
 libbbfdm_la_CFLAGS+=-I../dmtree/tr181
 libbbfdm_la_CFLAGS+=-I../dmtree/tr104
 libbbfdm_la_CFLAGS+=-I../dmtree/tr143

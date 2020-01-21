@@ -9,13 +9,13 @@
  *      Author: Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
-#include "dmbbf.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmcommon.h>
 #include "users.h"
-#include "dmcommon.h"
 
 /* *** Device.Users. *** */
 DMOBJ tUsersObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"User", &DMWRITE, add_users_user, delete_users_user, NULL, browseUserInst, NULL, NULL, NULL, NULL, tUsersUserParams, NULL, BBFDM_BOTH},
 {0}
 };

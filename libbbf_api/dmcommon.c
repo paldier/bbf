@@ -8,6 +8,7 @@
  *		Author: Imen Bhiri <imen.bhiri@pivasoftware.com>
  *		Author: Feten Besbes <feten.besbes@pivasoftware.com>
  *		Author: Omar Kallel <omar.kallel@pivasoftware.com>
+ *		Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
 #include <arpa/inet.h>
@@ -687,7 +688,7 @@ void update_section_list(char *config, char *section, char *option, int number, 
 	struct uci_section *s = NULL;
 	int i = 0;
 
-	if (config == DMMAP)
+	if (strcmp(config, DMMAP) == 0)
 	{
 		if (option) {
 			uci_path_foreach_option_eq(bbfdm, config, section, option, filter, s) {

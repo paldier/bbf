@@ -11,24 +11,24 @@
 
 #include <ctype.h>
 #include <uci.h>
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmcommon.h"
-#include "ptm.h"
-#include "dmjson.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
+#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
+#include "ptm.h"
 
 /* *** Device.PTM. *** */
 DMOBJ tPTMObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Link", &DMWRITE, add_ptm_link, delete_ptm_link, NULL, browsePtmLinkInst, NULL, NULL, NULL, tPTMLinkObj, tPTMLinkParams, get_ptm_linker, BBFDM_BOTH},
 {0}
 };
 
 /* *** Device.PTM.Link.{i}. *** */
 DMOBJ tPTMLinkObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tPTMLinkStatsParams, NULL, BBFDM_BOTH},
 {0}
 };

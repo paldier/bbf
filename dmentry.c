@@ -8,21 +8,23 @@
  *	  Author MOHAMED Kallel <mohamed.kallel@pivasoftware.com>
  *	  Author Imen Bhiri <imen.bhiri@pivasoftware.com>
  *	  Author Feten Besbes <feten.besbes@pivasoftware.com>
+ *	  Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  *
  */
 
 #include <unistd.h>
 #include <ctype.h>
 #include <sys/wait.h>
-#include "dmbbf.h"
-#include "dmubus.h"
-#include "dmuci.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmcommon.h>
 #include "dmentry.h"
+#include "dmentryjson.h"
+#include "dmentrylibrary.h"
+#include "dmoperate.h"
 #include "device.h"
 #include "wepkey.h"
-#include "dmcommon.h"
-#include "dmoperate.h"
-#include "dmentryjson.h"
 
 LIST_HEAD(head_package_change);
 unsigned char dmcli_timetrack = 0;
@@ -155,33 +157,21 @@ int dm_ctx_clean_sub(struct dmctx *ctx)
 	return 0;
 }
 
-void dmentry_instance_lookup_inparam(struct dmctx *ctx)
-{
-	char *pch, *spch, *in_param;
-	in_param = dmstrdup(ctx->in_param);
-	int i = 0;
-	char pat[2] = {0};
-	*pat = dm_delim;
-	for (pch = strtok_r(in_param, pat, &spch); pch != NULL; pch = strtok_r(NULL, pat, &spch)) {
-		if (pch[0]== '[') {
-			ctx->alias_register |= (1 << i);
-			i++;
-		} else if (isdigit(pch[0])) {
-			i++;
-		}
-	}
-	dmfree(in_param);
-	ctx->nbrof_instance = i;
-}
-
 int dm_entry_param_method(struct dmctx *ctx, int cmd, char *inparam, char *arg1, char *arg2)
 {
 	int fault = 0;
 	bool setnotif = true, alarm = false, event = false;
 	int err, err2;
-	
-	if (check_stats_folder(JSON_FOLDER_PATH))
+
+	if (check_stats_json_folder(JSON_FOLDER_PATH)) {
+		free_json_dynamic_arrays(tEntry181Obj);
 		load_json_dynamic_arrays(ctx);
+	}
+
+	if (check_stats_library_folder(LIBRARY_FOLDER_PATH)) {
+		free_library_dynamic_arrays(tEntry181Obj);
+		load_library_dynamic_arrays(ctx);
+	}
 
 	if (!inparam) inparam = "";
 	ctx->in_param = inparam;
@@ -254,7 +244,7 @@ int dm_entry_param_method(struct dmctx *ctx, int cmd, char *inparam, char *arg1,
 			break;
 		case CMD_USP_OPERATE:
 			ctx->in_value = arg1 ? arg1 : "";
-			fault = dm_entry_operate(ctx);
+			fault = operate_on_node(ctx, ctx->in_param, ctx->in_value);
 			break;
 #ifdef BBF_TR064
 		case CMD_UPNP_GET_SUPPORTED_PARAMETERS:
@@ -1965,3 +1955,12 @@ invalid_arguments:
 	fprintf(stdout, "Invalid arguments!\n");;
 }
 
+int free_dynamic_arrays(void)
+{
+	DMOBJ *root = tEntry181Obj;
+	DMNODE node = {.current_object = ""};
+	free_dm_browse_node_dynamic_object_tree(&node, root);
+	free_json_dynamic_arrays(tEntry181Obj);
+	free_library_dynamic_arrays(tEntry181Obj);
+	return 0;
+}

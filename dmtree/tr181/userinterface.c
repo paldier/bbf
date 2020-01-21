@@ -13,16 +13,16 @@
 #include <uci.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmbbf.h"
-#include "dmjson.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmjson.h>
+#include <libbbf_api/dmcommon.h>
 #include "userinterface.h"
 
 /* *** Device.UserInterface. *** */
 DMOBJ tUserInterfaceObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"RemoteAccess", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUserInterfaceRemoteAccessParams, NULL, BBFDM_BOTH},
 {0}
 };

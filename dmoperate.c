@@ -13,22 +13,12 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <regex.h>
-#include "dmbbf.h"
-#include "dmubus.h"
-#include "dmuci.h"
-#include "dmjson.h"
-#include "dmentry.h"
-#include "dmcommon.h"
 #include "dmoperate.h"
-#include "dmdiagnostics.h"
 
 #define GLOB_EXPR "[=><]+"
 
 static uint8_t wifi_neighbor_count = 0;
+struct op_cmd *dynamic_operate = NULL;
 
 bool match(const char *string, const char *pattern)
 {
@@ -224,7 +214,7 @@ struct wifi_security_params reset_params[] = {
 static opr_ret_t ap_security_reset(struct dmctx *dmctx, char *path, char *input)
 {
 	char *wpakey = NULL;
-	char node[MAXNAMLEN] = {'\0'};
+	char node[255] = {'\0'};
 	int i, len = 0;
 
 	char *ret = strrchr(path, '.');
@@ -233,20 +223,20 @@ static opr_ret_t ap_security_reset(struct dmctx *dmctx, char *path, char *input)
 	len = ARRAY_SIZE(reset_params);
 
 	for (i = 0; i < len; i++) {
-		strncpy(reset_params[i].node, node, MAXNAMLEN);
+		strncpy(reset_params[i].node, node, 255);
 		strcat(reset_params[i].node, reset_params[i].param);
 	}
 	const char *mode_enabled = "WPA2-Personal";
 
 	// Default mode - WPA2-Personal
-	strncpy(reset_params[0].value, mode_enabled, MAXNAMLEN);
+	strncpy(reset_params[0].value, mode_enabled, 255);
 
 	// Get Default wpakey
 	db_get_value_string("hw", "board", "wpaKey", &wpakey);
 
 	// PreSharedKey and KeyPassphrase are kept same
-	strncpy(reset_params[1].value, wpakey, MAXNAMLEN);
-	strncpy(reset_params[2].value, wpakey, MAXNAMLEN);
+	strncpy(reset_params[1].value, wpakey, 255);
+	strncpy(reset_params[2].value, wpakey, 255);
 
 	for (i = 0; i < len; i++) {
 		bbf_set_value(reset_params[i].node, reset_params[i].value);
@@ -807,6 +797,31 @@ static opr_ret_t ip_diagnostics_nslookup(struct dmctx *dmctx, char *path, char *
 	return SUCCESS;
 }
 
+static int get_index_of_available_dynamic_operate(struct op_cmd *operate)
+{
+	int idx = 0;
+	for (; (operate && operate->name); operate++) {
+		idx++;
+	}
+	return idx;
+}
+
+int add_dynamic_operate(char *path, operation operate)
+{
+	if (dynamic_operate == NULL) {
+		dynamic_operate = calloc(2, sizeof(struct op_cmd));
+		dynamic_operate[0].name = path;
+		dynamic_operate[0].opt = operate;
+	} else {
+		int idx = get_index_of_available_dynamic_operate(dynamic_operate);
+		dynamic_operate = realloc(dynamic_operate, (idx + 2) * sizeof(struct op_cmd));
+		memset(dynamic_operate + (idx + 1), 0, sizeof(struct op_cmd));
+		dynamic_operate[idx].name = path;
+		dynamic_operate[idx].opt = operate;
+	}
+	return 0;
+}
+
 static struct op_cmd operate_helper[] = {
 	{"Device.Reboot", reboot_device},
 	{"Device.FactoryReset", factory_reset},
@@ -829,15 +844,26 @@ static struct op_cmd operate_helper[] = {
 	{"Device.DNS.Diagnostics.NSLookupDiagnostics", ip_diagnostics_nslookup}
 };
 
-int operate_on_node(struct dmctx *dmctx, char *path, char *input)
+opr_ret_t operate_on_node(struct dmctx *dmctx, char *path, char *input)
 {
-	uint8_t len = 0;
+	uint8_t len = 0, i;
+	struct op_cmd *save_pointer = NULL;
+	if (dynamic_operate) save_pointer = dynamic_operate;
 
 	len = ARRAY_SIZE(operate_helper);
-	for(uint8_t i=0; i<len; i++) {
-		if(match(path, operate_helper[i].name)) {
+	for(i = 0; i < len; i++) {
+		if (match(path, operate_helper[i].name))
 			return(operate_helper[i].opt(dmctx, path, input));
+	}
+
+	for (; (dynamic_operate && dynamic_operate->name); dynamic_operate++) {
+		if (match(path, dynamic_operate->name)) {
+			opr_ret_t res = dynamic_operate->opt(dmctx, path, input);
+			if (save_pointer) dynamic_operate = save_pointer;
+			return res;
 		}
 	}
+	if (save_pointer) dynamic_operate = save_pointer;
+
 	return CMD_NOT_FOUND;
 }

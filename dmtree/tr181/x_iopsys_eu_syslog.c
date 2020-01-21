@@ -12,10 +12,10 @@
 #include <uci.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmbbf.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_syslog.h"
 
 /*** DMROOT.X_IOPSYS_EU_SyslogCfg. ***/

@@ -8,10 +8,10 @@
  *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include "dmbbf.h"
-#include "dmcommon.h"
-#include "dmubus.h"
-#include "dmjson.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmcommon.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "interfacestack.h"
 

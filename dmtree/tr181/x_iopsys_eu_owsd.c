@@ -12,10 +12,10 @@
 
 #include <uci.h>
 #include <ctype.h>
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
 #include "dmentry.h"
 #include "x_iopsys_eu_owsd.h"
 
@@ -28,7 +28,7 @@ DMLEAF XIopsysEuOwsdParams[] = {
 };
 
 DMOBJ XIopsysEuOwsdObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {CUSTOM_PREFIX"UbusProxy", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, UbusProxyParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"ListenObj", &DMWRITE, add_owsd_listen, delete_owsd_listen_instance, NULL, browseXIopsysEuOwsdListenObj, NULL, NULL, NULL, NULL, X_IOPSYS_EU_ListenObjParams, NULL, BBFDM_BOTH},
 {0}

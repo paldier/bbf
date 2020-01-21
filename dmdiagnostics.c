@@ -23,8 +23,7 @@
 #include <inttypes.h>
 #include <assert.h>
 #include <getopt.h>
-#include "dmentry.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmcommon.h>
 #include "dmdiagnostics.h"
 
 int read_next;

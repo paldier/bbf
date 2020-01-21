@@ -11,7 +11,7 @@
 #ifndef _USERS_H
 #define _USERS_H
 
-#include "dmbbf.h"
+#include <libbbf_api/dmbbf.h>
 
 extern DMOBJ tUsersObj[];
 extern DMLEAF tUsersParams[];

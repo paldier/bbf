@@ -12,15 +12,15 @@
 
 #include <uci.h>
 #include <ctype.h>
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_ipacccfg.h"
 
 /*** DMROOT.X_IOPSYS_EU_IpAccCfg. ***/
 DMOBJ tSe_IpAccObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {CUSTOM_PREFIX"IpAccListCfgObj", &DMWRITE, add_ipacccfg_rule, delete_ipacccfg_rule, NULL, browseAccListInst, NULL, NULL, NULL, NULL, tSe_IpAccCfgParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"PortForwarding", &DMWRITE, add_ipacccfg_port_forwarding, delete_ipacccfg_port_forwarding, NULL, browseport_forwardingInst, NULL, NULL, NULL, NULL, tSe_PortForwardingParam, NULL, BBFDM_BOTH},
 {0}

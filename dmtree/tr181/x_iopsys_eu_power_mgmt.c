@@ -12,9 +12,9 @@
  */
 
 #include <unistd.h>
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_power_mgmt.h"
 
 /*** DMROOT.X_IOPSYS_EU_PowerManagement. ***/

@@ -10,15 +10,15 @@
 
 #include <uci.h>
 #include <ctype.h>
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_wifilife.h"
 
 /*** DMROOT.X_IOPSYS_EU_WiFiLife. ****/
 DMOBJ X_IOPSYS_EU_WiFiLifeObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Steering", &DMREAD, NULL, NULL, NULL, browseWifiLifeSteeringObj, NULL, NULL, NULL, NULL, WiFiLifeSteeringParams, NULL, BBFDM_BOTH},
 {0}
 };

@@ -169,7 +169,7 @@ def printheaderObjCommon( objname ):
 def cprintheaderOBJS( objname ):
 	fp = open('./.objparamarray.c', 'a')
 	print >> fp,  "DMOBJ %s[] = {" % ("t" + getname(objname) + "Obj")
-	print >> fp,  "/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/"
+	print >> fp,  "/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/"
 	fp.close()
 
 def hprintheaderOBJS( objname ):

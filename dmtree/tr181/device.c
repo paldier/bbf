@@ -10,8 +10,8 @@
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include "dmuci.h"
-#include "dmbbf.h"
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmbbf.h>
 #include "device.h"
 #include "deviceinfo.h"
 #include "managementserver.h"
@@ -61,7 +61,7 @@
 
 /* *** BBFDM *** */
 DMOBJ tEntry181Obj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Device", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, NULL, tRoot_181_Obj, tRoot_181_Params, NULL, BBFDM_BOTH},
 {0}
 };
@@ -74,7 +74,7 @@ DMLEAF tRoot_181_Params[] = {
 };
 
 DMOBJ tRoot_181_Obj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"DeviceInfo", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, NULL, tDeviceInfoObj, tDeviceInfoParams, NULL, BBFDM_BOTH},
 {"ManagementServer", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, NULL, NULL, tManagementServerParams, NULL, BBFDM_BOTH},
 {"Time", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, NULL, tTimeParams, NULL, BBFDM_BOTH},

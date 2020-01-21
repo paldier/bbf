@@ -13,23 +13,23 @@
 #include <ctype.h>
 #include <uci.h>
 #include <unistd.h>
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
+#include <libbbf_api/dmjson.h>
 #include "voice_services.h"
-#include "dmjson.h"
 
 /* *** Device.Services. *** */
 DMOBJ tServicesObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"VoiceService", &DMREAD, NULL, NULL, NULL, browseVoiceServiceInst, NULL, NULL, NULL, tServicesVoiceServiceObj, tServicesVoiceServiceParams, NULL, BBFDM_BOTH},
 {0}
 };
 
 /* *** Device.Services.VoiceService.{i}. *** */
 DMOBJ tServicesVoiceServiceObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Capabilities", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceCapabilitiesObj, tServicesVoiceServiceCapabilitiesParams, NULL, BBFDM_BOTH},
 {"VoiceProfile", &DMWRITE, add_profile_object, delete_profile_object, NULL, browseProfileInst, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileObj, tServicesVoiceServiceVoiceProfileParams, NULL, BBFDM_BOTH},
 {0}
@@ -43,7 +43,7 @@ DMLEAF tServicesVoiceServiceParams[] = {
 
 /* *** Device.Services.VoiceService.{i}.Capabilities. *** */
 DMOBJ tServicesVoiceServiceCapabilitiesObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"SIP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceCapabilitiesSIPParams, NULL, BBFDM_BOTH},
 {"Codecs", &DMREAD, NULL, NULL, NULL, browseCodecsInst, NULL, NULL, NULL, NULL, tServicesVoiceServiceCapabilitiesCodecsParams, NULL, BBFDM_BOTH},
 {0}
@@ -111,7 +111,7 @@ DMLEAF tServicesVoiceServiceCapabilitiesCodecsParams[] = {
 
 /* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}. *** */
 DMOBJ tServicesVoiceServiceVoiceProfileObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"SIP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileSIPParams, NULL, BBFDM_BOTH},
 {"ServiceProviderInfo", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileServiceProviderInfoParams, NULL, BBFDM_BOTH},
 {"FaxT38", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileFaxT38Params, NULL, BBFDM_BOTH},
@@ -172,7 +172,7 @@ DMLEAF tServicesVoiceServiceVoiceProfileFaxT38Params[] = {
 
 /* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP. *** */
 DMOBJ tServicesVoiceServiceVoiceProfileRTPObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"RTCP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileRTPRTCPParams, NULL, BBFDM_BOTH},
 {"SRTP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileRTPSRTPParams, NULL, BBFDM_BOTH},
 {0}
@@ -203,7 +203,7 @@ DMLEAF tServicesVoiceServiceVoiceProfileRTPSRTPParams[] = {
 
 /* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}. *** */
 DMOBJ tServicesVoiceServiceVoiceProfileLineObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"VoiceProcessing", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileLineVoiceProcessingParams, NULL, BBFDM_BOTH},
 {"CallingFeatures", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileLineCallingFeaturesParams, NULL, BBFDM_BOTH},
 {"SIP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileLineSIPParams, NULL, BBFDM_BOTH},
@@ -250,7 +250,7 @@ DMLEAF tServicesVoiceServiceVoiceProfileLineSIPParams[] = {
 
 /* *** Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Codec. *** */
 DMOBJ tServicesVoiceServiceVoiceProfileLineCodecObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"List", &DMREAD, NULL, NULL, NULL, browseLineCodecListInst, NULL, NULL, NULL, NULL, tServicesVoiceServiceVoiceProfileLineCodecListParams, NULL, BBFDM_BOTH},
 {0}
 };

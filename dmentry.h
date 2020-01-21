@@ -8,13 +8,14 @@
  *	  Author MOHAMED Kallel <mohamed.kallel@pivasoftware.com>
  *	  Author Imen Bhiri <imen.bhiri@pivasoftware.com>
  *	  Author Feten Besbes <feten.besbes@pivasoftware.com>
+ *	  Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  *
  */
 
 #ifndef __DMENTRY_H__
 #define __DMENTRY_H__
 
-#include "dmbbf.h"
+#include <libbbf_api/dmbbf.h>
 extern struct list_head head_package_change;
 extern unsigned char dmcli_timetrack;
 extern unsigned char dmcli_evaluatetest;
@@ -52,7 +53,7 @@ int dm_ctx_clean_sub(struct dmctx *ctx);
 void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned int amd_version, unsigned int instance_mode);
 void dm_execute_cli_command(char *file, unsigned int dmtype, unsigned int amd_version, unsigned int instance_mode);
 void wepkey_cli(int argc, char** argv);
-void dmentry_instance_lookup_inparam(struct dmctx *ctx);
+int free_dynamic_arrays(void);
 
 #ifdef BBF_TR064
 #define DM_ENTRY_UPNP_CHECK_CHANGES(ALARM, EVENT, VERSION) \

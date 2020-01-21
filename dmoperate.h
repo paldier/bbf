@@ -16,7 +16,18 @@
 #ifndef __DMOPERATE_H__
 #define __DMOPERATE_H__
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <regex.h>
 #include <sys/param.h>
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmjson.h>
+#include <libbbf_api/dmcommon.h>
+#include "dmentry.h"
+#include "dmdiagnostics.h"
 
 #define SYSTEM_UBUS_PATH "system"
 #define NETWORK_INTERFACE_UBUS_PATH "network.interface"
@@ -25,22 +36,12 @@
 #define ICWMP_SCRIPT "/usr/sbin/icwmp"
 #define VCF_FILE_TYPE "3"
 
-enum operate_ret_status{
-	UBUS_INVALID_ARGUMENTS,
-	SUCCESS,
-	FAIL,
-	CMD_NOT_FOUND,
-	__STATUS_MAX,
-};
-
-typedef enum operate_ret_status opr_ret_t;
-
-typedef opr_ret_t (*operation) (struct dmctx *dmctx, char *p, char *input);
+extern struct op_cmd *dynamic_operate;
 
 struct wifi_security_params {
-	char node[MAXNAMLEN];
+	char node[255];
 	char *param;
-	char value[MAXNAMLEN];
+	char value[255];
 };
 
 struct file_server {
@@ -216,6 +217,7 @@ struct op_cmd {
 	operation opt;
 };
 
-int operate_on_node(struct dmctx *dmctx, char *path, char *input);
+int add_dynamic_operate(char *path, operation operate);
+opr_ret_t operate_on_node(struct dmctx *dmctx, char *path, char *input);
 
 #endif

@@ -8,14 +8,14 @@
  *      Author: Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
-#include "dmbbf.h"
-#include "firewall.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmcommon.h>
 #include "dmentry.h"
+#include "firewall.h"
 
 /* *** Device.Firewall. *** */
 DMOBJ tFirewallObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Level", &DMREAD, NULL, NULL, NULL, browseLevelInst, NULL, NULL, NULL, NULL, tFirewallLevelParams, NULL, BBFDM_BOTH},
 {"Chain", &DMREAD, NULL, NULL, NULL, browseChainInst, NULL, NULL, NULL, tFirewallChainObj, tFirewallChainParams, NULL, BBFDM_BOTH},
 {0}
@@ -44,7 +44,7 @@ DMLEAF tFirewallLevelParams[] = {
 
 /* *** Device.Firewall.Chain.{i}. *** */
 DMOBJ tFirewallChainObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Rule", &DMWRITE, add_firewall_rule, delete_firewall_rule, NULL, browseRuleInst, NULL, NULL, NULL, tFirewallChainRuleObj, tFirewallChainRuleParams, NULL, BBFDM_BOTH},
 {0}
 };
@@ -60,7 +60,7 @@ DMLEAF tFirewallChainParams[] = {
 
 /* *** Device.Firewall.Chain.{i}.Rule.{i}. *** */
 DMOBJ tFirewallChainRuleObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {CUSTOM_PREFIX"TimeSpan", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tTimeSpanParams, NULL, BBFDM_BOTH},
 {0}
 };

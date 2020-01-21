@@ -9,13 +9,13 @@
  *
  */
 
-#ifndef __DMENTRYJSON_H__
-#define __DMENTRYJSON_H__
+#ifndef __DMENTRYLIBRARY_H__
+#define __DMENTRYLIBRARY_H__
 
-#define JSON_FOLDER_PATH "/etc/bbfdm/json"
+#define LIBRARY_FOLDER_PATH "/usr/lib/bbfdm"
 
-int check_stats_json_folder(char *json_folder_path);
-int load_json_dynamic_arrays(struct dmctx *ctx);
-int free_json_dynamic_arrays(DMOBJ *dm_entryobj);
+int check_stats_library_folder(char *library_folder_path);
+int load_library_dynamic_arrays(struct dmctx *ctx);
+int free_library_dynamic_arrays(DMOBJ *dm_entryobj);
 
-#endif //__DMENTRYJSON_H__
+#endif //__DMENTRYLIBRARY_H__

@@ -232,7 +232,7 @@ static opr_ret_t ap_security_reset(struct dmctx *dmctx, char *path, char *input)
 	strncpy(reset_params[0].value, mode_enabled, 255);
 
 	// Get Default wpakey
-	db_get_value_string("hw", "board", "wpaKey", &wpakey);
+	db_get_value_string("hw", "board", "wpa_key", &wpakey);
 
 	// PreSharedKey and KeyPassphrase are kept same
 	strncpy(reset_params[1].value, wpakey, 255);

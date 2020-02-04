@@ -158,7 +158,7 @@ char *get_deviceid_manufactureroui()
 	{
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
 		if(!(res)){
-			db_get_value_string("hw", "board", "BaseMacAddr", &mac);
+			db_get_value_string("hw", "board", "basemac", &mac);
 			if(!mac || strlen(mac)==0 ){
 				if ((nvrammac = fopen("/proc/nvram/BaseMacAddr", "r")) == NULL)
 			    {
@@ -217,7 +217,7 @@ char *get_deviceid_productclass()
 char *get_deviceid_serialnumber()
 {
 	char *v;
-	db_get_value_string("hw", "board", "serialNumber", &v);
+	db_get_value_string("hw", "board", "serial_number", &v);
 	return v;
 }
 

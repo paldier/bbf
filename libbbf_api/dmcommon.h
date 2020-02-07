@@ -210,6 +210,7 @@ void update_dmmap_sections(struct list_head *dup_list, char *instancename, char*
 unsigned char isdigit_str(char *str);
 char *dm_strword(char *src, char *str);
 char **strsplit(const char* str, const char* delim, size_t* numtokens);
+char **strsplit_by_str(const char str[], char *delim);
 char *get_macaddr(char *ifname);
 char *get_device(char *ifname);
 int is_elt_exit_in_str_list(char *str_list, char *elt);

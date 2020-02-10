@@ -9,13 +9,12 @@
  *
  */
 
-#include "dmbbf.h"
+#include <libbbf_api/dmbbf.h>
 #include "upnp_configuration.h"
 #include "upnp_common.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmcommon.h"
-#include "dmjson.h"
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
 #include <stdio.h>
 #include <stdlib.h>
 

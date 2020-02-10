@@ -26,6 +26,9 @@
 #include "device.h"
 #include "wepkey.h"
 
+#ifdef BBF_TR064
+#include "upnp_device.h"
+#endif
 LIST_HEAD(head_package_change);
 unsigned char dmcli_timetrack = 0;
 unsigned char dmcli_evaluatetest = 0;

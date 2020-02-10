@@ -9,12 +9,12 @@
  *
  */
 
-#include "dmbbf.h"
+#include <libbbf_api/dmbbf.h>
 #include "upnp_monitoring.h"
 #include "upnp_common.h"
-#include "dmubus.h"
-#include "dmcommon.h"
-#include "dmjson.h"
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmcommon.h>
+#include <libbbf_api/dmjson.h>
 #include <time.h>
 
 /**************************************************************************

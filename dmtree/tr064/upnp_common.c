@@ -10,11 +10,11 @@
  */
 
 #include "upnp_common.h"
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
-#include "dmjson.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmubus.h>
+#include <libbbf_api/dmjson.h>
+#include <libbbf_api/dmcommon.h>
 #include <json-c/json.h>
 
 #include <stdio.h>

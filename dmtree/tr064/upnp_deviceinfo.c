@@ -10,12 +10,12 @@
  */
 
 #include <stdio.h>
-#include "dmbbf.h"
+#include <libbbf_api/dmbbf.h>
 #include "upnp_deviceinfo.h"
 #include <sys/utsname.h>
-#include "dmuci.h"
-#include "dmmem.h"
-#include "dmcommon.h"
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmmem.h>
+#include <libbbf_api/dmcommon.h>
 #include <uci.h>
 #include "upnp_common.h"
 #include<stdbool.h>

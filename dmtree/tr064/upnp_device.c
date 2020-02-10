@@ -9,8 +9,8 @@
  *
  */
 
-#include "dmuci.h"
-#include "dmbbf.h"
+#include <libbbf_api/dmuci.h>
+#include <libbbf_api/dmbbf.h>
 #include "upnp_device.h"
 #include "deviceinfo.h"
 #include "managementserver.h"
@@ -43,16 +43,6 @@
 #include "ppp.h"
 #include "routing.h"
 #include "userinterface.h"
-#include "landevice.h"
-#include "wandevice.h"
-#include "ippingdiagnostics.h"
-#include "lan_interfaces.h"
-#include "layer_3_forwarding.h"
-#include "x_iopsys_eu_wifi.h"
-#include "layer_2_bridging.h"
-#include "downloaddiagnostic.h"
-#include "uploaddiagnostic.h"
-#include "deviceconfig.h"
 #include "firewall.h"
 #include "dns.h"
 #include "users.h"
@@ -65,6 +55,7 @@
 #include "upnp_deviceinfo.h"
 #include "upnp_configuration.h"
 #include "upnp_monitoring.h"
+#include "upnp_device.h"
 #endif
 
 /*** UPNP ***/
@@ -103,7 +94,7 @@ DMOBJ tRoot181ObjUPNPBBF[] = {
 {"Time", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tTimeParams, NULL, BBFDM_BOTH},
 {"UPnP", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tUPnPObj, NULL, NULL, BBFDM_BOTH},
 #if BBF_TR104
-{"VoiceService", &DMREAD, NULL, NULL, NULL, browseVoiceServiceInst, NULL, NULL, tVoiceServiceObj, tVoiceServiceParam, NULL, BBFDM_BOTH},
+{"VoiceService", &DMREAD, NULL, NULL, NULL, browseVoiceServiceInst, NULL, NULL, tServicesVoiceServiceObj, tServicesVoiceServiceParams, NULL, BBFDM_BOTH},
 #endif
 {CUSTOM_PREFIX"ICE", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_IceParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"IGMP", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_IgmpParam, NULL, BBFDM_BOTH},
@@ -116,17 +107,17 @@ DMOBJ tRoot181ObjUPNPBBF[] = {
 {CUSTOM_PREFIX"Dropbear", &DMWRITE, add_dropbear_instance, delete_dropbear_instance, NULL, browseXIopsysEuDropbear, NULL, &DMNONE, NULL, X_IOPSYS_EU_DropbearParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Buttons", &DMREAD, NULL, NULL, NULL, browseXIopsysEuButton, NULL, &DMNONE, NULL, X_IOPSYS_EU_ButtonParams, NULL, BBFDM_BOTH},
 {"Bridging",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tBridgingObj, NULL, NULL, BBFDM_BOTH},
-{"WiFi",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tWifiObj, NULL, NULL, BBFDM_BOTH},
+{"WiFi",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tWiFiObj, NULL, NULL, BBFDM_BOTH},
 {"IP",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tIPObj, NULL, NULL, BBFDM_BOTH},
 {"Ethernet", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tEthernetObj, NULL, NULL, BBFDM_BOTH},
-{"DSL",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tDslObj, NULL, NULL, BBFDM_BOTH},
-{"ATM",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tAtmObj, NULL, NULL, BBFDM_BOTH},
-{"PTM", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tPtmObj, NULL, NULL, BBFDM_BOTH},
-{"DHCPv4", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tDhcpv4Obj, NULL, NULL, BBFDM_BOTH},
-{"Hosts", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, thostsObj, thostsParam, NULL, BBFDM_BOTH},
-{"NAT", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tnatObj, NULL, NULL, BBFDM_BOTH},
-{"PPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tpppObj, NULL, NULL, BBFDM_BOTH},
-{"Routing", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tRoutingObj, tRoutingParam, NULL, BBFDM_BOTH},
+{"DSL",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tDSLObj, NULL, NULL, BBFDM_BOTH},
+{"ATM",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tATMObj, NULL, NULL, BBFDM_BOTH},
+{"PTM", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tPTMObj, NULL, NULL, BBFDM_BOTH},
+{"DHCPv4", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tDHCPv4Obj, NULL, NULL, BBFDM_BOTH},
+{"Hosts", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tHostsObj, tHostsParams, NULL, BBFDM_BOTH},
+{"NAT", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tNATObj, NULL, NULL, BBFDM_BOTH},
+{"PPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tPPPObj, NULL, NULL, BBFDM_BOTH},
+{"Routing", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, tRoutingObj, tRoutingParams, NULL, BBFDM_BOTH},
 {"XMPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL,tXMPPObj, tXMPPParams, NULL, BBFDM_BOTH},
 {0}
 };

@@ -21,14 +21,14 @@
 DMOBJ tGREObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nexjsontobj, nextobj, leaf, linker, bbfdm_type*/
 {"Tunnel", &DMWRITE, addObjGRETunnel, delObjGRETunnel, NULL, browseGRETunnelInst, NULL, NULL, NULL, tGRETunnelObj, tGRETunnelParams, NULL, BBFDM_BOTH},
-{"Filter", &DMWRITE, addObjGREFilter, delObjGREFilter, NULL, browseGREFilterInst, NULL, NULL, NULL, NULL, tGREFilterParams, NULL, BBFDM_BOTH},
+//{"Filter", &DMWRITE, addObjGREFilter, delObjGREFilter, NULL, browseGREFilterInst, NULL, NULL, NULL, NULL, tGREFilterParams, NULL, BBFDM_BOTH},
 {0}
 };
 
 DMLEAF tGREParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"TunnelNumberOfEntries", &DMREAD, DMT_UNINT, get_GRE_TunnelNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{"FilterNumberOfEntries", &DMREAD, DMT_UNINT, get_GRE_FilterNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+//{"FilterNumberOfEntries", &DMREAD, DMT_UNINT, get_GRE_FilterNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -42,15 +42,15 @@ DMOBJ tGRETunnelObj[] = {
 
 DMLEAF tGRETunnelParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_GRETunnel_Enable, set_GRETunnel_Enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_GRETunnel_Status, NULL, NULL, NULL, BBFDM_BOTH},
+//{"Enable", &DMWRITE, DMT_BOOL, get_GRETunnel_Enable, set_GRETunnel_Enable, NULL, NULL, BBFDM_BOTH},
+//{"Status", &DMREAD, DMT_STRING, get_GRETunnel_Status, NULL, NULL, NULL, BBFDM_BOTH},
 {"Alias", &DMWRITE, DMT_STRING, get_GRETunnel_Alias, set_GRETunnel_Alias, NULL, NULL, BBFDM_BOTH},
-{"RemoteEndpoints", &DMWRITE, DMT_STRING, get_GRETunnel_RemoteEndpoints, set_GRETunnel_RemoteEndpoints, NULL, NULL, BBFDM_BOTH},
-{"KeepAlivePolicy", &DMWRITE, DMT_STRING, get_GRETunnel_KeepAlivePolicy, set_GRETunnel_KeepAlivePolicy, NULL, NULL, BBFDM_BOTH},
-{"KeepAliveTimeout", &DMWRITE, DMT_UNINT, get_GRETunnel_KeepAliveTimeout, set_GRETunnel_KeepAliveTimeout, NULL, NULL, BBFDM_BOTH},
+//{"RemoteEndpoints", &DMWRITE, DMT_STRING, get_GRETunnel_RemoteEndpoints, set_GRETunnel_RemoteEndpoints, NULL, NULL, BBFDM_BOTH},
+//{"KeepAlivePolicy", &DMWRITE, DMT_STRING, get_GRETunnel_KeepAlivePolicy, set_GRETunnel_KeepAlivePolicy, NULL, NULL, BBFDM_BOTH},
+//{"KeepAliveTimeout", &DMWRITE, DMT_UNINT, get_GRETunnel_KeepAliveTimeout, set_GRETunnel_KeepAliveTimeout, NULL, NULL, BBFDM_BOTH},
 {"KeepAliveThreshold", &DMWRITE, DMT_UNINT, get_GRETunnel_KeepAliveThreshold, set_GRETunnel_KeepAliveThreshold, NULL, NULL, BBFDM_BOTH},
-{"DeliveryHeaderProtocol", &DMWRITE, DMT_STRING, get_GRETunnel_DeliveryHeaderProtocol, set_GRETunnel_DeliveryHeaderProtocol, NULL, NULL, BBFDM_BOTH},
-{"DefaultDSCPMark", &DMWRITE, DMT_UNINT, get_GRETunnel_DefaultDSCPMark, set_GRETunnel_DefaultDSCPMark, NULL, NULL, BBFDM_BOTH},
+//{"DeliveryHeaderProtocol", &DMWRITE, DMT_STRING, get_GRETunnel_DeliveryHeaderProtocol, set_GRETunnel_DeliveryHeaderProtocol, NULL, NULL, BBFDM_BOTH},
+//{"DefaultDSCPMark", &DMWRITE, DMT_UNINT, get_GRETunnel_DefaultDSCPMark, set_GRETunnel_DefaultDSCPMark, NULL, NULL, BBFDM_BOTH},
 {"ConnectedRemoteEndpoint", &DMREAD, DMT_STRING, get_GRETunnel_ConnectedRemoteEndpoint, NULL, NULL, NULL, BBFDM_BOTH},
 {"InterfaceNumberOfEntries", &DMREAD, DMT_UNINT, get_GRETunnel_InterfaceNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
@@ -59,8 +59,8 @@ DMLEAF tGRETunnelParams[] = {
 /* *** Device.GRE.Tunnel.{i}.Stats. *** */
 DMLEAF tGRETunnelStatsParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"KeepAliveSent", &DMREAD, DMT_UNINT, get_GRETunnelStats_KeepAliveSent, NULL, NULL, NULL, BBFDM_BOTH},
-{"KeepAliveReceived", &DMREAD, DMT_UNINT, get_GRETunnelStats_KeepAliveReceived, NULL, NULL, NULL, BBFDM_BOTH},
+//{"KeepAliveSent", &DMREAD, DMT_UNINT, get_GRETunnelStats_KeepAliveSent, NULL, NULL, NULL, BBFDM_BOTH},
+//{"KeepAliveReceived", &DMREAD, DMT_UNINT, get_GRETunnelStats_KeepAliveReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {"BytesSent", &DMREAD, DMT_UNINT, get_GRETunnelStats_BytesSent, NULL, NULL, NULL, BBFDM_BOTH},
 {"BytesReceived", &DMREAD, DMT_UNINT, get_GRETunnelStats_BytesReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {"PacketsSent", &DMREAD, DMT_UNINT, get_GRETunnelStats_PacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
@@ -79,17 +79,17 @@ DMOBJ tGRETunnelInterfaceObj[] = {
 
 DMLEAF tGRETunnelInterfaceParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_GRETunnelInterface_Enable, set_GRETunnelInterface_Enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_GRETunnelInterface_Status, NULL, NULL, NULL, BBFDM_BOTH},
+//{"Enable", &DMWRITE, DMT_BOOL, get_GRETunnelInterface_Enable, set_GRETunnelInterface_Enable, NULL, NULL, BBFDM_BOTH},
+//{"Status", &DMREAD, DMT_STRING, get_GRETunnelInterface_Status, NULL, NULL, NULL, BBFDM_BOTH},
 {"Alias", &DMWRITE, DMT_STRING, get_GRETunnelInterface_Alias, set_GRETunnelInterface_Alias, NULL, NULL, BBFDM_BOTH},
 {"Name", &DMREAD, DMT_STRING, get_GRETunnelInterface_Name, NULL, NULL, NULL, BBFDM_BOTH},
-{"LastChange", &DMREAD, DMT_UNINT, get_GRETunnelInterface_LastChange, NULL, NULL, NULL, BBFDM_BOTH},
-{"LowerLayers", &DMWRITE, DMT_STRING, get_GRETunnelInterface_LowerLayers, set_GRETunnelInterface_LowerLayers, NULL, NULL, BBFDM_BOTH},
-{"ProtocolIdOverride", &DMWRITE, DMT_UNINT, get_GRETunnelInterface_ProtocolIdOverride, set_GRETunnelInterface_ProtocolIdOverride, NULL, NULL, BBFDM_BOTH},
-{"UseChecksum", &DMWRITE, DMT_BOOL, get_GRETunnelInterface_UseChecksum, set_GRETunnelInterface_UseChecksum, NULL, NULL, BBFDM_BOTH},
-{"KeyIdentifierGenerationPolicy", &DMWRITE, DMT_STRING, get_GRETunnelInterface_KeyIdentifierGenerationPolicy, set_GRETunnelInterface_KeyIdentifierGenerationPolicy, NULL, NULL, BBFDM_BOTH},
-{"KeyIdentifier", &DMWRITE, DMT_UNINT, get_GRETunnelInterface_KeyIdentifier, set_GRETunnelInterface_KeyIdentifier, NULL, NULL, BBFDM_BOTH},
-{"UseSequenceNumber", &DMWRITE, DMT_BOOL, get_GRETunnelInterface_UseSequenceNumber, set_GRETunnelInterface_UseSequenceNumber, NULL, NULL, BBFDM_BOTH},
+//{"LastChange", &DMREAD, DMT_UNINT, get_GRETunnelInterface_LastChange, NULL, NULL, NULL, BBFDM_BOTH},
+//{"LowerLayers", &DMWRITE, DMT_STRING, get_GRETunnelInterface_LowerLayers, set_GRETunnelInterface_LowerLayers, NULL, NULL, BBFDM_BOTH},
+//{"ProtocolIdOverride", &DMWRITE, DMT_UNINT, get_GRETunnelInterface_ProtocolIdOverride, set_GRETunnelInterface_ProtocolIdOverride, NULL, NULL, BBFDM_BOTH},
+//{"UseChecksum", &DMWRITE, DMT_BOOL, get_GRETunnelInterface_UseChecksum, set_GRETunnelInterface_UseChecksum, NULL, NULL, BBFDM_BOTH},
+//{"KeyIdentifierGenerationPolicy", &DMWRITE, DMT_STRING, get_GRETunnelInterface_KeyIdentifierGenerationPolicy, set_GRETunnelInterface_KeyIdentifierGenerationPolicy, NULL, NULL, BBFDM_BOTH},
+//{"KeyIdentifier", &DMWRITE, DMT_UNINT, get_GRETunnelInterface_KeyIdentifier, set_GRETunnelInterface_KeyIdentifier, NULL, NULL, BBFDM_BOTH},
+//{"UseSequenceNumber", &DMWRITE, DMT_BOOL, get_GRETunnelInterface_UseSequenceNumber, set_GRETunnelInterface_UseSequenceNumber, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -102,23 +102,23 @@ DMLEAF tGRETunnelInterfaceStatsParams[] = {
 {"PacketsReceived", &DMREAD, DMT_UNINT, get_GRETunnelInterfaceStats_PacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsSent", &DMREAD, DMT_UNINT, get_GRETunnelInterfaceStats_ErrorsSent, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsReceived", &DMREAD, DMT_UNINT, get_GRETunnelInterfaceStats_ErrorsReceived, NULL, NULL, NULL, BBFDM_BOTH},
-{"DiscardChecksumReceived", &DMREAD, DMT_UNINT, get_GRETunnelInterfaceStats_DiscardChecksumReceived, NULL, NULL, NULL, BBFDM_BOTH},
-{"DiscardSequenceNumberReceived", &DMREAD, DMT_UNINT, get_GRETunnelInterfaceStats_DiscardSequenceNumberReceived, NULL, NULL, NULL, BBFDM_BOTH},
+//{"DiscardChecksumReceived", &DMREAD, DMT_UNINT, get_GRETunnelInterfaceStats_DiscardChecksumReceived, NULL, NULL, NULL, BBFDM_BOTH},
+//{"DiscardSequenceNumberReceived", &DMREAD, DMT_UNINT, get_GRETunnelInterfaceStats_DiscardSequenceNumberReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
 /* *** Device.GRE.Filter.{i}. *** */
 DMLEAF tGREFilterParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_GREFilter_Enable, set_GREFilter_Enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_GREFilter_Status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Order", &DMWRITE, DMT_UNINT, get_GREFilter_Order, set_GREFilter_Order, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_GREFilter_Alias, set_GREFilter_Alias, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMWRITE, DMT_STRING, get_GREFilter_Interface, set_GREFilter_Interface, NULL, NULL, BBFDM_BOTH},
-{"AllInterfaces", &DMWRITE, DMT_BOOL, get_GREFilter_AllInterfaces, set_GREFilter_AllInterfaces, NULL, NULL, BBFDM_BOTH},
-{"VLANIDCheck", &DMWRITE, DMT_INT, get_GREFilter_VLANIDCheck, set_GREFilter_VLANIDCheck, NULL, NULL, BBFDM_BOTH},
-{"VLANIDExclude", &DMWRITE, DMT_BOOL, get_GREFilter_VLANIDExclude, set_GREFilter_VLANIDExclude, NULL, NULL, BBFDM_BOTH},
-{"DSCPMarkPolicy", &DMWRITE, DMT_INT, get_GREFilter_DSCPMarkPolicy, set_GREFilter_DSCPMarkPolicy, NULL, NULL, BBFDM_BOTH},
+//{"Enable", &DMWRITE, DMT_BOOL, get_GREFilter_Enable, set_GREFilter_Enable, NULL, NULL, BBFDM_BOTH},
+//{"Status", &DMREAD, DMT_STRING, get_GREFilter_Status, NULL, NULL, NULL, BBFDM_BOTH},
+//{"Order", &DMWRITE, DMT_UNINT, get_GREFilter_Order, set_GREFilter_Order, NULL, NULL, BBFDM_BOTH},
+//{"Alias", &DMWRITE, DMT_STRING, get_GREFilter_Alias, set_GREFilter_Alias, NULL, NULL, BBFDM_BOTH},
+//{"Interface", &DMWRITE, DMT_STRING, get_GREFilter_Interface, set_GREFilter_Interface, NULL, NULL, BBFDM_BOTH},
+//{"AllInterfaces", &DMWRITE, DMT_BOOL, get_GREFilter_AllInterfaces, set_GREFilter_AllInterfaces, NULL, NULL, BBFDM_BOTH},
+//{"VLANIDCheck", &DMWRITE, DMT_INT, get_GREFilter_VLANIDCheck, set_GREFilter_VLANIDCheck, NULL, NULL, BBFDM_BOTH},
+//{"VLANIDExclude", &DMWRITE, DMT_BOOL, get_GREFilter_VLANIDExclude, set_GREFilter_VLANIDExclude, NULL, NULL, BBFDM_BOTH},
+//{"DSCPMarkPolicy", &DMWRITE, DMT_INT, get_GREFilter_DSCPMarkPolicy, set_GREFilter_DSCPMarkPolicy, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

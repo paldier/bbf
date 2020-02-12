@@ -17,7 +17,7 @@
 
 
 struct dhcp_lease {
-	time_t ts;
+	uint64_t ts;
 	char hwaddr[20];
 	char ipaddr[16];
 	struct list_head list;

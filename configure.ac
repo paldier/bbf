@@ -73,6 +73,9 @@ AC_DEFINE(DM_USE_LIBUBUS)
 LBLOBMSG_LIBS='-lblobmsg_json'
 AC_SUBST([LBLOBMSG_LIBS])
 
+LIBDLOPEN_LIBS='-ldl'
+AC_SUBST([LIBDLOPEN_LIBS])
+
 # checks for header files
 AC_CHECK_HEADERS([stdlib.h string.h])
 

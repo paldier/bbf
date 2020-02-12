@@ -134,6 +134,7 @@ libbbfdm_la_LIBADD =		\
 	$(LIBJSON_LIBS)			\
 	$(LIBTRACE_LIBS)		\
 	$(LBLOBMSG_LIBS) 		\
+	$(LIBDLOPEN_LIBS) 		\
 	-lbbf_api
 
 libbbfdm_la_CFLAGS+=-I../

@@ -8,11 +8,6 @@
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "dns.h"
 
@@ -193,6 +188,7 @@ static int dmmap_synchronizeDNSClientRelayServer(struct dmctx *dmctx, DMNODE *pa
 			if (found)
 				break;
 			dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", section_name(ss), String}}, 1, &jobj);
+			if (!jobj) break;
 			dmjson_foreach_value_in_array(jobj, arrobj, ipdns, j, 1, "dns-server") {
 				if (strcmp(ipdns, vip) == 0) {
 					found = 1;
@@ -222,6 +218,7 @@ static int dmmap_synchronizeDNSClientRelayServer(struct dmctx *dmctx, DMNODE *pa
 		if (str[0] == '0')
 			continue;
 		dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", section_name(s), String}}, 1, &jobj);
+		if (!jobj) break;
 		dmjson_foreach_value_in_array(jobj, arrobj, ipdns, j, 1, "dns-server") {
 			if (ipdns[0] == '\0' || is_dns_server_in_dmmap(ipdns, section_name(s)))
 				continue;

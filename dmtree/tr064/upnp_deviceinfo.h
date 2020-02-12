@@ -11,7 +11,8 @@
 
 #ifndef UPNP_DEVICEINFO_H
 #define UPNP_DEVICEINFO_H
-#include <libbbf_api/dmbbf.h>
+
+#include <libbbf_api/dmcommon.h>
 
 struct upnp_dvinf_args
 {

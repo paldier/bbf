@@ -8,12 +8,6 @@
  *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include <uci.h>
-#include <ctype.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_wifilife.h"
 
 /*** DMROOT.X_IOPSYS_EU_WiFiLife. ****/
@@ -39,7 +33,6 @@ DMLEAF WiFiLifeSteeringParams[] = {
 int browseWifiLifeSteeringObj(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *isteer = NULL, *isteer_last = NULL;
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 

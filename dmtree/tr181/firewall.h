@@ -11,6 +11,8 @@
 #ifndef _FIREWALL_H
 #define _FIREWALL_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tFirewallObj[];
 extern DMLEAF tFirewallParams[];
 extern DMLEAF tFirewallLevelParams[];

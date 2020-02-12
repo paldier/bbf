@@ -8,18 +8,8 @@
  *		Author: AMIN Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include <uci.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "dsl.h"
-
-#define DELIMITOR ","
 
 /* *** Device.DSL. *** */
 DMOBJ tDSLObj[] = {
@@ -345,8 +335,8 @@ static struct uci_section *update_create_dmmap_dsl_channel(char *curr_id)
 	return s;
 }
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+*************************************************************/
 int browseDSLLineInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL, *line_obj = NULL;
@@ -413,8 +403,9 @@ static char *get_dsl_value_without_argument(char *command1, char *id, char *comm
 	json_object *res;
 	char command[16], *value = "0";
 
-	sprintf(command, "%s.%s", command1, id);
+	snprintf(command, sizeof(command), "%s.%s", command1, id);
 	dmubus_call(command, command2, UBUS_ARGS{}, 0, &res);
+	if (!res) return "";
 	value = dmjson_get_value(res, 1, key);
 	return value;
 }
@@ -424,8 +415,9 @@ static char *get_dsl_value_without_argument_and_with_two_key(char *command1, cha
 	json_object *res;
 	char command[16], *value = "0";
 
-	sprintf(command, "%s.%s", command1, id);
+	snprintf(command, sizeof(command), "%s.%s", command1, id);
 	dmubus_call(command, command2, UBUS_ARGS{}, 0, &res);
+	if (!res) return "";
 	value = dmjson_get_value(res, 2, key1, key2);
 	return value;
 }
@@ -435,8 +427,9 @@ static char *get_dsl_value_with_argument(char *command1, char *id, char *command
 	json_object *res;
 	char command[16], *value = "0";
 
-	sprintf(command, "%s.%s", command1, id);
+	snprintf(command, sizeof(command), "%s.%s", command1, id);
 	dmubus_call(command, command2, UBUS_ARGS{{"interval", argument, String}}, 1, &res);
+	if (!res) return "";
 	value = dmjson_get_value(res, 1, key);
 	return value;
 }
@@ -446,8 +439,9 @@ static char *get_dsl_value_array_without_argument(char *command1, char *id, char
 	json_object *res;
 	char command[16], *value= "0";
 
-	sprintf(command, "%s.%s", command1, id);
+	snprintf(command, sizeof(command), "%s.%s", command1, id);
 	dmubus_call(command, command2, UBUS_ARGS{}, 0, &res);
+	if (!res) return "";
 	value = dmjson_get_value_array_all(res, DELIMITOR, 1, key);
 	return value;
 }
@@ -476,7 +470,7 @@ int get_DSL_ChannelNumberOfEntries(char *refparam, struct dmctx *ctx, void *data
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
-	return 0;;
+	return 0;
 }
 
 /*#Device.DSL.Line.{i}.Enable!UBUS:dsl.line.0/status//status*/
@@ -1154,7 +1148,7 @@ int get_DSLChannel_Name(char *refparam, struct dmctx *ctx, void *data, char *ins
 int get_DSLChannel_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char linker[8];
-	sprintf(linker, "line_%s", ((struct dsl_line_args *)data)->id);
+	snprintf(linker, sizeof(linker), "line_%s", ((struct dsl_line_args *)data)->id);
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cDSL%cLine%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value); // MEM WILL BE FREED IN DMMEMCLEAN
 	if (*value == NULL)
 		*value = "";
@@ -1163,7 +1157,7 @@ int get_DSLChannel_LowerLayers(char *refparam, struct dmctx *ctx, void *data, ch
 
 static char *get_dsl_link_encapsulation_standard(char *str)
 {
-	char *dsl_link_encapsulation_standard;
+	char *dsl_link_encapsulation_standard = "";
 
 	if(strcmp(str, "adsl2_atm") == 0)
 		dsl_link_encapsulation_standard = "G.992.3_Annex_K_ATM";

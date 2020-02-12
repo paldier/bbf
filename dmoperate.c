@@ -20,16 +20,6 @@
 static uint8_t wifi_neighbor_count = 0;
 struct op_cmd *dynamic_operate = NULL;
 
-bool match(const char *string, const char *pattern)
-{
-	regex_t re;
-	if (regcomp(&re, pattern, REG_EXTENDED) != 0) return 0;
-	int status = regexec(&re, string, 0, NULL, 0);
-	regfree(&re);
-	if (status != 0) return false;
-	return true;
-}
-
 bool is_str_eq(const char *s1, const char *s2)
 {
 	if(0==strcmp(s1, s2))
@@ -347,6 +337,7 @@ static opr_ret_t fetch_neighboring_wifi_diagnostic(struct dmctx *dmctx, char *pa
 
 	dmubus_call(ROUTER_WIRELESS_UBUS_PATH, "radios", UBUS_ARGS{}, 0, &res);
 	json_object_object_foreach(res, key, val) {
+		UNUSED(val);
 		fill_wireless_scan_results(dmctx, key);
 	}
 	wifi_neighbor_count = 0;
@@ -814,7 +805,11 @@ int add_dynamic_operate(char *path, operation operate)
 		dynamic_operate[0].opt = operate;
 	} else {
 		int idx = get_index_of_available_dynamic_operate(dynamic_operate);
-		dynamic_operate = realloc(dynamic_operate, (idx + 2) * sizeof(struct op_cmd));
+		struct op_cmd *new_dynamic_operate = realloc(dynamic_operate, (idx + 2) * sizeof(struct op_cmd));
+		if (new_dynamic_operate == NULL)
+			FREE(dynamic_operate);
+		else
+			dynamic_operate = new_dynamic_operate;
 		memset(dynamic_operate + (idx + 1), 0, sizeof(struct op_cmd));
 		dynamic_operate[idx].name = path;
 		dynamic_operate[idx].opt = operate;

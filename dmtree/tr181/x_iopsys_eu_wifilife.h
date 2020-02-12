@@ -11,6 +11,8 @@
 #ifndef __WIFILIFE_H
 #define __WIFILIFE_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ X_IOPSYS_EU_WiFiLifeObj[];
 extern DMLEAF X_IOPSYS_EU_WiFiLifeParams[];
 extern DMLEAF WiFiLifeSteeringParams[];

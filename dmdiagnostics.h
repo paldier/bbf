@@ -12,6 +12,8 @@
 #ifndef __DMDIAGNOSTICS_H__
 #define __DMDIAGNOSTICS_H__
 
+#include <libbbf_api/dmcommon.h>
+
 #define DOWNLOAD_UPLOAD_PROTOCOL_HTTP		"http://"
 #define DOWNLOAD_UPLOAD_PROTOCOL_FTP		"ftp://"
 #define default_date_format "AAAA-MM-JJTHH:MM:SS.000000Z"

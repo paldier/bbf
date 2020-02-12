@@ -9,16 +9,8 @@
  *
  */
 
-#include <libbbf_api/dmbbf.h>
 #include "upnp_configuration.h"
-#include "upnp_common.h"
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-#define DELIMITOR ","
 /**************************************************************************
 *
 * /UPnP/DM/Configuration/ datamodel tree
@@ -71,18 +63,20 @@ DMLEAF upnpConfigurationNetworkIPInterfaceIpv4Params[]= {
 * /UPnP/DM/Configuration/* parameters functions
 *
 ***************************************************************************/
-
-int upnp_configuration_get_hostname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value) {
+int upnp_configuration_get_hostname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 		return 0;
 }
 
-int upnp_configuration_get_IPInterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_configuration_get_IPInterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	int n = upnp_get_IPInterfaceNumberOfEntries();
 	dmasprintf(value, "%d", n);
 	return 0;
 }
 
-int upnp_configuration_get_SystemName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_configuration_get_SystemName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
 	if(upnp_configargs->systemName !=NULL && strlen(upnp_configargs->systemName)>0) dmasprintf(value, "%s", upnp_configargs->systemName);
 	return 0;
@@ -96,7 +90,8 @@ int upnp_configuration_get_ipv4_IPAddress(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-int upnp_configuration_get_ipv4_addressingtype(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_configuration_get_ipv4_addressingtype(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	char *proto=NULL;
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
 	dmuci_get_value_by_section_string(upnp_configargs->upnpConfiguration_sec, "proto", &proto);
@@ -106,7 +101,8 @@ int upnp_configuration_get_ipv4_addressingtype(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-int upnp_configuration_get_ipv4_dnssevers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_configuration_get_ipv4_dnssevers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	json_object *res= NULL;
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
 	char *iface_name = section_name(upnp_configargs->upnpConfiguration_sec);
@@ -136,7 +132,8 @@ int upnp_configuration_get_ipv4_dnssevers(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-int upnp_configuration_get_ipv4_subnetmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_configuration_get_ipv4_subnetmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
 	char *netmask = NULL;
@@ -147,7 +144,8 @@ int upnp_configuration_get_ipv4_subnetmask(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int upnp_configuration_get_ipv4_defaultgateway(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_configuration_get_ipv4_defaultgateway(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
 	FILE* fp = NULL;
 	struct proc_routing proute = {0};
@@ -172,13 +170,15 @@ int upnp_configuration_get_ipv4_defaultgateway(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-int upnp_configuration_set_hostname(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int upnp_configuration_set_hostname(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	return 0;
 }
 
-int upnp_configuration_set_ipv4_IPAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int upnp_configuration_set_ipv4_IPAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
-	char *proto= NULL;
+	char *proto = NULL;
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -192,9 +192,10 @@ int upnp_configuration_set_ipv4_IPAddress(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-int upnp_configuration_set_ipv4_addressingtype(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int upnp_configuration_set_ipv4_addressingtype(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
-	char *proto= NULL;
+
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -212,9 +213,10 @@ int upnp_configuration_set_ipv4_addressingtype(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-int upnp_configuration_set_ipv4_dnssevers(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int upnp_configuration_set_ipv4_dnssevers(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
-	char *dup= NULL, *p= NULL;
+	char *dup = NULL, *p = NULL;
 
 	switch (action) {
 		case VALUECHECK:
@@ -235,9 +237,11 @@ int upnp_configuration_set_ipv4_dnssevers(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-int upnp_configuration_set_ipv4_subnetmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int upnp_configuration_set_ipv4_subnetmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
 	char *proto = NULL;
+
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -251,7 +255,8 @@ int upnp_configuration_set_ipv4_subnetmask(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int upnp_configuration_set_ipv4_defaultgateway(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action){
+int upnp_configuration_set_ipv4_defaultgateway(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
 
 	switch (action) {
@@ -263,7 +268,6 @@ int upnp_configuration_set_ipv4_defaultgateway(char *refparam, struct dmctx *ctx
 	}
 	return 0;
 }
-
 
 int upnp_configuration_ipinterface_createinstance(char *refparam, struct dmctx *ctx, void *data, char **instance){
 	char *value=NULL;
@@ -295,14 +299,11 @@ int upnp_configuration_ipinterface_deleteinstance(char *refparam, struct dmctx *
 	return 0;
 }
 
-int upnp_browseIPInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance){
-	char *value1, *value2;
+int upnp_browseIPInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+{
 	struct uci_section *net_sec = NULL;
-	char *iface_int = NULL, *iface_int_last = NULL;
+	char *iface_int = NULL, *iface_int_last = NULL, *netmask = NULL;
 	struct upnp_configuration_args currUpnpConfigurationArgs = {0};
-	char *type=NULL, *ipv4addr = "", *ipv6addr = "", *proto, *inst;
-	char *value= NULL, *netmask = NULL;
-	json_object *res = NULL, *res1 = NULL;
 
 	uci_foreach_sections("network", "interface", net_sec) {
 		currUpnpConfigurationArgs.upnpConfiguration_sec = net_sec;

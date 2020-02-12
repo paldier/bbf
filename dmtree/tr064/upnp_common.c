@@ -10,18 +10,9 @@
  */
 
 #include "upnp_common.h"
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmjson.h>
-#include <libbbf_api/dmcommon.h>
-#include <json-c/json.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-int upnp_get_NetworkInterfaceNumberOfEntries(){
+int upnp_get_NetworkInterfaceNumberOfEntries()
+{
 	int n = 0;
 	struct uci_section *s = NULL;
 	uci_foreach_sections("network", "interface", s) {
@@ -30,7 +21,8 @@ int upnp_get_NetworkInterfaceNumberOfEntries(){
 	return n;
 }
 
-int upnp_get_IPInterfaceNumberOfEntries(){
+int upnp_get_IPInterfaceNumberOfEntries()
+{
 	char *value1 = NULL, *value2 = NULL;
 	int n = 0;
 	struct uci_section *s = NULL;
@@ -61,7 +53,8 @@ char *upnp_get_softwareversion()
 	return val;
 }
 
-void upnp_getMacAddress(char *interfaceName, char **macAddress){
+void upnp_getMacAddress(char *interfaceName, char **macAddress)
+{
 	json_object *res = NULL, *res1 =NULL;
 	int length;
 
@@ -99,9 +92,10 @@ void upnp_getInterfaceStatus(char *interfaceName, char **status){
 		return;
 }
 
-int  upnp_getInterfaceTotalPacketSent(char *interfaceName, char **totalPktSent){
-	json_object *res= NULL, *res1= NULL, *res2= NULL;
-	char *device = NULL, *tx_packets = NULL;
+int  upnp_getInterfaceTotalPacketSent(char *interfaceName, char **totalPktSent)
+{
+	json_object *res = NULL, *res1 = NULL;
+	char *device = NULL;
 	int length;
 	char **devices = NULL;
 
@@ -111,7 +105,7 @@ int  upnp_getInterfaceTotalPacketSent(char *interfaceName, char **totalPktSent){
 		goto end_bloc;
 	}
 	device = dmjson_get_value(res, 1, "device");
-	if(device == NULL || strlen(device)<=0){
+	if (device == NULL || strlen(device)<=0) {
 		*totalPktSent = NULL;
 		goto end_bloc;
 	}
@@ -129,7 +123,8 @@ int  upnp_getInterfaceTotalPacketSent(char *interfaceName, char **totalPktSent){
 		return 0;
 }
 
-int upnp_getInterfaceTotalPacketReceived(char *interfaceName, char **totalPktReceived){
+int upnp_getInterfaceTotalPacketReceived(char *interfaceName, char **totalPktReceived)
+{
 	json_object *res= NULL, *res1= NULL, *res2= NULL;
 	char *device = NULL, *rx_packets = NULL;
 	int length;

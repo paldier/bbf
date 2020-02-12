@@ -9,12 +9,7 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <json-c/json.h>
-#include <libubox/blobmsg_json.h>
 #include "dmjson.h"
-#include "dmmem.h"
 
 static json_object *dmjson_jobj = NULL;
 
@@ -81,6 +76,8 @@ static char *dmjson_print_value(json_object *jobj)
 	case json_type_string:
 		ret = (char *)json_object_get_string(jobj);
 		break;
+	default:
+		break;
 	}
 	return ret;
 }
@@ -103,8 +100,7 @@ char *__dmjson_get_value_in_obj(json_object *mainjobj, int argc, ...)
 	int i;
 
 	va_start(arg, argc);
-	for (i = 0; i < argc; i++)
-	{
+	for (i = 0; i < argc; i++) {
 		argv[i] = va_arg(arg, char *);
 	}
 	argv[argc] = NULL;
@@ -120,8 +116,7 @@ json_object *__dmjson_get_obj(json_object *mainjobj, int argc, ...)
 	int i;
 
 	va_start(arg, argc);
-	for (i = 0; i < argc; i++)
-	{
+	for (i = 0; i < argc; i++) {
 		argv[i] = va_arg(arg, char *);
 	}
 	argv[argc] = NULL;
@@ -129,7 +124,6 @@ json_object *__dmjson_get_obj(json_object *mainjobj, int argc, ...)
 	return dmjson_select_obj(mainjobj, argv);
 	//return v;
 }
-
 
 json_object *dmjson_select_obj(json_object * jobj, char *argv[])
 {
@@ -142,11 +136,9 @@ json_object *dmjson_select_obj(json_object * jobj, char *argv[])
 	return jobj;
 }
 
-
 json_object *____dmjson_select_obj_in_array_idx(json_object *mainjobj, json_object **arrobj, int index, char *argv[])
 {
 	json_object *jobj = NULL;
-	int i;
 
 	if (arrobj == NULL || *arrobj == NULL) {
 		jobj = dmjson_select_obj(mainjobj, argv);
@@ -155,12 +147,10 @@ json_object *____dmjson_select_obj_in_array_idx(json_object *mainjobj, json_obje
 		if (jobj && json_object_get_type(jobj) == json_type_array) {
 			jobj = json_object_array_get_idx(jobj, index);
 			return jobj;
-		}
-		else {
+		} else {
 			return NULL;
 		}
-	}
-	else {
+	} else {
 		jobj = json_object_array_get_idx(*arrobj, index);
 		return jobj;
 	}
@@ -179,8 +169,7 @@ json_object *__dmjson_select_obj_in_array_idx(json_object *mainjobj, json_object
 		return NULL;
 
 	va_start(arg, argc);
-	for (i = 0; i < argc; i++)
-	{
+	for (i = 0; i < argc; i++) {
 		argv[i] = va_arg(arg, char *);
 	}
 	argv[argc] = NULL;
@@ -193,7 +182,6 @@ char *____dmjson_get_value_in_array_idx(json_object *mainjobj, json_object **arr
 {
 	json_object *jobj = NULL;
 	char *value = NULL;
-	int i;
 
 	if (arrobj == NULL || *arrobj == NULL) {
 		jobj = dmjson_select_obj(mainjobj, argv);
@@ -206,15 +194,13 @@ char *____dmjson_get_value_in_array_idx(json_object *mainjobj, json_object **arr
 			value = dmjson_print_value(jobj);
 			return value;
 		}
-	}
-	else {
+	} else {
 		jobj = json_object_array_get_idx(*arrobj, index);
 		if (jobj == NULL)
 			return NULL;
 		value = dmjson_print_value(jobj);
 		return value;
 	}
-
 	return value;
 }
 
@@ -228,8 +214,7 @@ char *__dmjson_get_value_in_array_idx(json_object *mainjobj, json_object **arrob
 		return defret;
 
 	va_start(arg, argc);
-	for (i = 0; i < argc; i++)
-	{
+	for (i = 0; i < argc; i++) {
 		argv[i] = va_arg(arg, char *);
 	}
 	argv[argc] = NULL;
@@ -253,8 +238,7 @@ char *____dmjson_get_value_array_all(json_object *mainjobj, char *delim, char *a
 
 		if (*ret == '\0') {
 			ret = dmstrdup(v);
-		}
-		else if (*v) {
+		} else if (*v) {
 			ret = dmrealloc(ret, strlen(ret) + dlen + strlen(v) + 1);
 			strcat(ret, delim);
 			strcat(ret, v);
@@ -270,8 +254,7 @@ char *__dmjson_get_value_array_all(json_object *mainjobj, char *delim, int argc,
 	int i;
 
 	va_start(arg, argc);
-	for (i = 0; i < argc; i++)
-	{
+	for (i = 0; i < argc; i++) {
 		argv[i] = va_arg(arg, char *);
 	}
 	argv[argc] = NULL;
@@ -282,7 +265,6 @@ char *__dmjson_get_value_array_all(json_object *mainjobj, char *delim, int argc,
 
 void dmjson_get_var(char *jkey, char **jval)
 {
-	enum json_type type;
 	*jval = "";
 
 	if (dmjson_jobj == NULL)

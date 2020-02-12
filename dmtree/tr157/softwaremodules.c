@@ -8,11 +8,6 @@
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "softwaremodules.h"
 
@@ -138,8 +133,8 @@ int get_du_linker(char *refparam, struct dmctx *dmctx, void *data, char *instanc
 }
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+*************************************************************/
 int browseSoftwareModulesExecEnvInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
@@ -199,8 +194,8 @@ int browseSoftwareModulesExecutionUnitInst(struct dmctx *dmctx, DMNODE *parent_n
 }
 
 /*************************************************************
- * GET & SET PARAM
-/*************************************************************/
+* GET & SET PARAM
+*************************************************************/
 int get_SoftwareModules_ExecEnvNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *environment = NULL;
@@ -479,7 +474,7 @@ int get_SoftwareModulesExecEnv_AvailableMemory(char *refparam, struct dmctx *ctx
 int get_SoftwareModulesExecEnv_ActiveExecutionUnits(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	int id = 0, j = 0, env = 0;
+	int j = 0, env = 0;
 	char *environment, *eu_list = NULL, *eu_list_tmp = NULL;
 
 	char *curr_env = dmjson_get_value((json_object *)data, 1, "name");
@@ -968,11 +963,11 @@ char *get_deployment_unit_reference(struct dmctx *ctx, char *package_name, char 
 void get_deployment_unit_name_version(char *uuid, char **name, char **version, char **env)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	int id = 0, j = 0, i, incr;
+	int j = 0, i, incr;
 	char *cur_uuid, buf[5];
 
 	for (i = 0;; i += 100) {
-		sprintf(buf, "%d", i);
+		snprintf(buf, sizeof(buf), "%d", i);
 		dmubus_call("softwaremanagement", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
 		if (res) {
 			incr = 0;
@@ -995,11 +990,11 @@ void get_deployment_unit_name_version(char *uuid, char **name, char **version, c
 char *get_softwaremodules_uuid(char *url)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	int id = 0, j = 0, i, incr;
+	int j = 0, i, incr;
 	char *cur_url, *uuid = "", buf[5];
 
 	for (i = 0;; i += 100) {
-		sprintf(buf, "%d", i);
+		snprintf(buf, sizeof(buf), "%d", i);
 		dmubus_call("softwaremanagement", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
 		if (res) {
 			incr = 0;
@@ -1021,11 +1016,11 @@ char *get_softwaremodules_uuid(char *url)
 char *get_softwaremodules_url(char *uuid)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	int id = 0, j = 0, i, incr;
+	int j = 0, i, incr;
 	char *cur_uuid, *url = "", buf[5];
 
 	for (i = 0;; i += 100) {
-		sprintf(buf, "%d", i);
+		snprintf(buf, sizeof(buf), "%d", i);
 		dmubus_call("softwaremanagement", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
 		if (res) {
 			incr = 0;

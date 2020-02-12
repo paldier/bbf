@@ -12,6 +12,8 @@
 #ifndef __SE_SYSLOG_H
 #define __SE_SYSLOG_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMLEAF tSe_SyslogCfgParam[];
 
 int get_server_ip_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

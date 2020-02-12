@@ -79,7 +79,7 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/users.c						\
 	../dmtree/tr181/dhcpv6.c					\
 	../dmtree/tr181/dsl.c						\
-	../dmtree/tr181/interfacestack.c			\	
+	../dmtree/tr181/interfacestack.c			\
 	../dmtree/tr181/qos.c						\
 	../dmtree/tr181/usb.c 						\
 	../dmtree/tr181/datamodelversion.c			\

@@ -13,6 +13,8 @@
 #ifndef __BRIDGING_H
 #define __BRIDGING_H
 
+#include <libbbf_api/dmcommon.h>
+
 struct bridging_args
 {
 	struct uci_section *bridge_sec;

@@ -13,6 +13,8 @@
 #ifndef __USER_INTERFACE_H
 #define __USER_INTERFACE_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMLEAF tUserInterfaceRemoteAccessParams[];
 extern DMOBJ tUserInterfaceObj[];
 

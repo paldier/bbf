@@ -12,10 +12,13 @@
 #ifndef __DMJSON_H
 #define __DMJSON_H
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <json-c/json.h>
 #include <libubox/blobmsg_json.h>
 #include "dmbbf.h"
+#include "dmmem.h"
 
 struct dmjson_arg {
 	char *key;

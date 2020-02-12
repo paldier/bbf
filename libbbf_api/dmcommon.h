@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 iopsys Software Solutions AB
+ * Copyright (C) 2020 iopsys Software Solutions AB
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -7,17 +7,50 @@
  *
  *	Author: Imen Bhiri <imen.bhiri@pivasoftware.com>
  *	Author: Feten Besbes <feten.besbes@pivasoftware.com>
- *	Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
+ *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
 #ifndef __DM_COMMON_H
 #define __DM_COMMON_H
 
-#include <sys/types.h>
-#include <libubox/blobmsg_json.h>
-#include <json-c/json.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <dirent.h>
+#include <ctype.h>
+#include <netdb.h>
+#include <errno.h>
+#include <regex.h>
 #include <unistd.h>
+#include <glob.h>
+#include <limits.h>
+#include <float.h>
+#include <time.h>
+#include <inttypes.h>
+#include <assert.h>
+#include <getopt.h>
+#include <dlfcn.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/klog.h>
+#include <sys/param.h>
+#include <net/if.h>
+#include <net/if_arp.h>
+#include <uci.h>
+#include <libubox/blobmsg_json.h>
+#include <libubox/list.h>
+#include <json-c/json.h>
+
 #include "dmbbf.h"
+#include "dmuci.h"
+#include "dmubus.h"
+#include "dmjson.h"
 
 #define NVRAM_FILE "/proc/nvram/WpaKey"
 #define MAX_DHCP_LEASES 256
@@ -27,6 +60,7 @@
 #define DHCP_LEASES_FILE "/tmp/dhcp.leases"
 #define DMMAP "dmmap"
 #define DHCPSTATICADDRESS_DISABLED_CHADDR "00:00:00:00:00:01"
+
 #define DM_ASSERT(X, Y) \
 do { \
 	if(!(X)) { \
@@ -156,11 +190,6 @@ int check_file(char *path);
 char *cidr2netmask(int bits);
 void remove_substring(char *s, const char *str_remove);
 bool is_strword_in_optionvalue(char *optionvalue, char *str);
-int get_interface_enable_ubus(char *iface, char *refparam, struct dmctx *ctx, char **value);
-int set_interface_enable_ubus(char *iface, char *refparam, struct dmctx *ctx, int action, char *value);
-int get_interface_firewall_enabled(char *iface, char *refparam, struct dmctx *ctx, char **value);
-struct uci_section *create_firewall_zone_config(char *fwl, char *iface, char *input, char *forward, char *output);
-int set_interface_firewall_enabled(char *iface, char *refparam, struct dmctx *ctx, int action, char *value);
 int dmcmd(char *cmd, int n, ...);
 int dmcmd_read(int pipe, char *buffer, int size);
 void dmcmd_read_alloc(int pipe, char **value);
@@ -184,8 +213,6 @@ int filter_lan_ip_interface(struct uci_section *ss, void *v);
 void remove_interface_from_ifname(char *iface, char *ifname, char *new_ifname);
 int max_array(int a[], int size);
 int check_ifname_is_vlan(char *ifname);
-int set_uci_dhcpserver_option(struct dmctx *ctx, struct uci_section *s, char *option, char *value);
-int update_uci_dhcpserver_option(struct dmctx *ctx, struct uci_section *s, char *option, char * new_option, char *value);
 void parse_proc_route_line(char *line, struct proc_routing *proute);
 int strstructered(char *str1, char *str2);
 int dmcommon_check_notification_value(char *value);
@@ -231,4 +258,5 @@ int isfileexist(char *filepath);
 int isfolderexist(char *folderpath);
 char* readFileContent(char *filepath);
 void writeFileContent(const char *filepath, const char *data);
+bool match(const char *string, const char *pattern);
 #endif

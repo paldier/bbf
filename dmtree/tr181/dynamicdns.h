@@ -11,6 +11,8 @@
 #ifndef __DYNAMICDNS_H
 #define __DYNAMICDNS_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tDynamicDNSObj[];
 extern DMLEAF tDynamicDNSParams[];
 extern DMOBJ tDynamicDNSClientObj[];

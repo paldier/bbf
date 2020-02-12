@@ -12,7 +12,7 @@
 #ifndef __DHCP_H
 #define __DHCP_H
 
-#include <json-c/json.h>
+#include <libbbf_api/dmcommon.h>
 
 struct dhcp_args
 {
@@ -31,7 +31,8 @@ struct client_args
 	char *key;
 };
 
-struct dhcp_client_ipv4address_args {
+struct dhcp_client_ipv4address_args
+{
 	char *mac;
 	char *ip;
 	unsigned int leasetime;
@@ -47,7 +48,8 @@ struct dhcp_client_args {
 	char *mask;
 };
 
-struct dhcp_client_option_args {
+struct dhcp_client_option_args
+{
 	struct uci_section *opt_sect;
 	struct uci_section *client_sect;
 	char *option_tag;

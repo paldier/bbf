@@ -11,6 +11,8 @@
 #ifndef _DNS_H
 #define _DNS_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tDNSObj[];
 extern DMLEAF tDNSParams[];
 extern DMLEAF tDNSClientParams[];

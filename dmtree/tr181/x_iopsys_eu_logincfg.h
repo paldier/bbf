@@ -12,6 +12,8 @@
 #ifndef __SE_LOGINCFG_H
 #define __SE_LOGINCFG_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMLEAF tSe_LoginCfgParam[];
 
 int set_x_bcm_admin_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);

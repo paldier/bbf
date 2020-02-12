@@ -9,13 +9,14 @@
  *
  */
 
+#ifndef __DMMEM_H
+#define __DMMEM_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <libubox/list.h>
-#ifndef __DMMEM_H
-#define __DMMEM_H
 
 void dmfree(void *m);
 static inline void dm_empty_func()

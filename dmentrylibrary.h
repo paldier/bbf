@@ -12,6 +12,8 @@
 #ifndef __DMENTRYLIBRARY_H__
 #define __DMENTRYLIBRARY_H__
 
+#include <libbbf_api/dmcommon.h>
+
 #define LIBRARY_FOLDER_PATH "/usr/lib/bbfdm"
 
 int check_stats_library_folder(char *library_folder_path);

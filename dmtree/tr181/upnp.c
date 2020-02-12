@@ -1,26 +1,20 @@
 /*
- * Copyright (C) 2019 iopsys Software Solutions AB
+ * Copyright (C) 2020 iopsys Software Solutions AB
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
  * as published by the Free Software Foundation
  *
- *	  Author Imen Bhiri <imen.bhiri@pivasoftware.com>
- *	  		 Omar Kallel <omar.kallel@pivasoftware.com>
- *
+ *	Author: Omar Kallel <omar.kallel@pivasoftware.com>
+ *	Author: Imen Bhiri <imen.bhiri@pivasoftware.com>
  */
 
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "upnp.h"
 
 /* *** Device.UPnP. *** */
 DMOBJ tUPnPObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Device", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUPnPDeviceObj, tUPnPDeviceParams, NULL, BBFDM_BOTH},
 {"Discovery", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUPnPDiscoveryObj, tUPnPDiscoveryParams, NULL, BBFDM_BOTH},
 {"Description", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUPnPDescriptionObj, tUPnPDescriptionParams, NULL, BBFDM_BOTH},
@@ -29,7 +23,7 @@ DMOBJ tUPnPObj[] = {
 
 /* *** Device.UPnP.Device. *** */
 DMOBJ tUPnPDeviceObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Capabilities", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUPnPDeviceCapabilitiesParams, NULL, BBFDM_BOTH},
 {0}
 };
@@ -70,7 +64,7 @@ DMLEAF tUPnPDeviceCapabilitiesParams[] = {
 
 /* *** Device.UPnP.Discovery. *** */
 DMOBJ tUPnPDiscoveryObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"RootDevice", &DMREAD, NULL, NULL, NULL, browseUPnPDiscoveryRootDeviceInst, NULL, NULL, NULL, NULL, tUPnPDiscoveryRootDeviceParams, get_root_device_linker, BBFDM_BOTH},
 {"Device", &DMREAD, NULL, NULL, NULL, browseUPnPDiscoveryDeviceInst, NULL, NULL, NULL, NULL, tUPnPDiscoveryDeviceParams, get_device_linker, BBFDM_BOTH},
 {"Service", &DMREAD, NULL, NULL, NULL, browseUPnPDiscoveryServiceInst, NULL, NULL, NULL, NULL, tUPnPDiscoveryServiceParams, get_service_linker, BBFDM_BOTH},
@@ -129,7 +123,7 @@ DMLEAF tUPnPDiscoveryServiceParams[] = {
 
 /* *** Device.UPnP.Description. *** */
 DMOBJ tUPnPDescriptionObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextjsonobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"DeviceDescription", &DMREAD, NULL, NULL, NULL, browseUPnPDescriptionDeviceDescriptionInst, NULL, NULL, NULL, NULL, tUPnPDescriptionDeviceDescriptionParams, NULL, BBFDM_BOTH},
 {"DeviceInstance", &DMREAD, NULL, NULL, NULL, browseUPnPDescriptionDeviceInstanceInst, NULL, NULL, NULL, NULL, tUPnPDescriptionDeviceInstanceParams, get_device_instance_linker, BBFDM_BOTH},
 {"ServiceInstance", &DMREAD, NULL, NULL, NULL, browseUPnPDescriptionServiceInstanceInst, NULL, NULL, NULL, NULL, tUPnPDescriptionServiceInstanceParams, NULL, BBFDM_BOTH},
@@ -232,8 +226,8 @@ int get_service_linker(char *refparam, struct dmctx *dmctx, void *data, char *in
 }
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+**************************************************************/
 int browseUPnPDiscoveryRootDeviceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL,  *devices = NULL, *device = NULL;
@@ -500,8 +494,8 @@ int browseUPnPDescriptionServiceInstanceInst(struct dmctx *dmctx, DMNODE *parent
 	return 0;
 }
 /*************************************************************
- * GET & SET PARAM
-/*************************************************************/
+* GET & SET PARAM
+**************************************************************/
 /*#Device.UPnP.Device.Enable!UCI:upnpd/upnpd,config/enabled*/
 int get_UPnPDevice_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -515,7 +509,6 @@ int get_UPnPDevice_Enable(char *refparam, struct dmctx *ctx, void *data, char *i
 int set_UPnPDevice_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	int check;
 	switch (action) {
 		case VALUECHECK:
 			if (string_to_bool(value, &b))
@@ -805,7 +798,7 @@ int get_UPnPDiscovery_RootDeviceNumberOfEntries(char *refparam, struct dmctx *ct
 {
 	int nbre = 0, i;
 	char *is_root_device = NULL;
-	json_object *res = NULL,  *devices = NULL, *device = NULL;
+	json_object *res = NULL, *devices = NULL, *device = NULL;
 
 	dmubus_call("upnpc", "discovery", UBUS_ARGS{{}}, 0, &res);
 	if (res == NULL) {
@@ -818,10 +811,10 @@ int get_UPnPDiscovery_RootDeviceNumberOfEntries(char *refparam, struct dmctx *ct
 		return 0;
 	}
 	size_t nbre_devices = json_object_array_length(devices);
-	if(nbre_devices>0){
-		for(i=0; i<nbre_devices; i++){
-			device= json_object_array_get_idx(devices, i);
-			is_root_device= dmjson_get_value(device, 1, "is_root_device");
+	if (nbre_devices > 0){
+		for (i = 0; i < nbre_devices; i++){
+			device = json_object_array_get_idx(devices, i);
+			is_root_device = dmjson_get_value(device, 1, "is_root_device");
 			if(strcmp(is_root_device, "0") == 0)
 				continue;
 			nbre ++;
@@ -852,7 +845,7 @@ int get_UPnPDiscovery_DeviceNumberOfEntries(char *refparam, struct dmctx *ctx, v
 
 int get_UPnPDiscovery_ServiceNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res,  *services;
+	json_object *res, *services;
 
 	dmubus_call("upnpc", "discovery", UBUS_ARGS{{}}, 0, &res);
 	if (res == NULL) {
@@ -1054,7 +1047,7 @@ int get_UPnPDescription_DeviceDescriptionNumberOfEntries(char *refparam, struct 
 
 int get_UPnPDescription_DeviceInstanceNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res,  *devicesinstances;
+	json_object *res, *devicesinstances;
 
 	dmubus_call("upnpc", "description", UBUS_ARGS{{}}, 0, &res);
 	if (res == NULL) {
@@ -1073,7 +1066,7 @@ int get_UPnPDescription_DeviceInstanceNumberOfEntries(char *refparam, struct dmc
 
 int get_UPnPDescription_ServiceInstanceNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res,  *servicesinstances;
+	json_object *res, *servicesinstances;
 
 	dmubus_call("upnpc", "description", UBUS_ARGS{{}}, 0, &res);
 	if (res == NULL) {
@@ -1132,11 +1125,10 @@ int get_UPnPDescriptionDeviceInstance_ParentDevice(char *refparam, struct dmctx 
 int get_UPnPDescriptionDeviceInstance_DiscoveryDevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
-	char **udnarray = NULL;
-	char *rootdevlink = NULL, *devlink = NULL;
-	int length;
+	char *rootdevlink = NULL, *devlink = NULL, **udnarray = NULL;
+	size_t length;
 
-	if(upnpdevinst->udn && upnpdevinst->udn[0]){
+	if (upnpdevinst->udn && upnpdevinst->udn[0]) {
 		udnarray = strsplit(upnpdevinst->udn, ":", &length);
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDiscovery%cRootDevice%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), udnarray[1], &rootdevlink);
 		if(rootdevlink != NULL){
@@ -1175,7 +1167,7 @@ int get_UPnPDescriptionDeviceInstance_DeviceCategory(char *refparam, struct dmct
 
 int get_UPnPDescriptionDeviceInstance_Manufacturer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
+	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
 	*value = upnpdevinst->manufacturer;
 	return 0;
 }
@@ -1188,21 +1180,21 @@ int get_UPnPDescriptionDeviceInstance_ManufacturerOUI(char *refparam, struct dmc
 
 int get_UPnPDescriptionDeviceInstance_ManufacturerURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
+	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
 	*value = upnpdevinst->manufacturer_url;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_ModelDescription(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
+	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
 	*value = upnpdevinst->model_description;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_ModelName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
+	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
 	*value = upnpdevinst->model_name;
 	return 0;
 }
@@ -1216,21 +1208,21 @@ int get_UPnPDescriptionDeviceInstance_ModelNumber(char *refparam, struct dmctx *
 
 int get_UPnPDescriptionDeviceInstance_ModelURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
+	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
 	*value = upnpdevinst->model_url;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_SerialNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
+	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
 	*value = upnpdevinst->serial_number;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_UPC(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
+	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
 	*value = upnpdevinst->upc;
 	return 0;
 }
@@ -1244,7 +1236,7 @@ int get_UPnPDescriptionDeviceInstance_PresentationURL(char *refparam, struct dmc
 
 int get_UPnPDescriptionServiceInstance_ParentDevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst= (struct upnp_service_inst *)data;
+	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
 	char *devinstlink = NULL;
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDescription%cDeviceInstance%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), upnpserviceinst->parentudn, &devinstlink);
 	if(devinstlink != NULL){
@@ -1256,20 +1248,20 @@ int get_UPnPDescriptionServiceInstance_ParentDevice(char *refparam, struct dmctx
 
 int get_UPnPDescriptionServiceInstance_ServiceId(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst= (struct upnp_service_inst *)data;
+	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
 	*value = upnpserviceinst->serviceid;
 	return 0;
 }
 
 int get_UPnPDescriptionServiceInstance_ServiceDiscovery(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst= (struct upnp_service_inst *)data;
+	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
 	char *usn = NULL, *devlink = NULL;
 	dmasprintf(&usn, "%s::%s", upnpserviceinst->parentudn, upnpserviceinst->servicetype);
-	if(usn && usn[0]){
+	if (usn && usn[0]) {
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDiscovery%cService%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), usn, &devlink);
-		if(devlink != NULL){
-			*value =devlink;
+		if (devlink != NULL) {
+			*value = devlink;
 			return 0;
 		}
 	}
@@ -1279,28 +1271,28 @@ int get_UPnPDescriptionServiceInstance_ServiceDiscovery(char *refparam, struct d
 
 int get_UPnPDescriptionServiceInstance_ServiceType(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst= (struct upnp_service_inst *)data;
+	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
 	*value = upnpserviceinst->servicetype;
 	return 0;
 }
 
 int get_UPnPDescriptionServiceInstance_SCPDURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst= (struct upnp_service_inst *)data;
+	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
 	*value = upnpserviceinst->scpdurl;
 	return 0;
 }
 
 int get_UPnPDescriptionServiceInstance_ControlURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst= (struct upnp_service_inst *)data;
+	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
 	*value = upnpserviceinst->controlurl;
 	return 0;
 }
 
 int get_UPnPDescriptionServiceInstance_EventSubURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst= (struct upnp_service_inst *)data;
+	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
 	*value = upnpserviceinst->eventsuburl;
 	return 0;
 }

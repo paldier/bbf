@@ -12,6 +12,8 @@
 #ifndef __ATM_H
 #define __ATM_H
 
+#include <libbbf_api/dmcommon.h>
+
 struct atm_args
 {
 	struct uci_section *atm_sec;

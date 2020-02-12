@@ -13,15 +13,9 @@
  *
  */
 
-#include <stdarg.h>
-#include <time.h>
-#include <uci.h>
-#include <ctype.h>
-#include "dmuci.h"
-#include "dmbbf.h"
 #include "dmmem.h"
 #include "dmcommon.h"
-#include "dmjson.h"
+#include "dmbbf.h"
 
 static char *get_parameter_notification(struct dmctx *ctx, char *param);
 static int remove_parameter_notification(char *param);
@@ -89,9 +83,6 @@ static int get_linker_check_param(DMPARAM_ARGS);
 static int get_linker_value_check_obj(DMOBJECT_ARGS);
 static int get_linker_value_check_param(DMPARAM_ARGS);
 
-
-LIST_HEAD(list_enabled_notify);
-LIST_HEAD(list_enabled_lw_notify);
 #ifdef BBF_TR064
 LIST_HEAD(list_upnp_enabled_onevent);
 LIST_HEAD(list_upnp_enabled_onalarm);
@@ -101,14 +92,16 @@ LIST_HEAD(list_upnp_changed_onalarm);
 LIST_HEAD(list_upnp_changed_version);
 #endif
 
+LIST_HEAD(list_enabled_notify);
+LIST_HEAD(list_enabled_lw_notify);
 LIST_HEAD(list_execute_end_session);
+
 int end_session_flag = 0;
 int ip_version = 4;
 char dm_delim = DMDELIM_CWMP;
 char dmroot[64] = "Device";
 int bbfdatamodel_type = BBFDM_BOTH;
 unsigned int upnp_in_user_mask = DM_SUPERADMIN_MASK;
-
 
 struct notification notifications[] = {
 	[0] = {"0", "disabled"},
@@ -476,10 +469,9 @@ int free_dm_browse_node_dynamic_object_tree(DMNODE *parent_node, DMOBJ *entryobj
 
 int rootcmp(char *inparam, char *rootobj)
 {
-	int cmp = -1;
 	char buf[32];
-	sprintf(buf, "%s%c", rootobj, dm_delim);
-	cmp = strcmp(inparam, buf);
+	snprintf(buf, sizeof(buf), "%s%c", rootobj, dm_delim);
+	int cmp = strcmp(inparam, buf);
 	return cmp;
 }
 
@@ -489,13 +481,10 @@ int rootcmp(char *inparam, char *rootobj)
 char *handle_update_instance(int instance_ranck, struct dmctx *ctx, char **last_inst, char * (*up_instance)(int action, char **last_inst, void *argv[]), int argc, ...)
 {
 	va_list arg;
-	char *instance, *inst_mode;
-	char *alias;
+	char *instance;
 	int i = 0;
-	unsigned int pos = instance_ranck - 1;
-	unsigned int alias_resister = 0, max, action;
+	unsigned int action, pos = instance_ranck - 1;
 	void *argv[argc];
-	char *str;
 
 	va_start(arg, argc);
 	for (i = 0; i < argc; i++) {
@@ -545,28 +534,28 @@ char *update_instance_bbfdm(struct uci_section *s, char *last_inst, char *inst_o
 
 char *update_instance_alias_bbfdm(int action, char **last_inst , void *argv[])
 {
-	char *instance;
-	char *alias;
+	char *instance, *alias;
 	char buf[64] = {0};
 	struct uci_section *s = (struct uci_section *) argv[0];
 	char *inst_opt = (char *) argv[1];
 	char *alias_opt = (char *) argv[2];
+
 	dmuci_get_value_by_section_string(s, inst_opt, &instance);
 	if (instance[0] == '\0') {
 		if (*last_inst == NULL)
-			sprintf(buf, "%d", 1);
+			snprintf(buf, sizeof(buf), "%d", 1);
 		else
-			sprintf(buf, "%d", atoi(*last_inst)+1);
+			snprintf(buf, sizeof(buf), "%d", atoi(*last_inst)+1);
 		instance = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, inst_opt, buf);
 	}
 	*last_inst = instance;
 	if (action == INSTANCE_MODE_ALIAS) {
 		dmuci_get_value_by_section_string(s, alias_opt, &alias);
 		if (alias[0] == '\0') {
-			sprintf(buf, "cpe-%s", instance);
+			snprintf(buf, sizeof(buf), "cpe-%s", instance);
 			alias = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, alias_opt, buf);
 		}
-		sprintf(buf, "[%s]", alias);
+		snprintf(buf, sizeof(buf), "[%s]", alias);
 		instance = dmstrdup(buf);
 	}
 	return instance;
@@ -574,8 +563,7 @@ char *update_instance_alias_bbfdm(int action, char **last_inst , void *argv[])
 
 char *update_instance_alias(int action, char **last_inst, void *argv[])
 {
-	char *instance;
-	char *alias;
+	char *instance, *alias;
 	char buf[64] = {0};
 
 	struct uci_section *s = (struct uci_section *) argv[0];
@@ -585,19 +573,19 @@ char *update_instance_alias(int action, char **last_inst, void *argv[])
 	dmuci_get_value_by_section_string(s, inst_opt, &instance);
 	if (instance[0] == '\0') {
 		if (*last_inst == NULL)
-			sprintf(buf, "%d", 1);
+			snprintf(buf, sizeof(buf), "%d", 1);
 		else
-			sprintf(buf, "%d", atoi(*last_inst) + 1);
+			snprintf(buf, sizeof(buf), "%d", atoi(*last_inst) + 1);
 		instance = dmuci_set_value_by_section(s, inst_opt, buf);
 	}
 	*last_inst = instance;
 	if (action == INSTANCE_MODE_ALIAS) {
 		dmuci_get_value_by_section_string(s, alias_opt, &alias);
 		if (alias[0] == '\0') {
-			sprintf(buf, "cpe-%s", instance);
+			snprintf(buf, sizeof(buf), "cpe-%s", instance);
 			alias = dmuci_set_value_by_section(s, alias_opt, buf);
 		}
-		sprintf(buf, "[%s]", alias);
+		snprintf(buf, sizeof(buf), "[%s]", alias);
 		instance = dmstrdup(buf);
 	}
 	return instance;
@@ -605,17 +593,14 @@ char *update_instance_alias(int action, char **last_inst, void *argv[])
 
 char *update_instance_without_section(int action, char **last_inst, void *argv[])
 {
-	char *instance;
-	char *alias;
-	char buf[64] = {0};
-
+	char *instance, buf[64] = {0};
 	int instnbr = (int) argv[0];
 
 	if (action == INSTANCE_MODE_ALIAS) {
-		sprintf(buf, "[cpe-%d]", instnbr);
+		snprintf(buf, sizeof(buf), "[cpe-%d]", instnbr);
 		instance = dmstrdup(buf);
 	} else {
-		sprintf(buf, "%d", instnbr);
+		snprintf(buf, sizeof(buf), "%d", instnbr);
 		instance = dmstrdup(buf);
 	}
 	return instance;
@@ -643,8 +628,7 @@ char *get_vlan_last_instance_bbfdm(char *package, char *section, char *opt_inst,
 char *get_last_instance_bbfdm(char *package, char *section, char *opt_inst)
 {
 	struct uci_section *s;
-	char *inst = NULL;
-	char *last_inst = NULL;
+	char *inst = NULL, *last_inst = NULL;
 
 	uci_path_foreach_sections(bbfdm, package, section, s) {
 		inst = update_instance_bbfdm(s, last_inst, opt_inst);
@@ -658,8 +642,7 @@ char *get_last_instance_bbfdm(char *package, char *section, char *opt_inst)
 char *get_last_instance_bbfdm_without_update(char *package, char *section, char *opt_inst)
 {
 	struct uci_section *s;
-	char *inst = NULL;
-	char *last_inst = NULL;
+	char *inst = NULL, *last_inst = NULL;
 
 	uci_path_foreach_sections(bbfdm, package, section, s) {
 		dmuci_get_value_by_section_string(s, opt_inst, &inst);
@@ -673,19 +656,16 @@ char *get_last_instance_bbfdm_without_update(char *package, char *section, char 
 char *get_last_instance(char *package, char *section, char *opt_inst)
 {
 	struct uci_section *s;
-	char *inst = NULL;
-	char *last_inst = NULL;
-	if (package == DMMAP)
-	{
+	char *inst = NULL, *last_inst = NULL;
+
+	if (strcmp(package, DMMAP) == 0) {
 		uci_path_foreach_sections(bbfdm, "dmmap", section, s) {
 			inst = update_instance_bbfdm(s, last_inst, opt_inst);
 			if(last_inst)
 				dmfree(last_inst);
 			last_inst = dmstrdup(inst);
 		}
-	}
-	else
-	{
+	} else {
 		uci_foreach_sections(package, section, s) {
 			inst = update_instance(s, inst, opt_inst);
 		}
@@ -696,8 +676,7 @@ char *get_last_instance(char *package, char *section, char *opt_inst)
 char *get_last_instance_lev2_bbfdm_dmmap_opt(char* dmmap_package, char *section,  char *opt_inst, char *opt_check, char *value_check)
 {
 	struct uci_section *s;
-	char *instance = NULL, *section_name= NULL;
-	char *last_inst = NULL;
+	char *instance = NULL, *section_name = NULL, *last_inst = NULL;
 
 	uci_path_foreach_option_eq(bbfdm, dmmap_package, section, opt_check, value_check, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &section_name);
@@ -711,8 +690,7 @@ char *get_last_instance_lev2_bbfdm_dmmap_opt(char* dmmap_package, char *section,
 char *get_last_instance_lev2_bbfdm(char *package, char *section, char* dmmap_package, char *opt_inst, char *opt_check, char *value_check)
 {
 	struct uci_section *s, *dmmap_section;
-	char *instance = NULL;
-	char *last_inst = NULL, *v= NULL;
+	char *instance = NULL, *last_inst = NULL, *v = NULL;
 
 	check_create_dmmap_package(dmmap_package);
 	uci_foreach_option_cont(package, section, opt_check, value_check, s) {
@@ -732,20 +710,16 @@ char *get_last_instance_lev2_bbfdm(char *package, char *section, char* dmmap_pac
 char *get_last_instance_lev2(char *package, char *section, char *opt_inst, char *opt_check, char *value_check)
 {
 	struct uci_section *s;
-	char *instance = NULL;
-	char *last_inst = NULL;
+	char *instance = NULL, *last_inst = NULL;
 
-	if (package == DMMAP)
-	{
+	if (strcmp(package, DMMAP) == 0) {
 		uci_path_foreach_option_cont(bbfdm, package, section, opt_check, value_check, s) {
 			instance = update_instance_bbfdm(s, last_inst, opt_inst);
 			if(last_inst)
 				dmfree(last_inst);
 			last_inst = dmstrdup(instance);
 		}
-	}
-	else
-	{
+	} else {
 		uci_foreach_option_cont(package, section, opt_check, value_check, s) {
 			instance = update_instance(s, instance, opt_inst);
 		}
@@ -763,8 +737,7 @@ void add_list_paramameter(struct dmctx *ctx, char *param_name, char *param_data,
 {
 	struct dm_parameter *dm_parameter;
 	struct list_head *ilist;
-	list_for_each(ilist, &ctx->list_parameter)
-	{
+	list_for_each(ilist, &ctx->list_parameter) {
 		dm_parameter = list_entry(ilist, struct dm_parameter, list);
 		int cmp = strcmp(dm_parameter->name, param_name);
 		if (cmp == 0) {
@@ -1137,7 +1110,6 @@ void dmentry_instance_lookup_inparam(struct dmctx *ctx)
  * **********/
 int dm_entry_get_value(struct dmctx *dmctx)
 {
-	int i;
 	int err = 0;
 	unsigned char findparam_check = 0;
 	DMOBJ *root = dmctx->dm_entryobj;
@@ -1217,7 +1189,6 @@ static int mparam_get_value_in_param(DMPARAM_ARGS)
 /* **********
  * get name 
  * **********/
-
 int dm_entry_get_name(struct dmctx *ctx)
 {
 	DMOBJ *root = ctx->dm_entryobj;
@@ -1323,10 +1294,11 @@ static int mparam_get_name_in_obj(DMPARAM_ARGS)
 	char *refparam;
 	char *perm = permission->val;
 
+	dmastrcat(&refparam, node->current_object, lastname);
+
 	if (permission->get_permission != NULL)
 		perm = permission->get_permission(refparam, dmctx, data, instance);
 
-	dmastrcat(&refparam, node->current_object, lastname);
 	add_list_paramameter(dmctx, refparam, perm, NULL, NULL, 0);
 	return 0;
 }
@@ -1343,10 +1315,11 @@ static int mobj_get_name_in_obj(DMOBJECT_ARGS)
 	if (dmctx->nextlevel && strcmp(node->current_object, dmctx->in_param) == 0)
 		return 0;
 
+	refparam = node->current_object;
+
 	if (permission->get_permission != NULL)
 		perm = permission->get_permission(refparam, dmctx, data, instance);
 
-	refparam = node->current_object;
 	add_list_paramameter(dmctx, refparam, perm, NULL, NULL, 0);
 	return 0;
 }
@@ -1530,8 +1503,6 @@ static int mparam_add_object(DMPARAM_ARGS)
 
 static int mobj_add_object(DMOBJECT_ARGS)
 {
-	char *addinst;
-	char newparam[256];
 	char *refparam = node->current_object;
 	char *perm = permission->val;
 	char *objinst;
@@ -1557,6 +1528,7 @@ static int mobj_add_object(DMOBJECT_ARGS)
 	dmfree(objinst);
 	return 0;
 }
+
 /* **************
  * del object 
  * **************/
@@ -1643,10 +1615,7 @@ static int mobj_set_value(DMOBJECT_ARGS)
 
 static int mparam_set_value(DMPARAM_ARGS)
 {
-	int err;
-	char *refparam;
-	char *perm;
-	char *v = "";
+	char *refparam, *perm;
 
 	dmastrcat(&refparam, node->current_object, lastname);
 	if (strcmp(refparam, dmctx->in_param) != 0) {
@@ -1670,10 +1639,8 @@ static int mparam_set_value(DMPARAM_ARGS)
 			return fault;
 		}
 		add_set_list_tmp(dmctx, dmctx->in_param, dmctx->in_value, 0);
-	}
-	else if (dmctx->setaction == VALUESET) {
+	} else if (dmctx->setaction == VALUESET) {
 		(set_cmd)(refparam, dmctx, data, instance, dmctx->in_value, VALUESET);
-		//(get_cmd)(refparam, dmctx, data, instance, &v);
 		dm_update_enabled_notify_byname(refparam, dmctx->in_value);
 	}
 	dmfree(refparam);
@@ -1687,7 +1654,6 @@ int dm_entry_set_notification(struct dmctx *dmctx)
 {
 	DMOBJ *root = dmctx->dm_entryobj;
 	DMNODE node = { .current_object = "" };
-	unsigned char findparam_check = 0;
 	int err;
 
 	if (dmcommon_check_notification_value(dmctx->in_notification) < 0)
@@ -1728,12 +1694,7 @@ static int mparam_set_notification_in_obj(DMPARAM_ARGS)
 
 static int mobj_set_notification_in_obj(DMOBJECT_ARGS)
 {
-	int err;
-	char *refparam;
-	char *perm;
-	char tparam[256];
-
-	refparam = node->current_object;
+	char *refparam = node->current_object;
 	if (strcmp(refparam, dmctx->in_param) != 0) {
 		return FAULT_9005;
 	}
@@ -1746,8 +1707,7 @@ static int mobj_set_notification_in_obj(DMOBJECT_ARGS)
 			return FAULT_9009;
 
 		add_set_list_tmp(dmctx, dmctx->in_param, dmctx->in_notification, 0);
-	}
-	else if (dmctx->setaction == VALUESET) {
+	} else if (dmctx->setaction == VALUESET) {
 		set_parameter_notification(dmctx, dmctx->in_param, dmctx->in_notification);
 		cwmp_set_end_session(END_SESSION_RELOAD);
 	}
@@ -1756,9 +1716,7 @@ static int mobj_set_notification_in_obj(DMOBJECT_ARGS)
 
 static int mparam_set_notification_in_param(DMPARAM_ARGS)
 {
-	int err;
 	char *refparam;
-	char tparam[256];
 
 	dmastrcat(&refparam, node->current_object, lastname);
 	if (strcmp(refparam, dmctx->in_param) != 0) {
@@ -2158,11 +2116,9 @@ void free_all_list_upnp_param_track(struct list_head *pchead)
 
 int get_parameter_version(struct dmctx *ctx, char *param, char **version, struct uci_section **rs)
 {
-	int found = 0;
 	struct uci_list *list_struc;
 	struct uci_section *s = NULL;
 	char *pch;
-	unsigned int acl = 0, f;
 	struct uci_element *e;
 
 	*version = NULL;
@@ -2177,8 +2133,7 @@ int get_parameter_version(struct dmctx *ctx, char *param, char **version, struct
 		if (**version == '\0')
 			*version = "0";
 		return 1;
-	}
-	else {
+	} else {
 		dmuci_get_option_value_list(UPNP_CFG, "@parameter_version_structured[0]", "paramater", &list_struc);
 		if (list_struc) {
 			uci_foreach_element(list_struc, e) {
@@ -2264,7 +2219,6 @@ int dm_entry_upnp_update_attribute_values_update(struct dmctx *dmctx)
 	char *v, *tmp, buf[32];
 	struct uci_section *s;
 	int version;
-	time_t time_value;
 
 	dmuci_get_option_value_string(UPNP_CFG, "@dm[0]", "attribute_values_version", &v);
 	version = atoi(v);
@@ -2274,9 +2228,9 @@ int dm_entry_upnp_update_attribute_values_update(struct dmctx *dmctx)
 	if (!tmp || tmp[0] == '\0') {
 		dmuci_add_section(UPNP_CFG, "dm", &s, &tmp);
 	}
-	sprintf(buf, "%d", version);
+	snprintf(buf, sizeof(buf), "%d", version);
 	dmuci_set_value(UPNP_CFG, "@dm[0]", "attribute_values_version", buf);
-	sprintf(buf, "%ld", time(NULL));
+	snprintf(buf, sizeof(buf), "%ld", time(NULL));
 	dmuci_set_value(UPNP_CFG, "@dm[0]", "attribute_values_epochtime", buf);
 
 	return 0;
@@ -2423,7 +2377,6 @@ static int mobj_upnp_get_supportedparams(DMOBJECT_ARGS)
 
 int dm_entry_upnp_get_selected_values(struct dmctx *dmctx)
 {
-	int i;
 	int err = 0;
 	DMOBJ *root = dmctx->dm_entryobj;
 	DMNODE node = {.current_object = ""};
@@ -2484,10 +2437,8 @@ static int mparam_upnp_structured_get_value_in_param(DMPARAM_ARGS)
 /* ***************
  * UPNP get values
  * ***************/
-
 int dm_entry_upnp_get_values(struct dmctx *dmctx)
 {
-	int i;
 	int err = 0;
 	unsigned char findparam_check = 0;
 	DMOBJ *root = dmctx->dm_entryobj;
@@ -2596,7 +2547,7 @@ int dm_entry_upnp_set_values(struct dmctx *dmctx)
 	dmctx->method_param = mparam_upnp_set_value;
 	err = dm_browse(dmctx, &node, root, NULL, NULL);
 	if (dmctx->stop)
-	return (upnp_map_bbf_fault(err));
+		return (upnp_map_bbf_fault(err));
 	else
 		return FAULT_UPNP_703;
 }
@@ -2608,10 +2559,7 @@ static int mobj_upnp_set_value(DMOBJECT_ARGS)
 
 static int mparam_upnp_set_value(DMPARAM_ARGS)
 {
-	int err;
-	char *refparam;
-	char *perm;
-	char *v = "";
+	char *refparam, *perm, *v = "";
 
 	dmastrcat(&refparam, node->current_object, lastname);
 	if (strcmp(refparam, dmctx->in_param) != 0) {
@@ -2742,8 +2690,6 @@ static int mparam_upnp_add_instance(DMPARAM_ARGS)
 
 static int mobj_upnp_add_instance(DMOBJECT_ARGS)
 {
-	char *addinst;
-	char newparam[256];
 	char *refparam = node->current_object;
 	char *perm = permission->val;
 	char *objinst;
@@ -2782,7 +2728,6 @@ int dm_entry_upnp_get_attributes(struct dmctx *dmctx)
 {
 	DMOBJ *root = dmctx->dm_entryobj;
 	DMNODE node = { .current_object = "" };
-	unsigned char findparam_check = 0;
 	int err;
 	char buf[4] = {0};
 	buf[0] = dm_delim;
@@ -2851,7 +2796,6 @@ static int mobj_upnp_get_attributes(DMOBJECT_ARGS)
 	unsigned int flags = 0;
 	char *perm = permission->val;
 	char *version = NULL;
-	char *type;
 	struct uci_section *s = NULL;
 
 	refparam = node->current_object;
@@ -2924,7 +2868,6 @@ static int mparam_upnp_set_attributes(DMPARAM_ARGS)
 {
 	char *refparam;
 	unsigned int flags = 0;
-	char *perm = permission->val;
 
 	dmastrcat(&refparam, node->current_object, lastname);
 
@@ -2950,8 +2893,6 @@ static int mparam_upnp_set_attributes(DMPARAM_ARGS)
 static int mobj_upnp_set_attributes(DMOBJECT_ARGS)
 {
 	char *refparam;
-	unsigned int flags = 0;
-	char *perm = permission->val;
 
 	refparam = node->current_object;
 
@@ -3018,7 +2959,6 @@ static int mparam_upnp_get_acldata(DMPARAM_ARGS)
 {
 	char *refparam;
 	unsigned int flags = 0;
-	char *perm = permission->val;
 
 	dmastrcat(&refparam, node->current_object, lastname);
 

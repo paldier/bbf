@@ -11,7 +11,8 @@
 
 #ifndef __TIMES_H
 #define __TIMES_H
-#include <libbbf_api/dmbbf.h>
+
+#include <libbbf_api/dmcommon.h>
 
 extern DMLEAF tTimeParams[];
 

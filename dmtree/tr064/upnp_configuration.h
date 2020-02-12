@@ -11,9 +11,11 @@
 
 #ifndef UPNP_CONFIGURATION_H
 #define UPNP_CONFIGURATION_H
-#include <libbbf_api/dmbbf.h>
 
-struct upnp_configuration_args{
+#include <libbbf_api/dmcommon.h>
+
+struct upnp_configuration_args
+{
 	struct uci_section *upnpConfiguration_sec;
 	char *systemName;
 	char *ipv4address;

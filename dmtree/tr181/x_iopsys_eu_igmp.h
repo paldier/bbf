@@ -12,6 +12,8 @@
 #ifndef __SE_IGMP_H
 #define __SE_IGMP_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMLEAF tSe_IgmpParam[];
 
 int get_igmp_dscp_mark(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

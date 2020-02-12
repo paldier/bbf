@@ -16,16 +16,6 @@
 #ifndef __DMOPERATE_H__
 #define __DMOPERATE_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <regex.h>
-#include <sys/param.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmjson.h>
-#include <libbbf_api/dmcommon.h>
 #include "dmentry.h"
 #include "dmdiagnostics.h"
 

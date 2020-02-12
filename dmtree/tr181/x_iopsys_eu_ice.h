@@ -12,6 +12,8 @@
 #ifndef __SE_ICE_H
 #define __SE_ICE_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMLEAF tSe_IceParam[];
 
 int get_ice_cloud_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

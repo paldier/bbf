@@ -10,12 +10,6 @@
  *
  */
 
-#include <uci.h>
-#include <ctype.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
 #include "xmpp.h"
 
 /* *** Device.XMPP. *** */
@@ -95,21 +89,20 @@ int delete_xmpp_connection(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	int found = 0;
 	struct uci_section *s, *ss = NULL;
-	struct uci_section *connsection = (struct uci_section *)data;
 	char *prev_connection_instance;
 	
 	switch (del_action) {
 		case DEL_INST:
-			dmuci_get_value_by_section_string(connsection, "connection_instance", &prev_connection_instance);
+			dmuci_get_value_by_section_string((struct uci_section *)data, "connection_instance", &prev_connection_instance);
 			uci_foreach_option_eq("cwmp_xmpp", "xmpp_connection_server", "id_connection", prev_connection_instance, s) {
 				dmuci_delete_by_section(s, NULL, NULL);
 				break;
 			}
-			dmuci_delete_by_section(connsection, NULL, NULL);
+			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			return 0;
 		case DEL_ALL:
 			uci_foreach_sections("cwmp_xmpp", "xmpp_connection", s) {
-					if (found != 0) {
+				if (found != 0) {
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
@@ -119,7 +112,7 @@ int delete_xmpp_connection(char *refparam, struct dmctx *ctx, void *data, char *
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			uci_foreach_sections("cwmp_xmpp", "xmpp_connection_server", s) {
-					if (found != 0) {
+				if (found != 0) {
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
@@ -155,15 +148,12 @@ int get_xmpp_connection_supported_server_connect_algorithms(char *refparam, stru
 /*#Device.XMPP.Connection.{i}.Enable!UCI:cwmp_xmpp/xmpp_connection,@i-1/enable*/
 int get_connection_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "enable", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
 	return 0;
 }
 
 int set_connection_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
 	bool b;
 
 	switch (action) {
@@ -173,7 +163,7 @@ int set_connection_enable(char *refparam, struct dmctx *ctx, void *data, char *i
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			dmuci_set_value_by_section(connsection, "enable", b ? "1" : "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "enable", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -182,22 +172,17 @@ int set_connection_enable(char *refparam, struct dmctx *ctx, void *data, char *i
 /*#Device.XMPP.Connection.{i}.Alias!UCI:cwmp_xmpp/xmpp_connection,@i-1/connection_alias*/
 int get_xmpp_connection_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "connection_alias", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "connection_alias", value);
 	return 0;
 }
 
 int set_xmpp_connection_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "connection_alias", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "connection_alias", value);
 			return 0;
 	}
 	return 0;
@@ -206,22 +191,17 @@ int set_xmpp_connection_alias(char *refparam, struct dmctx *ctx, void *data, cha
 /*#Device.XMPP.Connection.{i}.Username!UCI:cwmp_xmpp/xmpp_connection,@i-1/username*/
 int get_xmpp_connection_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "username", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "username", value);
 	return 0;
 }
 
 int set_xmpp_connection_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "username", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "username", value);
 			return 0;
 	}
 	return 0;
@@ -236,14 +216,11 @@ int get_xmpp_connection_password(char *refparam, struct dmctx *ctx, void *data, 
 
 int set_xmpp_connection_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "password", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "password", value);
 			return 0;
 	}
 	return 0;
@@ -252,22 +229,17 @@ int set_xmpp_connection_password(char *refparam, struct dmctx *ctx, void *data, 
 /*#Device.XMPP.Connection.{i}.Domain!UCI:cwmp_xmpp/xmpp_connection,@i-1/domain*/
 int get_xmpp_connection_domain(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "domain", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "domain", value);
 	return 0;
 }
 
 int set_xmpp_connection_domain(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "domain", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "domain", value);
 			return 0;
 	}
 	return 0;
@@ -276,22 +248,17 @@ int set_xmpp_connection_domain(char *refparam, struct dmctx *ctx, void *data, ch
 /*#Device.XMPP.Connection.{i}.Ressource!UCI:cwmp_xmpp/xmpp_connection,@i-1/resource*/
 int get_xmpp_connection_resource(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "resource", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "resource", value);
 	return 0;
 }
 
 int set_xmpp_connection_resource(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "resource", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "resource", value);
 			return 0;
 	}
 	return 0;
@@ -300,23 +267,18 @@ int set_xmpp_connection_resource(char *refparam, struct dmctx *ctx, void *data, 
 /*#Device.XMPP.Connection.{i}.ServerConnectAlgorithm!UCI:cwmp_xmpp/xmpp_connection,@i-1/serveralgorithm*/
 int get_xmpp_connection_server_connect_algorithm(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "serveralgorithm", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "serveralgorithm", value);
 	return 0;
 }
 
 int set_xmpp_connection_server_connect_algorithm(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			if(strcmp(value, "DNS-SRV") == 0 || strcmp(value, "ServerTable") == 0)
-				dmuci_set_value_by_section(connsection, "serveralgorithm", value);
+			if (strcmp(value, "DNS-SRV") == 0 || strcmp(value, "ServerTable") == 0)
+				dmuci_set_value_by_section((struct uci_section *)data, "serveralgorithm", value);
 			return 0;
 	}
 	return 0;
@@ -325,22 +287,17 @@ int set_xmpp_connection_server_connect_algorithm(char *refparam, struct dmctx *c
 /*#Device.XMPP.Connection.{i}.KeepAliveInterval!UCI:cwmp_xmpp/xmpp_connection,@i-1/interval*/
 int get_xmpp_connection_keepalive_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "interval", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "interval", value);
 	return 0;
 }
 
 int set_xmpp_connection_keepalive_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "interval", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "interval", value);
 			return 0;
 	}
 	return 0;
@@ -349,22 +306,17 @@ int set_xmpp_connection_keepalive_interval(char *refparam, struct dmctx *ctx, vo
 /*#Device.XMPP.Connection.{i}.ServerConnectAttempts!UCI:cwmp_xmpp/xmpp_connection,@i-1/attempt*/
 int get_xmpp_connection_server_attempts(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "attempt", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "attempt", value);
 	return 0;
 }
 
 int set_xmpp_connection_server_attempts(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "attempt", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "attempt", value);
 			return 0;
 	}
 	return 0;
@@ -373,22 +325,17 @@ int set_xmpp_connection_server_attempts(char *refparam, struct dmctx *ctx, void 
 /*#Device.XMPP.Connection.{i}.ServerRetryInitialInterval!UCI:cwmp_xmpp/xmpp_connection,@i-1/initial_retry_interval*/
 int get_xmpp_connection_retry_initial_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "initial_retry_interval", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "initial_retry_interval", value);
 	return 0;
 }
 
 int set_xmpp_connection_retry_initial_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "initial_retry_interval", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "initial_retry_interval", value);
 			return 0;
 	}
 	return 0;
@@ -397,22 +344,17 @@ int set_xmpp_connection_retry_initial_interval(char *refparam, struct dmctx *ctx
 /*#Device.XMPP.Connection.{i}.ServerRetryIntervalMultiplier!UCI:cwmp_xmpp/xmpp_connection,@i-1/retry_interval_multiplier*/
 int get_xmpp_connection_retry_interval_multiplier(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "retry_interval_multiplier", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "retry_interval_multiplier", value);
 	return 0;
 }
 
 int set_xmpp_connection_retry_interval_multiplier(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "retry_interval_multiplier", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "retry_interval_multiplier", value);
 			return 0;
 	}
 	return 0;
@@ -421,22 +363,17 @@ int set_xmpp_connection_retry_interval_multiplier(char *refparam, struct dmctx *
 /*#Device.XMPP.Connection.{i}.ServerRetryMaxInterval!UCI:cwmp_xmpp/xmpp_connection,@i-1/retry_max_interval*/
 int get_xmpp_connection_retry_max_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "retry_max_interval", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "retry_max_interval", value);
 	return 0;
 }
 
 int set_xmpp_connection_retry_max_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "retry_max_interval", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "retry_max_interval", value);
 			return 0;
 	}
 	return 0;
@@ -445,15 +382,12 @@ int set_xmpp_connection_retry_max_interval(char *refparam, struct dmctx *ctx, vo
 /*#Device.XMPP.Connection.{i}.UseTLS!UCI:cwmp_xmpp/xmpp_connection,@i-1/usetls*/
 int get_xmpp_connection_server_usetls(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "usetls", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "usetls", value);
 	return 0;
 }
 
 int set_xmpp_connection_server_usetls(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action) 
 {
-	struct uci_section *connsection = (struct uci_section *)data;
 	bool b;
 
 	switch (action) {
@@ -463,7 +397,7 @@ int set_xmpp_connection_server_usetls(char *refparam, struct dmctx *ctx, void *d
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			dmuci_set_value_by_section(connsection, "usetls", b ? "1" : "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "usetls", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -471,13 +405,12 @@ int set_xmpp_connection_server_usetls(char *refparam, struct dmctx *ctx, void *d
 
 int get_xmpp_connection_jabber_id(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
 	char *resource, *domain, *username;
 
-	dmuci_get_value_by_section_string(connsection, "resource", &resource);
-	dmuci_get_value_by_section_string(connsection, "domain", &domain);
-	dmuci_get_value_by_section_string(connsection, "username", &username);
-	if(*resource != '\0' || *domain != '\0' || *username != '\0')
+	dmuci_get_value_by_section_string((struct uci_section *)data, "resource", &resource);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "domain", &domain);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "username", &username);
+	if (*resource != '\0' || *domain != '\0' || *username != '\0')
 		dmasprintf(value, "%s@%s/%s", username, domain, resource);
 	else
 		*value = "";
@@ -487,11 +420,10 @@ int get_xmpp_connection_jabber_id(char *refparam, struct dmctx *ctx, void *data,
 /*#Device.XMPP.Connection.{i}.Status!UCI:cwmp_xmpp/xmpp_connection,@i-1/enable*/
 int get_xmpp_connection_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
 	char *status;
 
-	dmuci_get_value_by_section_string(connsection, "enable", &status);
-	if(strcmp(status,"1") == 0)
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", &status);
+	if (strcmp(status,"1") == 0)
 			*value = "Enabled";
 		else
 			*value = "Disabled";
@@ -507,15 +439,12 @@ int get_xmpp_connection_server_number_of_entries(char *refparam, struct dmctx *c
 /*#Device.XMPP.Connection.{i}.Server.{i}.Enable!UCI:cwmp_xmpp/xmpp_connection,@i-1/enable*/
 int get_xmpp_connection_server_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "enable", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
 	return 0;
 }
 
 int set_xmpp_connection_server_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
 	bool b;
 
 	switch (action) {
@@ -525,7 +454,7 @@ int set_xmpp_connection_server_enable(char *refparam, struct dmctx *ctx, void *d
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			dmuci_set_value_by_section(connsection, "enable", b ? "1" : "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "enable", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -534,22 +463,17 @@ int set_xmpp_connection_server_enable(char *refparam, struct dmctx *ctx, void *d
 /*#Device.XMPP.Connection.{i}.Server.{i}.Alias!UCI:cwmp_xmpp/xmpp_connection,@i-1/connection_server_alias*/
 int get_xmpp_connection_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "connection_server_alias", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "connection_server_alias", value);
 	return 0;
 }
 
 int set_xmpp_connection_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-	bool b;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "connection_server_alias", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "connection_server_alias", value);
 			return 0;
 	}
 	return 0;
@@ -558,21 +482,17 @@ int set_xmpp_connection_server_alias(char *refparam, struct dmctx *ctx, void *da
 /*#Device.XMPP.Connection.{i}.Server.{i}.ServerAddress!UCI:cwmp_xmpp/xmpp_connection,@i-1/server_address*/
 int get_xmpp_connection_server_server_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "server_address", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "server_address", value);
 	return 0;
 }
 
 int set_xmpp_connection_server_server_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "server_address", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "server_address", value);
 			return 0;
 	}
 	return 0;
@@ -581,21 +501,17 @@ int set_xmpp_connection_server_server_address(char *refparam, struct dmctx *ctx,
 /*#Device.XMPP.Connection.{i}.Server.{i}.Port!UCI:cwmp_xmpp/xmpp_connection,@i-1/port*/
 int get_xmpp_connection_server_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(connsection, "port", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "port", value);
 	return 0;
 }
 
 int set_xmpp_connection_server_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *connsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(connsection, "port", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "port", value);
 			return 0;
 	}
 	return 0;
@@ -604,24 +520,21 @@ int set_xmpp_connection_server_port(char *refparam, struct dmctx *ctx, void *dat
 /**************************************************************************
 * LINKER
 ***************************************************************************/
-int  get_xmpp_connection_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker) {
+int  get_xmpp_connection_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+{
 	char *conn_instance;
-	struct uci_section *connsection = (struct uci_section *)data;
 
-	if (connsection)
-	{
-		dmuci_get_value_by_section_string(connsection, "connection_instance", &conn_instance);
+	if (data) {
+		dmuci_get_value_by_section_string((struct uci_section *)data, "connection_instance", &conn_instance);
 		dmasprintf(linker,"xmppc:%s", conn_instance);
-		return 0;
-	}
-	else
+	} else
 		*linker = "";
-		return 0;
+	return 0;
 }
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+**************************************************************/
 /*#Device.XMPP.Connection.{i}.!UCI:cwmp_xmpp/xmpp_connection/dmmap_cwmp_xmpp*/
 int browsexmpp_connectionInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {

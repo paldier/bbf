@@ -8,12 +8,6 @@
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmjson.h>
-//#include "dmentry.h"
 #include "bulkdata.h"
 
 /* *** Device.BulkData. *** */
@@ -130,8 +124,8 @@ DMLEAF tBulkDataProfileHTTPRequestURIParameterParams[] = {
 };
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+*************************************************************/
 /*#Device.BulkData.Profile.{i}.!UCI:cwmp_bulkdata/profile/dmmap_cwmp_profile*/
 int browseBulkDataProfileInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
@@ -183,8 +177,8 @@ int browseBulkDataProfileHTTPRequestURIParameterInst(struct dmctx *dmctx, DMNODE
 }
 
 /*************************************************************
- * ADD & DEL OBJ
-/*************************************************************/
+* ADD & DEL OBJ
+*************************************************************/
 int addObjBulkDataProfile(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	struct uci_section *profile;
@@ -287,7 +281,7 @@ int addObjBulkDataProfileParameter(char *refparam, struct dmctx *ctx, void *data
 int delObjBulkDataProfileParameter(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	int found = 0;
-	struct uci_section *s, *ss = NULL, *profile_section = (struct uci_section *)data;;
+	struct uci_section *s, *ss = NULL, *profile_section = (struct uci_section *)data;
 	char *prev_profile_id;
 
 	switch (del_action) {
@@ -326,7 +320,7 @@ int addObjBulkDataProfileHTTPRequestURIParameter(char *refparam, struct dmctx *c
 int delObjBulkDataProfileHTTPRequestURIParameter(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	int found = 0;
-	struct uci_section *s, *ss = NULL, *profile_section = (struct uci_section *)data;;
+	struct uci_section *s, *ss = NULL, *profile_section = (struct uci_section *)data;
 	char *prev_profile_id;
 
 	switch (del_action) {
@@ -349,8 +343,8 @@ int delObjBulkDataProfileHTTPRequestURIParameter(char *refparam, struct dmctx *c
 }
 
 /*************************************************************
- * GET & SET PARAM
-/*************************************************************/
+* GET & SET PARAM
+*************************************************************/
 /*#Device.BulkData.Enable!UCI:cwmp_bulkdata/bulkdata,bulkdata/enable*/
 int get_BulkData_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -608,7 +602,7 @@ int set_BulkDataProfile_TimeReference(char *refparam, struct dmctx *ctx, void *d
 		case VALUESET:
 			if (!(strptime(value, "%Y-%m-%dT%H:%M:%S", &tm)))
 				break;
-			sprintf(buf, "%ld", mktime(&tm));
+			snprintf(buf, sizeof(buf), "%ld", mktime(&tm));
 			dmuci_set_value_by_section((struct uci_section *)data, "time_reference", buf);
 			break;
 	}

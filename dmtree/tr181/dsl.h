@@ -11,6 +11,8 @@
 #ifndef __DSL_H
 #define __DSL_H
 
+#include <libbbf_api/dmcommon.h>
+
 struct dsl_line_args
 {
 	struct uci_section *line_sec;

@@ -10,19 +10,7 @@
  *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include <ctype.h>
-#include <uci.h>
-#include <stdio.h>
-#include <time.h>
-#include <libbbf_api/dmmem.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmjson.h>
 #include "managementserver.h"
-
-#define DEFAULT_ACSURL "http://192.168.1.1:8080/openacs/acs"
 
 /*** ManagementServer. ***/
 DMLEAF tManagementServerParams[] = {
@@ -66,37 +54,31 @@ DMLEAF tManagementServerParams[] = {
 /*#Device.ManagementServer.URL!UCI:cwmp/cwmp,acs/url*/
 int get_management_server_url(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	int i = 1;
-	char *dhcp = NULL, *pch = NULL, *spch = NULL;
-	char *url = NULL;
-	char *provisioning_value = NULL;
-	char package[64] = "", section[64] = "", option[64] = "";
+	char *dhcp = NULL, *url = NULL, *provisioning_value = NULL;
 
 	dmuci_get_option_value_string("cwmp", "acs", "dhcp_discovery", &dhcp);
 	dmuci_get_option_value_string("cwmp", "acs", "url", &url);
 	dmuci_get_varstate_string("cwmp", "acs", "dhcp_url", &provisioning_value);
 
 	if ( ((dhcp && strcmp(dhcp, "enable") == 0 ) || ((url == NULL) || (url[0] == '\0'))) && ((provisioning_value != NULL) && (provisioning_value[0] != '\0')) )
-	{
 		*value = provisioning_value;
-	}
 	else if ((url != NULL) && (url[0] != '\0'))
-			*value = url;
+		*value = url;
 	else
-		*value = dmstrdup(DEFAULT_ACSURL);
+		*value = dmstrdup("http://192.168.1.1:8080/openacs/acs");
 	return 0;
 }
 
 int set_management_server_url(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
-		case VALUECHECK:			
-			return 0;
+		case VALUECHECK:
+			break;
 		case VALUESET:
 			dmuci_set_value("cwmp", "acs", "dhcp_discovery", "disable");
 			dmuci_set_value("cwmp", "acs", "url", value);
 			cwmp_set_end_session(END_SESSION_RELOAD);
-			return 0;
+			break;
 	}
 	return 0;
 }
@@ -201,8 +183,7 @@ int get_management_server_periodic_inform_time(char *refparam, struct dmctx *ctx
 		char s_now[sizeof "AAAA-MM-JJTHH:MM:SS.000Z"];
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S.000Z", localtime(&time_value));
 		*value = dmstrdup(s_now); // MEM WILL BE FREED IN DMMEMCLEAN
-	}
-	else {
+	} else {
 		*value = "0001-01-01T00:00:00Z";
 	}		
 	return 0;	
@@ -211,7 +192,8 @@ int get_management_server_periodic_inform_time(char *refparam, struct dmctx *ctx
 int set_management_server_periodic_inform_time(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct tm tm;
-	char *p, buf[16];
+	char buf[16];
+
 	switch (action) {
 		case VALUECHECK:			
 			return 0;
@@ -219,7 +201,7 @@ int set_management_server_periodic_inform_time(char *refparam, struct dmctx *ctx
 			if (!(strptime(value, "%Y-%m-%dT%H:%M:%S", &tm))) {
 				return 0;
 			}
-			sprintf(buf, "%ld", mktime(&tm));
+			snprintf(buf, sizeof(buf), "%ld", mktime(&tm));
 			dmuci_set_value("cwmp", "acs", "periodic_inform_time", buf);
 			cwmp_set_end_session(END_SESSION_RELOAD);
 			return 0;
@@ -238,7 +220,7 @@ int get_management_server_connection_request_url(char *refparam, struct dmctx *c
 	dmuci_get_option_value_string("cwmp", "cpe", "port", &port);
 	if (ip[0] != '\0' && port[0] != '\0') {
 		char buf[64];
-		sprintf(buf,"http://%s:%s/", ip, port);
+		snprintf(buf, sizeof(buf), "http://%s:%s/", ip, port);
 		*value = dmstrdup(buf); //  MEM WILL BE FREED IN DMMEMCLEAN
 	}
 	return 0;

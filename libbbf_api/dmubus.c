@@ -11,20 +11,11 @@
  *	Author: Anis Ellouze <anis.ellouze@pivasoftware.com>
  */
 
-#include <unistd.h>
-#include <string.h>
-#include <strings.h>
-#include <stdlib.h>
 #include <libubus.h>
-#include <libubox/blobmsg_json.h>
-#include <json-c/json.h>
-#include <json-c/bits.h>
-#include <stdio.h>
 #include "dmubus.h"
 #include "dmmem.h"
 #include "dmcommon.h"
 
-#define DELIMITOR ","
 #define UBUS_BUFFEER_SIZE 1024 * 8
 
 struct dmubus_ctx dmubus_ctx;
@@ -91,20 +82,19 @@ int dmubus_call_set(char *obj, char *method, struct ubus_arg u_args[], int u_arg
 {
 #if !DM_USE_LIBUBUS
 	char bufargs[256], *p;
-	int i, r;
+	int i;
 	p = bufargs;
 
 	if (u_args_size) {
 		sprintf(p, "{");
 		for (i = 0; i < u_args_size; i++) {
 			p += strlen(p);
-			if (i == 0){
+			if (i == 0) {
 				if(u_args[i].type != Integer)
 					sprintf(p, "\"%s\": \"%s\"", u_args[i].key, u_args[i].val);
 				else
 					sprintf(p, "\"%s\": %s", u_args[i].key, u_args[i].val);
-			}
-			else{
+			} else {
 				if(u_args[i].type != Integer)
 					sprintf(p, ", \"%s\": \"%s\"", u_args[i].key, u_args[i].val);
 				else
@@ -113,10 +103,9 @@ int dmubus_call_set(char *obj, char *method, struct ubus_arg u_args[], int u_arg
 		}
 		p += strlen(p);
 		sprintf(p, "}");
-		DMCMD("ubus", 7, "-S", "-t", "1", "call", obj, method, bufargs); //TODO wait to fix uloop ubus freeze
-	}
-	else {
-		DMCMD("ubus", 6, "-S", "-t", "1", "call", obj, method); //TODO wait to fix uloop ubus freeze
+		DMCMD("ubus", 7, "-S", "-t", "1", "call", obj, method, bufargs);
+	} else {
+		DMCMD("ubus", 6, "-S", "-t", "1", "call", obj, method);
 	}
 	return 0;
 #else
@@ -155,20 +144,19 @@ static inline json_object *ubus_call_req(char *obj, char *method, struct ubus_ar
 #if !DM_USE_LIBUBUS
 	json_object *res = NULL;
 	char *ubus_return, bufargs[256], *p;
-	int i, pp = 0, r;
+	int i, pp = 0;
 	p = bufargs;
 
 	if (u_args_size) {
 		sprintf(p, "{");
 		for (i = 0; i < u_args_size; i++) {
 			p += strlen(p);
-			if (i == 0){
+			if (i == 0) {
 				if(u_args[i].type != Integer)
 					sprintf(p, "\"%s\": \"%s\"", u_args[i].key, u_args[i].val);
 				else
 					sprintf(p, "\"%s\": %s", u_args[i].key, u_args[i].val);
-			}
-			else{
+			} else {
 				if(u_args[i].type != Integer)
 					sprintf(p, ", \"%s\": \"%s\"", u_args[i].key, u_args[i].val);
 				else
@@ -177,10 +165,9 @@ static inline json_object *ubus_call_req(char *obj, char *method, struct ubus_ar
 		}
 		p += strlen(p);
 		sprintf(p, "}");
-		pp = dmcmd("ubus", 7, "-S", "-t", "3", "call", obj, method, bufargs); //TODO wait to fix uloop ubus freeze
-	}
-	else {
-		pp = dmcmd("ubus", 6, "-S", "-t", "3", "call", obj, method); //TODO wait to fix uloop ubus freeze
+		pp = dmcmd("ubus", 7, "-S", "-t", "3", "call", obj, method, bufargs);
+	} else {
+		pp = dmcmd("ubus", 6, "-S", "-t", "3", "call", obj, method);
 	}
 	if (pp) {
 		dmcmd_read_alloc(pp, &ubus_return);
@@ -229,6 +216,7 @@ int dmubus_call(char *obj, char *method, struct ubus_arg u_args[], int u_args_si
 	struct ubus_msg *k = NULL;
 	json_object **jr;
 	bool found = false;
+
 	*req_res = NULL;
 	list_for_each_entry(i, &dmubus_ctx.obj_head, list) {
 		if (strcmp(obj, i->name) == 0) {
@@ -262,7 +250,6 @@ int dmubus_call(char *obj, char *method, struct ubus_arg u_args[], int u_args_si
 	// Arguments
 	if (u_args_size != 0) {
 		found = false;
-		int n=0;
 		list_for_each_entry(k, &j->msg_head, list) {
 			if (ubus_arg_cmp(k->ug, k->ug_size, u_args, u_args_size) == 0) {
 				*req_res = k->res;
@@ -299,7 +286,7 @@ void dmubus_ctx_free(struct dmubus_ctx *ctx)
 	list_for_each_entry_safe(i, _i, &ctx->obj_head, list) {
 		list_for_each_entry_safe(j, _j, &i->method_head, list) {
 			list_for_each_entry_safe(k, _k, &j->msg_head, list) {
-				if(k->ug_size != 0) {
+				if (k->ug_size != 0) {
 					int c;
 					for (c = 0; c < k->ug_size; c++) {
 						dmfree(k->ug[c].key);
@@ -308,12 +295,12 @@ void dmubus_ctx_free(struct dmubus_ctx *ctx)
 					dmfree(k->ug);
 				}
 				list_del(&k->list);
-				if(k->res)
+				if (k->res)
 					json_object_put(k->res);
 				dmfree(k);
 			}
 			list_del(&j->list);
-			if(j->res)
+			if (j->res)
 				json_object_put(j->res);
 			dmfree(j->name);
 			dmfree(j);

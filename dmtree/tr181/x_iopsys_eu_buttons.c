@@ -10,12 +10,6 @@
  *
  */
 
-#include <uci.h>
-#include <ctype.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_buttons.h"
 
 /*** DMROOT.X_IOPSYS_EU_Buttons.{i}. ****/
@@ -34,7 +28,6 @@ DMLEAF X_IOPSYS_EU_ButtonParams[] = {
 int browseXIopsysEuButton(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *ibutton = NULL, *ibutton_last = NULL;
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 
@@ -144,13 +137,12 @@ int set_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 ////////////////////////SET AND GET ALIAS/////////////////////////////////
-
 int get_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section;
 
 	get_dmmap_section_of_config_section("dmmap_buttons", "button", section_name((struct uci_section *)data), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "buttonalias", value);
+	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "buttonalias", value);
 	return 0;
 }
 
@@ -158,12 +150,12 @@ int set_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, 
 {
 	struct uci_section *dmmap_section;
 
-	get_dmmap_section_of_config_section("dmmap_buttons", "button", section_name((struct uci_section *)data), &dmmap_section);
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(dmmap_section, "buttonalias", value);
+			get_dmmap_section_of_config_section("dmmap_buttons", "button", section_name((struct uci_section *)data), &dmmap_section);
+			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "buttonalias", value);
 			return 0;
 	}
 	return 0;

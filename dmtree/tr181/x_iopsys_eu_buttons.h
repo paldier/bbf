@@ -13,6 +13,8 @@
 #ifndef __SE_BUTTONS_H
 #define __SE_BUTTONS_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMLEAF X_IOPSYS_EU_ButtonParams[];
 int browseXIopsysEuButton(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance);
 int get_x_iopsys_eu_button_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

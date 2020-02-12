@@ -9,15 +9,6 @@
  *
  */
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <ctype.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentryjson.h"
 #include "dmmemjson.h"
 
@@ -38,7 +29,7 @@ static int get_stats_json_folder(char *folder_path, int *file_count, unsigned lo
 		while ((entry = readdir(dirp)) != NULL) {
 			if ((entry->d_type == DT_REG) && (strstr(entry->d_name, ".json"))) {
 				filecount++;
-				sprintf(buf, "%s/%s", folder_path, entry->d_name);
+				snprintf(buf, sizeof(buf), "%s/%s", folder_path, entry->d_name);
 				if (!stat(buf, &stats)) {
 					filesize = (filesize + stats.st_size) / 2;
 					filedate = (filedate + stats.st_mtime) / 2;
@@ -139,7 +130,7 @@ int check_stats_json_folder(char *json_folder_path)
 	if (!get_stats_json_folder(json_folder_path, &file_count, &size, &date))
 		return 0;
 	
-	sprintf(str, "count:%d,sizes:%lu,date:%lu", file_count, size, date);
+	snprintf(str, sizeof(str), "count:%d,sizes:%lu,date:%lu", file_count, size, date);
 	if (strcmp(str, json_hash)) {
 		strcpy(json_hash, str);
 		return 1;
@@ -274,8 +265,8 @@ int browse_obj(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *
 	char *obj = generate_obj_without_instance(parent_node->current_object, true);
 	generate_prefixobj_and_obj_full_obj(parent_node->current_object, &prefix_obj, &object);
 
-	sprintf(buf_instance, "%s_instance", object);
-	sprintf(buf_alias, "%s_alias", object);
+	snprintf(buf_instance, sizeof(buf_instance), "%s_instance", object);
+	snprintf(buf_alias, sizeof(buf_alias), "%s_alias", object);
 	for (int i = 0; buf_instance[i]; i++) {
 		buf_instance[i] = tolower(buf_instance[i]);
 	}
@@ -332,7 +323,7 @@ static int add_obj(char *refparam, struct dmctx *ctx, void *data, char **instanc
 
 	if (arg1 && strcmp(arg1, "uci") == 0) {
 		generate_prefixobj_and_obj_full_obj(refparam, &prefix_obj, &object);
-		sprintf(buf_instance, "%s_instance", object);
+		snprintf(buf_instance, sizeof(buf_instance), "%s_instance", object);
 		for (int i = 0; buf_instance[i]; i++) {
 			buf_instance[i] = tolower(buf_instance[i]);
 		}
@@ -439,7 +430,7 @@ static int getvalue_param(char *refparam, struct dmctx *ctx, void *data, char *i
 	} else if (arg1 && strcmp(arg1, "ubus") == 0) {
 		//UBUS: arg1=type :: arg2=ubus_object :: arg3=ubus_method :: arg4=ubus_args1 :: arg5=ubus_args2 :: arg6=ubus_key
 
-		json_object *res;
+		json_object *res = NULL;
 		if (arg2 && arg3 && arg4 && arg5) {
 			if (data && (strcmp(arg5, "@Name") == 0))
 				dmubus_call(arg2, arg3, UBUS_ARGS{{arg4, section_name((struct uci_section *)data), String}}, 1, &res);
@@ -593,7 +584,9 @@ static void parse_param(char *object, char *param, json_object *jobj, DMLEAF *pl
 	/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type(8)*/
 	struct json_object *type, *protocols, *proto, *write, *mapping;
 	char full_param[256] = "";
-	size_t n_proto, n_mapping;
+	size_t n_proto;
+
+	if (!pleaf) return;
 
 	//PARAM
 	pleaf[i].parameter = dmstrdupjson(param);
@@ -606,8 +599,10 @@ static void parse_param(char *object, char *param, json_object *jobj, DMLEAF *pl
 	json_object_object_get_ex(jobj, "type", &type);
 	if (strcmp(json_object_get_string(type), "boolean") == 0)
 		pleaf[i].type = DMT_BOOL;
-	else if ((strcmp(json_object_get_string(type), "unsignedInt") == 0) || (strcmp(json_object_get_string(type), "unsignedLong") == 0))
+	else if (strcmp(json_object_get_string(type), "unsignedInt") == 0)
 		pleaf[i].type = DMT_UNINT;
+	else if (strcmp(json_object_get_string(type), "unsignedLong") == 0)
+		pleaf[i].type = DMT_UNLONG;
 	else if (strcmp(json_object_get_string(type), "hexBinary") == 0)
 		pleaf[i].type = DMT_HEXBIN;
 	else if (strcmp(json_object_get_string(type), "int") == 0)
@@ -647,7 +642,7 @@ static void parse_param(char *object, char *param, json_object *jobj, DMLEAF *pl
 	} else
 		pleaf[i].bbfdm_type = BBFDM_BOTH;
 
-	sprintf(full_param, "%s%s", object, param);
+	snprintf(full_param, sizeof(full_param), "%s%s", object, param);
 	json_object_object_get_ex(jobj, "mapping", &mapping);
 	parse_mapping_param(full_param, mapping, list);
 }
@@ -676,13 +671,14 @@ static void parse_obj(char *object, json_object *jobj, DMOBJ *pobj, int index, s
 
 	char *full_obj = NULL, *prfix_obj = NULL, *obj_str = NULL;
 	int obj_number = 0, param_number = 0, i = 0, j = 0;
-	DMOBJ *next_obj;
-	DMLEAF *next_leaf;
+	DMOBJ *next_obj = NULL;
+	DMLEAF *next_leaf = NULL;
 
 	count_obj_param_under_jsonobj(jobj, &obj_number, &param_number);
 	full_obj = replace_string(object, ".{i}.", ".");
 	generate_prefixobj_and_obj_full_obj(full_obj, &prfix_obj, &obj_str);
 
+	if (!pobj) return;
 	//OBJ
 	pobj[index].obj = obj_str;
 
@@ -767,8 +763,6 @@ static void parse_obj(char *object, json_object *jobj, DMOBJ *pobj, int index, s
 
 static void parse_next_obj(struct dmctx *ctx, json_object *jobj)
 {
-	int instance = 0, indx = 0;
-
 	json_object_object_foreach(jobj, key, json_obj) {
 		DMOBJ *dm_entryobj = NULL;
 		if (json_object_get_type(json_obj) == json_type_object && is_obj(key, json_obj)) {
@@ -813,8 +807,7 @@ int load_json_dynamic_arrays(struct dmctx *ctx)
 				DMOBJ *dm_entryobj = NULL;
 				json_object *json;
 				char buf[32] = "";
-				int instance = 0, indx = 0;
-				sprintf(buf, "%s/%s", JSON_FOLDER_PATH, ent->d_name);
+				snprintf(buf, sizeof(buf), "%s/%s", JSON_FOLDER_PATH, ent->d_name);
 				json = json_object_from_file(buf);
 				if (!json) continue;
 

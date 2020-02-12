@@ -9,19 +9,7 @@
  *		Author: Feten Besbes <feten.besbes@pivasoftware.com>
  */
 
-#include <ctype.h>
-#include <uci.h>
-#include <stdio.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/klog.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmcommon.h>
 #include "deviceinfo.h"
-#include <libbbf_api/dmjson.h>
-#include <libbbf_api/dmubus.h>
 
 /* *** Device.DeviceInfo. *** */
 DMOBJ tDeviceInfoObj[] = {
@@ -121,8 +109,8 @@ DMLEAF tDeviceInfoVendorLogFileParams[] = {
 };
 
 /*************************************************************
- * INIT
-/*************************************************************/
+* INIT
+**************************************************************/
 inline int init_process_args(struct process_args *args, char *pid, char *command, char* size, char* priority, char *cputime, char *state)
 {
 	args->pid = pid;
@@ -146,48 +134,39 @@ char *get_deviceid_manufacturer()
 
 char *get_deviceid_manufactureroui()
 {
-	char *v;
-	char str[16];
-	char *mac = NULL;	
+	char *v, *mac = NULL, str[16], macreadfile[18] = {0};
 	json_object *res;
-	FILE *nvrammac=NULL;
-	char macreadfile[18]={0};
+	FILE *nvrammac = NULL;
 	
 	dmuci_get_option_value_string("cwmp", "cpe", "override_oui", &v);
-	if (v[0] == '\0')
-	{
-	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
-		if(!(res)){
+	if (v[0] == '\0') {
+		dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
+		if (!(res)) {
 			db_get_value_string("hw", "board", "basemac", &mac);
-			if(!mac || strlen(mac)==0 ){
-				if ((nvrammac = fopen("/proc/nvram/BaseMacAddr", "r")) == NULL)
-			    {
+			if (!mac || strlen(mac) == 0) {
+				if ((nvrammac = fopen("/proc/nvram/BaseMacAddr", "r")) == NULL) {
 					mac = NULL;
-			    }
-				else{
-					fscanf(nvrammac,"%[^\n]", macreadfile);
-					macreadfile[17]='\0';
+				} else {
+					fscanf(nvrammac,"%17[^\n]", macreadfile);
+					macreadfile[17] = '\0';
 					sscanf(macreadfile,"%2c %2c %2c", str, str+2, str+4);
-					str[6]='\0';
+					str[6] = '\0';
 					v = dmstrdup(str); // MEM WILL BE FREED IN DMMEMCLEAN
 					fclose(nvrammac);
 					return v;
 				}
 			}
-		}
-		else
+		} else
 			mac = dm_ubus_get_value(res, 2, "system", "basemac");
 
-		if(mac)
-		{
+		if(mac) {
 			size_t ln = strlen(mac);
-			if (ln<17) goto not_found;
+			if (ln < 17) goto not_found;
 			sscanf (mac,"%2c:%2c:%2c",str,str+2,str+4);
 			str[6] = '\0';
 			v = dmstrdup(str); // MEM WILL BE FREED IN DMMEMCLEAN
 			return v;
-		}
-		else
+		} else
 			goto not_found;
 	}
 	return v;
@@ -198,21 +177,14 @@ not_found:
 
 char *get_deviceid_productclass()
 {
-	char *v, *tmp, *val;
+	char *v;
 	dmuci_get_option_value_string("cwmp", "cpe", "override_productclass", &v);
-	if (v[0] == '\0')
-	{
+	if (v[0] == '\0') {
 		db_get_value_string("hw", "board", "iopVerBoard", &v);
-		tmp = dmstrdup(v);// MEM WILL BE FREED IN DMMEMCLEAN
-		val = tmp;
-		return val;
+		return v;
 	}
-
-	tmp = dmstrdup(v);// MEM WILL BE FREED IN DMMEMCLEAN
-	val = tmp;
-	return val;
+	return v;
 }
-
 
 char *get_deviceid_serialnumber()
 {
@@ -223,12 +195,9 @@ char *get_deviceid_serialnumber()
 
 char *get_softwareversion()
 {
-	char *v, *tmp, *val;
-	
+	char *v;
 	db_get_value_string("hw", "board", "iopVersion", &v);
-	tmp = dmstrdup(v);// MEM WILL BE FREED IN DMMEMCLEAN
-	val = tmp;
-	return val;
+	return v;
 }
 
 /*#Device.DeviceInfo.Manufacturer!UCI:cwmp/cwmp,cpe/manufacturer*/
@@ -278,9 +247,8 @@ int get_device_routermodel(char *refparam, struct dmctx *ctx, void *data, char *
 
 int get_device_info_uptime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	FILE* fp = NULL;
-	char *pch, *spch;
-	char buf[64];
+	FILE *fp = NULL;
+	char *pch, *spch, buf[64];
 	*value = "0";
 
 	fp = fopen(UPTIME, "r");
@@ -342,7 +310,6 @@ int get_device_provisioningcode(char *refparam, struct dmctx *ctx, void *data, c
 
 int set_device_provisioningcode(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	bool b;
 	switch (action) {
 		case VALUECHECK:			
 			return 0;
@@ -356,7 +323,6 @@ int set_device_provisioningcode(char *refparam, struct dmctx *ctx, void *data, c
 int get_base_mac_addr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {	
 	json_object *res;
-	
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "");
 	*value = dm_ubus_get_value(res, 2, "system", "basemac");
@@ -366,7 +332,6 @@ int get_base_mac_addr(char *refparam, struct dmctx *ctx, void *data, char *insta
 int get_device_memory_bank(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-
 	dmubus_call("router.system", "memory_bank", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "");
 	*value = dm_ubus_get_value(res, 1, "code");
@@ -389,9 +354,8 @@ int get_catv_enabled(char *refparam, struct dmctx *ctx, void *data, char *instan
 {
 	char *catv;
 	dmuci_get_option_value_string("catv", "catv", "enable", &catv);
-	if (strcmp(catv, "on") == 0) {
+	if (strcmp(catv, "on") == 0)
 		*value = "1";
-	} 
 	else 
 		*value = "0";
 	return 0;	
@@ -421,11 +385,8 @@ int set_device_catvenabled(char *refparam, struct dmctx *ctx, void *data, char *
 int get_catv_optical_input_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-	char *str;
-	*value = "";
 	dmubus_call("catv", "vpd", UBUS_ARGS{}, 0, &res);
-	if (!res)
-		return 0;
+	DM_ASSERT(res, *value = "");
 	*value = dm_ubus_get_value(res, 1, "VPD");
 	return 0;
 }
@@ -433,11 +394,8 @@ int get_catv_optical_input_level(char *refparam, struct dmctx *ctx, void *data, 
 int get_catv_rf_output_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-	char *str;
-	*value = "";
 	dmubus_call("catv", "rf", UBUS_ARGS{}, 0, &res);
-	if (!res)
-		return 0;
+	DM_ASSERT(res, *value = "");
 	*value = dm_ubus_get_value(res, 1, "RF");
 	return 0;
 }
@@ -445,11 +403,8 @@ int get_catv_rf_output_level(char *refparam, struct dmctx *ctx, void *data, char
 int get_catv_temperature(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-	char *str;
-	*value = "";
 	dmubus_call("catv", "temp", UBUS_ARGS{}, 0, &res);
-	if (!res)
-		return 0;
+	DM_ASSERT(res, *value = "");
 	*value = dm_ubus_get_value(res, 1, "Temperature");
 	return 0;
 }
@@ -457,26 +412,21 @@ int get_catv_temperature(char *refparam, struct dmctx *ctx, void *data, char *in
 int get_catv_voltage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-	char *str;
-	*value = "";
 	dmubus_call("catv", "vcc", UBUS_ARGS{}, 0, &res);
-	if (!res)
-		return 0;
+	DM_ASSERT(res, *value = "");
 	*value = dm_ubus_get_value(res, 1, "VCC");
 	return 0;
 }
 
 int get_vcf_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *vcf_sec = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(vcf_sec, "name", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "name", value);
 	return 0;
 }
 
 int get_vcf_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *vcf_sec = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(vcf_sec, "version", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "version", value);
 	return 0;
 }
 
@@ -487,52 +437,48 @@ int get_vcf_date(char *refparam, struct dmctx *ctx, void *data, char *instance, 
 	struct stat attr;
 	char path[128];
 	char date[sizeof "AAAA-MM-JJTHH:MM:SS.000Z"];
-	struct uci_section *vcf_sec = (struct uci_section *)data;
+
 	*value = "";
-	dmuci_get_value_by_section_string(vcf_sec, "name", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "name", value);
 	if ((dir = opendir (DEFAULT_CONFIG_DIR)) != NULL) {
 		while ((d_file = readdir (dir)) != NULL) {
 			if(strcmp(*value, d_file->d_name) == 0) {
-				sprintf(path, DEFAULT_CONFIG_DIR"%s", d_file->d_name);
+				snprintf(path, sizeof(path), DEFAULT_CONFIG_DIR"%s", d_file->d_name);
 				stat(path, &attr);
-				strftime(date, sizeof date, "%Y-%m-%dT%H:%M:%S.000Z", localtime(&attr.st_mtime));
+				strftime(date, sizeof(date), "%Y-%m-%dT%H:%M:%S.000Z", localtime(&attr.st_mtime));
 				*value = dmstrdup(date);
 			}
 		}
-	closedir (dir);
+		closedir (dir);
 	}
 	return 0;
 }
 
 int get_vcf_backup_restore(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *vcf_sec = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(vcf_sec, "backup_restore", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "backup_restore", value);
 	return 0;
 }
 
 int get_vcf_desc(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *vcf_sec = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(vcf_sec, "description", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "description", value);
 	return 0;
 }
 
 int get_vcf_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *vcf_sec = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(vcf_sec, "vcf_alias", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "vcf_alias", value);
 	return 0;
 }
 
 int set_vcf_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *vcf_sec = (struct uci_section *)data;
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(vcf_sec, "vcf_alias", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "vcf_alias", value);
 			return 0;
 	}
 	return 0;
@@ -553,31 +499,29 @@ int check_file_dir(char *name)
 	struct dirent *d_file;
 	if ((dir = opendir (DEFAULT_CONFIG_DIR)) != NULL) {
 		while ((d_file = readdir (dir)) != NULL) {
-			if(strcmp(name, d_file->d_name) == 0) {
+			if (strcmp(name, d_file->d_name) == 0) {
 				closedir(dir);
 				return 1;
 			}
 		}
-	closedir(dir);
+		closedir(dir);
 	}
 	return 0;
 }
 
 int get_vlf_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *sys_log_sec = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(sys_log_sec, "vlf_alias", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "vlf_alias", value);
 	return 0;
 }
 
 int set_vlf_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *sys_log_sec = (struct uci_section *)data;
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(sys_log_sec, "vlf_alias", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "vlf_alias", value);
 			return 0;
 	}
 	return 0;
@@ -585,15 +529,13 @@ int set_vlf_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 
 int get_vlf_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *sys_log_sec = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(sys_log_sec, "log_file", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "log_file", value);
 	return 0;
 }
 
 int get_vlf_max_size (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *sys_log_sec = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(sys_log_sec, "log_size", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "log_size", value);
 	*value = (**value) ? *value : "0";
 	return 0;
 }
@@ -608,8 +550,8 @@ int get_vlf_persistent(char *refparam, struct dmctx *ctx, void *data, char *inst
 int get_memory_status_total(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
+	DM_ASSERT(res, *value = "0");
 	*value = dm_ubus_get_value(res, 2, "memoryKB", "total");
 	return 0;
 }
@@ -618,8 +560,8 @@ int get_memory_status_total(char* refparam, struct dmctx *ctx, void *data, char 
 int get_memory_status_free(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
+	DM_ASSERT(res, *value = "0");
 	*value = dm_ubus_get_value(res, 2, "memoryKB", "free");
 	return 0;
 }
@@ -628,8 +570,8 @@ int get_memory_status_free(char* refparam, struct dmctx *ctx, void *data, char *
 int get_process_cpu_usage(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
+	DM_ASSERT(res, *value = "0");
 	*value = dm_ubus_get_value(res, 2, "system", "cpu_per");
 	return 0;
 }
@@ -640,65 +582,60 @@ int get_process_number_of_entries(char* refparam, struct dmctx *ctx, void *data,
 	int nbre_process = 0;
 
 	dmubus_call("router.system", "processes", UBUS_ARGS{{}}, 0, &res);
+	DM_ASSERT(res, *value = "0");
 	json_object_object_get_ex(res, "processes", &processes);
-	nbre_process= json_object_array_length(processes);
-	dmasprintf(value,"%d",nbre_process);
+	nbre_process = json_object_array_length(processes);
+	dmasprintf(value, "%d", nbre_process);
 	return 0;
 }
 
 int get_process_pid(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct process_args *proc_args= (struct process_args*) data;
-	*value= proc_args->pid;
+	*value = ((struct process_args *)data)->pid;
 	return 0;
 }
 
 int get_process_command(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct process_args *proc_args= (struct process_args*) data;
-	*value= proc_args->command;
+	*value = ((struct process_args *)data)->command;
 	return 0;
 }
 
 int get_process_size(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct process_args *proc_args= (struct process_args*) data;
-	if(proc_args->size!=NULL) *value= proc_args->size;
-	else *value= "0";
+	if (((struct process_args *)data)->size != NULL)
+		*value = ((struct process_args *)data)->size;
+	else
+		*value = "0";
 	return 0;
 }
 
 int get_process_priority(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct process_args *proc_args= (struct process_args*) data;
-	long val;
-
-	if(proc_args->priority!=NULL) {
-		val = atol(proc_args->priority);
-		if(val<0) val=0;
+	if (((struct process_args *)data)->priority != NULL) {
+		long val = atol(((struct process_args *)data)->priority);
+		if (val < 0) val = 0;
 		dmasprintf(value, "%ld", val);
-	}
-	else *value= "0";
+	} else
+		*value= "0";
 	return 0;
 }
 
 int get_process_cpu_time(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct process_args *proc_args= (struct process_args*) data;
-	if(proc_args->cputime!=NULL) *value= proc_args->cputime;
+	if (((struct process_args *)data)->cputime != NULL)
+		*value = ((struct process_args *)data)->cputime;
 	return 0;
 }
 
 int get_process_state(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct process_args *proc_args= (struct process_args*) data;
-	if(strchr(proc_args->state, 'S')!=NULL) *value="Sleeping";
-	else if(strchr(proc_args->state, 'R')!=NULL) *value= "Running";
-	else if(strchr(proc_args->state, 'T')!=NULL) *value= "Stopped";
-	else if(strchr(proc_args->state, 'D')!=NULL) *value= "Uninterruptible";
-	else if(strchr(proc_args->state, 'Z')!=NULL) *value= "Zombie";
-	else *value= proc_args->state;
-
+	if(strchr(((struct process_args *)data)->state, 'S') != NULL) *value = "Sleeping";
+	else if (strchr(((struct process_args *)data)->state, 'R') != NULL) *value = "Running";
+	else if (strchr(((struct process_args *)data)->state, 'T') != NULL) *value = "Stopped";
+	else if (strchr(((struct process_args *)data)->state, 'D') != NULL) *value = "Uninterruptible";
+	else if (strchr(((struct process_args *)data)->state, 'Z') != NULL) *value = "Zombie";
+	else *value = ((struct process_args *)data)->state;
 	return 0;
 }
 
@@ -706,10 +643,11 @@ int browsePocessEntriesInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev
 {
 	json_object *res,  *processes, *fields, *process;
 	char *pid_field, *command_field, *state_field, *mem_size_field, *cpu_time_field, *priority_field, *pid, *command, *mem_size, *state, *cpu_time, *priority, *idx, *idx_last= NULL;
-	int i, id=0;
-	struct process_args proc_args={};
+	int i, id = 0;
+	struct process_args proc_args = {0};
 
 	dmubus_call("router.system", "processes", UBUS_ARGS{{}}, 0, &res);
+	if (!res) return 0;
 	json_object_object_get_ex(res, "fields", &fields);
 	json_object_object_get_ex(res, "processes", &processes);
 	size_t nbre_process = json_object_array_length(processes);
@@ -720,18 +658,16 @@ int browsePocessEntriesInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev
 	priority_field = (char *)dmjson_get_value_in_array_idx(fields, 8, 0, NULL);
 	cpu_time_field = (char *)dmjson_get_value_in_array_idx(fields, 9, 0, NULL);
 
-	if(nbre_process>0){
-		for(i=0; i<nbre_process; i++){
+	if (nbre_process > 0) {
+		for (i = 0; i < nbre_process; i++) {
 			process= json_object_array_get_idx(processes, i);
 			pid = dmjson_get_value(process, 1, pid_field);
 			command = dmjson_get_value(process, 1, command_field);
 			state = dmjson_get_value(process, 1, state_field);
-			mem_size= dmjson_get_value(process, 1, mem_size_field);
-			cpu_time= dmjson_get_value(process, 1, cpu_time_field);
-			priority= dmjson_get_value(process, 1, priority_field);
-
+			mem_size = dmjson_get_value(process, 1, mem_size_field);
+			cpu_time = dmjson_get_value(process, 1, cpu_time_field);
+			priority = dmjson_get_value(process, 1, priority_field);
 			init_process_args(&proc_args, pid, command, mem_size, priority, cpu_time, state);
-
 			idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, ++id);
 			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&proc_args, idx) == DM_STOP)
 				break;
@@ -777,22 +713,22 @@ int browseVcfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, cha
 //Browse VendorLogFile instances
 int browseVlfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	struct uci_section *sys_log_sec, *s, *dm_sec, *del_sec=NULL;
-	char *instance, *last_instance, *log_file,*log_size, *add_value, *lfile;
-	int i=1, n=0;
+	struct uci_section *sys_log_sec, *dm_sec;
+	char *instance, *last_instance, *log_file,*log_size;
+	int i = 1;
+
 	uci_foreach_sections("system", "system", sys_log_sec) {
-		if(!sys_log_sec)
+		if (!sys_log_sec)
 			break;
 		dmuci_get_value_by_section_string(sys_log_sec, "log_file", &log_file);
 		dmuci_get_value_by_section_string(sys_log_sec, "log_size", &log_size);
 		uci_path_foreach_sections(bbfdm, "dmmap", "vlf", dm_sec) {
-			if(dm_sec)
+			if (dm_sec)
 				break;
 		}
-		if(!dm_sec){
+		if (!dm_sec) {
 			update_section_list(DMMAP,"vlf", NULL, i++, NULL, "log_file", log_file, "log_size", log_size);
-		}
-		else{
+		} else {
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dm_sec, "log_file", log_file);
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dm_sec, "log_size", log_size);
 		}

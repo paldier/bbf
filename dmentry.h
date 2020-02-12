@@ -15,7 +15,8 @@
 #ifndef __DMENTRY_H__
 #define __DMENTRY_H__
 
-#include <libbbf_api/dmbbf.h>
+#include <libbbf_api/dmcommon.h>
+
 extern struct list_head head_package_change;
 extern unsigned char dmcli_timetrack;
 extern unsigned char dmcli_evaluatetest;
@@ -56,19 +57,19 @@ void wepkey_cli(int argc, char** argv);
 int free_dynamic_arrays(void);
 
 #ifdef BBF_TR064
-#define DM_ENTRY_UPNP_CHECK_CHANGES(ALARM, EVENT, VERSION) \
+#define DM_ENTRY_UPNP_CHECK_CHANGES() \
 	do { \
 		struct dmctx dmctx_chg = {0}; \
 		dm_ctx_init(&dmctx_chg, DM_UPNP, AMD_2, INSTANCE_MODE_NUMBER); \
-		ALARM = dm_entry_upnp_check_alarmonchange_param(&dmctx_chg); \
+		dm_entry_upnp_check_alarmonchange_param(&dmctx_chg); \
 		dm_ctx_clean(&dmctx_chg); \
 		memset(&dmctx_chg, 0, sizeof(struct dmctx)); \
 		dm_ctx_init(&dmctx_chg, DM_UPNP, AMD_2, INSTANCE_MODE_NUMBER); \
-		EVENT = dm_entry_upnp_check_eventonchange_param(&dmctx_chg); \
+		dm_entry_upnp_check_eventonchange_param(&dmctx_chg); \
 		dm_ctx_clean(&dmctx_chg); \
 		memset(&dmctx_chg, 0, sizeof(struct dmctx)); \
 		dm_ctx_init(&dmctx_chg, DM_UPNP, AMD_2, INSTANCE_MODE_NUMBER); \
-		VERSION = dm_entry_upnp_check_versiononchange_param(&dmctx_chg); \
+		dm_entry_upnp_check_versiononchange_param(&dmctx_chg); \
 		dm_ctx_clean(&dmctx_chg); \
 	} while(0)
 

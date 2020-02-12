@@ -12,8 +12,9 @@
 #ifndef __POWER_MGMT_H
 #define __POWER_MGMT_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMLEAF tSe_PowerManagementParam[];
-//bool dm_powermgmt_enable_set(void);
 
 int get_pwr_mgmt_value_ethapd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int get_pwr_mgmt_value_eee(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

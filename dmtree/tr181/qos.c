@@ -8,10 +8,6 @@
  *	Author: Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
-#include <regex.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmuci.h>
 #include "dmentry.h"
 #include "qos.h"
 
@@ -341,24 +337,24 @@ struct uci_section *get_dup_qos_stats_section_in_dmmap(char *dmmap_package, char
 int browseQoSQueueStatsInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *dmmap_sect;
-	char *questatsout[256], *wnum= NULL, *instance= NULL, *inst_last= NULL, *v, *lastinstancestore= NULL, *instancestore= NULL, dev[50]= "", user[50]= "";
+	char *questatsout[256], *instance = NULL, *inst_last = NULL, *v, *lastinstancestore = NULL, dev[50] = "", user[50] = "";
 	int length, i, ret;
-	struct queuestats queuests= {0}, emptyquestats= {0};
+	struct queuestats queuests = {0}, emptyquestats = {0};
 	regex_t regex1, regex2;
 
 	regcomp(&regex1, queuessts1, 0);
 	regcomp(&regex2, queuessts2, 0);
 	check_create_dmmap_package("dmmap_qos");
 	command_exec_output_to_array("tc -s qdisc", questatsout, &length);
-	for(i=0; i<length; i++){
-		switch(i%3) {
-			case 0: ret= regexec(&regex1, questatsout[i], 0, NULL, 0);
+	for (i = 0; i < length; i++){
+		switch (i%3) {
+			case 0: ret = regexec(&regex1, questatsout[i], 0, NULL, 0);
 				 	if (ret == 0)
-				 		sscanf(questatsout[i], "qdisc noqueue %d: dev %s %s refcnt %d\n", &queuests.noqueue, dev, user, &queuests.refcnt);
+				 		sscanf(questatsout[i], "qdisc noqueue %d: dev %49s %49s refcnt %d\n", &queuests.noqueue, dev, user, &queuests.refcnt);
 				 	else {
 				 		ret= regexec(&regex2, questatsout[i], 0, NULL, 0);
 				 		if (ret == 0)
-				 			sscanf(questatsout[i], "qdisc pfifo_fast %d: dev %s %s refcnt %d\n", &queuests.pfifo_fast, dev, user, &queuests.refcnt);
+				 			sscanf(questatsout[i], "qdisc pfifo_fast %d: dev %49s %49s refcnt %d\n", &queuests.pfifo_fast, dev, user, &queuests.refcnt);
 				 	}
 					strcpy(queuests.dev, dev);
 					break;
@@ -373,13 +369,11 @@ int browseQoSQueueStatsInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev
 
 					if(lastinstancestore != NULL && inst_last !=NULL)
 						inst_last= dmstrdup(lastinstancestore);
-					instance =  handle_update_instance(1, dmctx, &inst_last, update_instance_alias, 3, dmmap_sect, "queuestatsinstance", "queuestatsalias");
+					instance = handle_update_instance(1, dmctx, &inst_last, update_instance_alias, 3, dmmap_sect, "queuestatsinstance", "queuestatsalias");
 					lastinstancestore= dmstrdup(inst_last);
-					instancestore= dmstrdup(instance);
 					if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&queuests, instance) == DM_STOP)
 						goto end;
-					queuests= emptyquestats;
-					dmfree(instance);
+					queuests = emptyquestats;
 					break;
 		}
 	}
@@ -390,17 +384,16 @@ int browseQoSQueueStatsInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev
 int browseQoSShaperInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *wnum = NULL, *wnum_last = NULL;
-	char buf[12];
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
-	char *limitrate= NULL;
+	char *limitrate = NULL;
 	LIST_HEAD(dup_list);
+
 	synchronize_specific_config_sections_with_dmmap("qos", "class", "dmmap_qos", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
 		dmuci_get_value_by_section_string(p->config_section, "limitrate", &limitrate);
-		if(limitrate == NULL || strlen(limitrate) == 0)
+		if (limitrate == NULL || strlen(limitrate) == 0)
 			continue;
-		wnum =  handle_update_instance(1, dmctx, &wnum_last, update_instance_alias, 3, p->dmmap_section, "shaperinstance", "shaperalias");
+		wnum = handle_update_instance(1, dmctx, &wnum_last, update_instance_alias, 3, p->dmmap_section, "shaperinstance", "shaperalias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)p, wnum) == DM_STOP)
 			break;
 	}
@@ -412,13 +405,13 @@ int browseQoSShaperInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_dat
 int addObjQoSClassification(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	struct uci_section *s, *dmmap_qos_classify;
-	char *last_inst= NULL, *sect_name= NULL, *qos_comment, *v;
+	char *last_inst = NULL, *sect_name = NULL, *qos_comment, *v;
 	char ib[8];
-	last_inst= get_last_instance_bbfdm("dmmap_qos", "classify", "classifinstance");
+	last_inst = get_last_instance_bbfdm("dmmap_qos", "classify", "classifinstance");
 	if (last_inst)
-		sprintf(ib, "%s", last_inst);
+		snprintf(ib, sizeof(ib), "%s", last_inst);
 	else
-		sprintf(ib, "%s", "1");
+		snprintf(ib, sizeof(ib), "%s", "1");
 	dmasprintf(&qos_comment, "QoS classify %d", atoi(ib)+1);
 
 	dmuci_add_section("qos", "classify", &s, &sect_name);
@@ -432,10 +425,8 @@ int addObjQoSClassification(char *refparam, struct dmctx *ctx, void *data, char 
 
 int delObjQoSClassification(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct dmmap_dup *p= (struct dmmap_dup*)data;
-	struct uci_section *s = NULL;
-	struct uci_section *ss = NULL;
-	struct uci_section *dmmap_section;
+	struct dmmap_dup *p = (struct dmmap_dup*)data;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_section;
 	int found = 0;
 
 	switch (del_action) {
@@ -462,7 +453,7 @@ int delObjQoSClassification(char *refparam, struct dmctx *ctx, void *data, char 
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_qos", "classify", section_name(ss), &dmmap_section);
 				if(dmmap_section != NULL)
 					dmuci_delete_by_section(dmmap_section, NULL, NULL);
@@ -533,13 +524,14 @@ int delObjQoSPolicer(char *refparam, struct dmctx *ctx, void *data, char *instan
 int addObjQoSQueue(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	struct uci_section *s, *dmmap_qos_class;
-	char *last_inst= NULL, *sect_name= NULL, *qos_comment, *v;
+	char *last_inst = NULL, *sect_name = NULL, *v;
 	char ib[8];
-	last_inst= get_last_instance_bbfdm("dmmap_qos", "class", "queueinstance");
+
+	last_inst = get_last_instance_bbfdm("dmmap_qos", "class", "queueinstance");
 	if (last_inst)
-		sprintf(ib, "%s", last_inst);
+		snprintf(ib, sizeof(ib), "%s", last_inst);
 	else
-		sprintf(ib, "%s", "1");
+		snprintf(ib, sizeof(ib), "%s", "1");
 
 	dmuci_add_section("qos", "class", &s, &sect_name);
 	dmuci_set_value_by_section(s, "packetsize", "1000");
@@ -553,14 +545,12 @@ int addObjQoSQueue(char *refparam, struct dmctx *ctx, void *data, char **instanc
 int delObjQoSQueue(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct dmmap_dup *p= (struct dmmap_dup*)data;
-	struct uci_section *s = NULL;
-	struct uci_section *ss = NULL;
-	struct uci_section *dmmap_section;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_section;
 	int found = 0;
 
 	switch (del_action) {
 		case DEL_INST:
-			if(is_section_unnamed(section_name(p->config_section))){
+			if (is_section_unnamed(section_name(p->config_section))) {
 				LIST_HEAD(dup_list);
 				delete_sections_save_next_sections("dmmap_qos", "class", "queueinstance", section_name(p->config_section), atoi(instance), &dup_list);
 				update_dmmap_sections(&dup_list, "queueinstance", "dmmap_qos", "class");
@@ -573,18 +563,18 @@ int delObjQoSQueue(char *refparam, struct dmctx *ctx, void *data, char *instance
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("qos", "class", s) {
-				if (found != 0){
+				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_qos", "class", section_name(ss), &dmmap_section);
-					if(dmmap_section != NULL)
+					if (dmmap_section != NULL)
 						dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_qos", "class", section_name(ss), &dmmap_section);
-				if(dmmap_section != NULL)
+				if (dmmap_section != NULL)
 					dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
@@ -615,13 +605,14 @@ int delObjQoSQueueStats(char *refparam, struct dmctx *ctx, void *data, char *ins
 int addObjQoSShaper(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	struct uci_section *s, *dmmap_qos_class;
-	char *last_inst= NULL, *sect_name= NULL, *qos_comment, *v;
+	char *last_inst = NULL, *sect_name = NULL, *v;
 	char ib[8];
+
 	last_inst= get_last_instance_bbfdm_without_update("dmmap_qos", "class", "shaperinstance");
 	if (last_inst)
-		sprintf(ib, "%s", last_inst);
+		snprintf(ib, sizeof(ib), "%s", last_inst);
 	else
-		sprintf(ib, "%s", "1");
+		snprintf(ib, sizeof(ib), "%s", "1");
 
 	dmuci_add_section("qos", "class", &s, &sect_name);
 	dmuci_set_value_by_section(s, "limitrate", "1000");
@@ -996,24 +987,23 @@ int get_QoSClassification_Interface(char *refparam, struct dmctx *ctx, void *dat
 {
 	struct dmmap_dup *p= (struct dmmap_dup *) data;
 	struct uci_section *s;
-	char *classes= NULL, **classesarr, *classgroup= NULL, *ifaceclassgrp, *targetclass;
-	int nbre= 0;
+	char *classes = NULL, **classesarr, *classgroup = NULL, *ifaceclassgrp, *targetclass;
 	size_t length;
 
 	dmuci_get_value_by_section_string(p->config_section, "target", &targetclass);
 	uci_foreach_sections("qos", "classgroup", s) {
 		dmuci_get_value_by_section_string(s, "classes", &classes);
-		classesarr= strsplit(classes, " ", &length);
-		if(classes!=NULL && is_array_elt_exist(classesarr, targetclass, length)){
+		classesarr = strsplit(classes, " ", &length);
+		if (classes != NULL && is_array_elt_exist(classesarr, targetclass, length)) {
 			dmasprintf(&classgroup, "%s", section_name(s));
 			break;
 		}
 	}
-	if(classgroup == NULL)
+	if (classgroup == NULL)
 		return 0;
 	uci_foreach_sections("qos", "interface", s) {
 		dmuci_get_value_by_section_string(s, "classgroup", &ifaceclassgrp);
-		if(ifaceclassgrp != NULL && strcmp(ifaceclassgrp, classgroup) == 0){
+		if (ifaceclassgrp != NULL && strcmp(ifaceclassgrp, classgroup) == 0) {
 			adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), section_name(s), value);
 			if (*value == NULL)
 				adm_entry_get_linker_param(ctx, dm_print_path("%s%cPPP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), section_name(s), value);
@@ -3200,16 +3190,15 @@ int set_QoSQueue_TrafficClasses(char *refparam, struct dmctx *ctx, void *data, c
 
 int get_QoSQueue_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct dmmap_dup *p= (struct dmmap_dup *) data;
+	struct dmmap_dup *p = (struct dmmap_dup *)data;
 	struct uci_section *s;
-	char *classes= NULL, **classesarr, *classgroup= NULL, *ifaceclassgrp, *targetclass;
-	int nbre= 0;
+	char *classes = NULL, **classesarr, *classgroup = NULL, *ifaceclassgrp;
 	size_t length;
 
 	uci_foreach_sections("qos", "classgroup", s) {
 		dmuci_get_value_by_section_string(s, "classes", &classes);
-		classesarr= strsplit(classes, " ", &length);
-		if(classes!=NULL && is_array_elt_exist(classesarr, section_name(p->config_section), length)){
+		classesarr = strsplit(classes, " ", &length);
+		if (classes != NULL && is_array_elt_exist(classesarr, section_name(p->config_section), length)){
 			dmasprintf(&classgroup, "%s", section_name(s));
 			break;
 		}
@@ -3218,7 +3207,7 @@ int get_QoSQueue_Interface(char *refparam, struct dmctx *ctx, void *data, char *
 		return 0;
 	uci_foreach_sections("qos", "interface", s) {
 		dmuci_get_value_by_section_string(s, "classgroup", &ifaceclassgrp);
-		if(ifaceclassgrp != NULL && strcmp(ifaceclassgrp, classgroup) == 0){
+		if (ifaceclassgrp != NULL && strcmp(ifaceclassgrp, classgroup) == 0) {
 			adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), section_name(s), value);
 			if (*value == NULL)
 				adm_entry_get_linker_param(ctx, dm_print_path("%s%cPPP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), section_name(s), value);
@@ -3610,16 +3599,15 @@ int set_QoSShaper_Alias(char *refparam, struct dmctx *ctx, void *data, char *ins
 
 int get_QoSShaper_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct dmmap_dup *p= (struct dmmap_dup *) data;
+	struct dmmap_dup *p = (struct dmmap_dup *)data;
 	struct uci_section *s;
-	char *classes= NULL, **classesarr, *classgroup= NULL, *ifaceclassgrp, *targetclass;
-	int nbre= 0;
+	char *classes = NULL, **classesarr, *classgroup = NULL, *ifaceclassgrp;
 	size_t length;
 
 	uci_foreach_sections("qos", "classgroup", s) {
 		dmuci_get_value_by_section_string(s, "classes", &classes);
 		classesarr= strsplit(classes, " ", &length);
-		if(classes!=NULL && is_array_elt_exist(classesarr, section_name(p->config_section), length)){
+		if (classes != NULL && is_array_elt_exist(classesarr, section_name(p->config_section), length)){
 			dmasprintf(&classgroup, "%s", section_name(s));
 			break;
 		}
@@ -3628,7 +3616,7 @@ int get_QoSShaper_Interface(char *refparam, struct dmctx *ctx, void *data, char 
 		return 0;
 	uci_foreach_sections("qos", "interface", s) {
 		dmuci_get_value_by_section_string(s, "classgroup", &ifaceclassgrp);
-		if(ifaceclassgrp != NULL && strcmp(ifaceclassgrp, classgroup) == 0){
+		if (ifaceclassgrp != NULL && strcmp(ifaceclassgrp, classgroup) == 0) {
 			adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), section_name(s), value);
 			if (*value == NULL)
 				adm_entry_get_linker_param(ctx, dm_print_path("%s%cPPP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), section_name(s), value);

@@ -12,13 +12,6 @@
  *
  */
 
-#include <unistd.h>
-#include <ctype.h>
-#include <sys/wait.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmcommon.h>
 #include "dmentry.h"
 #include "dmentryjson.h"
 #include "dmentrylibrary.h"
@@ -29,6 +22,7 @@
 #ifdef BBF_TR064
 #include "upnp_device.h"
 #endif
+
 LIST_HEAD(head_package_change);
 unsigned char dmcli_timetrack = 0;
 unsigned char dmcli_evaluatetest = 0;
@@ -162,9 +156,12 @@ int dm_ctx_clean_sub(struct dmctx *ctx)
 
 int dm_entry_param_method(struct dmctx *ctx, int cmd, char *inparam, char *arg1, char *arg2)
 {
-	int fault = 0;
-	bool setnotif = true, alarm = false, event = false;
-	int err, err2;
+	int err = 0, fault = 0;
+	bool setnotif = true;
+#ifdef BBF_TR064
+	bool alarm = false, event = false;
+	int err2 = 0;
+#endif
 
 	if (check_stats_json_folder(JSON_FOLDER_PATH)) {
 		free_json_dynamic_arrays(tEntry181Obj);
@@ -190,11 +187,10 @@ int dm_entry_param_method(struct dmctx *ctx, int cmd, char *inparam, char *arg1,
 		case CMD_GET_NAME:
 			if (ctx->dm_type == DM_CWMP && ctx->in_param[0] == dm_delim && strlen(ctx->in_param) == 1)
 				fault = FAULT_9005;
-			else if (arg1 && string_to_bool(arg1, &ctx->nextlevel) == 0){
+			else if (arg1 && string_to_bool(arg1, &ctx->nextlevel) == 0)
 				fault = dm_entry_get_name(ctx);
-			} else {
+			else
 				fault = FAULT_9003;
-			}
 			break;
 		case CMD_GET_NOTIFICATION:
 			if (ctx->dm_type == DM_CWMP && ctx->in_param[0] == dm_delim && strlen(ctx->in_param) == 1)
@@ -556,9 +552,9 @@ int dm_entry_upnp_update_version_configuration(struct dmctx *dmctx)
 	if (!tmp || tmp[0] == '\0') {
 		dmuci_add_section(UPNP_CFG, "dm", &s, &tmp);
 	}
-	sprintf(buf, "%d", version);
+	snprintf(buf, sizeof(buf), "%d", version);
 	dmuci_set_value(UPNP_CFG, "@dm[0]", "current_configuration_version", buf);
-	sprintf(buf, "%ld", time(NULL));
+	snprintf(buf, sizeof(buf), "%ld", time(NULL));
 	dmuci_set_value(UPNP_CFG, "@dm[0]", "current_configuration_epochtime", buf);
 
 	return version;
@@ -569,8 +565,7 @@ int dm_entry_upnp_check_versiononchange_param(struct dmctx *pctx)
 	struct dmctx dmctx = {0};
 	struct dm_upnp_enabled_track *p;
 	struct dm_parameter *dm_parameter;
-	int version, fault;
-	int ischange;
+	int version, fault, ischange = 0;
 	char *all_instances;
 
 	list_for_each_entry(p, &list_upnp_enabled_version, list) {
@@ -603,7 +598,7 @@ int dm_entry_upnp_check_versiononchange_param(struct dmctx *pctx)
 			char *tmp;
 			struct uci_section *s = NULL;
 			version = dm_entry_upnp_update_version_configuration(&dmctx);
-			sprintf(buf, "%d", version);
+			snprintf(buf, sizeof(buf), "%d", version);
 			if (p->key) {
 				dmuci_set_value(UPNP_CFG, p->key, "version", buf);
 			}
@@ -640,29 +635,29 @@ int upnp_state_variables_init(struct dmctx *dmctx)
 	dmuci_get_option_value_string(UPNP_CFG, "@dm[0]", "supported_datamodel_version", &v);
 	n = atoi(v);
 	if (n != UPNP_SUPPORTED_DATAMODEL_VERSION) {
-		sprintf(buf, "%d", UPNP_SUPPORTED_DATAMODEL_VERSION);
+		snprintf(buf, sizeof(buf), "%d", UPNP_SUPPORTED_DATAMODEL_VERSION);
 		dmuci_set_value(UPNP_CFG, "@dm[0]", "supported_datamodel_version", buf);
-		sprintf(buf, "%ld", time(NULL));
+		snprintf(buf, sizeof(buf), "%ld", time(NULL));
 		dmuci_set_value(UPNP_CFG, "@dm[0]", "supported_datamodel_epochtime", buf);
 	}
 	dmuci_get_option_value_string(UPNP_CFG, "@dm[0]", "supported_parameters_version", &v);
 	n = atoi(v);
 	if (n != UPNP_SUPPORTED_PARAMETERS_VERSION) {
-		sprintf(buf, "%d", UPNP_SUPPORTED_PARAMETERS_VERSION);
+		snprintf(buf, sizeof(buf), "%d", UPNP_SUPPORTED_PARAMETERS_VERSION);
 		dmuci_set_value(UPNP_CFG, "@dm[0]", "supported_parameters_version", buf);
-		sprintf(buf, "%ld", time(NULL));
+		snprintf(buf, sizeof(buf), "%ld", time(NULL));
 		dmuci_set_value(UPNP_CFG, "@dm[0]", "supported_parameters_epochtime", buf);
 	}
 	dmuci_get_option_value_string(UPNP_CFG, "@dm[0]", "current_configuration_version", &v);
 	if (*v == '\0') {
 		dmuci_set_value(UPNP_CFG, "@dm[0]", "current_configuration_version", "0");
-		sprintf(buf, "%ld", time(NULL));
+		snprintf(buf, sizeof(buf), "%ld", time(NULL));
 		dmuci_set_value(UPNP_CFG, "@dm[0]", "current_configuration_epochtime", buf);
 	}
 	dmuci_get_option_value_string(UPNP_CFG, "@dm[0]", "attribute_values_version", &v);
 	if (*v == '\0') {
 		dmuci_set_value(UPNP_CFG, "@dm[0]", "attribute_values_version", "0");
-		sprintf(buf, "%ld", time(NULL));
+		snprintf(buf, sizeof(buf), "%ld", time(NULL));
 		dmuci_set_value(UPNP_CFG, "@dm[0]", "attribute_values_epochtime", buf);
 	}
 
@@ -687,7 +682,7 @@ int dm_entry_upnp_get_supported_parameters_update(struct dmctx *dmctx, char **va
 		time_value = atoi(v);
 		char s_now[sizeof "AAAA-MM-JJTHH:MM:SS.000Z"];
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S.000Z", localtime(&time_value));
-		sprintf(csv, "%d,%s", UPNP_SUPPORTED_PARAMETERS_VERSION, s_now);
+		snprintf(csv, sizeof(csv), "%d,%s", UPNP_SUPPORTED_PARAMETERS_VERSION, s_now);
 	}
 
 	return 0;
@@ -710,7 +705,7 @@ int dm_entry_upnp_get_supported_datamodel_update(struct dmctx *dmctx, char **val
 		time_value = atoi(v);
 		char s_now[sizeof "AAAA-MM-JJTHH:MM:SS.000Z"];
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S.000Z", localtime(&time_value));
-		sprintf(csv, "%d,%s", UPNP_SUPPORTED_DATAMODEL_VERSION, s_now);
+		snprintf(csv, sizeof(csv), "%d,%s", UPNP_SUPPORTED_DATAMODEL_VERSION, s_now);
 	}
 
 	return 0;
@@ -734,7 +729,7 @@ int dm_entry_upnp_get_attribute_values_update(struct dmctx *dmctx, char **value)
 		time_value = atoi(v);
 		char s_now[sizeof "AAAA-MM-JJTHH:MM:SS.000Z"];
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S.000Z", localtime(&time_value));
-		sprintf(csv, "%s,%s", s, s_now);
+		snprintf(csv, sizeof(csv), "%s,%s", s, s_now);
 	}
 
 	return 0;
@@ -758,7 +753,7 @@ int dm_entry_upnp_get_configuration_update(struct dmctx *dmctx, char **value)
 		time_value = atoi(v);
 		char s_now[sizeof "AAAA-MM-JJTHH:MM:SS.000Z"];
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S.000Z", localtime(&time_value));
-		sprintf(csv, "%s,%s", s, s_now);
+		snprintf(csv, sizeof(csv), "%s,%s", s, s_now);
 	}
 
 	return 0;
@@ -917,11 +912,11 @@ int cli_output_dm_result(struct dmctx *dmctx, int fault, int cmd, int out)
 		list_for_each_entry(n, &dmctx->list_parameter, list) {
 			char alrm[32] = "", evnt[32] = "", btype[16], bversion[32] = "", *stype = NULL;
 			if (n->flags & DM_PARAM_ALARAM_ON_CHANGE)
-				strcpy(alrm, ", \"alarmOnChange\": \"1\"");
+				strncpy(alrm, ", \"alarmOnChange\": \"1\"", sizeof(alrm)-1);
 			if (n->flags & DM_PARAM_EVENT_ON_CHANGE)
 				strcpy(evnt, ", \"eventOnChange\": \"1\"");
 			if (n->version)
-				sprintf(bversion, ", \"version\": \"%s\"", n->version);
+				snprintf(bversion, sizeof(bversion), ", \"version\": \"%s\"", n->version);
 			switch (n->flags & NODE_DATA_ATTRIBUTE_TYPEMASK) {
 			case NODE_DATA_ATTRIBUTE_TYPEINT:
 				stype = "int";
@@ -946,7 +941,7 @@ int cli_output_dm_result(struct dmctx *dmctx, int fault, int cmd, int out)
 				break;
 			}
 			if (stype)
-				sprintf(btype, ",  \"type\": \"%s\"", stype);
+				snprintf(btype, sizeof(btype), ",  \"type\": \"%s\"", stype);
 			fprintf (stdout, "{ \"parameter\": \"%s\", \"access\": \"%s\"%s%s%s%s}\n", n->name, n->data, btype, evnt, alrm, bversion);
 		}
 		break;
@@ -996,7 +991,7 @@ int cli_output_dm_result(struct dmctx *dmctx, int fault, int cmd, int out)
 			if (*bwrite)
 				bwrite[strlen(bwrite) - 1] = '\0';
 			if (n->flags & DM_FACTORIZED)
-				sprintf(bfac, ", \"factorized\": \"1\"");
+				snprintf(bfac, sizeof(bfac), ", \"factorized\": \"1\"");
 			fprintf (stdout, "{ \"ACLDataPath\": \"%s\", \"List\": \"%s\", \"Read\": \"%s\", \"Write\": \"%s\"%s }\n", n->name, blist, bread, bwrite, bfac);
 		}
 		break;
@@ -1064,41 +1059,33 @@ static char *parse_arg_r(char *pch, char **last)
 		return NULL;
 	}
 
-	for(; *pch != '\0'; pch++)
-	{
+	for(; *pch != '\0'; pch++) {
 		if(*pch == ' ' || *pch == '\t')
 			continue;
-		if (*pch == '"')
-		{
+		if (*pch == '"') {
 			char *s = strchr(++pch, '"');
 			if(s) {
 				*s = '\0';
 				*last = s + 1;
 				return pch;
-			}
-			else {
+			} else {
 				*last = NULL;
 				return NULL;
 			}
-		}
-		else
-		{
+		} else {
 			char *s = strchr(pch, ' ');
 			if(s) {
 				*s = '\0';
 				 *last = s + 1;
-			}
-			else {
+			} else {
 				s = strchr(pch, '\t');
 				if(s) {
 					*s = '\0';
 					 *last = s + 1;
-				}
-				else {
+				} else {
 					*last = NULL;
 				}
 			}
-
 			return pch;
 		}
 	}
@@ -1130,14 +1117,16 @@ static int dmentry_external_cmd(char **argv)
 void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned int amd_version, unsigned int instance_mode)
 {
 	struct dmctx cli_dmctx = {0};
-	int output = 1, dmrpc;
+	int fault = 0, output = 1;
 	char *param, *next_level, *parameter_key, *value, *cmd;
-	int fault = 0, status = -1;
 	bool set_fault = false;
 	long ms; // Milliseconds
 	time_t s;  // Seconds
 	struct timespec tstart, tend;
 	unsigned char apply_services = 0;
+#ifdef BBF_TR064
+	int dmrpc = 0;
+#endif
 
 	if (dmcli_timetrack)
 		clock_gettime(CLOCK_REALTIME, &tstart);
@@ -1153,7 +1142,6 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 	/* GET NAME */
 	if (strcmp(cmd, "get_name") == 0) {
 		if (argc < 6) goto invalid_arguments;
-		dmrpc = CMD_GET_NAME;
 		param = argv[4];
 		next_level =argv[5];
 		fault = dm_entry_param_method(&cli_dmctx, CMD_GET_NAME, param, next_level, NULL);
@@ -1162,7 +1150,6 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 	/* GET VALUE */
 	else if (strcmp(cmd, "get_value") == 0) {
 		if (argc < 5) goto invalid_arguments;
-		dmrpc = CMD_GET_VALUE;
 		param = argv[4];
 		fault = dm_entry_param_method(&cli_dmctx, CMD_GET_VALUE, param, NULL, NULL);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_GET_VALUE, output);
@@ -1170,7 +1157,6 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 	/* GET NOTIFICATION */
 	else if (strcmp(cmd, "get_notification") == 0) {
 		if (argc < 5) goto invalid_arguments;
-		dmrpc = CMD_GET_NOTIFICATION;
 		param = argv[4];
 		fault = dm_entry_param_method(&cli_dmctx, CMD_GET_NOTIFICATION, param, NULL, NULL);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_GET_NOTIFICATION, output);
@@ -1178,7 +1164,6 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 	/* SET VALUE */
 	else if (strcmp(cmd, "set_value") == 0) {
 		if (argc < 7 || (argc % 2) == 0) goto invalid_arguments;
-		dmrpc = CMD_SET_VALUE;
 		int i;
 		for (i = 5; i < argc; i+=2) {
 			param = argv[i];
@@ -1196,7 +1181,6 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 	/* SET NOTIFICATION */
 	else if (strcmp(cmd, "set_notification") == 0) {
 		if (argc < 6 || (argc % 2) != 0) goto invalid_arguments;
-		dmrpc = CMD_SET_NOTIFICATION;
 		int i;
 		for (i = 4; i < argc; i+=2) {
 			param = argv[i];
@@ -1212,8 +1196,7 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 	/* ADD OBJECT */
 	else if (strcmp(cmd, "add_object") == 0) {
 		if (argc < 6) goto invalid_arguments;
-		dmrpc = CMD_ADD_OBJECT;
-		param =argv[5];
+		param = argv[5];
 		parameter_key =argv[4];
 		fault = dm_entry_param_method(&cli_dmctx, CMD_ADD_OBJECT, param, parameter_key, NULL);
 		if (!fault)
@@ -1222,9 +1205,8 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 	}
 	/* DEL OBJECT */
 	else if (strcmp(cmd, "delete_object") == 0) {
-		dmrpc = CMD_DEL_OBJECT;
 		if (argc < 6) goto invalid_arguments;
-		param =argv[5];
+		param = argv[5];
 		parameter_key =argv[4];
 		fault = dm_entry_param_method(&cli_dmctx, CMD_DEL_OBJECT, param, parameter_key, NULL);
 		if (!fault)
@@ -1233,7 +1215,6 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 	}
 	/* INFORM */
 	else if (strcmp(cmd, "inform") == 0) {
-		dmrpc = CMD_INFORM;
 		fault = dm_entry_param_method(&cli_dmctx, CMD_INFORM, "", NULL, NULL);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_INFORM, output);
 	}
@@ -1311,7 +1292,7 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 			if (argc >= 6) {
 				dm_ctx_init_sub(&set_dmctx, dmtype, amd_version, instance_mode);
 				for (i = 5; i < argc; i+=2) {
-					sprintf(buf, "%s%s%c%s", param, cli_dmctx.addobj_instance, dm_delim, argv[i]); // concatenate obj path + instance + sub param
+					snprintf(buf, sizeof(buf), "%s%s%c%s", param, cli_dmctx.addobj_instance, dm_delim, argv[i]); // concatenate obj path + instance + sub param
 					value = argv[i+1];
 					dm_entry_param_method(&set_dmctx, CMD_UPNP_SET_VALUES, buf, value, NULL);
 				}
@@ -1389,39 +1370,32 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 		cli_output_dm_upnp_variable_state(&cli_dmctx, CMD_UPNP_GET_ATTRIBUTE_VALUES_UPDATE, var);
 	}
 	else if (strcmp(cmd, "upnp_load_enabled_parametrs_track") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_LOAD_ENABLED_PARAMETRS_TRACK;
 		dm_entry_upnp_load_tracked_parameters(&cli_dmctx);
 	}
 	else if (strcmp(cmd, "upnp_get_enabled_parametrs_alarm") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_GET_ENABLED_PARAMETRS_ALARM;
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_GET_ENABLED_PARAMETRS_ALARM, output);
 	}
 	else if (strcmp(cmd, "upnp_get_enabled_parametrs_event") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_GET_ENABLED_PARAMETRS_EVENT;
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_GET_ENABLED_PARAMETRS_EVENT, output);
 	}
 	else if (strcmp(cmd, "upnp_get_enabled_parametrs_version") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_GET_ENABLED_PARAMETRS_VERSION;
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_GET_ENABLED_PARAMETRS_VERSION, output);
 	}
 	else if (strcmp(cmd, "upnp_check_changed_parametrs_alarm") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_CHECK_CHANGED_PARAMETRS_ALARM;
 		dm_entry_upnp_check_alarmonchange_param(&cli_dmctx);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_CHECK_CHANGED_PARAMETRS_ALARM, output);
 	}
 	else if (strcmp(cmd, "upnp_check_changed_parametrs_event") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_CHECK_CHANGED_PARAMETRS_EVENT;
 		dm_entry_upnp_check_eventonchange_param(&cli_dmctx);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_CHECK_CHANGED_PARAMETRS_EVENT, output);
 	}
 	else if (strcmp(cmd, "upnp_check_changed_parametrs_version") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_CHECK_CHANGED_PARAMETRS_VERSION;
 		dm_entry_upnp_check_versiononchange_param(&cli_dmctx);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_CHECK_CHANGED_PARAMETRS_VERSION, output);
@@ -1437,13 +1411,12 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 	}
 
 	if (!fault) {
-		int ualarm, uversion, uevent;
 #ifdef BBF_TR064
 		switch (dmrpc) {
 		case CMD_UPNP_SET_VALUES:
 		case CMD_UPNP_DEL_INSTANCE:
 		case CMD_UPNP_ADD_INSTANCE:
-			DM_ENTRY_UPNP_CHECK_CHANGES(ualarm, uevent, uversion);
+			DM_ENTRY_UPNP_CHECK_CHANGES();
 			break;
 		case CMD_UPNP_SET_ATTRIBUTES:
 			DM_ENTRY_UPNP_LOAD_TRACKED_PARAMETERS();
@@ -1469,19 +1442,18 @@ void dm_execute_cli_shell(int argc, char** argv, unsigned int dmtype, unsigned i
 
 invalid_arguments:
 	dm_ctx_clean(&cli_dmctx);
-	fprintf(stdout, "Invalid arguments!\n");;
+	fprintf(stdout, "Invalid arguments!\n");
 }
 
 int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_version, unsigned int instance_mode)
 {
 	struct dmctx cli_dmctx = {0};
-	int fault = 0, set_fault = 0;
-	int i, dmrpc;
-	char *param;
-	char *value;
-	char *parameter_key;
-	char *notifset;
+	int fault = 0, set_fault = 0, i;
+	char *param, *value, *parameter_key, *notifset;
 	unsigned char apply_services = 0;
+#ifdef BBF_TR064
+	int dmrpc = 0;
+#endif
 
 	if (argc < 3) {
 		fprintf(stderr, "Wrong arguments!\n");
@@ -1492,7 +1464,6 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 	dm_ctx_init(&cli_dmctx, dmtype, amd_version, instance_mode);
 	if (strcmp(argv[2], "get_value") == 0) {
 		char *param = "";
-		dmrpc = CMD_GET_VALUE;
 		if (argc >= 4)
 			param = argv[3];
 		fault = dm_entry_param_method(&cli_dmctx, CMD_GET_VALUE, param, NULL, NULL);
@@ -1501,13 +1472,11 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 	else if (strcmp(argv[2], "get_name") == 0) {
 		if (argc < 5)
 			goto invalid_arguments;
-		dmrpc = CMD_GET_NAME;
 		fault = dm_entry_param_method(&cli_dmctx, CMD_GET_NAME, argv[3], argv[4], NULL);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_GET_NAME, 1);
 	}
 	else if (strcmp(argv[2], "get_notification") == 0) {
 		char *param = "";
-		dmrpc = CMD_GET_NOTIFICATION;
 		if (argc >= 4)
 			param = argv[3];
 		fault = dm_entry_param_method(&cli_dmctx, CMD_GET_NOTIFICATION, param, NULL, NULL);
@@ -1516,9 +1485,7 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 	else if (strcmp(argv[2], "set_value") == 0) {
 		if (argc < 6 || (argc % 2) != 0)
 			goto invalid_arguments;
-
-		dmrpc = CMD_SET_VALUE;
-		for (i = 4; i < argc; i+=2) {
+		for (i = 4; i < argc; i += 2) {
 			param = argv[i];
 			value = argv[i+1];
 			fault = dm_entry_param_method(&cli_dmctx, CMD_SET_VALUE, param, value, NULL);
@@ -1534,8 +1501,7 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 	else if (strcmp(argv[2], "set_notification") == 0) {
 		if (argc < 6 || (argc % 3) != 0)
 			goto invalid_arguments;
-		dmrpc = CMD_SET_NOTIFICATION;
-		for (i=3; i<argc; i+=3) {
+		for (i = 3; i < argc; i += 3) {
 			param = argv[i];
 			value = argv[i+1];
 			notifset = argv[i+2];
@@ -1548,14 +1514,12 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 		cli_output_dm_result(&cli_dmctx, fault, CMD_SET_NOTIFICATION, 1);
 	}
 	else if (strcmp(argv[2], "inform") == 0 || strcmp(argv[2], "inform_parameter") == 0) {
-		dmrpc = CMD_INFORM;
 		fault = dm_entry_param_method(&cli_dmctx, CMD_INFORM, "", NULL, NULL);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_INFORM, 1);
 	}
 	else if (strcmp(argv[2], "add_obj") == 0) {
 		if (argc < 5)
 			goto invalid_arguments;
-		dmrpc = CMD_ADD_OBJECT;
 		param = argv[3];
 		parameter_key = argv[4];
 		fault = dm_entry_param_method(&cli_dmctx, CMD_ADD_OBJECT, param, parameter_key, NULL);
@@ -1566,7 +1530,6 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 	else if (strcmp(argv[2], "del_obj") == 0) {
 		if (argc < 5)
 			goto invalid_arguments;
-		dmrpc = CMD_DEL_OBJECT;
 		param =argv[3];
 		parameter_key =argv[4];
 		fault = dm_entry_param_method(&cli_dmctx, CMD_DEL_OBJECT, param, parameter_key, NULL);
@@ -1577,7 +1540,6 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 	else if (strcmp(argv[2], "external_command") == 0) {
 		if (argc < 4)
 			goto invalid_arguments;
-		dmrpc = CMD_EXTERNAL_COMMAND;
 		argv[argc] = NULL;
 		dmentry_external_cmd(&argv[3]);
 	}
@@ -1620,7 +1582,7 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 			goto invalid_arguments;
 
 		dmrpc = CMD_UPNP_SET_VALUES;
-		for (i = 3; i < argc; i+=2) {
+		for (i = 3; i < argc; i += 2) {
 			param = argv[i];
 			value = argv[i+1];
 			fault = dm_entry_param_method(&cli_dmctx, CMD_UPNP_SET_VALUES, param, value, NULL);
@@ -1628,7 +1590,7 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 		}
 		if (!fault) {
 			apply_services = 1;
-			fault = dm_entry_apply(&cli_dmctx, CMD_UPNP_SET_VALUES, parameter_key, NULL);
+			fault = dm_entry_apply(&cli_dmctx, CMD_UPNP_SET_VALUES, NULL, NULL);
 		}
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_SET_VALUES, 1);
 	}
@@ -1669,7 +1631,7 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 			if (argc >= 5) {
 				dm_ctx_init_sub(&set_dmctx, dmtype, amd_version, instance_mode);
 				for (i = 4; i < argc; i+=2) {
-					sprintf(buf, "%s%s%c%s", param, cli_dmctx.addobj_instance, dm_delim, argv[i]); // concatenate obj path + instance + sub param
+					snprintf(buf, sizeof(buf), "%s%s%c%s", param, cli_dmctx.addobj_instance, dm_delim, argv[i]); // concatenate obj path + instance + sub param
 					value = argv[i+1];
 					dm_entry_param_method(&set_dmctx, CMD_UPNP_SET_VALUES, buf, value, NULL);
 				}
@@ -1731,39 +1693,32 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 		cli_output_dm_upnp_variable_state(&cli_dmctx, CMD_UPNP_GET_ATTRIBUTE_VALUES_UPDATE, var);
 	}
 	else if (strcmp(argv[2], "upnp_load_enabled_parametrs_track") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_LOAD_ENABLED_PARAMETRS_TRACK;
 		dm_entry_upnp_load_tracked_parameters(&cli_dmctx);
 	}
 	else if (strcmp(argv[2], "upnp_get_enabled_parametrs_alarm") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_GET_ENABLED_PARAMETRS_ALARM;
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_GET_ENABLED_PARAMETRS_ALARM, 1);
 	}
 	else if (strcmp(argv[2], "upnp_get_enabled_parametrs_event") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_GET_ENABLED_PARAMETRS_EVENT;
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_GET_ENABLED_PARAMETRS_EVENT, 1);
 	}
 	else if (strcmp(argv[2], "upnp_get_enabled_parametrs_version") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_GET_ENABLED_PARAMETRS_VERSION;
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_GET_ENABLED_PARAMETRS_VERSION, 1);
 	}
 	else if (strcmp(argv[2], "upnp_check_changed_parametrs_alarm") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_CHECK_CHANGED_PARAMETRS_ALARM;
 		dm_entry_upnp_check_alarmonchange_param(&cli_dmctx);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_CHECK_CHANGED_PARAMETRS_ALARM, 1);
 	}
 	else if (strcmp(argv[2], "upnp_check_changed_parametrs_event") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_CHECK_CHANGED_PARAMETRS_EVENT;
 		dm_entry_upnp_check_eventonchange_param(&cli_dmctx);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_CHECK_CHANGED_PARAMETRS_EVENT, 1);
 	}
 	else if (strcmp(argv[2], "upnp_check_changed_parametrs_version") == 0) {
-		char *var;
 		dmrpc = CMD_UPNP_CHECK_CHANGED_PARAMETRS_VERSION;
 		dm_entry_upnp_check_versiononchange_param(&cli_dmctx);
 		cli_output_dm_result(&cli_dmctx, fault, CMD_UPNP_CHECK_CHANGED_PARAMETRS_VERSION, 1);
@@ -1779,13 +1734,12 @@ int dmentry_cli(int argc, char *argv[], unsigned int dmtype, unsigned int amd_ve
 	}
 
 	if (!fault) {
-		int ualarm, uversion, uevent;
 #ifdef BBF_TR064
 		switch (dmrpc) {
 		case CMD_UPNP_SET_VALUES:
 		case CMD_UPNP_DEL_INSTANCE:
 		case CMD_UPNP_ADD_INSTANCE:
-			DM_ENTRY_UPNP_CHECK_CHANGES(ualarm, uevent, uversion);
+			DM_ENTRY_UPNP_CHECK_CHANGES();
 			break;
 		case CMD_UPNP_SET_ATTRIBUTES:
 			DM_ENTRY_UPNP_LOAD_TRACKED_PARAMETERS();
@@ -1805,9 +1759,7 @@ invalid_arguments:
 void dm_execute_cli_command(char *file, unsigned int dmtype, unsigned int amd_version, unsigned int instance_mode)
 {
 	FILE *fp;
-	char *argv[64];
-	char buf[2048], dbuf[2048];
-	char *pch, *pchr;
+	char *argv[64], buf[2048], dbuf[2048], *pch, *pchr;
 	int argc, len, i=0;
 	long ms; // Milliseconds
 	time_t s;  // Seconds
@@ -1820,8 +1772,7 @@ void dm_execute_cli_command(char *file, unsigned int dmtype, unsigned int amd_ve
 			fflush(stderr);
 			return;
 		}
-	}
-	else {
+	} else {
 		fp = stdin;
 	}
 
@@ -1853,7 +1804,6 @@ void dm_execute_cli_command(char *file, unsigned int dmtype, unsigned int amd_ve
 			printf(DM_PROMPT" "); fflush(stdout);
 			continue;
 		}
-
 		i++;
 
 		strcpy(dbuf, buf);
@@ -1863,7 +1813,7 @@ void dm_execute_cli_command(char *file, unsigned int dmtype, unsigned int amd_ve
 			if (*pch == '"')
 				pch++;
 			len = strlen(pch);
-			if (len>0 && pch[len-1] == '"')
+			if (len > 0 && pch[len-1] == '"')
 				pch[len-1] = '\0';
 			argv[argc++] = pch;
 		}
@@ -1871,16 +1821,15 @@ void dm_execute_cli_command(char *file, unsigned int dmtype, unsigned int amd_ve
 			if (!pch || pch[0] != '#') {
 				fprintf(stdout, "%s\n", dbuf);
 				fflush(stdout);
-			}
-			else {
+			} else {
 				fprintf(stdout, "\n");
 				fflush(stdout);
 			}
 		}
-		if (argc>2) {
+		if (argc > 2) {
 			char testref[32] = "";
 			if (dmcli_evaluatetest)
-				sprintf(testref, "Ref: %s - ", argv[1]);
+				snprintf(testref, sizeof(testref), "Ref: %s - ", argv[1]);
 			if (dmcli_timetrack || dmcli_evaluatetest) {
 				fprintf(stdout, "-----------------------------\n");
 				fprintf(stdout, "[%s%04d] %s\n", testref, i, dbuf);
@@ -1902,8 +1851,7 @@ void dm_execute_cli_command(char *file, unsigned int dmtype, unsigned int amd_ve
 					fprintf(stdout, "-----------------------------\n");
 					fflush(stdout);
 				}
-			}
-			else {
+			} else {
 				fprintf(stdout, "Type help for help\n");
 				fflush(stdout);
 			}
@@ -1943,19 +1891,17 @@ void wepkey_cli(int argc, char** argv)
 		char strk64[4][11];
 		wepkey64(passphrase, strk64);
 		cli_output_wepkey64(strk64);
-	}
-	else if (strcmp(strength, "128") == 0) {
+	} else if (strcmp(strength, "128") == 0) {
 		char strk128[27];
 		wepkey128(passphrase, strk128);
 		cli_output_wepkey128(strk128);
-	}
-	else {
+	} else {
 		goto invalid_arguments;
 	}
 	return;
 
 invalid_arguments:
-	fprintf(stdout, "Invalid arguments!\n");;
+	fprintf(stdout, "Invalid arguments!\n");
 }
 
 int free_dynamic_arrays(void)

@@ -9,13 +9,6 @@
  *
  */
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <ctype.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <dlfcn.h>
-#include <libbbf_api/dmcommon.h>
 #include "dmentrylibrary.h"
 #include "dmoperate.h"
 
@@ -35,7 +28,7 @@ static int get_stats_library_folder(char *folder_path, int *file_count, unsigned
 		while ((entry = readdir(dirp)) != NULL) {
 			if ((entry->d_type == DT_REG) && (strstr(entry->d_name, ".so"))) {
 				filecount++;
-				sprintf(buf, "%s/%s", folder_path, entry->d_name);
+				snprintf(buf, sizeof(buf), "%s/%s", folder_path, entry->d_name);
 				if (!stat(buf, &stats)) {
 					filesize = (filesize + stats.st_size) / 2;
 					filedate = (filedate + stats.st_mtime) / 2;
@@ -61,7 +54,7 @@ int check_stats_library_folder(char *library_folder_path)
 	if (!get_stats_library_folder(library_folder_path, &file_count, &size, &date))
 		return 0;
 
-	sprintf(str, "count:%d,sizes:%lu,date:%lu", file_count, size, date);
+	snprintf(str, sizeof(str), "count:%d,sizes:%lu,date:%lu", file_count, size, date);
 	if (strcmp(str, library_hash)) {
 		strcpy(library_hash, str);
 		return 1;
@@ -135,7 +128,7 @@ int load_library_dynamic_arrays(struct dmctx *ctx)
 				char buf[32] = "";
 				int i;
 
-				sprintf(buf, "%s/%s", LIBRARY_FOLDER_PATH, ent->d_name);
+				snprintf(buf, sizeof(buf), "%s/%s", LIBRARY_FOLDER_PATH, ent->d_name);
 				handle = dlopen(buf, RTLD_LAZY);
 				if (!handle) continue;
 

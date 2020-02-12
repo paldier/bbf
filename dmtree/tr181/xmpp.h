@@ -13,6 +13,8 @@
 #ifndef __XMPP_H
 #define __XMPP_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tXMPPObj[];
 extern DMLEAF tXMPPParams[];
 extern DMLEAF tXMPPConnectionParams[];

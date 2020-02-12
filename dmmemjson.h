@@ -9,16 +9,13 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <libubox/list.h>
-
 #ifndef __DMMEMJSON_H
 #define __DMMEMJSON_H
 
-struct dmmemjson {
+#include <libbbf_api/dmcommon.h>
+
+struct dmmemjson
+{
 	struct list_head list;
 	char mem[0];
 };

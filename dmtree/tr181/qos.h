@@ -11,6 +11,8 @@
 #ifndef __QOS_H
 #define __QOS_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tQoSObj[];
 extern DMLEAF tQoSParams[];
 extern DMLEAF tQoSClassificationParams[];
@@ -23,10 +25,9 @@ extern DMLEAF tQoSShaperParams[];
 
 #define queuessts1 "^qdisc noqueue [0-9]*: dev [[:alnum:]]* [[:alnum:]]* refcnt [0-9]*"
 #define queuessts2 "^qdisc pfifo_fast [0-9]*: dev [[:alnum:]]* [[:alnum:]]* refcnt [0-9]*"
-//#define queuessts3 "^[ ]*Sent [0-9]* bytes [0-9]* pkt (dropped [0-9]*, overlimits [0-9]* requeues [0-9]*)"
-//#define queuessts4 "^[ ]*backlog [0-9]*b [0-9]*p requeues [0-9]*"
 
-struct queuestats {
+struct queuestats
+{
 	struct uci_section *dmsect;
 	char dev[50];
 	char user[50];

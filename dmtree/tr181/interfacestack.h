@@ -11,6 +11,8 @@
 #ifndef __INTERFACESTACK_H
 #define __INTERFACESTACK_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMLEAF tInterfaceStackParams[];
 
 struct interfacestack_data {

@@ -11,7 +11,7 @@
 #ifndef __USB_H
 #define __USB_H
 
-#include <regex.h>
+#include <libbbf_api/dmcommon.h>
 
 extern DMOBJ tUSBObj[];
 extern DMLEAF tUSBParams[];
@@ -33,14 +33,16 @@ extern DMLEAF tUSBUSBHostsHostDeviceConfigurationInterfaceParams[];
 
 regex_t regex1, regex2;
 
-struct usb_port {
+struct usb_port
+{
 	struct uci_section *dm_usb_port;
 	char *folder_name;
 	char *folder_path;
 	struct uci_section *dmsect;
 };
 
-struct usb_interface {
+struct usb_interface
+{
 	struct uci_section *dm_usb_iface;
 	char *iface_name;
 	char *iface_path;

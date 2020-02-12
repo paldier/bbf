@@ -10,13 +10,6 @@
  *
  */
 
-#include <uci.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
 #include "dmentry.h"
 #include "nat.h"
 
@@ -65,8 +58,8 @@ DMLEAF tNATPortMappingParams[] = {
 };
 
 /*************************************************************
- * ADD DEL OBJ
-/*************************************************************/
+* ADD DEL OBJ
+**************************************************************/
 int add_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char *value, *v, *inst, name[16];
@@ -74,7 +67,7 @@ int add_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *data, char
 
 	check_create_dmmap_package("dmmap_firewall");
 	inst = get_last_instance_bbfdm("dmmap_firewall", "zone", "interface_setting_instance");
-	sprintf(name, "iface_set_%d", inst ? (atoi(inst)+1) : 1);
+	snprintf(name, sizeof(name), "iface_set_%d", inst ? (atoi(inst)+1) : 1);
 	dmuci_add_section_and_rename("firewall", "zone", &s, &value);
 	dmuci_set_value_by_section(s, "input", "REJECT");
 	dmuci_set_value_by_section(s, "output", "ACCEPT");
@@ -91,31 +84,27 @@ int add_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *data, char
 int delete_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	int found = 0;
-	char *lan_name;
-	struct uci_section *s = NULL, *ss = NULL, *dmmap_firewall= NULL;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_firewall = NULL;
 
 	switch (del_action) {
 		case DEL_INST:
 			get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name((struct uci_section *)data), &dmmap_firewall);
-			if(dmmap_firewall != NULL)
-				dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+			if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("firewall", "zone", s) {
-				if (found != 0){
+				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name(ss), &dmmap_firewall);
-					if(dmmap_firewall != NULL)
-						dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+					if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name(ss), &dmmap_firewall);
-				if(dmmap_firewall != NULL)
-					dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+				if(dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			return 0;
@@ -130,7 +119,7 @@ int add_NAT_PortMapping(char *refparam, struct dmctx *ctx, void *data, char **in
 
 	check_create_dmmap_package("dmmap_firewall");
 	inst = get_last_instance_bbfdm("dmmap_firewall", "redirect", "port_mapping_instance");
-	sprintf(name, "port_map_%d", inst ? (atoi(inst)+1) : 1);
+	snprintf(name, sizeof(name), "port_map_%d", inst ? (atoi(inst)+1) : 1);
 	dmuci_add_section_and_rename("firewall", "redirect", &s, &value);
 	dmuci_set_value_by_section(s, "name", name);
 	dmuci_set_value_by_section(s, "src", "wan");
@@ -147,31 +136,27 @@ int add_NAT_PortMapping(char *refparam, struct dmctx *ctx, void *data, char **in
 int delete_NAT_PortMapping(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	int found = 0;
-	char *lan_name;
-	struct uci_section *s = NULL, *ss = NULL, *dmmap_firewall= NULL;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_firewall = NULL;
 
 	switch (del_action) {
 		case DEL_INST:
 			get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name((struct uci_section *)data), &dmmap_firewall);
-			if(dmmap_firewall != NULL)
-				dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+			if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("firewall", "redirect", s) {
-				if (found != 0){
+				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(ss), &dmmap_firewall);
-					if(dmmap_firewall != NULL)
-						dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+					if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(ss), &dmmap_firewall);
-				if(dmmap_firewall != NULL)
-					dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+				if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			return 0;
@@ -249,7 +234,7 @@ int get_nat_interface_setting_alias(char *refparam, struct dmctx *ctx, void *dat
 	struct uci_section *dmmap_section;
 
 	get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name((struct uci_section *)data), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "interface_setting_alias", value);
+	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "interface_setting_alias", value);
 	return 0;
 }
 
@@ -257,12 +242,12 @@ int set_nat_interface_setting_alias(char *refparam, struct dmctx *ctx, void *dat
 {
 	struct uci_section *dmmap_section;
 
-	get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name((struct uci_section *)data), &dmmap_section);
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(dmmap_section, "interface_setting_alias", value);
+			get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name((struct uci_section *)data), &dmmap_section);
+			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "interface_setting_alias", value);
 			return 0;
 	}
 	return 0;
@@ -512,9 +497,9 @@ int set_nat_port_mapping_external_port(char *refparam, struct dmctx *ctx, void *
 			dmuci_get_value_by_section_string((struct uci_section *)data, "src_dport", &dport);
 			dport = strchr(dport, ':');
 			if (dport == NULL)
-				sprintf(buffer, "%s", value);
+				snprintf(buffer, sizeof(buffer), "%s", value);
 			else
-				sprintf(buffer, "%s%s", value, dport);
+				snprintf(buffer, sizeof(buffer), "%s%s", value, dport);
 			dmuci_set_value_by_section((struct uci_section *)data, "src_dport", buffer);
 			return 0;
 	}
@@ -543,9 +528,9 @@ int set_nat_port_mapping_external_port_end_range(char *refparam, struct dmctx *c
 			if (tmp)
 				*tmp = '\0';
 			if (*value == '0')
-				sprintf(buffer, "%s", dport);
+				snprintf(buffer, sizeof(buffer), "%s", dport);
 			else
-				sprintf(buffer, "%s:%s", dport, value);
+				snprintf(buffer, sizeof(buffer), "%s:%s", dport, value);
 			dmuci_set_value_by_section((struct uci_section *)data, "src_dport", buffer);
 			return 0;
 	}
@@ -646,8 +631,8 @@ int set_nat_port_mapping_description(char *refparam, struct dmctx *ctx, void *da
 }
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+**************************************************************/
 /*#Device.NAT.InterfaceSetting.{i}.!UCI:firewall/zone/dmmap_firewall*/
 int browseInterfaceSettingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {

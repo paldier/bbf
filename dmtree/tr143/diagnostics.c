@@ -9,14 +9,6 @@
  *
  */
 
-#include <uci.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "diagnostics.h"
 
@@ -931,6 +923,7 @@ int set_IPDiagnosticsDownloadDiagnostics_Interface(char *refparam, struct dmctx 
 			adm_entry_get_linker_value(ctx, value, &linker);
 			if (linker) {
 				dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", linker, String}}, 1, &res);
+				if (!res) return 0;
 				device = dmjson_get_value(res, 1, "device");
 				if (device) {
 					DOWNLOAD_DIAGNOSTIC_STOP
@@ -1320,6 +1313,7 @@ int set_IPDiagnosticsUploadDiagnostics_Interface(char *refparam, struct dmctx *c
 			adm_entry_get_linker_value(ctx, value, &linker);
 			if (linker) {
 				dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", linker, String}}, 1, &res);
+				if (!res) return 0;
 				device = dmjson_get_value(res, 1, "device");
 				if (device) {
 					UPLOAD_DIAGNOSTIC_STOP

@@ -11,6 +11,8 @@
 #ifndef __BULKDATA_H
 #define __BULKDATA_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tBulkDataObj[];
 extern DMLEAF tBulkDataParams[];
 extern DMOBJ tBulkDataProfileObj[];

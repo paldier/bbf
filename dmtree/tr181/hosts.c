@@ -9,14 +9,6 @@
  *
  */
 
-#include <uci.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "hosts.h"
 
@@ -53,8 +45,8 @@ DMLEAF tHostsHostParams[] = {
 
 
 /*************************************************************
- * INIT
-/*************************************************************/
+* INIT
+**************************************************************/
 inline int init_host_args(struct host_args *args, json_object *clients, char *key)
 {
 	args->client = clients;
@@ -62,13 +54,13 @@ inline int init_host_args(struct host_args *args, json_object *clients, char *ke
 	return 0;
 }
 /*************************************************************
- * GET & SET PARAM
-/*************************************************************/
+* GET & SET PARAM
+**************************************************************/
 int get_host_associateddevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *ss;
-	char *macaddr_linker = dmjson_get_value(((struct host_args *)data)->client, 1, "macaddr");
 	char *accesspointInstance = NULL, *wifiAssociativeDeviecPath;
+	char *macaddr_linker = dmjson_get_value(((struct host_args *)data)->client, 1, "macaddr");
 
 	uci_path_foreach_sections(bbfdm, "dmmap_wireless", "wifi-iface", ss) {
 		dmuci_get_value_by_section_string(ss, "accesspointinstance", &accesspointInstance);
@@ -101,10 +93,10 @@ int get_host_interface_type(char *refparam, struct dmctx *ctx, void *data, char 
 	struct uci_section *ss = NULL;
 
 	uci_foreach_sections("network", "interface", ss) {
-		if(!strcmp(ifname, section_name(ss))){
+		if (!strcmp(ifname, section_name(ss))) {
 			dmuci_get_value_by_section_string(ss, "type", &type);
-			if(type!=NULL){
-				if(!strcmp(type, "bridge")) *value="Bridge";else *value= "Normal";
+			if (type!=NULL) {
+				if (!strcmp(type, "bridge")) *value="Bridge";else *value= "Normal";
 				break;
 			}
 		}
@@ -118,15 +110,12 @@ int get_host_interfacename(char *refparam, struct dmctx *ctx, void *data, char *
 
 	frequency = dmjson_get_value(((struct host_args *)data)->client, 1, "frequency");
 	wireless = dmjson_get_value(((struct host_args *)data)->client, 1, "wireless");
-	if( (*frequency != '\0') && (strcmp(wireless, "true")==0) )
-	{
+	if ((*frequency != '\0') && (strcmp(wireless, "true")==0)) {
 		if(strcmp(frequency,"5GHz")==0)
 			*value = "WiFi@5GHz";
 		else
 			*value = "WiFi@2.4GHz";
-	}
-	else
-	{
+	} else {
 		*value = dmjson_get_value(((struct host_args *)data)->client, 1, "ethport");
 		if (*value == NULL)
 			*value = "";
@@ -172,10 +161,9 @@ int get_host_address_source(char *refparam, struct dmctx *ctx, void *data, char 
 
 int get_host_leasetime_remaining(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char buf[80], *dhcp;
+	char *dhcp;
 	FILE *fp;
 	char line[MAX_DHCP_LEASES];
-	struct tm ts;
 	char *leasetime, *mac_f, *mac, *line1;
 	char delimiter[] = " \t";
 
@@ -229,8 +217,7 @@ static char *get_interface_type(char *mac, char *ndev)
 	json_object *res;
 	int wlctl_num;
 	struct uci_section *s, *d;
-	char *network, *device, *value, *wunit;
-	char buf[8], *p;
+	char buf[8], *p, *network, *value, *wunit;
 
 	uci_foreach_sections("wireless", "wifi-device", d) {
 		wlctl_num = 0;
@@ -239,15 +226,15 @@ static char *get_interface_type(char *mac, char *ndev)
 			dmuci_get_value_by_section_string(s, "network", &network);
 			if (strcmp(network, ndev) == 0) {
 				if (wlctl_num != 0) {
-					sprintf(buf, "%s.%d", wunit, wlctl_num);
+					snprintf(buf, sizeof(buf), "%s.%d", wunit, wlctl_num);
 					p = buf;
-				}
-				else {
+				} else {
 					p = wunit;
 				}
 				dmubus_call("router.wireless", "stas", UBUS_ARGS{{"vif", p, String}}, 1, &res);
 				if(res) {
 					json_object_object_foreach(res, key, val) {
+						UNUSED(key);
 						value = dmjson_get_value(val, 1, "macaddr");
 						if (strcasecmp(value, mac) == 0)
 							return "802.11";
@@ -278,6 +265,8 @@ int get_host_nbr_entries(char *refparam, struct dmctx *ctx, void *data, char *in
 	dmubus_call("router.network", "clients", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "0");
 	json_object_object_foreach(res, key, client_obj) {
+		UNUSED(key);
+		UNUSED(client_obj);
 		entries++;
 	}
 	dmasprintf(value, "%d", entries); // MEM WILL BE FREED IN DMMEMCLEAN
@@ -285,11 +274,11 @@ int get_host_nbr_entries(char *refparam, struct dmctx *ctx, void *data, char *in
 }
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+**************************************************************/
 int browsehostInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	json_object *res, *client_obj;
+	json_object *res;
 	char *idx, *idx_last = NULL, *connected;
 	int id = 0;
 	struct host_args curr_host_args = {0};

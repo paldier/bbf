@@ -12,7 +12,8 @@
 
 #ifndef __DEVICE_INFO_H
 #define __DEVICE_INFO_H
-#include <libbbf_api/dmbbf.h>
+
+#include <libbbf_api/dmcommon.h>
 
 #define UPTIME "/proc/uptime"
 #define DEFAULT_CONFIG_DIR "/etc/config/"
@@ -26,7 +27,8 @@ extern DMLEAF tDeviceInfoProcessStatusParams[];
 extern DMOBJ tDeviceInfoObj[];
 extern DMLEAF tDeviceInfoProcessStatusProcessParams[];
 
-struct process_args{
+struct process_args
+{
 	char *pid;
 	char *command;
 	char* size;

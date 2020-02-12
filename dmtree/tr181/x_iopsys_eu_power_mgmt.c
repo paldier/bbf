@@ -11,10 +11,6 @@
  *		Author: Anis Ellouze <anis.ellouze@pivasoftware.com>
  */
 
-#include <unistd.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_power_mgmt.h"
 
 /*** DMROOT.X_IOPSYS_EU_PowerManagement. ***/
@@ -42,14 +38,13 @@ int get_pwr_mgmt_value_eee(char *refparam, struct dmctx *ctx, void *data, char *
 int get_pwr_nbr_interfaces_up(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char buf[256];
-	int pp, r;
+	int pp;
 
 	*value = "";
-	pp = dmcmd("pwrctl", 1, "show"); //TODO wait ubus command
+	pp = dmcmd("pwrctl", 1, "show");
 	if (pp) {
-		r = dmcmd_read(pp, buf, 256);
+		dmcmd_read(pp, buf, 256);
 		close(pp);
-		//TODO output command is changed
 		return 0;
 	}
 	return 0;
@@ -58,14 +53,13 @@ int get_pwr_nbr_interfaces_up(char *refparam, struct dmctx *ctx, void *data, cha
 int get_pwr_nbr_interfaces_down(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char buf[256];
-	int pp, r;
+	int pp;
 
 	*value = "";
-	pp = dmcmd("pwrctl", 1, "show"); //TODO wait ubus command
+	pp = dmcmd("pwrctl", 1, "show");
 	if (pp) {
-		r = dmcmd_read(pp, buf, 256);
+		dmcmd_read(pp, buf, 256);
 		close(pp);
-		//TODO output command is changed
 		return 0;
 	}
 	return 0;
@@ -110,15 +104,3 @@ int set_power_mgmt_param_eee(char *refparam, struct dmctx *ctx, void *data, char
 	}
 	return 0;
 }
-
-#if 0
-bool dm_powermgmt_enable_set(void)
-{
-	if( access("/etc/init.d/power_mgmt", F_OK ) != -1 ) {
-		return true;
-	}
-  else {
-		return false;
-	}
-}
-#endif

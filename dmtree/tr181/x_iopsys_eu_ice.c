@@ -8,14 +8,7 @@
  *	  Author Imen Bhiri <imen.bhiri@pivasoftware.com>
  *
  */ 
- 
-#include <uci.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
+
 #include "x_iopsys_eu_ice.h"
 
 /*** DMROOT.X_IOPSYS_EU_ICE. ***/
@@ -56,6 +49,7 @@ int set_ice_cloud_enable(char *refparam, struct dmctx *ctx, void *data, char *in
 				dmuci_set_value("ice", "cloud", "enabled", "0");
 			return 0;
 	}
+	return 0;
 }
 
 int get_ice_cloud_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)

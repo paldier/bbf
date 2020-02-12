@@ -9,8 +9,6 @@
  *      Author: Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
 #include "users.h"
 
 /* *** Device.Users. *** */
@@ -56,18 +54,14 @@ int browseUserInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, ch
 	return 0;
 }
 
-int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instance){
+int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instance)
+{
 	struct uci_section *s, *dmmap_user;
-	char *last_inst= NULL, *sect_name= NULL, *username, *v;
-	char ib[8];
-	last_inst= get_last_instance_bbfdm("dmmap_users", "user", "user_instance");
-	if (last_inst)
-		sprintf(ib, "%s", last_inst);
-	else
-		sprintf(ib, "%s", "1");
+	char ib[8], *last_inst = NULL, *sect_name = NULL, *username, *v;
 
+	last_inst = get_last_instance_bbfdm("dmmap_users", "user", "user_instance");
+	snprintf(ib, sizeof(ib), "%s", last_inst ? last_inst : "1");
 	dmasprintf(&username, "user_%d", atoi(ib)+1);
-
 	dmuci_add_section("users", "user", &s, &sect_name);
 	dmuci_rename_section_by_section(s, username);
 	dmuci_set_value_by_section(s, "enabled", "1");
@@ -81,14 +75,12 @@ int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instanc
 
 int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct uci_section *s = NULL;
-	struct uci_section *ss = NULL;
-	struct uci_section *dmmap_section;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_section;
 	int found = 0;
 
 	switch (del_action) {
 		case DEL_INST:
-			if(is_section_unnamed(section_name((struct uci_section *)data))){
+			if (is_section_unnamed(section_name((struct uci_section *)data))) {
 				LIST_HEAD(dup_list);
 				delete_sections_save_next_sections("dmmap_users", "user", "user_instance", section_name((struct uci_section *)data), atoi(instance), &dup_list);
 				update_dmmap_sections(&dup_list, "user_instance", "dmmap_users", "user");
@@ -101,19 +93,17 @@ int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *insta
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("users", "user", s) {
-				if (found != 0){
+				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_users", "user", section_name(ss), &dmmap_section);
-					if(dmmap_section != NULL)
-						dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_users", "user", section_name(ss), &dmmap_section);
-				if(dmmap_section != NULL)
-					dmuci_delete_by_section(dmmap_section, NULL, NULL);
+				if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			break;
@@ -140,7 +130,7 @@ int get_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance
 	struct uci_section *dmmap_section;
 
 	get_dmmap_section_of_config_section("dmmap_users", "user", section_name((struct uci_section *)data), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "user_alias", value);
+	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "user_alias", value);
     return 0;
 }
 
@@ -153,7 +143,7 @@ int get_user_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 
 int get_user_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value= dmstrdup(section_name((struct uci_section *)data));
+	*value = dmstrdup(section_name((struct uci_section *)data));
     return 0;
 }
 
@@ -187,7 +177,7 @@ int set_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance
 			break;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_users", "user", section_name((struct uci_section *)data), &dmmap_section);
-			dmuci_set_value_by_section(dmmap_section, "user_alias", value);
+			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "user_alias", value);
 			return 0;
 	}
 	return 0;

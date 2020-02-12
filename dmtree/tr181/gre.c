@@ -8,13 +8,6 @@
  *		Author: Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
-#include <ctype.h>
-#include <uci.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmjson.h>
 #include "gre.h"
 
 /* *** Device.GRE. *** */
@@ -123,8 +116,8 @@ DMLEAF tGREFilterParams[] = {
 };
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+*************************************************************/
 int browseGRETunnelInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *gretun_inst= NULL, *gretun_inst_last= NULL;
@@ -179,8 +172,8 @@ int browseGRETunnelInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void 
 }
 
 /*************************************************************
- * ADD & DEL OBJ
-/*************************************************************/
+* ADD & DEL OBJ
+*************************************************************/
 int addObjGRETunnel(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
 	char *value, *v;
@@ -242,7 +235,7 @@ int delObjGRETunnel(char *refparam, struct dmctx *ctx, void *data, char *instanc
 
 int addObjGREFilter(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
-	struct dmmap_dup *dm = (struct dmmap_dup *)data;
+	//TODO
 	return 0;
 }
 
@@ -285,12 +278,10 @@ int addObjGRETunnelInterface(char *refparam, struct dmctx *ctx, void *data, char
 
 int delObjGRETunnelInterface(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct uci_section *s = NULL, *s1= NULL;
-	struct uci_section *ss = NULL;
-	struct uci_section *dmmap_section;
+	struct uci_section *s = NULL, *ss = NULL, *s1 = NULL, *dmmap_section;
 	int found = 0;
-	struct dmmap_dup *p= (struct dmmap_dup *)data;
-	char *iface= NULL, *atiface= NULL;
+	struct dmmap_dup *p = (struct dmmap_dup *)data;
+	char *iface = NULL, *atiface = NULL;
 
 	switch (del_action) {
 		case DEL_INST:
@@ -337,14 +328,15 @@ int delObjGRETunnelInterface(char *refparam, struct dmctx *ctx, void *data, char
 }
 
 /*************************************************************
- * GET & SET PARAM
-/*************************************************************/
+* GET & SET PARAM
+*************************************************************/
 static char *get_gre_tunnel_interface_statistics(char *interface, char *key)
 {
 	json_object *res, *diag;
 	char *device, *value = "0";
 
 	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", interface, String}}, 1, &res);
+	if (!res) return value;
 	device = dmjson_get_value(res, 1, "device");
 	if(device[0] != '\0') {
 		dmubus_call("network.device", "status", UBUS_ARGS{{"name", device, String}}, 1, &diag);

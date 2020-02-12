@@ -12,6 +12,8 @@
 #ifndef __PTM_H
 #define __PTM_H
 
+#include <libbbf_api/dmcommon.h>
+
 struct ptm_args
 {
 	struct uci_section *ptm_sec;

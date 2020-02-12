@@ -9,12 +9,6 @@
  *
  */
 
-#include <uci.h>
-#include <ctype.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
 #include "dmentry.h"
 #include "times.h"
 
@@ -49,7 +43,6 @@ int get_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 int set_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	int check; 
 	pid_t pid;
 	
 	switch (action) {
@@ -60,17 +53,16 @@ int set_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 		case VALUESET:
 			string_to_bool(value, &b);
 			if(b) {
-				DMCMD("/etc/rc.common", 2, "/etc/init.d/ntpd", "enable"); //TODO wait ubus command
+				DMCMD("/etc/rc.common", 2, "/etc/init.d/ntpd", "enable");
 				pid = get_pid("ntpd");
 				if (pid < 0) {
-					DMCMD("/etc/rc.common", 2, "/etc/init.d/ntpd", "start"); //TODO wait ubus command
+					DMCMD("/etc/rc.common", 2, "/etc/init.d/ntpd", "start");
 				}
-			}
-			else {
-				DMCMD("/etc/rc.common", 2, "/etc/init.d/ntpd", "disable"); //TODO wait ubus command
+			} else {
+				DMCMD("/etc/rc.common", 2, "/etc/init.d/ntpd", "disable");
 				pid = get_pid("ntpd");
 				if (pid > 0) {
-					DMCMD("/etc/rc.common", 2, "/etc/init.d/ntpd", "stop"); //TODO may be should be updated with ubus call uci
+					DMCMD("/etc/rc.common", 2, "/etc/init.d/ntpd", "stop");
 				}
 			}
 			return 0;
@@ -78,7 +70,8 @@ int set_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	return 0;
 }
 
-int get_time_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_time_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	char *path = "/etc/rc.d/*ntpd";
 
 	if (check_file(path))
@@ -90,7 +83,7 @@ int get_time_status(char *refparam, struct dmctx *ctx, void *data, char *instanc
 
 int get_time_CurrentLocalTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char time_buf[26] = {0};
+	char time_buf[27] = {0};
 	struct tm *t_tm;
 
 	*value = "0001-01-01T00:00:00Z";
@@ -131,13 +124,14 @@ int set_time_LocalTimeZone(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
-int get_local_time_zone_olson(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_local_time_zone_olson(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	dmuci_get_option_value_string("system", "@system[0]", "zonename", value);
+	return 0;
 }
 
 int get_time_ntpserver(char *refparam, struct dmctx *ctx, char **value, int index)
 {
-	char *pch;
 	bool found = 0;
 	int element = 0;
 	struct uci_list *v;
@@ -148,7 +142,7 @@ int get_time_ntpserver(char *refparam, struct dmctx *ctx, char **value, int inde
 		uci_foreach_element(v, e) {
 			element++;
 			if (element == index) {
-				*value = dmstrdup(e->name); // MEM WILL BE FREED IN DMMEMCLEAN
+				*value = dmstrdup(e->name);
 				found = 1; 
 				break;
 			}
@@ -164,16 +158,17 @@ int get_time_ntpserver(char *refparam, struct dmctx *ctx, char **value, int inde
 	return 0;
 }
 
-int get_time_source_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
-	char *iface= NULL, *interface= NULL;
-	*value= "";
+int get_time_source_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	char *iface = NULL, *interface = NULL;
+	*value = "";
 	dmuci_get_option_value_string("system", "ntp", "interface", &iface);
-	if (*iface == '\0' || strlen(iface)== 0)
+	if (*iface == '\0' || strlen(iface) == 0)
 		return 0;
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), iface, &interface);
 	if (*interface == '\0')
 		return 0;
-	*value= dmstrdup(interface);
+	*value = dmstrdup(interface);
 	return 0;
 }
 
@@ -208,7 +203,7 @@ int set_time_source_interface(char *refparam, struct dmctx *ctx, void *data, cha
 	switch (action) {
 		case VALUECHECK:
 			adm_entry_get_linker_value(ctx, value, &iface);
-			if(iface == NULL ||  iface[0] == '\0')
+			if (iface == NULL ||  iface[0] == '\0')
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -221,12 +216,9 @@ int set_time_source_interface(char *refparam, struct dmctx *ctx, void *data, cha
 
 int set_time_ntpserver(char *refparam, struct dmctx *ctx, int action, char *value, int index)
 {
-	char *pch, *path;
-	int check;
 	struct uci_list *v;
 	struct uci_element *e;
-	int count = 0;
-	int i = 0;
+	int count = 0, i = 0;
 	char *ntp[5] = {0};
 	
 	switch (action) {
@@ -236,21 +228,19 @@ int set_time_ntpserver(char *refparam, struct dmctx *ctx, int action, char *valu
 			dmuci_get_option_value_list("system", "ntp", "server", &v);
 			if (v) {
 				uci_foreach_element(v, e) {
-					if ((count+1) == index) {
+					if ((count + 1) == index)
 						ntp[count] = dmstrdup(value);
-					}
-					else {
-					ntp[count] = dmstrdup(e->name);
-				}
+					else
+						ntp[count] = dmstrdup(e->name);
 					count++;
 					if (count > 4)
 						break;
 				}
 			}
 			if (index > count) {
-				ntp[index-1] = dmstrdup(value);
+				ntp[index - 1] = dmstrdup(value);
 				count = index;
-				}
+			}
 			for (i = 0; i < 5; i++) {
 				if (ntp[i] && (*ntp[i]) != '\0')
 					count = i+1;

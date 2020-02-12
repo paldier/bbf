@@ -36,8 +36,12 @@ inline void *__dmreallocjson(void *old, size_t size)
 		m = container_of(old, struct dmmemjson, mem);
 		list_del(&m->list);
 	}
-	m = realloc(m, sizeof(struct dmmemjson) + size);
-	if (m == NULL) return NULL;
+	struct dmmemjson *new_m = realloc(m, sizeof(struct dmmemjson) + size);
+	if (new_m == NULL) {
+		dmfreejson(m);
+		return NULL;
+	} else
+		m = new_m;
 	list_add(&m->list, &memheadjson);
 	return (void *)m->mem;
 }
@@ -69,14 +73,12 @@ char *__dmstrdupjson(const char *s)
 	return (char *) memcpy(new, s, len);
 }
 
-
 int __dmasprintfjson(char **s, const char *format, ...)
 {
 	char buf[512];
 	va_list arg;
-	int ret;
 	va_start(arg,format);
-	ret = vsprintf(buf, format, arg);
+	vsprintf(buf, format, arg);
 	va_end(arg);
 	*s = __dmstrdupjson(buf);
 	if (*s == NULL) return -1;

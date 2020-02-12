@@ -12,6 +12,8 @@
 #ifndef __DMENTRYJSON_H__
 #define __DMENTRYJSON_H__
 
+#include <libbbf_api/dmcommon.h>
+
 #define JSON_FOLDER_PATH "/etc/bbfdm/json"
 
 int check_stats_json_folder(char *json_folder_path);

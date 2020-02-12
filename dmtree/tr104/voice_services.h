@@ -14,6 +14,8 @@
 #ifndef __VOICE_H
 #define __VOICE_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tServicesObj[];
 extern DMOBJ tServicesVoiceServiceObj[];
 extern DMLEAF tServicesVoiceServiceParams[];

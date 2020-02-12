@@ -10,8 +10,6 @@
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmbbf.h>
 #include "device.h"
 #include "deviceinfo.h"
 #include "managementserver.h"

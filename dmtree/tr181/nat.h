@@ -13,6 +13,8 @@
 #ifndef __NAT_H
 #define __NAT_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tNATObj[];
 extern DMLEAF tNATParams[];
 extern DMLEAF tNATInterfaceSettingParams[];

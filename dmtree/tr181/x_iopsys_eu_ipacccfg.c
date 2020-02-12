@@ -10,12 +10,6 @@
  *
  */
 
-#include <uci.h>
-#include <ctype.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_ipacccfg.h"
 
 /*** DMROOT.X_IOPSYS_EU_IpAccCfg. ***/
@@ -63,9 +57,7 @@ DMLEAF tSe_IpAccCfgParam[] = {
 **************************************************************************************/
 int get_x_bcm_com_ip_acc_list_cfgobj_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-		
-	dmuci_get_value_by_section_string(ipaccsection, "enabled", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enabled", value);
 	if ((*value)[0] == '\0') {
 		*value = "1";
 	}		
@@ -75,8 +67,6 @@ int get_x_bcm_com_ip_acc_list_cfgobj_enable(char *refparam, struct dmctx *ctx, v
 int set_x_bcm_com_ip_acc_list_cfgobj_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	int check;
-	struct uci_section *ipaccsection = (struct uci_section *)data;
 	
 	switch (action) {
 		case VALUECHECK:
@@ -91,7 +81,7 @@ int set_x_bcm_com_ip_acc_list_cfgobj_enable(char *refparam, struct dmctx *ctx, v
 			else {
 				value = "0";
 			}
-			dmuci_set_value_by_section(ipaccsection, "enabled", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "enabled", value);
 			return 0;
 	}
 	return 0;
@@ -99,21 +89,17 @@ int set_x_bcm_com_ip_acc_list_cfgobj_enable(char *refparam, struct dmctx *ctx, v
 
 int get_x_bcm_com_ip_acc_list_cfgobj_ipversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(ipaccsection, "family", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "family", value);
 	return 0;
 }
 
 int set_x_bcm_com_ip_acc_list_cfgobj_ipversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(ipaccsection, "family", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "family", value);
 			return 0;
 	}
 	return 0;
@@ -121,21 +107,17 @@ int set_x_bcm_com_ip_acc_list_cfgobj_ipversion(char *refparam, struct dmctx *ctx
 
 int get_x_bcm_com_ip_acc_list_cfgobj_protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(ipaccsection, "proto", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "proto", value);
 	return 0;
 }
 
 int set_x_bcm_com_ip_acc_list_cfgobj_protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(ipaccsection, "proto", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "proto", value);
 			return 0;
 	}
 	return 0;
@@ -143,21 +125,17 @@ int set_x_bcm_com_ip_acc_list_cfgobj_protocol(char *refparam, struct dmctx *ctx,
 
 int get_x_bcm_com_ip_acc_list_cfgobj_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(ipaccsection, "name", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "name", value);
 	return 0;
 }
 
 int set_x_bcm_com_ip_acc_list_cfgobj_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(ipaccsection, "name", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "name", value);
 			return 0;
 	}
 	return 0;
@@ -166,15 +144,11 @@ int set_x_bcm_com_ip_acc_list_cfgobj_name(char *refparam, struct dmctx *ctx, voi
 int get_x_iopsys_eu_cfgobj_address_netmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_list *val;
-	struct uci_element *e = NULL;
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-	struct uci_list *list = NULL;
 	
-	dmuci_get_value_by_section_list(ipaccsection, "src_ip", &val);
+	dmuci_get_value_by_section_list((struct uci_section *)data, "src_ip", &val);
 	if (val) {
 		*value = dmuci_list_to_string(val, ",");
-	}
-	else
+	} else
 		*value = "";
 	if ((*value)[0] == '\0') {
 		*value = "0.0.0.0/0";
@@ -186,17 +160,16 @@ int get_x_iopsys_eu_cfgobj_address_netmask(char *refparam, struct dmctx *ctx, vo
 int set_x_iopsys_eu_cfgobj_address_netmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *pch, *spch, *val;
-	struct uci_section *ipaccsection = (struct uci_section *)data;
 	
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_delete_by_section(ipaccsection, "src_ip", "");
+			dmuci_delete_by_section((struct uci_section *)data, "src_ip", "");
 			val = dmstrdup(value);
 			pch = strtok_r(val, " ,", &spch);
 			while (pch != NULL) {
-				dmuci_add_list_value_by_section(ipaccsection, "src_ip", pch);
+				dmuci_add_list_value_by_section((struct uci_section *)data, "src_ip", pch);
 				pch = strtok_r(NULL, " ,", &spch);
 			}
 			dmfree(val);
@@ -207,21 +180,17 @@ int set_x_iopsys_eu_cfgobj_address_netmask(char *refparam, struct dmctx *ctx, vo
 
 int get_x_bcm_com_ip_acc_list_cfgobj_acc_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-	
-	dmuci_get_value_by_section_string(ipaccsection, "dest_port", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "dest_port", value);
 	return 0;
 }
 
 int set_x_bcm_com_ip_acc_list_cfgobj_acc_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-	
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(ipaccsection, "dest_port", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "dest_port", value);
 			return 0;
 	}
 	return 0;
@@ -229,21 +198,17 @@ int set_x_bcm_com_ip_acc_list_cfgobj_acc_port(char *refparam, struct dmctx *ctx,
 
 int get_x_bcm_com_ip_acc_list_cfgobj_target(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(ipaccsection, "target", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "target", value);
 	return 0;
 }
 
 int set_x_bcm_com_ip_acc_list_cfgobj_target(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(ipaccsection, "target", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "target", value);
 			return 0;
 	}
 	return 0;
@@ -254,21 +219,17 @@ int set_x_bcm_com_ip_acc_list_cfgobj_target(char *refparam, struct dmctx *ctx, v
 **************************************************************************************/
 int get_port_forwarding_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(forwardsection, "name", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "name", value);
 	return 0;
 }
 
 int set_port_forwarding_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(forwardsection, "name", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "name", value);
 			return 0;
 	}
 	return 0;
@@ -276,17 +237,13 @@ int set_port_forwarding_name(char *refparam, struct dmctx *ctx, void *data, char
 
 int get_port_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(forwardsection, "enabled", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enabled", value);
 	return 0;
 }
 
 int set_port_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	int check;
-	struct uci_section *forwardsection = (struct uci_section *)data;
 	
 	switch (action) {
 		case VALUECHECK:
@@ -296,9 +253,9 @@ int set_port_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, ch
 		case VALUESET:
 			string_to_bool(value, &b);
 			if(b)
-				dmuci_set_value_by_section(forwardsection, "enabled", "1");
+				dmuci_set_value_by_section((struct uci_section *)data, "enabled", "1");
 			else 
-				dmuci_set_value_by_section(forwardsection, "enabled", "0");
+				dmuci_set_value_by_section((struct uci_section *)data, "enabled", "0");
 			return 0;
 	}
 	return 0;
@@ -306,9 +263,7 @@ int set_port_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, ch
 
 int get_port_forwarding_loopback(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-		
-	dmuci_get_value_by_section_string(forwardsection, "reflection", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "reflection", value);
 	if((*value)[0] == '\0') {
 		*value = "1";
 	}
@@ -318,7 +273,6 @@ int get_port_forwarding_loopback(char *refparam, struct dmctx *ctx, void *data, 
 int set_port_forwarding_loopback(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	struct uci_section *forwardsection = (struct uci_section *)data;
 	
 	switch (action) {
 		case VALUECHECK:
@@ -328,9 +282,9 @@ int set_port_forwarding_loopback(char *refparam, struct dmctx *ctx, void *data, 
 		case VALUESET:
 			string_to_bool(value, &b);
 			if(b)
-				dmuci_set_value_by_section(forwardsection, "reflection", "1");
+				dmuci_set_value_by_section((struct uci_section *)data, "reflection", "1");
 			else 
-				dmuci_set_value_by_section(forwardsection, "reflection", "0");
+				dmuci_set_value_by_section((struct uci_section *)data, "reflection", "0");
 			return 0;
 	}
 	return 0;
@@ -338,22 +292,17 @@ int set_port_forwarding_loopback(char *refparam, struct dmctx *ctx, void *data, 
 
 int get_port_forwarding_protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-		
-	dmuci_get_value_by_section_string(forwardsection, "proto", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "proto", value);
 	return 0;
 }
 
 int set_port_forwarding_protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
-	
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(forwardsection, "proto", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "proto", value);
 			return 0;
 	}
 	return 0;
@@ -361,22 +310,17 @@ int set_port_forwarding_protocol(char *refparam, struct dmctx *ctx, void *data, 
 
 int get_port_forwarding_external_zone(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(forwardsection, "src", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "src", value);
 	return 0;
 }
 
 int set_port_forwarding_external_zone(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
-	
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(forwardsection, "src", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "src", value);
 			return 0;
 	}
 	return 0;
@@ -384,22 +328,17 @@ int set_port_forwarding_external_zone(char *refparam, struct dmctx *ctx, void *d
 
 int get_port_forwarding_internal_zone(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(forwardsection, "dest", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "dest", value);
 	return 0;
 }
 
 int set_port_forwarding_internal_zone(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(forwardsection, "dest", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "dest", value);
 			return 0;
 	}
 	return 0;
@@ -407,22 +346,17 @@ int set_port_forwarding_internal_zone(char *refparam, struct dmctx *ctx, void *d
 
 int get_port_forwarding_external_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(forwardsection, "src_dport", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "src_dport", value);
 	return 0;
 }
 
 int set_port_forwarding_external_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(forwardsection, "src_dport", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "src_dport", value);
 			return 0;
 	}
 	return 0;
@@ -430,9 +364,7 @@ int set_port_forwarding_external_port(char *refparam, struct dmctx *ctx, void *d
 
 int get_port_forwarding_internal_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(forwardsection, "dest_port", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "dest_port", value);
 	if ((*value)[0] == '\0') {
 		*value = "any";
 	}
@@ -441,9 +373,6 @@ int get_port_forwarding_internal_port(char *refparam, struct dmctx *ctx, void *d
 
 int set_port_forwarding_internal_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
-	
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -451,7 +380,7 @@ int set_port_forwarding_internal_port(char *refparam, struct dmctx *ctx, void *d
 			if (strcasecmp(value, "any") == 0) {
 				value = "";
 			}
-			dmuci_set_value_by_section(forwardsection, "dest_port", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "dest_port", value);
 			return 0;
 	}
 	return 0;
@@ -459,9 +388,7 @@ int set_port_forwarding_internal_port(char *refparam, struct dmctx *ctx, void *d
 
 int get_port_forwarding_source_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(forwardsection, "src_port", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "src_port", value);
 	if ((*value)[0] == '\0') {
 		*value = "any";
 	}
@@ -470,9 +397,6 @@ int get_port_forwarding_source_port(char *refparam, struct dmctx *ctx, void *dat
 
 int set_port_forwarding_source_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -480,7 +404,7 @@ int set_port_forwarding_source_port(char *refparam, struct dmctx *ctx, void *dat
 			if (strcasecmp(value, "any") == 0) {
 				value = "";
 			}
-			dmuci_set_value_by_section(forwardsection, "src_port", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "src_port", value);
 			return 0;
 	}
 	return 0;
@@ -488,22 +412,17 @@ int set_port_forwarding_source_port(char *refparam, struct dmctx *ctx, void *dat
 
 int get_port_forwarding_internal_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(forwardsection, "dest_ip", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "dest_ip", value);
 	return 0;
 }
 
 int set_port_forwarding_internal_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(forwardsection, "dest_ip", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "dest_ip", value);
 			return 0;
 	}
 	return 0;
@@ -511,9 +430,7 @@ int set_port_forwarding_internal_ipaddress(char *refparam, struct dmctx *ctx, vo
 
 int get_port_forwarding_external_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(forwardsection, "src_dip", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "src_dip", value);
 	if ((*value)[0] == '\0') {
 		*value = "any";
 	}
@@ -522,9 +439,6 @@ int get_port_forwarding_external_ipaddress(char *refparam, struct dmctx *ctx, vo
 
 int set_port_forwarding_external_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
@@ -532,7 +446,7 @@ int set_port_forwarding_external_ipaddress(char *refparam, struct dmctx *ctx, vo
 			if (strcasecmp(value, "any") == 0) {
 				value = "";
 			}
-			dmuci_set_value_by_section(forwardsection, "src_dip", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "src_dip", value);
 			return 0;
 	}
 	return 0;
@@ -541,14 +455,11 @@ int set_port_forwarding_external_ipaddress(char *refparam, struct dmctx *ctx, vo
 int get_port_forwarding_source_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_list *val;
-	struct uci_element *e = NULL;
-	struct uci_section *forwardsection = (struct uci_section *)data;
 
-	dmuci_get_value_by_section_list(forwardsection, "src_ip", &val);
+	dmuci_get_value_by_section_list((struct uci_section *)data, "src_ip", &val);
 	if (val) {
 		*value = dmuci_list_to_string(val, ",");
-	}
-	else {
+	} else {
 		*value = "";
 	}
 	if ((*value)[0] == '\0') {
@@ -560,21 +471,19 @@ int get_port_forwarding_source_ipaddress(char *refparam, struct dmctx *ctx, void
 int set_port_forwarding_source_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *pch, *val, *spch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
 
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
 			if (strcasecmp(value, "any") == 0) {
-				dmuci_delete_by_section(forwardsection, "src_ip", "");
-			}
-			else {
-				dmuci_delete_by_section(forwardsection, "src_ip", "");
+				dmuci_delete_by_section((struct uci_section *)data, "src_ip", "");
+			} else {
+				dmuci_delete_by_section((struct uci_section *)data, "src_ip", "");
 				val = dmstrdup(value);
 				pch = strtok_r(val, " ,", &spch);
 				while (pch != NULL) {
-					dmuci_add_list_value_by_section(forwardsection, "src_ip", pch);
+					dmuci_add_list_value_by_section((struct uci_section *)data, "src_ip", pch);
 					pch = strtok_r(NULL, " ,", &spch);
 				}
 				dmfree(val);
@@ -587,9 +496,8 @@ int set_port_forwarding_source_ipaddress(char *refparam, struct dmctx *ctx, void
 int get_port_forwarding_src_mac(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_list *list = NULL;
-	struct uci_section *forwardsection = (struct uci_section *)data;
 
-	dmuci_get_value_by_section_list(forwardsection, "src_mac", &list);
+	dmuci_get_value_by_section_list((struct uci_section *)data, "src_mac", &list);
 	*value = dmuci_list_to_string(list, " ");
 	return 0;
 }
@@ -597,17 +505,16 @@ int get_port_forwarding_src_mac(char *refparam, struct dmctx *ctx, void *data, c
 int set_port_forwarding_src_mac(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *pch, *spch;
-	struct uci_section *forwardsection = (struct uci_section *)data;
 
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_delete_by_section(forwardsection, "src_mac", NULL);
+			dmuci_delete_by_section((struct uci_section *)data, "src_mac", NULL);
 			value = dmstrdup(value);
 			pch = strtok_r(value, " ", &spch);
 			while (pch != NULL) {
-				dmuci_add_list_value_by_section(forwardsection, "src_mac", pch);
+				dmuci_add_list_value_by_section((struct uci_section *)data, "src_mac", pch);
 				pch = strtok_r(NULL, " ", &spch);
 			}
 			dmfree(value);
@@ -619,9 +526,8 @@ int set_port_forwarding_src_mac(char *refparam, struct dmctx *ctx, void *data, c
 /***** ADD DEL OBJ *******/
 int add_ipacccfg_rule(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
-	char *value, *v;
-	char *instance;
-	struct uci_section *rule = NULL, *dmmap_rule= NULL;
+	char *value, *v, *instance;
+	struct uci_section *rule = NULL, *dmmap_rule = NULL;
 	
 	check_create_dmmap_package("dmmap_firewall");
 	instance = get_last_instance_bbfdm("dmmap_firewall", "rule", "fruleinstance");
@@ -638,39 +544,33 @@ int add_ipacccfg_rule(char *refparam, struct dmctx *ctx, void *data, char **inst
 	dmuci_add_section_bbfdm("dmmap_firewall", "rule", &dmmap_rule, &v);
 	dmuci_set_value_by_section(dmmap_rule, "section_name", section_name(rule));
 	*instancepara = update_instance_bbfdm(dmmap_rule, instance, "fruleinstance");
-
 	return 0;
 }
 
 int delete_ipacccfg_rule(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct uci_section *s = NULL; 
-	struct uci_section *ss = NULL;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_section;
 	int found = 0;
-	struct uci_section *ipaccsection = (struct uci_section *)data;
-	struct uci_section *dmmap_section;
 
 	switch (del_action) {
 		case DEL_INST:
-			get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name(ipaccsection), &dmmap_section);
-			dmuci_delete_by_section(dmmap_section, NULL, NULL);
-			dmuci_delete_by_section(ipaccsection, NULL, NULL);
+			get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name((struct uci_section *)data), &dmmap_section);
+			if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("firewall", "rule", s) {
-				if (found != 0){
+				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name(s), &dmmap_section);
-					if(dmmap_section != NULL)
-						dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name(ss), &dmmap_section);
-				if(dmmap_section != NULL)
-					dmuci_delete_by_section(dmmap_section, NULL, NULL);
+				if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			break;
@@ -681,9 +581,8 @@ int delete_ipacccfg_rule(char *refparam, struct dmctx *ctx, void *data, char *in
 
 int add_ipacccfg_port_forwarding(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
-	char *value, *v;
-	char *instance;
-	struct uci_section *redirect = NULL, *dmmap_redirect= NULL;
+	char *value, *v, *instance;
+	struct uci_section *redirect = NULL, *dmmap_redirect = NULL;
 	
 	check_create_dmmap_package("dmmap_firewall");
 	instance = get_last_instance_bbfdm("dmmap_firewall", "redirect", "forwardinstance");
@@ -702,33 +601,27 @@ int add_ipacccfg_port_forwarding(char *refparam, struct dmctx *ctx, void *data, 
 int delete_ipacccfg_port_forwarding(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	int found = 0;
-	struct pforwardrgs *forwardargs;
-	struct uci_section *s = NULL;
-	struct uci_section *ss = NULL;
-	struct uci_section *forwardsection = (struct uci_section *)data;
-	struct uci_section *dmmap_section;
+	struct uci_section *forwardsection = (struct uci_section *)data, *s = NULL, *ss = NULL, *dmmap_section;
 	
 	switch (del_action) {
 		case DEL_INST:
 			get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(forwardsection), &dmmap_section);
-			dmuci_delete_by_section(dmmap_section, NULL, NULL);
+			if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 			dmuci_delete_by_section(forwardsection, NULL, NULL);
 			break;
 		case DEL_ALL:
 			uci_foreach_option_eq("firewall", "redirect", "target", "DNAT", s) {
-				if (found != 0){
+				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(s), &dmmap_section);
-					if(dmmap_section != NULL)
-						dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(ss), &dmmap_section);
-				if(dmmap_section != NULL)
-					dmuci_delete_by_section(dmmap_section, NULL, NULL);
+				if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			break;
@@ -792,7 +685,6 @@ int set_port_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, cha
 int browseAccListInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *irule = NULL, *irule_last = NULL;
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 
@@ -800,7 +692,7 @@ int browseAccListInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data,
 	list_for_each_entry(p, &dup_list, list) {
 		irule =  handle_update_instance(1, dmctx, &irule_last, update_instance_alias_bbfdm, 3, p->dmmap_section, "fruleinstance", "frulealias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)p->config_section, irule) == DM_STOP)
-			return 0;
+			break;
 	}
 	free_dmmap_config_dup_list(&dup_list);
 	return 0;
@@ -809,7 +701,6 @@ int browseAccListInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data,
 int browseport_forwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *iforward = NULL, *iforward_last = NULL;
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 

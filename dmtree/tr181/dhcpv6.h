@@ -11,6 +11,8 @@
 #ifndef __DHCPV6_H
 #define __DHCPV6_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tDHCPv6Obj[];
 extern DMLEAF tDHCPv6Params[];
 extern DMOBJ tDHCPv6ClientObj[];
@@ -29,7 +31,8 @@ extern DMLEAF tDHCPv6ServerPoolClientIPv6PrefixParams[];
 extern DMLEAF tDHCPv6ServerPoolClientOptionParams[];
 extern DMLEAF tDHCPv6ServerPoolOptionParams[];
 
-struct dhcpv6_client_args {
+struct dhcpv6_client_args
+{
 	struct uci_section *dhcp_client_conf;
 	struct uci_section *dhcp_client_dm;
 	char *ip;

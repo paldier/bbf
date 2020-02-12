@@ -11,7 +11,6 @@
 #ifndef __DATAMODELVERSION_H
 #define __DATAMODELVERSION_H
 
-#include <libbbf_api/dmbbf.h>
 #include <libbbf_api/dmcommon.h>
 
 int get_Device_RootDataModelVersion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

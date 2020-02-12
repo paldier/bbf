@@ -9,13 +9,8 @@
  *
  */
 
-#include <libbbf_api/dmbbf.h>
 #include "upnp_monitoring.h"
 #include "upnp_common.h"
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmjson.h>
-#include <time.h>
 
 /**************************************************************************
 *
@@ -66,14 +61,16 @@ DMLEAF upnpMonitoringIPUsageParams[] = {
 * /UPnP/DM/Monitoring/* parameters functions
 *
 ***************************************************************************/
-int upnp_monitoring_get_IPUsageNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_monitoring_get_IPUsageNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	int n = upnp_get_IPInterfaceNumberOfEntries();
 	dmasprintf(value, "%d", n);
 	return 0;
 }
 
 
-int upnp_monitoring_get_CurrentTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_monitoring_get_CurrentTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
     time_t rawtime;
     struct tm * timeinfo = NULL;
 
@@ -83,11 +80,13 @@ int upnp_monitoring_get_CurrentTime(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int upnp_monitoring_get_CPUUsage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_monitoring_get_CPUUsage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	return 0;
 }
 
-int upnp_monitoring_get_MemoryUsage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_monitoring_get_MemoryUsage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	json_object *res = NULL;
 	char *totalmemory = NULL, *freememory = NULL;
 	int total, free;
@@ -107,35 +106,40 @@ int upnp_monitoring_get_MemoryUsage(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int upnp_monitoring_get_SystemName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_monitoring_get_SystemName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct upnp_ip_usage_args *ipusage_args = (struct upnp_ip_usage_args *)data;
 	if(ipusage_args->systemName != NULL && strlen(ipusage_args->systemName)>0)
 	dmasprintf(value, "%s", ipusage_args->systemName);
 	return 0;
 }
 
-int upnp_monitoring_get_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_monitoring_get_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct upnp_ip_usage_args *ipusage_args = (struct upnp_ip_usage_args *)data;
 	if(ipusage_args->status != NULL && strlen(ipusage_args->status)>0)
 	dmasprintf(value, "%s", ipusage_args->status);
 	return 0;
 }
 
-int upnp_monitoring_get_TotalPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_monitoring_get_TotalPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct upnp_ip_usage_args *ipusage_args = (struct upnp_ip_usage_args *)data;
 	if(ipusage_args->totalpacketsent != NULL && strlen(ipusage_args->totalpacketsent)>0)
 	dmasprintf(value, "%s", ipusage_args->totalpacketsent);
 	return 0;
 }
 
-int upnp_monitoring_get_TotalPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_monitoring_get_TotalPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct upnp_ip_usage_args *ipusage_args = (struct upnp_ip_usage_args *)data;
 	if(ipusage_args->totalpacketreceived != NULL && strlen(ipusage_args->totalpacketreceived)>0)
 	dmasprintf(value, "%s", ipusage_args->totalpacketreceived);
 	return 0;
 }
 
-int upnp_BrowseIPUsage(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance){
+int upnp_BrowseIPUsage(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+{
 	struct uci_section *net_sec = NULL;
 	struct upnp_ip_usage_args curr_ip_usage_args = {0};
 	char *iface_int = NULL, *iface_int_last = NULL, *totalPktSnt = NULL, *totalPktRcvd= NULL, *status = NULL;

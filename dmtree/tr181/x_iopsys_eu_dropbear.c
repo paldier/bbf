@@ -9,12 +9,6 @@
  *
  */
 
-#include <uci.h>
-#include <ctype.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_dropbear.h"
 
 /*** DMROOT.X_IOPSYS_EU_Dropbear.{i}. ****/
@@ -39,7 +33,6 @@ DMLEAF X_IOPSYS_EU_DropbearParams[] = {
 int browseXIopsysEuDropbear(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *idropbear = NULL, *idropbear_last = NULL;
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 
@@ -60,8 +53,7 @@ int get_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, vo
 	dmuci_get_value_by_section_string((struct uci_section *)data, "PasswordAuth", value);
 	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1') {
 		*value = "1";
-	}
-	else
+	} else
 		*value = "0";
 	return 0;
 }
@@ -91,8 +83,7 @@ int get_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ct
 	dmuci_get_value_by_section_string((struct uci_section *)data, "RootPasswordAuth", value);
 	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1') {
 		*value = "1";
-	}
-	else
+	} else
 		*value = "0";
 	return 0;
 }
@@ -209,8 +200,7 @@ int get_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, vo
 	dmuci_get_value_by_section_string((struct uci_section *)data, "GatewayPorts", value);
 	if ((*value)[0] == '\0' || (*value)[0] == '0' ) {
 		*value = "0";
-	}
-	else
+	} else
 		*value = "1";
 	return 0;
 }
@@ -368,7 +358,7 @@ int get_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data
 	struct uci_section *dmmap_section;
 
 	get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name((struct uci_section *)data), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "dropbearalias", value);
+	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "dropbearalias", value);
 	return 0;
 }
 
@@ -376,12 +366,12 @@ int set_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data
 {
 	struct uci_section *dmmap_section;
 
-	get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name((struct uci_section *)data), &dmmap_section);
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(dmmap_section, "dropbearalias", value);
+			get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name((struct uci_section *)data), &dmmap_section);
+			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "dropbearalias", value);
 			return 0;
 	}
 	return 0;
@@ -390,8 +380,7 @@ int set_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data
 /***** ADD DEL OBJ *******/
 int add_dropbear_instance(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
-	char *value, *v;
-	char *instance;
+	char *value, *v, *instance;
 	struct uci_section *dropbear_sec = NULL, *dmmap_sec= NULL;
 
 	check_create_dmmap_package("dmmap_dropbear");
@@ -413,9 +402,7 @@ int add_dropbear_instance(char *refparam, struct dmctx *ctx, void *data, char **
 
 int delete_dropbear_instance(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct uci_section *s = NULL;
-	struct uci_section *ss = NULL;
-	struct uci_section *dmmap_section;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_section;
 	int found = 0;
 
 	switch (del_action) {
@@ -433,19 +420,17 @@ int delete_dropbear_instance(char *refparam, struct dmctx *ctx, void *data, char
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("dropbear", "dropbear", s) {
-				if (found != 0){
+				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name(ss), &dmmap_section);
-					if(dmmap_section != NULL)
-						dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name(ss), &dmmap_section);
-				if(dmmap_section != NULL)
-					dmuci_delete_by_section(dmmap_section, NULL, NULL);
+				if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 		return 0;

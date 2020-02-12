@@ -12,6 +12,8 @@
 #ifndef __UPNPDEVICE_H
 #define __UPNPDEVICE_H
 
+#include <libbbf_api/dmcommon.h>
+
 #ifdef BBF_TR064
 extern DMOBJ tEntry181ObjUPNP[];
 extern DMOBJ tRoot181ObjUPNP[];

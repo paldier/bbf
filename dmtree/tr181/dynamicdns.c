@@ -8,12 +8,6 @@
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include <stdbool.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "dynamicdns.h"
 
@@ -98,8 +92,8 @@ int get_linker_dynamicdns_server(char *refparam, struct dmctx *dmctx, void *data
 }
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+*************************************************************/
 /*#Device.DynamicDNS.Client.{i}.!UCI:ddns/service/dmmap_ddns*/
 int browseDynamicDNSClientInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
@@ -213,8 +207,8 @@ int browseDynamicDNSClientHostnameInst(struct dmctx *dmctx, DMNODE *parent_node,
 }
 
 /*************************************************************
- * ADD & DEL OBJ
-/*************************************************************/
+* ADD & DEL OBJ
+*************************************************************/
 int addObjDynamicDNSClient(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char inst[8], *last_inst, *value, *v, *s_name;
@@ -222,7 +216,7 @@ int addObjDynamicDNSClient(char *refparam, struct dmctx *ctx, void *data, char *
 
 	check_create_dmmap_package("dmmap_ddns");
 	last_inst = get_last_instance_bbfdm("dmmap_ddns", "service", "clientinstance");
-	sprintf(inst, "%s", last_inst ? last_inst : "1");
+	snprintf(inst, sizeof(inst), "%s", last_inst ? last_inst : "1");
 	dmasprintf(&s_name, "Ddns_%d", atoi(inst)+1);
 
 	dmuci_add_section("ddns", "service", &s, &value);
@@ -285,7 +279,7 @@ int addObjDynamicDNSServer(char *refparam, struct dmctx *ctx, void *data, char *
 
 	check_create_dmmap_package("dmmap_ddns");
 	last_inst = get_last_instance_bbfdm("dmmap_ddns", "ddns_server", "serverinstance");
-	sprintf(inst, "%s", last_inst ? last_inst : "1");
+	snprintf(inst, sizeof(inst), "%s", last_inst ? last_inst : "1");
 	dmasprintf(&s_name, "server_%d", atoi(inst)+1);
 	dmuci_add_section("ddns", "service", &s, &value);
 	dmuci_rename_section_by_section(s, s_name);
@@ -344,8 +338,8 @@ int delObjDynamicDNSServer(char *refparam, struct dmctx *ctx, void *data, char *
 }
 
 /*************************************************************
- * GET & SET PARAM
-/*************************************************************/
+* GET & SET PARAM
+*************************************************************/
 int get_DynamicDNS_ClientNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
@@ -387,10 +381,10 @@ int get_DynamicDNS_SupportedServices(char *refparam, struct dmctx *ctx, void *da
 			remove_substring(pch, "\"");
 			remove_substring(pch, " ");
 			if (strcmp(buf, "") == 0) {
-				sprintf(buf, "%s", pch);
+				snprintf(buf, sizeof(buf), "%s", pch);
 			} else {
 				strcpy(buf_tmp, buf);
-				sprintf(buf, "%s,%s", buf_tmp, pch);
+				snprintf(buf, sizeof(buf), "%s,%s", buf_tmp, pch);
 			}
 		}
 		fclose(fp);
@@ -437,7 +431,7 @@ int get_DynamicDNSClient_Status(char *refparam, struct dmctx *ctx, void *data, c
 		dmuci_get_option_value_string("ddns", "global", "ddns_logdir", &logdir);
 		if (*logdir == '\0')
 			logdir = "/var/log/ddns";
-		sprintf(path, "%s/%s.log", logdir, section_name((struct uci_section *)data));
+		snprintf(path, sizeof(path), "%s/%s.log", logdir, section_name((struct uci_section *)data));
 		fp = fopen(path, "r");
 		if (fp != NULL) {
 			strcpy(status, "Connecting");
@@ -463,8 +457,7 @@ int get_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 {
 	struct uci_section *dmmap_section;
 	get_dmmap_section_of_config_section("dmmap_ddns", "service", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "clientalias", value);
+	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "clientalias", value);
 	return 0;
 }
 
@@ -477,8 +470,7 @@ int set_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 			break;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_ddns", "service", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "clientalias", value);
+			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "clientalias", value);
 			break;
 	}
 	return 0;
@@ -496,7 +488,7 @@ int get_DynamicDNSClient_LastError(char *refparam, struct dmctx *ctx, void *data
 		dmuci_get_option_value_string("ddns", "global", "ddns_logdir", &logdir);
 		if (*logdir == '\0')
 			logdir = "/var/log/ddns";
-		sprintf(path, "%s/%s.log", logdir, section_name((struct uci_section *)data));
+		snprintf(path, sizeof(path), "%s/%s.log", logdir, section_name((struct uci_section *)data));
 		fp = fopen(path, "r");
 		if (fp != NULL) {
 			strcpy(status, "NO_ERROR");
@@ -660,7 +652,7 @@ int get_DynamicDNSClientHostname_Status(char *refparam, struct dmctx *ctx, void 
 		dmuci_get_option_value_string("ddns", "global", "ddns_logdir", &logdir);
 		if (*logdir == '\0')
 			logdir = "/var/log/ddns";
-		sprintf(path, "%s/%s.log", logdir, section_name((struct uci_section *)data));
+		snprintf(path, sizeof(path), "%s/%s.log", logdir, section_name((struct uci_section *)data));
 		fp = fopen(path, "r");
 		if (fp != NULL) {
 			strcpy(status, "Registered");
@@ -712,7 +704,7 @@ int get_DynamicDNSClientHostname_LastUpdate(char *refparam, struct dmctx *ctx, v
 	dmuci_get_option_value_string("ddns", "global", "ddns_rundir", &rundir);
 	if (*rundir == '\0')
 		rundir = "/var/run/ddns";
-	sprintf(path, "%s/%s.update", rundir, section_name((struct uci_section *)data));
+	snprintf(path, sizeof(path), "%s/%s.update", rundir, section_name((struct uci_section *)data));
 
 	fp = fopen(path, "r");
 	if (fp != NULL) {
@@ -801,8 +793,6 @@ int get_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 
 int set_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
-
 	switch (action)	{
 		case VALUECHECK:
 			break;
@@ -871,7 +861,7 @@ int set_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *
 			} else {
 				char *addr = strchr(dns_server, ':');
 				if (addr)
-					sprintf(new, "%s%s", value, addr);
+					snprintf(new, sizeof(new), "%s%s", value, addr);
 				else
 					strcpy(new, value);
 				dmuci_set_value_by_section((struct uci_section *)data, "dns_server", new);
@@ -884,7 +874,7 @@ int set_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *
 				} else {
 					char *addr = strchr(dns_server, ':');
 					if (addr)
-						sprintf(new, "%s%s", value, addr);
+						snprintf(new, sizeof(new), "%s%s", value, addr);
 					else
 						strcpy(new, value);
 					dmuci_set_value_by_section(s, "dns_server", new);
@@ -931,9 +921,9 @@ int set_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, void *dat
 				char *addr = strchr(dns_server, ':');
 				if (addr) {
 					*addr = '\0';
-					sprintf(new, "%s%s", dns_server, value);
+					snprintf(new, sizeof(new), "%s%s", dns_server, value);
 				} else {
-					sprintf(new, "%s:%s", dns_server, value);
+					snprintf(new, sizeof(new), "%s:%s", dns_server, value);
 				}
 				dmuci_set_value_by_section((struct uci_section *)data, "dns_server", new);
 			}
@@ -946,9 +936,9 @@ int set_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, void *dat
 					char *addr = strchr(dns_server, ':');
 					if (addr) {
 						*addr = '\0';
-						sprintf(new, "%s%s", dns_server, value);
+						snprintf(new, sizeof(new), "%s%s", dns_server, value);
 					} else {
-						sprintf(new, "%s:%s", dns_server, value);
+						snprintf(new, sizeof(new), "%s:%s", dns_server, value);
 					}
 					dmuci_set_value_by_section(s, "dns_server", new);
 				}
@@ -1026,7 +1016,7 @@ int set_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *
 				check_interval = atoi(value) * 60;
 			else
 				check_interval = atoi(value);
-			sprintf(buf, "%d", check_interval);
+			snprintf(buf, sizeof(buf), sizeof(buf), "%d", check_interval);
 			dmuci_set_value_by_section((struct uci_section *)data, "check_interval", buf);
 
 			dmuci_get_value_by_section_string((struct uci_section *)data, "service_name", &service_name);
@@ -1064,7 +1054,7 @@ int set_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx, void *
 				retry_interval = atoi(value) * 60;
 			else
 				retry_interval = atoi(value);
-			sprintf(buf, "%d", retry_interval);
+			snprintf(buf, sizeof(buf), "%d", retry_interval);
 			dmuci_set_value_by_section((struct uci_section *)data, "retry_interval", buf);
 			dmuci_get_value_by_section_string((struct uci_section *)data, "service_name", &service_name);
 			uci_foreach_option_eq("ddns", "service", "service_name", service_name, s) {

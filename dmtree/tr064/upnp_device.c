@@ -9,16 +9,11 @@
  *
  */
 
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmbbf.h>
 #include "upnp_device.h"
 #include "deviceinfo.h"
 #include "managementserver.h"
 #include "times.h"
 #include "upnp.h"
-#if BBF_TR104
-#include "voice_services.h"
-#endif
 #include "x_iopsys_eu_ice.h"
 #include "x_iopsys_eu_igmp.h"
 #include "x_iopsys_eu_ipacccfg.h"
@@ -50,6 +45,10 @@
 #include "dhcpv6.h"
 #include "interfacestack.h"
 #include "qos.h"
+
+#if BBF_TR104
+#include "voice_services.h"
+#endif
 
 #ifdef BBF_TR064
 #include "upnp_deviceinfo.h"
@@ -122,7 +121,6 @@ DMOBJ tRoot181ObjUPNPBBF[] = {
 {0}
 };
 
-UPNP_SUPPORTED_DM tUPNPSupportedDM[];
 UPNP_SUPPORTED_DM tUPNPSupportedDM_181[] = {
 {"/UPnP/DM/DeviceInfo/", "urn:UPnP:Parent Device:1:ConfigurationManagement:2", DMROOT_URL_181, "UPnP DeviceInfo from "DMROOT_DESC_181, ""},
 {"/UPnP/DM/Configuration/", "urn:UPnP:Parent Device:1:ConfigurationManagement:2", DMROOT_URL_181, "Configuration from "DMROOT_DESC_181, ""},

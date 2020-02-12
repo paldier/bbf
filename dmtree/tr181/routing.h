@@ -13,8 +13,16 @@
 #ifndef __ROUTING_H
 #define __ROUTING_H
 
+#include <libbbf_api/dmcommon.h>
+
 #define PROC_ROUTE6 "/proc/net/ipv6_route"
 extern struct dm_permession_s DMRouting;
+
+enum enum_route_type {
+	ROUTE_STATIC,
+	ROUTE_DYNAMIC,
+	ROUTE_DISABLED
+};
 
 extern DMOBJ tRoutingObj[];
 extern DMLEAF tRoutingParams[];

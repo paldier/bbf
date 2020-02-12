@@ -11,6 +11,8 @@
 #ifndef __SOFTWAREMODULES_H
 #define __SOFTWAREMODULES_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tSoftwareModulesObj[];
 extern DMLEAF tSoftwareModulesParams[];
 extern DMLEAF tSoftwareModulesExecEnvParams[];

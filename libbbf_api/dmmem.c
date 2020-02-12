@@ -65,8 +65,12 @@ void *old, size_t size
 		m = container_of(old, struct dmmem, mem);
 		list_del(&m->list);
 	}
-	m = realloc(m, sizeof(struct dmmem) + size);
-	if (m == NULL) return NULL;
+	struct dmmem *new_m = realloc(m, sizeof(struct dmmem) + size);
+	if (new_m == NULL) {
+		dmfree(m);
+		return NULL;
+	} else
+		m = new_m;
 	list_add(&m->list, &memhead);
 #ifdef WITH_MEMTRACK
 	m->file = (char *)file;
@@ -127,9 +131,8 @@ char **s, const char *format, ...
 {
 	char buf[2048];
 	va_list arg;
-	int ret;
 	va_start(arg,format);
-	ret = vsprintf(buf, format, arg);
+	vsprintf(buf, format, arg);
 	va_end(arg);
 #ifdef WITH_MEMTRACK
 	*s = __dmstrdup(file, func, line, buf);

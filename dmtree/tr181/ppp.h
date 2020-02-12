@@ -12,6 +12,8 @@
 #ifndef __PPP_H
 #define __PPP_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tPPPObj[];
 extern DMLEAF tPPPParams[];
 extern DMOBJ tPPPInterfaceObj[];

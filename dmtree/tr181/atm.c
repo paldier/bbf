@@ -9,13 +9,6 @@
  *
  */
 
-#include <ctype.h>
-#include <uci.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "atm.h"
 
@@ -95,7 +88,6 @@ int get_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, c
 int set_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *vpi = NULL, *vci = NULL, *spch, *val;
-	struct uci_section *s;
 
 	switch (action) {
 		case VALUECHECK:
@@ -136,8 +128,7 @@ int get_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *i
 	dmuci_get_value_by_section_string(((struct atm_args *)data)->atm_sec, "encapsulation", &encapsulation);
 	if (strcasecmp(encapsulation, "vcmux") == 0) {
 		*value = "VCMUX";
-	}
-	else if (strcasecmp(encapsulation, "llc") == 0) {
+	} else if (strcasecmp(encapsulation, "llc") == 0) {
 		*value = "LLC";
 	} else {
 		*value = "";
@@ -189,15 +180,16 @@ int set_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char *insta
 int get_atm_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char linker[16];
-	sprintf(linker, "channel_%d", atoi(instance)-1);
+	snprintf(linker, sizeof(linker), "channel_%d", atoi(instance)-1);
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cDSL%cChannel%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value); // MEM WILL BE FREED IN DMMEMCLEAN
 	if (*value == NULL)
 		*value = "";
 	return 0;
 }
 
-static inline int ubus_atm_stats(json_object *res, char **value, char *stat_mod, void *data)
+static inline int ubus_atm_stats(char **value, char *stat_mod, void *data)
 {
+	json_object *res = NULL;
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct atm_args *)data)->ifname, String}}, 1, &res);
 	DM_ASSERT(res, *value = "");
 	*value = dmjson_get_value(res, 2, "statistics", stat_mod);
@@ -207,32 +199,28 @@ static inline int ubus_atm_stats(json_object *res, char **value, char *stat_mod,
 /*#Device.ATM.Link.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
 int get_atm_stats_bytes_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	ubus_atm_stats(res, value, "rx_bytes", data);
+	ubus_atm_stats(value, "rx_bytes", data);
 	return 0;
 }
 
 /*#Device.ATM.Link.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
 int get_atm_stats_bytes_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	ubus_atm_stats(res, value, "tx_bytes", data);
+	ubus_atm_stats(value, "tx_bytes", data);
 	return 0;
 }
 
 /*#Device.ATM.Link.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
 int get_atm_stats_pack_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	ubus_atm_stats(res, value, "rx_packets", data);
+	ubus_atm_stats(value, "rx_packets", data);
 	return 0;
 }
 
 /*#Device.ATM.Link.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
 int get_atm_stats_pack_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	ubus_atm_stats(res, value, "tx_packets", data);
+	ubus_atm_stats(value, "tx_packets", data);
 	return 0;
 }
 
@@ -243,8 +231,8 @@ int get_atm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance
 }
 
 /*************************************************************
- * ADD OBJ
-/*************************************************************/
+* ADD OBJ
+*************************************************************/
 int add_atm_link(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
 	char *instance = NULL, *atm_device = NULL, *v = NULL, *instance_update = NULL;
@@ -325,14 +313,14 @@ int delete_atm_link(char *refparam, struct dmctx *ctx, void *data, char *instanc
 }
 
 /*************************************************************
- * SET AND GET ALIAS
-/*************************************************************/
+* SET AND GET ALIAS
+*************************************************************/
 int get_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section;
 
 	get_dmmap_section_of_config_section("dmmap_dsl", "atm-device", section_name(((struct atm_args *)data)->atm_sec), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "atmlinkalias", value);
+	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "atmlinkalias", value);
 	return 0;
 }
 
@@ -345,15 +333,15 @@ int set_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_dsl", "atm-device", section_name(((struct atm_args *)data)->atm_sec), &dmmap_section);
-			dmuci_set_value_by_section(dmmap_section, "atmlinkalias", value);
+			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "atmlinkalias", value);
 			return 0;
 	}
 	return 0;
 }
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+*************************************************************/
 /*#Device.ATM.Link.{i}.!UCI:dsl/atm-device/dmmap_dsl*/
 int browseAtmLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {

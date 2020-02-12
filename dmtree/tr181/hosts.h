@@ -12,6 +12,8 @@
 #ifndef __HOSTS_H
 #define __HOSTS_H
 
+#include <libbbf_api/dmcommon.h>
+
 struct host_args
 {
 	json_object *client;

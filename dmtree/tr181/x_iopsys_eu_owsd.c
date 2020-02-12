@@ -10,12 +10,6 @@
  *
  */
 
-#include <uci.h>
-#include <ctype.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
 #include "dmentry.h"
 #include "x_iopsys_eu_owsd.h"
 
@@ -61,7 +55,6 @@ DMLEAF X_IOPSYS_EU_ListenObjParams[] = {
 int browseXIopsysEuOwsdListenObj(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *iowsd_listen = NULL, *iowsd_listen_last = NULL;
-	struct uci_section *s = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 
@@ -119,8 +112,7 @@ int set_x_iopsys_eu_owsd_global_redirect(char *refparam, struct dmctx *ctx, void
 **************************************************************************************/
 int get_x_iopsys_eu_owsd_listenobj_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(owsd_listensection, "port", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "port", value);
 	if ((*value)[0] == '\0') {
 		*value = "";
 	}		
@@ -129,13 +121,11 @@ int get_x_iopsys_eu_owsd_listenobj_port(char *refparam, struct dmctx *ctx, void 
 
 int set_x_iopsys_eu_owsd_listenobj_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(owsd_listensection, "port", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "port", value);
 			return 0;
 	}
 	return 0;
@@ -144,9 +134,8 @@ int set_x_iopsys_eu_owsd_listenobj_port(char *refparam, struct dmctx *ctx, void 
 int get_x_iopsys_eu_owsd_listenobj_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *iface;
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 
-	dmuci_get_value_by_section_string(owsd_listensection, "interface", &iface);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &iface);
 	if (iface[0] != '\0') {
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), iface, value); // MEM WILL BE FREED IN DMMEMCLEAN
 		if (*value == NULL)
@@ -158,7 +147,6 @@ int get_x_iopsys_eu_owsd_listenobj_interface(char *refparam, struct dmctx *ctx, 
 int set_x_iopsys_eu_owsd_listenobj_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker;
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 
 	switch (action) {
 		case VALUECHECK:
@@ -166,7 +154,7 @@ int set_x_iopsys_eu_owsd_listenobj_interface(char *refparam, struct dmctx *ctx, 
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &linker);
 			if (linker) {
-				dmuci_set_value_by_section(owsd_listensection, "interface", linker);
+				dmuci_set_value_by_section((struct uci_section *)data, "interface", linker);
 				dmfree(linker);
 			}
 			return 0;
@@ -176,9 +164,7 @@ int set_x_iopsys_eu_owsd_listenobj_interface(char *refparam, struct dmctx *ctx, 
 
 int get_x_iopsys_eu_owsd_listenobj_ipv6_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
-
-	dmuci_get_value_by_section_string(owsd_listensection, "ipv6", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "ipv6", value);
 	if ((*value)[0] != '\0' && (*value)[0] == 'o' && (*value)[1] == 'n' ) {
 		*value = "1";
 	}
@@ -190,7 +176,6 @@ int get_x_iopsys_eu_owsd_listenobj_ipv6_enable(char *refparam, struct dmctx *ctx
 int set_x_iopsys_eu_owsd_listenobj_ipv6_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 
 	switch (action) {
 		case VALUECHECK:
@@ -200,9 +185,9 @@ int set_x_iopsys_eu_owsd_listenobj_ipv6_enable(char *refparam, struct dmctx *ctx
 		case VALUESET:
 			string_to_bool(value, &b);
 			if(b)
-				dmuci_set_value_by_section(owsd_listensection, "ipv6", "on");
+				dmuci_set_value_by_section((struct uci_section *)data, "ipv6", "on");
 			else
-				dmuci_set_value_by_section(owsd_listensection, "ipv6", "off");
+				dmuci_set_value_by_section((struct uci_section *)data, "ipv6", "off");
 			return 0;
 	}
 	return 0;
@@ -210,8 +195,7 @@ int set_x_iopsys_eu_owsd_listenobj_ipv6_enable(char *refparam, struct dmctx *ctx
 
 int get_x_iopsys_eu_owsd_listenobj_whitelist_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(owsd_listensection, "whitelist_interface_as_origin", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "whitelist_interface_as_origin", value);
 	if ((*value)[0] == '\0' ) {
 		*value = "0";
 	}
@@ -221,7 +205,6 @@ int get_x_iopsys_eu_owsd_listenobj_whitelist_interface(char *refparam, struct dm
 int set_x_iopsys_eu_owsd_listenobj_whitelist_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 
 	switch (action) {
 		case VALUECHECK:
@@ -231,9 +214,9 @@ int set_x_iopsys_eu_owsd_listenobj_whitelist_interface(char *refparam, struct dm
 		case VALUESET:
 			string_to_bool(value, &b);
 			if(b)
-				dmuci_set_value_by_section(owsd_listensection, "whitelist_interface_as_origin", "1");
+				dmuci_set_value_by_section((struct uci_section *)data, "whitelist_interface_as_origin", "1");
 			else
-				dmuci_set_value_by_section(owsd_listensection, "whitelist_interface_as_origin", "0");
+				dmuci_set_value_by_section((struct uci_section *)data, "whitelist_interface_as_origin", "0");
 			return 0;
 	}
 	return 0;
@@ -241,8 +224,7 @@ int set_x_iopsys_eu_owsd_listenobj_whitelist_interface(char *refparam, struct dm
 
 int get_x_iopsys_eu_owsd_listenobj_whitelist_dhcp(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(owsd_listensection, "whitelist_dhcp_domains", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "whitelist_dhcp_domains", value);
 	if ((*value)[0] == '\0') {
 		*value = "0";
 	}
@@ -252,7 +234,6 @@ int get_x_iopsys_eu_owsd_listenobj_whitelist_dhcp(char *refparam, struct dmctx *
 int set_x_iopsys_eu_owsd_listenobj_whitelist_dhcp(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 
 	switch (action) {
 		case VALUECHECK:
@@ -262,9 +243,9 @@ int set_x_iopsys_eu_owsd_listenobj_whitelist_dhcp(char *refparam, struct dmctx *
 		case VALUESET:
 			string_to_bool(value, &b);
 			if(b)
-				dmuci_set_value_by_section(owsd_listensection, "whitelist_dhcp_domains", "1");
+				dmuci_set_value_by_section((struct uci_section *)data, "whitelist_dhcp_domains", "1");
 			else
-				dmuci_set_value_by_section(owsd_listensection, "whitelist_dhcp_domains", "0");
+				dmuci_set_value_by_section((struct uci_section *)data, "whitelist_dhcp_domains", "0");
 			return 0;
 	}
 	return 0;
@@ -273,9 +254,8 @@ int set_x_iopsys_eu_owsd_listenobj_whitelist_dhcp(char *refparam, struct dmctx *
 int get_x_iopsys_eu_owsd_listenobj_origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_list *val;
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 
-	dmuci_get_value_by_section_list(owsd_listensection, "origin", &val);
+	dmuci_get_value_by_section_list((struct uci_section *)data, "origin", &val);
 	if (val)
 		*value = dmuci_list_to_string(val, " ");
 	else
@@ -286,16 +266,16 @@ int get_x_iopsys_eu_owsd_listenobj_origin(char *refparam, struct dmctx *ctx, voi
 int set_x_iopsys_eu_owsd_listenobj_origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *pch, *spch;
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
+
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_delete_by_section(owsd_listensection, "origin", NULL);
+			dmuci_delete_by_section((struct uci_section *)data, "origin", NULL);
 			value = dmstrdup(value);
 			pch = strtok_r(value, " ", &spch);
 			while (pch != NULL) {
-				dmuci_add_list_value_by_section(owsd_listensection, "origin", pch);
+				dmuci_add_list_value_by_section((struct uci_section *)data, "origin", pch);
 				pch = strtok_r(NULL, " ", &spch);
 			}
 			dmfree(value);
@@ -307,25 +287,23 @@ int set_x_iopsys_eu_owsd_listenobj_origin(char *refparam, struct dmctx *ctx, voi
 ////////////////////////SET AND GET ALIAS/////////////////////////////////
 int get_x_iopsys_eu_owsd_listenobj_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 	struct uci_section *dmmap_section;
 
-	get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name(owsd_listensection), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "olistenalias", value);
+	get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name((struct uci_section *)data), &dmmap_section);
+	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "olistenalias", value);
 	return 0;
 }
 
 int set_x_iopsys_eu_owsd_listenobj_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 	struct uci_section *dmmap_section;
 
-	get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name(owsd_listensection), &dmmap_section);
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(dmmap_section, "olistenalias", value);
+			get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name((struct uci_section *)data), &dmmap_section);
+			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "olistenalias", value);
 			return 0;
 	}
 	return 0;
@@ -405,19 +383,17 @@ int set_x_iopsys_eu_owsd_ubus_proxy_ca(char *refparam, struct dmctx *ctx, void *
 
 int get_x_iopsys_eu_owsd_ubus_cert(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 	char *net_cur_mode = NULL;
 	dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
 
-	if(strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-		dmuci_get_value_by_section_string(owsd_listensection, "cert", value);
+	if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
+		dmuci_get_value_by_section_string((struct uci_section *)data, "cert", value);
 	}
 	return 0;
 }
 
 int set_x_iopsys_eu_owsd_ubus_cert(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 	char *net_cur_mode = NULL;
 
 	switch (action) {
@@ -425,9 +401,9 @@ int set_x_iopsys_eu_owsd_ubus_cert(char *refparam, struct dmctx *ctx, void *data
 			return 0;
 		case VALUESET:
 			dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-			if(strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")){
-				if(strcmp(section_name(owsd_listensection), "wan_https")== 0)
-					dmuci_set_value_by_section(owsd_listensection, "cert", value);
+			if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
+				if (strcmp(section_name((struct uci_section *)data), "wan_https")== 0)
+					dmuci_set_value_by_section((struct uci_section *)data, "cert", value);
 			}
 			return 0;
 	}
@@ -436,19 +412,17 @@ int set_x_iopsys_eu_owsd_ubus_cert(char *refparam, struct dmctx *ctx, void *data
 
 int get_x_iopsys_eu_owsd_ubus_key(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 	char *net_cur_mode= NULL;
 
 	dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-	if(strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-		dmuci_get_value_by_section_string(owsd_listensection, "key", value);
+	if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
+		dmuci_get_value_by_section_string((struct uci_section *)data, "key", value);
 	}
 	return 0;
 }
 
 int set_x_iopsys_eu_owsd_ubus_key(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 	char *net_cur_mode = NULL;
 
 	switch (action) {
@@ -456,9 +430,9 @@ int set_x_iopsys_eu_owsd_ubus_key(char *refparam, struct dmctx *ctx, void *data,
 			return 0;
 		case VALUESET:
 			dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-			if(strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-				if(strcmp(section_name(owsd_listensection), "wan_https")== 0)
-					dmuci_set_value_by_section(owsd_listensection, "key", value);
+			if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
+				if(strcmp(section_name((struct uci_section *)data), "wan_https") == 0)
+					dmuci_set_value_by_section((struct uci_section *)data, "key", value);
 			}
 			return 0;
 	}
@@ -467,19 +441,17 @@ int set_x_iopsys_eu_owsd_ubus_key(char *refparam, struct dmctx *ctx, void *data,
 
 int get_x_iopsys_eu_owsd_ubus_ca(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 	char *net_cur_mode = NULL;
 
 	dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-	if(strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")){
-		dmuci_get_value_by_section_string(owsd_listensection, "ca", value);
+	if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
+		dmuci_get_value_by_section_string((struct uci_section *)data, "ca", value);
 	}
 	return 0;
 }
 
 int set_x_iopsys_eu_owsd_ubus_ca(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
 	char *net_cur_mode = NULL;
 
 	switch (action) {
@@ -487,9 +459,9 @@ int set_x_iopsys_eu_owsd_ubus_ca(char *refparam, struct dmctx *ctx, void *data, 
 			return 0;
 		case VALUESET:
 			dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-			if(strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-				if(strcmp(section_name(owsd_listensection), "wan_https")== 0)
-					dmuci_set_value_by_section(owsd_listensection, "ca", value);
+			if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
+				if (strcmp(section_name((struct uci_section *)data), "wan_https") == 0)
+					dmuci_set_value_by_section((struct uci_section *)data, "ca", value);
 			}
 			return 0;
 	}
@@ -499,9 +471,8 @@ int set_x_iopsys_eu_owsd_ubus_ca(char *refparam, struct dmctx *ctx, void *data, 
 /***** ADD DEL OBJ *******/
 int add_owsd_listen(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
-	char *value, *v;
-	char *instance;
-	struct uci_section *listen_sec = NULL, *dmmap_sec= NULL;
+	char *value, *v, *instance;
+	struct uci_section *listen_sec = NULL, *dmmap_sec = NULL;
 
 	check_create_dmmap_package("dmmap_owsd");
 	instance = get_last_instance_bbfdm("dmmap_owsd", "owsd-listen", "olisteninstance");
@@ -520,40 +491,35 @@ int add_owsd_listen(char *refparam, struct dmctx *ctx, void *data, char **instan
 
 int delete_owsd_listen_instance(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct uci_section *s = NULL;
-	struct uci_section *ss = NULL;
-	struct uci_section *owsd_listensection = (struct uci_section *)data;
-	struct uci_section *dmmap_section;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_section;
 
 	int found = 0;
 	switch (del_action) {
 		case DEL_INST:
-			if(is_section_unnamed(section_name(owsd_listensection))){
+			if (is_section_unnamed(section_name((struct uci_section *)data))) {
 				LIST_HEAD(dup_list);
-				delete_sections_save_next_sections("dmmap_owsd", "owsd-listen", "olisteninstance", section_name(owsd_listensection), atoi(instance), &dup_list);
+				delete_sections_save_next_sections("dmmap_owsd", "owsd-listen", "olisteninstance", section_name((struct uci_section *)data), atoi(instance), &dup_list);
 				update_dmmap_sections(&dup_list, "olisteninstance", "dmmap_owsd", "owsd-listen");
-				dmuci_delete_by_section_unnamed(owsd_listensection, NULL, NULL);
+				dmuci_delete_by_section_unnamed((struct uci_section *)data, NULL, NULL);
 			} else {
-				get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name(owsd_listensection), &dmmap_section);
-				dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
-				dmuci_delete_by_section(owsd_listensection, NULL, NULL);
+				get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name((struct uci_section *)data), &dmmap_section);
+				if (dmmap_section) dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
+				dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			}
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("owsd", "owsd-listen", s) {
-				if (found != 0){
+				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_owsd", "listen", section_name(s), &dmmap_section);
-					if(dmmap_section != NULL)
-						dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_owsd", "listen", section_name(ss), &dmmap_section);
-				if(dmmap_section != NULL)
-					dmuci_delete_by_section(dmmap_section, NULL, NULL);
+				if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			return 0;

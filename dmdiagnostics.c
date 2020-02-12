@@ -9,21 +9,7 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <pthread.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <netinet/if_ether.h>
-#include <arpa/inet.h>
 #include <libtrace.h>
-#include <libpacketdump.h>
-#include <inttypes.h>
-#include <assert.h>
-#include <getopt.h>
-#include <libbbf_api/dmcommon.h>
 #include "dmdiagnostics.h"
 
 int read_next;
@@ -162,10 +148,7 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 	struct tm lt;
 	struct timeval ts;
 	libtrace_tcp_t *tcp;
-	uint32_t seq = 0;
-	char tcp_flag[16] = "";
-	char *nexthdr;
-	char s_now[default_date_size];
+	char *nexthdr, tcp_flag[16] = "", s_now[default_date_size];
 	uint8_t proto;
 	uint32_t remaining;
 
@@ -185,8 +168,7 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 	if (tcp->ack) strcat(tcp_flag, "ACK ");
 	if (tcp->urg) strcat(tcp_flag, "URG ");
 
-	if (strcmp(tcp_flag, "SYN ") == 0 && download_stats.random_seq == 0)
-	{
+	if (strcmp(tcp_flag, "SYN ") == 0 && download_stats.random_seq == 0) {
     	ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
@@ -194,8 +176,8 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 		download_stats.random_seq = ntohl(tcp->seq);
 		return;
 	}
-	if (strcmp(tcp_flag, "SYN ACK ") == 0 && download_stats.random_seq != 0 && (ntohl(tcp->ack_seq) - 1 ) == download_stats.random_seq)
-	{
+
+	if (strcmp(tcp_flag, "SYN ACK ") == 0 && download_stats.random_seq != 0 && (ntohl(tcp->ack_seq) - 1 ) == download_stats.random_seq) {
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
@@ -203,8 +185,8 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 		download_stats.random_seq = ntohl(tcp->seq);
 		return;
 	}
-	if (strcmp(tcp_flag, "PSH ACK ") == 0 && strncmp(nexthdr, "GET", 3) == 0)
-	{
+
+	if (strcmp(tcp_flag, "PSH ACK ") == 0 && strncmp(nexthdr, "GET", 3) == 0) {
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
@@ -212,18 +194,17 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 		download_stats.get_ack = ntohl(tcp->ack_seq);
 		return;
 	}
-	if(strcmp(tcp_flag, "ACK ") == 0 && ntohl(tcp->seq) == download_stats.get_ack && download_stats.ack_seq == 0)
-	{
+
+	if(strcmp(tcp_flag, "ACK ") == 0 && ntohl(tcp->seq) == download_stats.get_ack && download_stats.ack_seq == 0) {
 		download_stats.ack_seq = ntohl(tcp->ack_seq);
 		return;
 	}
-	if(strcmp(tcp_flag, "ACK ") == 0 && ntohl(tcp->ack_seq) == download_stats.ack_seq )
-	{
+
+	if(strcmp(tcp_flag, "ACK ") == 0 && ntohl(tcp->ack_seq) == download_stats.ack_seq ) {
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		if (download_stats.first_data == 0)
-		{
+		if (download_stats.first_data == 0) {
 			sprintf((download_stats.bomtime),"%s.%06ld", s_now, (long) ts.tv_usec);
 			char *val = strstr(nexthdr,"Content-Length");
 			char *pch, *pchr;
@@ -234,13 +215,12 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 		}
 		return;
 	}
-	if ( (strcmp(tcp_flag, "PSH ACK ") == 0 || strcmp(tcp_flag, "FIN PSH ACK ") == 0) &&  ntohl(tcp->ack_seq) == download_stats.ack_seq)
-	{
+
+	if ( (strcmp(tcp_flag, "PSH ACK ") == 0 || strcmp(tcp_flag, "FIN PSH ACK ") == 0) &&  ntohl(tcp->ack_seq) == download_stats.ack_seq) {
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		if (download_stats.first_data == 0)
-		{
+		if (download_stats.first_data == 0) {
 			sprintf((download_stats.bomtime),"%s.%06ld", s_now, (long) ts.tv_usec);
 			char *val = strstr(nexthdr,"Content-Length");
 			char *pch, *pchr;
@@ -554,22 +534,16 @@ int extract_stats(char *dump_file, int proto, int diagnostic_type, char *protoco
 	return 0;
 }
 
-int get_default_gateway_device( char **gw )
+int get_default_gateway_device(char **gw)
 {
-    FILE *f;
-    char line[100], *p, *c, *saveptr;
-
-    f = fopen("/proc/net/route" , "r");
-	if (f != NULL)
-	{
-		while(fgets(line , 100 , f))
-		{
+    FILE *f = fopen("/proc/net/route" , "r");
+	if (f != NULL) {
+		char line[100], *p, *c, *saveptr;
+		while(fgets(line , 100 , f)) {
 			p = strtok_r(line, " \t", &saveptr);
 			c = strtok_r(NULL, " \t", &saveptr);
-			if(p!=NULL && c!=NULL)
-			{
-				if(strcmp(c, "00000000") == 0)
-				{
+			if(p!=NULL && c!=NULL) {
+				if(strcmp(c, "00000000") == 0) {
 					dmasprintf(gw, "%s", p);
 					fclose(f);
 					return 0;
@@ -583,30 +557,25 @@ int get_default_gateway_device( char **gw )
 
 int start_upload_download_diagnostic(int diagnostic_type)
 {
-	char *url = NULL;
-	char *interface = NULL;
-	char *size = NULL;
+	char *url, *interface, *size, *status;
 	int error;
-	char *status;
 
 	if (diagnostic_type == DOWNLOAD_DIAGNOSTIC) {
 		dmuci_get_varstate_string("cwmp", "@downloaddiagnostic[0]", "url", &url);
 		dmuci_get_varstate_string("cwmp", "@downloaddiagnostic[0]", "device", &interface);
-	}
-	else {
+	} else {
 		dmuci_get_varstate_string("cwmp", "@uploaddiagnostic[0]", "url", &url);
 		dmuci_get_varstate_string("cwmp", "@uploaddiagnostic[0]", "TestFileLength", &size);
 		dmuci_get_varstate_string("cwmp", "@uploaddiagnostic[0]", "device", &interface);
 	}
 
-	if ( interface == NULL || interface[0] == '\0' )
-	{
+	if (interface[0] == '\0') {
 		error = get_default_gateway_device(&interface);
 		if (error == -1)
 			return -1;
 	}
-	if (diagnostic_type == DOWNLOAD_DIAGNOSTIC)
-	{
+
+	if (diagnostic_type == DOWNLOAD_DIAGNOSTIC) {
 		//Free uci_varstate_ctx
 		end_uci_varstate_ctx();
 
@@ -617,19 +586,15 @@ int start_upload_download_diagnostic(int diagnostic_type)
 
 		dmuci_get_varstate_string("cwmp", "@downloaddiagnostic[0]", "url", &url);
 		dmuci_get_varstate_string("cwmp", "@downloaddiagnostic[0]", "DiagnosticState", &status);
-		if (status && strcmp(status, "Completed") == 0)
-		{
+		if (status && strcmp(status, "Completed") == 0) {
 			init_download_stats();
-			if(strncmp(url,DOWNLOAD_UPLOAD_PROTOCOL_HTTP,strlen(DOWNLOAD_UPLOAD_PROTOCOL_HTTP)) == 0)
+			if(strncmp(url, DOWNLOAD_UPLOAD_PROTOCOL_HTTP, strlen(DOWNLOAD_UPLOAD_PROTOCOL_HTTP)) == 0)
 				extract_stats(DOWNLOAD_DUMP_FILE, DOWNLOAD_DIAGNOSTIC_HTTP, DOWNLOAD_DIAGNOSTIC, "usp");
-			if(strncmp(url,DOWNLOAD_UPLOAD_PROTOCOL_FTP,strlen(DOWNLOAD_UPLOAD_PROTOCOL_FTP)) == 0)
+			if(strncmp(url, DOWNLOAD_UPLOAD_PROTOCOL_FTP, strlen(DOWNLOAD_UPLOAD_PROTOCOL_FTP)) == 0)
 				extract_stats(DOWNLOAD_DUMP_FILE, DOWNLOAD_DIAGNOSTIC_FTP, DOWNLOAD_DIAGNOSTIC, "usp");
-		}
-		else if (status && strncmp(status, "Error_", strlen("Error_")) == 0)
+		} else if (status && strncmp(status, "Error_", strlen("Error_")) == 0)
 			return -1;
-	}
-	else
-	{
+	} else {
 		//Free uci_varstate_ctx
 		end_uci_varstate_ctx();
 
@@ -640,15 +605,13 @@ int start_upload_download_diagnostic(int diagnostic_type)
 
 		dmuci_get_varstate_string("cwmp", "@uploaddiagnostic[0]", "url", &url);
 		dmuci_get_varstate_string("cwmp", "@uploaddiagnostic[0]", "DiagnosticState", &status);
-		if (status && strcmp(status, "Completed") == 0)
-		{
+		if (status && strcmp(status, "Completed") == 0) {
 			init_upload_stats();
-			if(strncmp(url,DOWNLOAD_UPLOAD_PROTOCOL_HTTP,strlen(DOWNLOAD_UPLOAD_PROTOCOL_HTTP)) == 0)
+			if(strncmp(url, DOWNLOAD_UPLOAD_PROTOCOL_HTTP, strlen(DOWNLOAD_UPLOAD_PROTOCOL_HTTP)) == 0)
 				extract_stats(UPLOAD_DUMP_FILE, DOWNLOAD_DIAGNOSTIC_HTTP, UPLOAD_DIAGNOSTIC, "usp");
-			if(strncmp(url,DOWNLOAD_UPLOAD_PROTOCOL_FTP,strlen(DOWNLOAD_UPLOAD_PROTOCOL_FTP)) == 0)
+			if(strncmp(url, DOWNLOAD_UPLOAD_PROTOCOL_FTP, strlen(DOWNLOAD_UPLOAD_PROTOCOL_FTP)) == 0)
 				extract_stats(UPLOAD_DUMP_FILE, DOWNLOAD_DIAGNOSTIC_FTP, UPLOAD_DIAGNOSTIC, "usp");
-		}
-		else if (status && strncmp(status, "Error_", strlen("Error_")) == 0)
+		} else if (status && strncmp(status, "Error_", strlen("Error_")) == 0)
 			return -1;
 	}
 	return 0;

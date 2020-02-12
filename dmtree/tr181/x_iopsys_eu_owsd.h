@@ -13,6 +13,7 @@
 #ifndef __SE_OWSD_H
 #define __SE_OWSD_H
 
+#include <libbbf_api/dmcommon.h>
 
 extern DMLEAF XIopsysEuOwsdParams[];
 extern DMOBJ XIopsysEuOwsdObj[];

@@ -13,6 +13,8 @@
 #ifndef __SE_IPACCCFG_H
 #define __SE_IPACCCFG_H
 
+#include <libbbf_api/dmcommon.h>
+
 extern DMOBJ tSe_IpAccObj[];
 extern DMLEAF tSe_IpAccCfgParam[];
 extern DMLEAF tSe_PortForwardingParam[];

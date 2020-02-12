@@ -9,13 +9,6 @@
  *
  */ 
 
-#include <uci.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
 #include "x_iopsys_eu_igmp.h"
 
 DMLEAF tSe_IgmpParam[] = {
@@ -71,7 +64,6 @@ int get_igmp_proxy_interface(char *refparam, struct dmctx *ctx, void *data, char
 
 int set_igmp_proxy_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	int i;
 	char *p;
 
 	switch (action) {
@@ -387,7 +379,6 @@ int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *data, c
 
 int set_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	int i;
 	char *p;
 	
 	switch (action) {

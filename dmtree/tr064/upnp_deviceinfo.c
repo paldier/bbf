@@ -9,16 +9,10 @@
  *
  */
 
-#include <stdio.h>
-#include <libbbf_api/dmbbf.h>
 #include "upnp_deviceinfo.h"
 #include <sys/utsname.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmmem.h>
 #include <libbbf_api/dmcommon.h>
-#include <uci.h>
 #include "upnp_common.h"
-#include<stdbool.h>
 
 int upnp_browseNetworkInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance);
 
@@ -93,14 +87,15 @@ DMLEAF upnpDeviceIdParams[] =  {
 * /UPnP/DM/DeviceInfo/* parameters functions
 *
 ***************************************************************************/
-
-int upnp_deviceinfo_get_provisionning_code(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_provisionning_code(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	dmuci_get_option_value_string("cwmp", "cpe", "provisioning_code", value);
 	return 0;
 }
 
-int upnp_deviceinfo_get_software_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
-	char *v = NULL, *tmp = NULL, *val = NULL;
+int upnp_deviceinfo_get_software_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	char *v = NULL, *tmp = NULL;
 
 	db_get_value_string("hw", "board", "iopVersion", &v);
 	if(v == NULL || strlen(v)<=0) {
@@ -112,7 +107,8 @@ int upnp_deviceinfo_get_software_version(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-int upnp_deviceinfo_get_software_description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_software_description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
     struct utsname unameData;
     uname(&unameData);
 
@@ -120,7 +116,8 @@ int upnp_deviceinfo_get_software_description(char *refparam, struct dmctx *ctx, 
 	return 0;
 }
 
-int upnp_deviceinfo_get_up_time(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_up_time(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	FILE* fp = NULL;
 	char *pch = NULL, *spch = NULL;
 	char buf[64];
@@ -137,7 +134,8 @@ int upnp_deviceinfo_get_up_time(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int upnp_deviceinfo_get_hardware_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_hardware_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	db_get_value_string("hw", "board", "hardwareVersion", value);
 	return 0;
 }
@@ -148,7 +146,8 @@ int upnp_deviceinfo_get_network_interface_number_entries(char *refparam, struct 
 	return 0;
 }
 
-int upnp_deviceinfo_get_manufacturer_oui(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_manufacturer_oui(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	dmuci_get_option_value_string("cwmp", "cpe", "override_oui", value);
 	if(*value == NULL || strlen(value)<=0) {
 		*value = NULL;
@@ -160,7 +159,8 @@ int upnp_deviceinfo_get_manufacturer_oui(char *refparam, struct dmctx *ctx, void
 }
 
 
-int upnp_deviceinfo_get_product_class(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_product_class(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	char *v = NULL, *tmp = NULL, *val = NULL;
 
 	db_get_value_string("hw", "board", "iopVerBoard", &v);
@@ -173,32 +173,39 @@ int upnp_deviceinfo_get_product_class(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-int upnp_deviceinfo_get_serial_number(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_serial_number(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	db_get_value_string("hw", "board", "serialNumber", value);
 	return 0;
 }
 
-int upnp_deviceinfo_get_system_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_system_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	return 0;
 }
 
-int upnp_deviceinfo_get_mac_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_mac_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	return 0;
 }
 
-int upnp_deviceinfo_get_interface_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_interface_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	return 0;
 }
 
-int upnp_deviceinfo_get_will_reboot(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_will_reboot(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	return 0;
 }
 
-int upnp_deviceinfo_get_will_base_line_reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_will_base_line_reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	return 0;
 }
 
-int upnp_deviceinfo_get_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int upnp_deviceinfo_get_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	return 0;
 }
 
@@ -221,7 +228,6 @@ int upnp_deviceinfo_set_provisionning_code(char *refparam, struct dmctx *ctx, vo
  * MultiInstance objects browsing functions
  *
  *************************************************/
-
 int upnp_deviceinfo_networkinterface_createinstance(char *refparam, struct dmctx *ctx, void *data, char **instance){
 	char *value = NULL;
 	char *iface_instance = NULL, ib[8], ip_name[32];
@@ -241,7 +247,8 @@ int upnp_deviceinfo_networkinterface_createinstance(char *refparam, struct dmctx
 	return 0;
 }
 
-int upnp_deviceinfo_networkinterface_deleteinstance(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action){
+int upnp_deviceinfo_networkinterface_deleteinstance(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+{
 	switch (del_action) {
 	case DEL_INST:
 		dmuci_set_value_by_section(((struct upnp_dvinf_args *)data)->upnp_deviceinfo_sec, "proto", "");
@@ -260,7 +267,8 @@ int upnp_deviceinfo_networkinterface_deleteinstance(char *refparam, struct dmctx
 	return 0;
 }
 
-int upnp_browseNetworkInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance){
+int upnp_browseNetworkInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+{
 	struct uci_section *net_sec = NULL;
 	char *iface_int = NULL, *iface_int_last = NULL, *interfaceType = NULL, *macAddress = NULL;
 	struct upnp_dvinf_args curr_upnp_deviceinfo_args = {0};
@@ -274,4 +282,5 @@ int upnp_browseNetworkInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, vo
 		iface_int = handle_update_instance(1, dmctx, &iface_int_last, update_instance_alias, 3, net_sec, "upnp_iface_int_instance", "upnp_iface_int_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_upnp_deviceinfo_args, iface_int) == DM_STOP) break;
 	}
+	return 0;
 }

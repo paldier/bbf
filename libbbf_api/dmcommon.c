@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 iopsys Software Solutions AB
+ * Copyright (C) 2020 iopsys Software Solutions AB
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 2.1
@@ -8,33 +8,10 @@
  *		Author: Imen Bhiri <imen.bhiri@pivasoftware.com>
  *		Author: Feten Besbes <feten.besbes@pivasoftware.com>
  *		Author: Omar Kallel <omar.kallel@pivasoftware.com>
- *		Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
+ *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#include <arpa/inet.h>
-#include <glob.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <uci.h>
-#include <ctype.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <net/if_arp.h>
-
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
 #include "dmcommon.h"
-#include "dmjson.h"
 
 char *array_notifcation_char[__MAX_notification] = {
 	[notification_none] = "0",
@@ -45,68 +22,6 @@ char *array_notifcation_char[__MAX_notification] = {
 	[notification_aactive_lw] = "5",
 	[notification_passive_active_lw] = "6",
 };
-
-int set_uci_dhcpserver_option(struct dmctx *ctx, struct uci_section *s, char *option, char *value)
-{
-	struct uci_list *v;
-	struct uci_element *e, *tmp;
-	char *pch, *spch, bufopt[8];
-	int len = 0;
-	if (value == NULL)
-		return -1;
-
-	dmuci_get_value_by_section_list(s, "dhcp_option", &v);
-	if (v != NULL) {
-		uci_foreach_element(v, e) {
-			pch = strchr(e->name, ',');
-			if (pch) {
-				len = pch - e->name;
-				strncpy(bufopt, e->name, len);
-				bufopt[len] = '\0';
-				if (strcmp(bufopt, option) == 0) {
-					dmuci_del_list_value_by_section(s, "dhcp_option", e->name);
-					break;
-				}
-			}
-		}
-	}
-	if (value[0] != '\0') {
-		dmasprintf(&spch, "%s,%s", option, value);
-		dmuci_add_list_value_by_section(s, "dhcp_option", spch);
-	}
-	return 0;
-}
-
-int update_uci_dhcpserver_option(struct dmctx *ctx, struct uci_section *s, char *option, char *new_option, char *value)
-{
-	struct uci_list *v;
-	struct uci_element *e, *tmp;
-	char *pch, *spch, bufopt[8];
-	int len = 0;
-	if (value == NULL)
-		return -1;
-
-	dmuci_get_value_by_section_list(s, "dhcp_option", &v);
-	if (v != NULL) {
-		uci_foreach_element(v, e) {
-			pch = strchr(e->name, ',');
-			if (pch[0] != '\0' && strcmp(++pch, value) == 0) {
-				len = pch - e->name - 1;
-				strncpy(bufopt, e->name, len);
-				bufopt[len] = '\0';
-				if (strcmp(bufopt, option) == 0) {
-					dmuci_del_list_value_by_section(s, "dhcp_option", e->name);
-					break;
-				}
-			}
-		}
-	}
-	if (value[0] != '\0') {
-		dmasprintf(&spch, "%s,%s", new_option, value);
-		dmuci_add_list_value_by_section(s, "dhcp_option", spch);
-	}
-	return 0;
-}
 
 void compress_spaces(char *str)
 {
@@ -121,12 +36,13 @@ void compress_spaces(char *str)
 	}
 	*dst = '\0';
 }
+
 char *cut_fx(char *str, char *delimiter, int occurence)
 {
 	int i = 1;
 	char *pch, *spch;
 	pch = strtok_r(str, delimiter, &spch);
-	while (pch != NULL && i<occurence) {
+	while (pch != NULL && i < occurence) {
 		i++;
 		pch = strtok_r(NULL, delimiter, &spch);
 	}
@@ -145,9 +61,9 @@ unsigned char dmisnumeric(char *nbr)
 
 /* int strstructered(char *str1, char *str2)
  * Return:
- * STRUCTERED_SAME: if str1 is same of str2 (with # match any number)
- * STRUCTERED_PART: if str2 is part of str1 (with # match any number)
- * STRUCTERED_NULL: if str2 is not part of str1 (with # match any number)
+ * STRUCTERED_SAME: if str1 is same of str2
+ * STRUCTERED_PART: if str2 is part of str1
+ * STRUCTERED_NULL: if str2 is not part of str1
  *
  */
 int strstructered(char *str1, char *str2)
@@ -165,8 +81,7 @@ int strstructered(char *str1, char *str2)
 			buf[i] = '\0';
 			if (dmisnumeric(buf))
 				continue;
-		}
-		else if (*str1 == '#') {
+		} else if (*str1 == '#') {
 			i = 0;
 			do {
 				buf[i++] = *str2;
@@ -233,8 +148,6 @@ char *cidr2netmask(int bits)
 	uint32_t mask;
 	struct in_addr ip_addr;
 	uint8_t u_bits = (uint8_t)bits;
-	char *netmask;
-	char tmp[32] = {0};
 
 	mask = ((0xFFFFFFFFUL << (32 - u_bits)) & 0xFFFFFFFFUL);
 	mask = htonl(mask);
@@ -245,7 +158,7 @@ char *cidr2netmask(int bits)
 void remove_substring(char *s, const char *str_remove)
 {
 	int len = strlen(str_remove);
-	while (s = strstr(s, str_remove)) {
+	while (s == strstr(s, str_remove)) {
 		memmove(s, s+len, 1+strlen(s+len));
     }
 }
@@ -261,102 +174,6 @@ bool is_strword_in_optionvalue(char *optionvalue, char *str)
 		s++;
 	}
 	return false;
-}
-
-int get_interface_enable_ubus(char *iface, char *refparam, struct dmctx *ctx, char **value)
-{
-	json_object *res;
-
-	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", iface, String}}, 1, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "up");
-	return 0;
-}
-
-int set_interface_enable_ubus(char *iface, char *refparam, struct dmctx *ctx, int action, char *value)
-{
-	bool b;
-	char *ubus_object;
-
-	switch (action) {
-		case VALUECHECK:
-			if (string_to_bool(value, &b))
-				return FAULT_9007;
-			return 0;
-		case VALUESET:
-			string_to_bool(value, &b);
-			dmastrcat(&ubus_object, "network.interface.", iface);
-			if(b) {
-				dmubus_call_set(ubus_object, "up", UBUS_ARGS{}, 0);
-			}
-			else
-				dmubus_call_set(ubus_object, "down", UBUS_ARGS{}, 0);
-			dmfree(ubus_object);
-			return 0;
-	}
-	return 0;
-}
-
-int get_interface_firewall_enabled(char *iface, char *refparam, struct dmctx *ctx, char **value)
-{
-	char *input = "", *forward = "";
-	struct uci_section *s = NULL;
-
-	uci_foreach_option_cont("firewall", "zone", "network", iface, s) {
-		dmuci_get_value_by_section_string(s, "input", &input);
-		dmuci_get_value_by_section_string(s, "forward", &forward);
-		if (strcmp(input, "ACCEPT") !=0 && strcmp(forward, "ACCEPT") !=0) {
-			*value = "1";
-			return 0;
-		}
-	}
-	*value = "0";
-	return 0;
-}
-
-struct uci_section *create_firewall_zone_config(char *fwl, char *iface, char *input, char *forward, char *output)
-{
-	struct uci_section *s;
-	char *value, *name;
-	
-	dmuci_add_section_and_rename("firewall", "zone", &s, &value);
-	dmasprintf(&name, "%s_%s", fwl, iface);
-	dmuci_set_value_by_section(s, "name", name);
-	dmuci_set_value_by_section(s, "input", input);
-	dmuci_set_value_by_section(s, "forward", forward);
-	dmuci_set_value_by_section(s, "output", output);
-	dmuci_set_value_by_section(s, "network", iface);
-	dmfree(name);
-	return s;
-}
-
-int set_interface_firewall_enabled(char *iface, char *refparam, struct dmctx *ctx, int action, char *value)
-{
-	bool b;
-	int cnt = 0;
-	struct uci_section *s = NULL;
-
-	switch (action) {
-		case VALUECHECK:
-			if (string_to_bool(value, &b))
-				return FAULT_9007;
-			return 0;
-		case VALUESET:
-			string_to_bool(value, &b);
-			if (b)
-				value = "DROP";
-			else
-				value = "ACCEPT";
-			uci_foreach_option_cont("firewall", "zone", "network", iface, s) {
-				dmuci_set_value_by_section(s, "input", value);
-				dmuci_set_value_by_section(s, "forward", value);
-				cnt++;
-			}
-			if (cnt == 0 && b)
-				create_firewall_zone_config("fwl", iface, "DROP", "DROP", "ACCEPT");
-			return 0;
-	}
-	return 0;
 }
 
 int dmcmd(char *cmd, int n, ...)
@@ -413,9 +230,9 @@ int dmcmd_no_wait(char *cmd, int n, ...)
 {
 	va_list arg;
 	int i, pid;
-	static int dmcmd_pfds[2];
 	char *argv[n+2];
 	static char sargv[4][128];
+
 	argv[0] = cmd;
 	va_start(arg,n);
 	for (i=0; i<n; i++)
@@ -440,7 +257,6 @@ int dmcmd_no_wait(char *cmd, int n, ...)
 
 void dmcmd_read_alloc(int pipe, char **value)
 {
-	char *c = NULL;
 	char buffer[64];
 	ssize_t rxed;
 	int t, len = 1;
@@ -464,8 +280,7 @@ int dmcmd_read(int pipe, char *buffer, int size)
 	if ((rd = read(pipe, buffer, (size-1))) > 0) {
 		buffer[rd] = '\0';
 		return (rd + 1);
-	}
-	else {
+	} else {
 		buffer[0] = '\0';
 		return -1;
 	}
@@ -474,14 +289,8 @@ int dmcmd_read(int pipe, char *buffer, int size)
 
 int ipcalc(char *ip_str, char *mask_str, char *start_str, char *end_str, char *ipstart_str, char *ipend_str)
 {
-//TODO test it in accordance with inteno issue #7467
-	struct in_addr ip;
-	struct in_addr mask;
-	struct in_addr ups;
-	struct in_addr upe;
+	struct in_addr ip, mask, ups, upe;
 	int start, end;
-	unsigned int umask;
-	unsigned int addr;
 
 	inet_aton(ip_str, &ip);
 	inet_aton(mask_str, &mask);
@@ -501,14 +310,8 @@ int ipcalc(char *ip_str, char *mask_str, char *start_str, char *end_str, char *i
 
 int ipcalc_rev_start(char *ip_str, char *mask_str, char *ipstart_str, char *start_str)
 {
-//TODO test it in accordance with inteno issue #7467
-	struct in_addr ip;
-	struct in_addr mask;
-	struct in_addr ups;
-	struct in_addr upe;
+	struct in_addr ip, mask, ups;
 	int start;
-	unsigned int umask;
-	unsigned int addr;
 
 	inet_aton(ip_str, &ip);
 	inet_aton(mask_str, &mask);
@@ -521,7 +324,6 @@ int ipcalc_rev_start(char *ip_str, char *mask_str, char *ipstart_str, char *star
 
 int ipcalc_rev_end(char *ip_str, char *mask_str, char *start_str, char *ipend_str, char *end_str)
 {
-//TODO test it in accordance with inteno issue #7467
 	struct in_addr ip;
 	struct in_addr mask;
 	struct in_addr upe;
@@ -551,8 +353,7 @@ int network_get_ipaddr(char **value, char *iface)
 	if((*value)[0] == '\0' || ipv6_value[0] == '\0') {
 		if ((*value)[0] == '\0')
 			*value = ipv6_value;
-	}
-	else if (ip_version == 6) {
+	} else if (ip_version == 6) {
 		*value = ipv6_value;
 		return 0;
 	}
@@ -561,7 +362,7 @@ int network_get_ipaddr(char **value, char *iface)
 
 void remove_vid_interfaces_from_ifname(char *vid, char *ifname, char *new_ifname)
 {
-	char *sv, *pch, *p = new_ifname, *spch;
+	char *pch, *p = new_ifname, *spch;
 	new_ifname[0] = '\0';
 	bool append;
 
@@ -575,15 +376,13 @@ void remove_vid_interfaces_from_ifname(char *vid, char *ifname, char *new_ifname
 			if (strcmp(sv, vid) != 0) {
 				append = true;
 			}
-		}
-		else {
+		} else {
 			append = true;
 		}
 		if (append) {
 			if (p == new_ifname) {
 				dmstrappendstr(p, pch);
-			}
-			else {
+			} else {
 				dmstrappendchr(p, ' ');
 				dmstrappendstr(p, pch);
 			}
@@ -596,22 +395,17 @@ void remove_vid_interfaces_from_ifname(char *vid, char *ifname, char *new_ifname
 
 void update_section_option_list(char *config, char *section, char *option, char *option_2,char *val, char *val_2, char *name)
 {
-	char *add_value;
-	int i = 0;
-	char *baseifname;
+	char *add_value, *baseifname;
 	struct uci_section *prev_s= NULL, *s;
-	char *instance = NULL, *last_instance  = NULL, *value;
 	bool add_sec = true;
 
 	if (name[0] == '\0') {
 		add_sec = false;
 	}
-		if (config == DMMAP)
-	{
+	if (strcmp(config, DMMAP) == 0) {
 		uci_path_foreach_option_eq(bbfdm, config, section, option_2, val_2, s) {
 			dmuci_get_value_by_section_string(s, option, &baseifname);
-			if (!strstr(name, baseifname))
-			{
+			if (!strstr(name, baseifname)) {
 				//delete section if baseifname  does not belong to ifname
 				if (prev_s) {
 					DMUCI_DELETE_BY_SECTION(bbfdm, prev_s, NULL, NULL);
@@ -630,13 +424,10 @@ void update_section_option_list(char *config, char *section, char *option, char 
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, option, val);
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, option_2, val_2);
 		}
-	}
-	else
-	{
+	} else {
 		uci_foreach_option_eq(config, section, option_2, val_2, s) {
 			dmuci_get_value_by_section_string(s, option, &baseifname);
-			if (!strstr(name, baseifname))
-			{
+			if (!strstr(name, baseifname)) {
 				//delete section if baseifname  does not belong to ifname
 				if (prev_s) {
 					dmuci_delete_by_section(prev_s, NULL, NULL);
@@ -912,18 +703,6 @@ int dmcommon_check_notification_value(char *value)
 	return -1;
 }
 
-char *print_bin(unsigned int n, char *buf, int sep)
-{
-	int i = 0, j;
-	for (j = 0; j < 32;  j++) {
-		if (j % sep == 0)
-			buf[i++] = ' ';
-		buf[i++] = (n & (1<<j)) ? '1' : '0';
-	}
-	buf[i] = '\0';
-	return buf;
-}
-
 void parse_proc_route_line(char *line, struct proc_routing *proute)
 {
 	char *pch, *spch;
@@ -970,7 +749,6 @@ void ip_to_hex(char *address, char *ret)
 void add_sectons_list_paramameter(struct list_head *dup_list, struct uci_section *config_section, struct uci_section *dmmap_section, void* additional_attribute)
 {
 	struct dmmap_dup *dmmap_config;
-	struct list_head *ilist;
 
 	dmmap_config = dmcalloc(1, sizeof(struct dmmap_dup));
 	list_add_tail(&dmmap_config->list, dup_list);
@@ -978,7 +756,6 @@ void add_sectons_list_paramameter(struct list_head *dup_list, struct uci_section
 	dmmap_config->dmmap_section = dmmap_section;
 	dmmap_config->additional_attribute = additional_attribute;
 }
-
 
 void dmmap_config_dup_delete(struct dmmap_dup *dmmap_config)
 {
@@ -997,13 +774,12 @@ void free_dmmap_config_dup_list(struct list_head *dup_list)
 /*
  * Function allows to synchronize config section with dmmap config
  */
-
 struct uci_section *get_origin_section_from_config(char *package, char *section_type, char *orig_section_name)
 {
 	struct uci_section *s;
 
 	uci_foreach_sections(package, section_type, s) {
-		if (strcmp(section_name(s), orig_section_name) == 0){
+		if (strcmp(section_name(s), orig_section_name) == 0) {
 			return s;
 		}
 	}
@@ -1014,8 +790,7 @@ struct uci_section *get_dup_section_in_dmmap(char *dmmap_package, char *section_
 {
 	struct uci_section *s;
 
-	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, "section_name", orig_section_name, s)
-	{
+	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, "section_name", orig_section_name, s) {
 		return s;
 	}
 
@@ -1026,8 +801,7 @@ struct uci_section *get_dup_section_in_dmmap_opt(char *dmmap_package, char *sect
 {
 	struct uci_section *s;
 
-	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, opt_name, opt_value, s)
-	{
+	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, opt_name, opt_value, s) {
 		return s;
 	}
 
@@ -1041,7 +815,7 @@ struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* secti
 
 	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, "section_name", sect_name, s) {
 		dmuci_get_value_by_section_string(s, opt_name, &v);
-		if(strcmp(v, opt_value)== 0)
+		if (strcmp(v, opt_value) == 0)
 			return s;
 	}
 	return NULL;
@@ -1081,7 +855,7 @@ void synchronize_specific_config_sections_with_dmmap(char *package, char *sectio
 	 */
 	uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &v);
-		if(get_origin_section_from_config(package, section_type, v) == NULL){
+		if (get_origin_section_from_config(package, section_type, v) == NULL) {
 			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
 		}
 	}
@@ -1309,7 +1083,6 @@ bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *s
 void add_sysfs_sectons_list_paramameter(struct list_head *dup_list, struct uci_section *dmmap_section, char *file_name, char* filepath)
 {
 	struct sysfs_dmsection *dmmap_sysfs;
-	struct list_head *ilist;
 
 	dmmap_sysfs = dmcalloc(1, sizeof(struct sysfs_dmsection));
 	list_add_tail(&dmmap_sysfs->list, dup_list);
@@ -1559,75 +1332,74 @@ char *dm_strword(char *src, char *str)
 
 char **strsplit(const char* str, const char* delim, size_t* numtokens)
 {
-    // copy the original string so that we don't overwrite parts of it
-    // (don't do this if you don't need to keep the old line,
-    // as this is less efficient)
-    char *s = strdup(str);
-    // these three variables are part of a very common idiom to
-    // implement a dynamically-growing array
-    size_t tokens_alloc = 1;
-    size_t tokens_used = 0;
-    char **tokens = calloc(tokens_alloc, sizeof(char*));
-    char *token, *strtok_ctx;
-    for (token = strtok_r(s, delim, &strtok_ctx);
-            token != NULL;
-            token = strtok_r(NULL, delim, &strtok_ctx)) {
-        // check if we need to allocate more space for tokens
-        if (tokens_used == tokens_alloc) {
-            tokens_alloc *= 2;
-            tokens = realloc(tokens, tokens_alloc * sizeof(char*));
-        }
-        tokens[tokens_used++] = strdup(token);
-    }
-    // cleanup
-    if (tokens_used == 0) {
-        free(tokens);
-        tokens = NULL;
-    } else {
-        tokens = realloc(tokens, tokens_used * sizeof(char*));
-    }
-    *numtokens = tokens_used;
-    free(s);
-    return tokens;
+	char *s = strdup(str);
+	size_t tokens_alloc = 1;
+	size_t tokens_used = 0;
+	char **tokens = calloc(tokens_alloc, sizeof(char*));
+	char *token, *strtok_ctx;
+	for (token = strtok_r(s, delim, &strtok_ctx); token != NULL; token = strtok_r(NULL, delim, &strtok_ctx)) {
+		if (tokens_used == tokens_alloc) {
+			tokens_alloc *= 2;
+			char **new_tokens = realloc(tokens, tokens_alloc * sizeof(char*));
+			if (new_tokens == NULL)
+				FREE(tokens);
+			else
+				tokens = new_tokens;
+		}
+		tokens[tokens_used++] = strdup(token);
+	}
+	if (tokens_used == 0) {
+		free(tokens);
+		tokens = NULL;
+	} else {
+		char **new_tokens = realloc(tokens, tokens_used * sizeof(char*));
+		if (new_tokens == NULL)
+			FREE(tokens);
+		else
+			tokens = new_tokens;
+	}
+	*numtokens = tokens_used;
+	free(s);
+	return tokens;
 }
 
 char **strsplit_by_str(const char str[], char *delim)
 {
-	char *substr= NULL; //strstr(str, delim);
+	char *substr = NULL;
 	size_t tokens_alloc = 1;
 	size_t tokens_used = 0;
 	char **tokens = calloc(tokens_alloc, sizeof(char*));
-	char *strparse= strdup(str);
+	char *strparse = strdup(str);
 	do {
-		substr= strstr(strparse, delim);
-		if(substr == NULL && (strparse == NULL || strparse[0] == '\0'))
+		substr = strstr(strparse, delim);
+		if (substr == NULL && (strparse == NULL || strparse[0] == '\0'))
 				break;
-		if(substr == NULL)
-		{
-			substr= strdup(strparse);
-			tokens[tokens_used]= calloc(strlen(substr)+1, sizeof(char));
+		if (substr == NULL) {
+			substr = strdup(strparse);
+			tokens[tokens_used] = calloc(strlen(substr)+1, sizeof(char));
 			strncpy(tokens[tokens_used], strparse, strlen(strparse));
-			free(strparse);
-			strparse= NULL;
+			FREE(strparse);
 			break;
 		}
 		if (tokens_used == tokens_alloc) {
-			if(strparse == NULL)
-					tokens_alloc++;
+			if (strparse == NULL)
+				tokens_alloc++;
 			else
-					tokens_alloc += 2;
-			tokens = realloc(tokens, tokens_alloc * sizeof(char*));
+				tokens_alloc += 2;
+			char **new_tokens = realloc(tokens, tokens_alloc * sizeof(char*));
+			if (new_tokens == NULL)
+				FREE(tokens);
+			else
+				tokens = new_tokens;
 		}
-		tokens[tokens_used]= calloc(substr-strparse+1, sizeof(char));
+		tokens[tokens_used] = calloc(substr-strparse+1, sizeof(char));
 		strncpy(tokens[tokens_used], strparse, substr-strparse);
 		tokens_used++;
-		free(strparse);
-		strparse= NULL;
-		strparse= strdup(substr+strlen(delim));
-	} while( substr != NULL);
+		FREE(strparse);
+		strparse = strdup(substr+strlen(delim));
+	} while (substr != NULL);
 	return tokens;
 }
-
 
 char *get_macaddr(char *interface_name)
 {
@@ -1714,8 +1486,8 @@ int is_array_elt_exist(char **str_array, char *str, int length)
 {
 	int i;
 
-	for(i=0; i<length; i++){
-		if(strcmp(str_array[i], str) == 0)
+	for (i = 0; i < length; i++){
+		if (strcmp(str_array[i], str) == 0)
 			return 1;
 	}
 	return 0;
@@ -1731,7 +1503,7 @@ int get_shift_time_time(int shift_time, char *local_time, int size)
 	if (t_tm == NULL)
 		return -1;
 
-	if(strftime(local_time, size, "%FT%T%z", t_tm) == 0)
+	if (strftime(local_time, size, "%FT%T%z", t_tm) == 0)
 		return -1;
 
 	local_time[25] = local_time[24];
@@ -1755,11 +1527,11 @@ int get_shift_time_shift(char *local_time, char *shift)
 int get_stats_from_ifconfig_command(char *device, char *direction, char *option)
 {
 	char buf[1024], *pch, *pchr, *ret;
-	int pp, r, stats = 0;
+	int pp, stats = 0;
 
 	pp = dmcmd("ifconfig", 1, device);
 	if (pp) {
-		r = dmcmd_read(pp, buf, 1024);
+		dmcmd_read(pp, buf, 1024);
 		for(pch = strtok_r(buf, "\n", &pchr); pch != NULL; pch = strtok_r(NULL, "\n", &pchr)) {
 			if(!strstr(pch, direction))
 				continue;
@@ -1802,12 +1574,12 @@ char* int_period_to_date_time_format(int time)
 {
 	char *datetime;
 	int seconds, minutes, hours, days;
-	minutes= time/60;
-	seconds= time%60;
-	hours= minutes/60;
-	minutes= minutes%60;
-    days= hours/24;
-    hours= hours%24;
+	minutes = time/60;
+	seconds = time%60;
+	hours = minutes/60;
+	minutes = minutes%60;
+    days = hours/24;
+    hours = hours%24;
     dmasprintf(&datetime, "%dT%d:%d:%d", days, hours, minutes, seconds);
 	return datetime;
 }
@@ -1845,8 +1617,7 @@ int copy_temporary_file_to_original_file(char *f1, char *f2)
 	  return 0;
 	}
 
-	while( fgets(buf, 512, ftmp) !=NULL )
-	{
+	while (fgets(buf, 512, ftmp) != NULL) {
 		fprintf(fp, "%s", buf);
 	}
 	fclose(ftmp);
@@ -1856,49 +1627,49 @@ int copy_temporary_file_to_original_file(char *f1, char *f2)
 
 char* readFileContent(char *filepath)
 {
-	char *str=NULL, *tmp= NULL, *res= NULL;
-	FILE *f = fopen(filepath, "rb");
-	int i, j= 0;
+	char *str = NULL, *tmp = NULL, *res = NULL;
+	int i, j = 0;
 
-	if(f==NULL)
+	FILE *f = fopen(filepath, "rb");
+	if (f == NULL)
 		return "";
 	fseek(f, 0, SEEK_END);
 	long fsize = ftell(f);
-	fseek(f, 0, SEEK_SET); //same as rewind(f);
+	fseek(f, 0, SEEK_SET);
 
 	char *filecontent = dmmalloc(fsize + 1);
 	fread(filecontent, 1, fsize, f);
 	fclose(f);
 
 	filecontent[fsize] = 0;
-	for(i=0; i<strlen(filecontent); i++){
-		if(filecontent[i]<48 || (filecontent[i]>57 && filecontent[i]<65) || (filecontent[i]>90 && filecontent[i]<91) || filecontent[i]>122){
-			if(!j)
+	for (i = 0; i < strlen(filecontent); i++) {
+		if (filecontent[i] < 48 || (filecontent[i] > 57 && filecontent[i] < 65) || (filecontent[i] > 90 && filecontent[i] < 91) || filecontent[i] > 122) {
+			if (!j)
 				continue;
 			else
 				break;
 		}
-		if (!tmp){
+		if (!tmp) {
 			dmasprintf(&str, "%c", filecontent[i]);
 			j++;
-			tmp= dmstrdup(str);
+			tmp = dmstrdup(str);
 			continue;
 		}
 		j++;
 		dmasprintf(&str, "%s%c", tmp, filecontent[i]);
 		if(tmp){
 			dmfree(tmp);
-			tmp= NULL;
+			tmp = NULL;
 		}
-		tmp= dmstrdup(str);
-		if(str!=NULL){
+		tmp = dmstrdup(str);
+		if (str != NULL) {
 			dmfree(str);
-			str= NULL;
+			str = NULL;
 		}
 	}
-	res= (char *)dmmalloc((j+1)*sizeof(char));
+	res = (char *)dmmalloc((j+1)*sizeof(char));
 	strcpy(res, tmp);
-	res[j]= 0;
+	res[j] = 0;
 	return res;
 
 }
@@ -1906,9 +1677,18 @@ char* readFileContent(char *filepath)
 void writeFileContent(const char *filepath, const char *data)
 {
     FILE *fp = fopen(filepath, "ab");
-    if (fp != NULL)
-    {
+    if (fp != NULL) {
         fputs(data, fp);
         fclose(fp);
     }
+}
+
+bool match(const char *string, const char *pattern)
+{
+	regex_t re;
+	if (regcomp(&re, pattern, REG_EXTENDED) != 0) return 0;
+	int status = regexec(&re, string, 0, NULL, 0);
+	regfree(&re);
+	if (status != 0) return false;
+	return true;
 }

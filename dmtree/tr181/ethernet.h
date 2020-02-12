@@ -13,6 +13,8 @@
 #ifndef __ETHERNET_H
 #define __ETHERNET_H
 
+#include <libbbf_api/dmcommon.h>
+
 struct eth_port_args
 {
 	struct uci_section *eth_port_sec;

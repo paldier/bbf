@@ -10,14 +10,6 @@
  *
  */
 
-#include <uci.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmjson.h>
-#include <libbbf_api/dmcommon.h>
 #include "userinterface.h"
 
 /* *** Device.UserInterface. *** */
@@ -60,17 +52,14 @@ int get_userint_remoteaccesss_enable(char *refparam, struct dmctx *ctx, void *da
 	struct uci_section *ss;
 	char *rule_name, *rule_enabled;
 
-	uci_foreach_sections("firewall", "rule", ss)
-	{
+	uci_foreach_sections("firewall", "rule", ss) {
 		dmuci_get_value_by_section_string(ss, "name", &rule_name);
-		if(strcmp(rule_name, "juci-remote-access") == 0)
-		{
+		if (strcmp(rule_name, "juci-remote-access") == 0) {
 			dmuci_get_value_by_section_string(ss, "enabled", &rule_enabled);
 			*value= (strcmp(rule_enabled, "0") == 0) ? "0": "1";
 			return 0;
 		}
 	}
-
 	*value = "0";
 	return 0;
 }
@@ -88,16 +77,13 @@ int set_userint_remoteaccesss_enable(char *refparam, struct dmctx *ctx, void *da
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			uci_foreach_sections("firewall", "rule", ss)
-			{
+			uci_foreach_sections("firewall", "rule", ss) {
 				dmuci_get_value_by_section_string(ss, "name", &rule_name);
-				if(strcmp(rule_name, "juci-remote-access") == 0)
-				{
+				if (strcmp(rule_name, "juci-remote-access") == 0) {
 					dmuci_set_value_by_section(ss, "enabled", b ? "" : "0");
 					return 0;
 				}
 			}
-
 			add_default_rule("80", value, "wan");
 			return 0;
 	}
@@ -111,34 +97,29 @@ int get_userint_remoteaccesss_port(char *refparam, struct dmctx *ctx, void *data
 
 	uci_foreach_sections("firewall", "rule", ss) {
 		dmuci_get_value_by_section_string(ss, "name", &rule_name);
-		if(strcmp(rule_name, "juci-remote-access") == 0){
+		if (strcmp(rule_name, "juci-remote-access") == 0) {
 			dmuci_get_value_by_section_string(ss, "dest_port", &dest_port);
 			*value= dest_port;
 			return 0;
 		}
 	}
-
 	*value = "80";
 	return 0;
 }
 
 int set_userint_remoteaccesss_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-
 	struct uci_section *ss;
 	char *rule_name, *owsd;
-	char *ret;
 
 	switch (action)
 	{
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			uci_foreach_sections("firewall", "rule", ss)
-			{
+			uci_foreach_sections("firewall", "rule", ss) {
 				dmuci_get_value_by_section_string(ss, "name", &rule_name);
-				if(strcmp(rule_name, "juci-remote-access") == 0)
-				{
+				if (strcmp(rule_name, "juci-remote-access") == 0) {
 					dmuci_set_value_by_section(ss, "dest_port", value);
 					dmuci_get_value_by_section_string(ss, "owsd", &owsd);
 					dmuci_set_value("owsd", owsd, "port", value);
@@ -168,15 +149,11 @@ static int get_supportedprotocols(void)
 
 int get_userint_remoteaccesss_supportedprotocols(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	int found;
-
-	found = get_supportedprotocols();
-	if (found)
-	{
+	int found = get_supportedprotocols();
+	if (found) {
 		*value = "HTTP, HTTPS";
 		return 0;
 	}
-
 	*value = "HTTP";
 	return 0;
 }
@@ -186,11 +163,9 @@ int get_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *
 	struct uci_section *ss;
 	char *rule_name, *rule_owsd;
 
-	uci_foreach_sections("firewall", "rule", ss)
-	{
+	uci_foreach_sections("firewall", "rule", ss) {
 		dmuci_get_value_by_section_string(ss, "name", &rule_name);
-		if(strcmp(rule_name, "juci-remote-access") == 0)
-		{
+		if (strcmp(rule_name, "juci-remote-access") == 0) {
 			dmuci_get_value_by_section_string(ss, "owsd", &rule_owsd);
 			if (strcmp(rule_owsd, "wan") == 0)
 				*value = "HTTP";
@@ -199,7 +174,6 @@ int get_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *
 			return 0;
 		}
 	}
-
 	*value = "HTTP";
 	return 0;
 }
@@ -214,24 +188,19 @@ int set_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *
 	{
 		case VALUECHECK:
 			found = get_supportedprotocols();
-			if (found)
-			{
+			if (found) {
 				if ((strcmp(value, "HTTP") != 0) && (strcmp(value, "HTTPS") != 0))
 					return FAULT_9007;
-			}
-			else
-			{
+			} else {
 				if (strcmp(value, "HTTP") != 0)
 					return FAULT_9007;
 			}
 			return 0;
 		case VALUESET:
-			uci_foreach_sections("firewall", "rule", ss)
-			{
+			uci_foreach_sections("firewall", "rule", ss) {
 				dmuci_get_value_by_section_string(ss, "name", &rule_name);
-				if(strcmp(rule_name, "juci-remote-access") == 0)
-				{
-					if(strcmp(value, "HTTPS") == 0)
+				if (strcmp(rule_name, "juci-remote-access") == 0) {
+					if (strcmp(value, "HTTPS") == 0)
 						dmuci_set_value_by_section(ss, "owsd", "wan_https");
 					else
 						dmuci_set_value_by_section(ss, "owsd", "wan");
@@ -239,7 +208,7 @@ int set_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *
 				}
 			}
 
-			if(strcmp(value, "HTTPS") == 0)
+			if (strcmp(value, "HTTPS") == 0)
 				name_http = "wan_https";
 			else
 				name_http = "wan";

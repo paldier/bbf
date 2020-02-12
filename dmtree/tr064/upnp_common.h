@@ -12,6 +12,8 @@
 #ifndef UPNP_COMMON_H
 #define UPNP_COMMON_H
 
+#include <libbbf_api/dmcommon.h>
+
 char *upnp_get_softwareversion();
 int upnp_get_NetworkInterfaceNumberOfEntries();
 int upnp_get_IPInterfaceNumberOfEntries();

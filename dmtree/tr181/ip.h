@@ -13,6 +13,8 @@
 #ifndef __IP_H
 #define __IP_H
 
+#include <libbbf_api/dmcommon.h>
+
 struct ip_args
 {
 	struct uci_section *ip_sec;

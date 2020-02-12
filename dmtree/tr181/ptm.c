@@ -9,13 +9,6 @@
  *
  */
 
-#include <ctype.h>
-#include <uci.h>
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "ptm.h"
 
@@ -56,7 +49,8 @@ DMLEAF tPTMLinkStatsParams[] = {
 /**************************************************************************
 * LINKER
 ***************************************************************************/
-int get_ptm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker) {
+int get_ptm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+{
 	if (data && ((struct ptm_args *)data)->ifname){
 		*linker =  ((struct ptm_args *)data)->ifname;
 		return 0;
@@ -88,16 +82,16 @@ int get_ptm_link_name(char *refparam, struct dmctx *ctx, void *data, char *insta
 int get_ptm_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char linker[16];
-	sprintf(linker, "channel_%d", atoi(instance)-1);
+	snprintf(linker, sizeof(linker), "channel_%d", atoi(instance)-1);
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cDSL%cChannel%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value); // MEM WILL BE FREED IN DMMEMCLEAN
 	if (*value == NULL)
 		*value = "";
 	return 0;
 }
 
-static inline int ubus_ptm_stats(json_object *res, char **value, char *stat_mod, void *data)
+static inline int ubus_ptm_stats(char **value, char *stat_mod, void *data)
 {
-
+	json_object *res = NULL;
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct ptm_args *)data)->ifname, String}}, 1, &res);
 	DM_ASSERT(res, *value = "");
 	*value = dmjson_get_value(res, 2, "statistics", stat_mod);
@@ -107,32 +101,28 @@ static inline int ubus_ptm_stats(json_object *res, char **value, char *stat_mod,
 /*#Device.PTM.Link.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
 int get_ptm_stats_bytes_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	ubus_ptm_stats(res, value, "rx_bytes", data);
+	ubus_ptm_stats(value, "rx_bytes", data);
 	return 0;
 }
 
 /*#Device.PTM.Link.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
 int get_ptm_stats_bytes_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	ubus_ptm_stats(res, value, "tx_bytes", data);
+	ubus_ptm_stats(value, "tx_bytes", data);
 	return 0;
 }
 
 /*#Device.PTM.Link.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
 int get_ptm_stats_pack_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	ubus_ptm_stats(res, value, "rx_packets", data);
+	ubus_ptm_stats(value, "rx_packets", data);
 	return 0;
 }
 
 /*#Device.PTM.Link.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
 int get_ptm_stats_pack_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	ubus_ptm_stats(res, value, "tx_packets", data);
+	ubus_ptm_stats(value, "tx_packets", data);
 	return 0;
 }
 
@@ -143,8 +133,8 @@ int get_ptm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance
 }
 
 /*************************************************************
- * ADD OBJ
-/*************************************************************/
+* ADD OBJ
+*************************************************************/
 int add_ptm_link(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
 	char *instance = NULL, *ptm_device = NULL, *v = NULL, *instance_update = NULL;
@@ -222,14 +212,14 @@ int delete_ptm_link(char *refparam, struct dmctx *ctx, void *data, char *instanc
 }
 
 /*************************************************************
- * SET AND GET ALIAS
-/*************************************************************/
+* SET AND GET ALIAS
+*************************************************************/
 int get_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section;
 
 	get_dmmap_section_of_config_section("dmmap_dsl", "ptm-device", section_name(((struct ptm_args *)data)->ptm_sec), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "ptmlinkalias", value);
+	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "ptmlinkalias", value);
 	return 0;
 }
 
@@ -242,15 +232,15 @@ int set_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_dsl", "ptm-device", section_name(((struct ptm_args *)data)->ptm_sec), &dmmap_section);
-			dmuci_set_value_by_section(dmmap_section, "ptmlinkalias", value);
+			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "ptmlinkalias", value);
 			return 0;
 	}
 	return 0;
 }
 
 /*************************************************************
- * ENTRY METHOD
-/*************************************************************/
+* ENTRY METHOD
+*************************************************************/
 /*#Device.PTM.Link.{i}.!UCI:dsl/ptm-device/dmmap_dsl*/
 int browsePtmLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {

@@ -68,10 +68,6 @@ static void receive_call_result_data(struct ubus_request *req, int type, struct 
 
 	json_res = json_tokener_parse(str);
 	free((char *)str); //MEM should be free and not dmfree
-	if (json_res != NULL && (is_error(json_res))) {
-		json_object_put(json_res);
-		json_res = NULL;
-	}
 }
 
 static int __dm_ubus_call(const char *obj, const char *method, const struct ubus_arg u_args[], int u_args_size)
@@ -179,13 +175,8 @@ static inline json_object *ubus_call_req(char *obj, char *method, struct ubus_ar
 	if (pp) {
 		dmcmd_read_alloc(pp, &ubus_return);
 		close(pp);
-		if (ubus_return) {
+		if (ubus_return)
 			res = json_tokener_parse(ubus_return);
-			if (res != NULL && (is_error(res))) {
-				json_object_put(res);
-				res = NULL;
-			}
-		}
 	}
 	return res;
 

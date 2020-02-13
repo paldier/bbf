@@ -1016,7 +1016,7 @@ int set_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *
 				check_interval = atoi(value) * 60;
 			else
 				check_interval = atoi(value);
-			snprintf(buf, sizeof(buf), sizeof(buf), "%d", check_interval);
+			snprintf(buf, sizeof(buf), "%d", check_interval);
 			dmuci_set_value_by_section((struct uci_section *)data, "check_interval", buf);
 
 			dmuci_get_value_by_section_string((struct uci_section *)data, "service_name", &service_name);

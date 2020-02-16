@@ -203,7 +203,7 @@ End of BBF Data Models Generation
 ```
 
 #### JSON generator: ####
-It is a generator of json file from C source code.
+It is a generator of json file from xml data model and C source code.
 ```plain
 $ python generator_json_with_backend.py
 Usage: generator_json_with_backend.py <tr-181 cwmp xml data model> <tr-181 usp xml data model> [Object path]
@@ -216,6 +216,18 @@ Examples:
     ==> Generate the json file of the sub tree Device. in tr106.json
 
 Example of xml data model file: https://www.broadband-forum.org/cwmp/tr-181-2-12-0-cwmp-full.xml
+```
+
+#### Excel generator: ####
+It is a generator of excel sheet with supported and unsupported data model parameters.
+```plain
+$ python generate_excel.py
+Usage: generate_excel.py <json data model>
+Examples:
+  - generate_excel.py tr181.json
+    ==> Generate excel file in tr181.xls
+  - generate_excel.py tr104.json
+    ==> Generate excel file in tr104.xls
 ```
 
 #### Load additional parameters at run time ####
@@ -454,3 +466,17 @@ Examples:
 **3. Fill the functions of object/parameter:**
 
 After building the templates of source code, a **test.c, test.h and Makefile** files will be generated under **test** folder that contains the functions related to each object, parameter and operate. Then, you have to fill each function with the necessary [bbfdm API](#bbfdm-api) defined above. You can find an example of source code **(example folder)** under **library** folder.
+
+## Dependencies ##
+
+To successfully build libbbfdm, the following libraries are needed:
+
+| Dependency  | Link                                        | License        |
+| ----------- | ------------------------------------------- | -------------- |
+| libuci      | https://git.openwrt.org/project/uci.git     | LGPL 2.1       |
+| libubox     | https://git.openwrt.org/project/libubox.git | BSD            |
+| libubus     | https://git.openwrt.org/project/ubus.git    | LGPL 2.1       |
+| libjson-c   | https://s3.amazonaws.com/json-c_releases    | MIT            |
+| libtrace    | https://github.com/apietila/libtrace.git    | GPLv2          |
+| libbbf_api  | https://dev.iopsys.eu/iopsys/bbf.git        | LGPL 2.1       |
+

@@ -821,6 +821,78 @@ struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* secti
 	return NULL;
 }
 
+void synchronize_specific_config_sections_with_dmmap_vlan(char *package, char *section_type, char *dmmap_package, char *ifname, struct list_head *dup_list)
+{
+        struct uci_section *s, *stmp, *dmmap_sect;
+        FILE *fp;
+        char *v, *dmmap_file_path;
+
+        dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
+        if (access(dmmap_file_path, F_OK)) {
+                /*
+                 *File does not exist
+                 **/
+                fp = fopen(dmmap_file_path, "w"); // new empty file
+                fclose(fp);
+        }
+        uci_foreach_sections(package, section_type, s) {
+                /*
+                 * create/update corresponding dmmap section that have same config_section link and using param_value_array
+                 */
+                if ((dmmap_sect = get_dup_section_in_dmmap(dmmap_package, section_type, section_name(s))) == NULL) {
+                        dmuci_add_section_bbfdm(dmmap_package, section_type, &dmmap_sect, &v);
+                        DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
+                }
+
+                /* Fix : Entry for only VLANS. */
+                if (strcmp(package, "network") == 0  &&
+                        strcmp(section_type, "interface") == 0 &&
+                        strcmp(dmmap_package, "dmmap_network") == 0) {
+                        char *type, *intf;
+                        dmuci_get_value_by_section_string(s, "type", &type);
+                        dmuci_get_value_by_section_string(s, "ifname", &intf);
+                        if (strcmp(type,"bridge") != 0 || strcmp(intf, ifname) != 0){
+                                continue;
+                        }
+                }
+
+                /* Fix: Vlan object should not be created for transparent bridges. */
+                int tag = 0;
+                char name[250] = {0};
+                strncpy(name, ifname, sizeof(name));
+                char *p = strtok(name, " ");
+                while (p != NULL) {
+                        char intf[250] = {0};
+                        strncpy(intf, p, sizeof(intf));
+                        char *find = strstr(intf, ".");
+                        if (find) {
+                                tag = 1;
+                                break;
+                        }
+                        p = strtok(NULL, "");
+                }
+
+                if (tag == 0) {
+                        continue;
+                }
+
+                /*
+                 * Add system and dmmap sections to the list
+                 */
+                add_sectons_list_paramameter(dup_list, s, dmmap_sect, NULL);
+        }
+
+        /*
+         * Delete unused dmmap sections
+         */
+        uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
+                dmuci_get_value_by_section_string(s, "section_name", &v);
+                if(get_origin_section_from_config(package, section_type, v) == NULL){
+                        dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
+                }
+        }
+}
+
 void synchronize_specific_config_sections_with_dmmap(char *package, char *section_type, char *dmmap_package, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
@@ -843,6 +915,18 @@ void synchronize_specific_config_sections_with_dmmap(char *package, char *sectio
 			dmuci_add_section_bbfdm(dmmap_package, section_type, &dmmap_sect, &v);
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
 		}
+
+               /* Fix : Change to fix multiple IP interface creation. */
+                if (strcmp(package, "network") == 0  &&
+                        strcmp(section_type, "interface") == 0 &&
+                        strcmp(dmmap_package, "dmmap_network") == 0) {
+                        char *value;
+                        char *type;
+                        dmuci_get_value_by_section_string(s, "proto", &value);
+                        if (*value == '\0') {
+                                continue;
+                        }
+                }
 
 		/*
 		 * Add system and dmmap sections to the list

@@ -171,24 +171,6 @@ inline int init_eth_port(struct eth_port_args *args, struct uci_section *s, char
 /*************************************************************
 * COMMON Functions
 **************************************************************/
-static int is_device_exist(char *device)
-{
-        struct uci_section *s = NULL;
-        char *dev;
-
-        uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
-                dmuci_get_value_by_section_string(s, "device", &dev);
-
-                char *p = strtok(dev, ".");
-                if (p != NULL) {
-                        if (strcmp(p, device) == 0) {
-                                return 1;
-                        }
-                }
-        }
-        return 0;
-}
-
 static int is_mac_exist(char *macaddr)
 {
 	struct uci_section *s = NULL;
@@ -219,17 +201,6 @@ static void create_link(char *ifname)
 	if (is_mac_exist(macaddr))
 		return;
 
-       /* Fix: For all the Ethernet link objects pointing to same Ethernet Interface,
-         * we can omit creating multiple Ethernet link entries.*/
-        char intf[250] = {0};
-        strncpy(intf, device, sizeof(intf));
-        char *p = strtok(intf, ".");
-        if (p != NULL) {
-                if (is_device_exist(p)) {
-                        return;
-                }
-        }
-
 	dmuci_add_section_bbfdm(DMMAP, "link", &dmmap, &v);
 	dmuci_set_value_by_section(dmmap, "mac", macaddr);
 	dmuci_set_value_by_section(dmmap, "device", device);
@@ -239,16 +210,12 @@ static void create_link(char *ifname)
 static int dmmap_synchronizeEthernetLink(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *s = NULL;
-	char *type, *ifname, *proto;
+	char *type, *ifname;
 
 	uci_foreach_sections("network", "interface", s) {
 		dmuci_get_value_by_section_string(s, "type", &type);
-		/* Fix: The creating of multiple ethernet links.*/
-                dmuci_get_value_by_section_string(s, "proto", &proto);
-		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback") == 0 ||
-				*proto == '\0') {
+		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback") == 0)
 			continue;
-		}
 
 		dmuci_get_value_by_section_string(s, "ifname", &ifname);
 		if (*ifname == '\0' || *ifname == '@')
@@ -347,8 +314,7 @@ int get_linker_interface(char *refparam, struct dmctx *dmctx, void *data, char *
 
 int get_linker_link(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	/* Fix: for get linker link */
-        dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "mac", linker);
+	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "section_name", linker);
 	return 0;
 }
 
@@ -1241,7 +1207,7 @@ int get_EthernetVLANTermination_LastChange(char *refparam, struct dmctx *ctx, vo
 
 int get_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *pch, *spch, *devifname, *ifname, *dupifname, *mac;
+	char *pch, *spch, *devifname, *ifname, *dupifname;
 	struct uci_section *section;
 	
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "name", &devifname);
@@ -1250,11 +1216,7 @@ int get_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx *ctx, v
 		dupifname = dmstrdup(ifname);
 		for (pch = strtok_r(dupifname, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
 			if(strcmp(pch, devifname) == 0){
-				/* Fix: Use mac address instead of section name for lower layer. */
-				mac = get_macaddr(section_name(section));
-				if (mac[0] != '\0') {
-					adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), mac, value);
-				}
+				adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), section_name(section), value);
 				break;
 			}
 		}

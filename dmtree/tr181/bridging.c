@@ -488,8 +488,7 @@ int get_br_vlan_number_of_entries(char *refparam, struct dmctx *ctx, void *data,
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	/* Fix: Interface section needs to be browsed to get the vlan entries. */
-	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "interface", "bridge_key", instance, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "device", "bridge_key", instance, s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -1132,8 +1131,7 @@ int get_br_vlan_alias(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	struct uci_section *dmmap_section;
 
-	/* Fix: Interface section needs to be browsed to get the value for vlan alias. */
-	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct bridging_vlan_args *)data)->bridge_vlan_sec), &dmmap_section);
+	get_dmmap_section_of_config_section("dmmap_network", "device", section_name(((struct bridging_vlan_args *)data)->bridge_vlan_sec), &dmmap_section);
 	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "bridge_vlan_alias", value);
 	return 0;
 }
@@ -1348,7 +1346,7 @@ int delete_br_port(char *refparam, struct dmctx *ctx, void *data, char *instance
 /*************************************************************
 * LOWER LAYER
 **************************************************************/
-int check_port_with_ifname (char *ifname, struct uci_section **ss, int *is_tag)
+int check_port_with_ifname (char *ifname, struct uci_section **ss)
 {
 	struct uci_section *sss, *s;
 	char *file_config_name;
@@ -1387,7 +1385,7 @@ int check_port_with_ifname (char *ifname, struct uci_section **ss, int *is_tag)
 				}
 			}
 		}
-	} else if (strncmp(ifname, wan_baseifname, strlen(ifname)) == 0) {
+	} else if (strncmp(ifname, wan_baseifname, strlen(wan_baseifname)) == 0) {
 		uci_foreach_option_eq("network", "device", "name", ifname, s) {
 			*ss = s;
 			break;
@@ -1398,37 +1396,10 @@ int check_port_with_ifname (char *ifname, struct uci_section **ss, int *is_tag)
 			break;
 		}
 	} else {
-		/* Fix : Add support for untagged interfaces(vlan id =1) in lower layer. */
-		char intf[50] = {0};
-		strncpy(intf, ifname, sizeof(intf));
-		char *p = strstr(intf, ".");
-		if(p) {
-			char *token , *end= NULL;
-			token = strtok_r(intf, ".", &end);
-			if (NULL != token) {
-				char tag[50] = {0};
-				strncpy(tag, end, sizeof(tag));
-				if (strncmp(tag, "1", sizeof(tag)) == 0) {
-					uci_foreach_option_eq("network", "device", "name", ifname, s) {
-						*ss = s;
-						break;
-					}
-				} else {
-					/* Fix : Add support for tagged interfaces in lower layer. */
-					uci_foreach_option_eq("ports", "ethport", "ifname", token, s) {
-						*is_tag = 1;
-						*ss = s;
-						break;
-					}
-				}
-			}
-		} else {
-			uci_foreach_option_eq("ports", "ethport", "ifname", ifname, s) {
-				*ss = s;
-				break;
-			}
+		uci_foreach_option_eq("ports", "ethport", "ifname", ifname, s) {
+			*ss = s;
+			break;
 		}
-
 	}
 	return 0;
 }
@@ -1445,9 +1416,7 @@ int get_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *in
 		ifname_dup = dmstrdup(ifname);
 		p = lbuf;
 		for (pch = strtok_r(ifname_dup, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
-			/* Fix: Added support for tagged and untagged interfaces. */
-			int is_tag = 0;
-			check_port_with_ifname(pch, &s, &is_tag);
+			check_port_with_ifname(pch, &s);
 			if(s == NULL)
 				continue;
 			snprintf(plinker, sizeof(plinker), "%s+%s", section_name(s), pch);
@@ -1734,34 +1703,11 @@ int browseBridgePortInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_da
 	if (((struct bridging_args *)prev_data)->ifname[0] == '\0')
 		return 0;
 	ifname_dup = dmstrdup(((struct bridging_args *)prev_data)->ifname);
-	char tagged_intf[250] = {0};
-	strncpy(tagged_intf, ifname_dup, sizeof(tagged_intf));
 	for (pch = strtok_r(ifname_dup, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
 		found = false;
 
-		if (!found) {
-			/* Fix : Add support for untagged interfaces.*/
-			char val[50] = {0};
-			strncpy(val, pch, sizeof(val));
-			char *p = strstr(val, ".");
-			if (p) {
-				char *tok, *tok_end;
-				tok = strtok_r(val, ".", &tok_end);
-				if (tok != NULL) {
-					char tag[20] = {0};
-					strncpy(tag, tok_end, sizeof(tag));
-					if (strncmp(tag, "1", sizeof(tag)) == 0) {
-						found= synchronize_multi_config_sections_with_dmmap_eq("network", "device", "dmmap_bridge_port", "bridge_port", "name", pch, pch, &dup_list);
-					} else {
-						/* Fix : Add support for tagged interfaces(eth0.100, eth1.200 etc).*/
-						found= synchronize_multi_config_sections_with_dmmap_eq("ports", "ethport", "dmmap_bridge_port", "bridge_port", "ifname", tok, pch, &dup_list);
-					}
-				}
-			} else {
-				/* Add support for interfaces eth0, eth1, eth2.....etc.*/
-				found= synchronize_multi_config_sections_with_dmmap_eq("ports", "ethport", "dmmap_bridge_port", "bridge_port", "ifname", pch, pch, &dup_list);
-			}
-		}
+		if (!found)
+			found= synchronize_multi_config_sections_with_dmmap_eq("ports", "ethport", "dmmap_bridge_port", "bridge_port", "ifname", pch, pch, &dup_list);
 
 		if (!found)
 			found= synchronize_multi_config_sections_with_dmmap_eq("wireless", "wifi-iface", "dmmap_bridge_port", "bridge_port", "ifname", pch, pch, &dup_list);
@@ -1817,24 +1763,30 @@ end:
 /*#Device.Bridging.Bridge.{i}.VLAN.!UCI:network/device/dmmap_network*/
 int browseBridgeVlanInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	char *vlan = NULL, *vlan_last = NULL;
+	char *vlan = NULL, *vlan_last = NULL, *type, *is_lan = NULL;
 	struct bridging_vlan_args curr_bridging_vlan_args = {0};
 	struct bridging_args *br_args = (struct bridging_args *)prev_data;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 
-	synchronize_specific_config_sections_with_dmmap_vlan("network", "interface", "dmmap_network", br_args->ifname, &dup_list);
-	list_for_each_entry(p, &dup_list, list) {
-		if(!p->config_section)
-			goto end;
-
-		dmuci_set_value_by_section(p->dmmap_section, "bridge_key", br_args->br_key);
-		vlan =  handle_update_instance(2, dmctx, &vlan_last, update_instance_alias, 3, p->dmmap_section, "bridge_vlan_instance", "bridge_vlan_alias");
-		init_bridging_vlan_args(&curr_bridging_vlan_args, p->config_section, br_args->bridge_sec, vlan_last, br_args->br_key);
-		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_bridging_vlan_args, vlan) == DM_STOP)
+	dmuci_get_value_by_section_string(br_args->bridge_sec, "is_lan", &is_lan);
+	if (is_lan == NULL || strcmp(is_lan, "1") != 0) {
+		synchronize_specific_config_sections_with_dmmap("network", "device", "dmmap_network", &dup_list);
+		list_for_each_entry(p, &dup_list, list) {
+			if(!p->config_section)
 				goto end;
+			//Check if VLAN or NOT
+			dmuci_get_value_by_section_string(p->config_section, "type", &type);
+			if (strcmp(type, "untagged") != 0) {
+				dmuci_set_value_by_section(p->dmmap_section, "bridge_key", br_args->br_key);
+				vlan =  handle_update_instance(2, dmctx, &vlan_last, update_instance_alias, 3, p->dmmap_section, "bridge_vlan_instance", "bridge_vlan_alias");
+				init_bridging_vlan_args(&curr_bridging_vlan_args, p->config_section, br_args->bridge_sec, vlan_last, br_args->br_key);
+				if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_bridging_vlan_args, vlan) == DM_STOP)
+					goto end;
+			}
+		}
+		free_dmmap_config_dup_list(&dup_list);
 	}
-	free_dmmap_config_dup_list(&dup_list);
 end:
 	return 0;
 }

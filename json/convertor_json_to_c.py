@@ -1,25 +1,20 @@
 #!/usr/bin/python
 
-# Copyright (C) 2019 iopsys Software Solutions AB
+# Copyright (C) 2020 iopsys Software Solutions AB
 # Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
 
-import os
-import sys
-import time
-import json
+import os, sys, time, json
 from collections import OrderedDict
 
-arrtype = {
-"string": "DMT_STRING",
-"unsignedInt": "DMT_UNINT",
-"unsignedLong": "DMT_UNLONG",
-"int": "DMT_INT",
-"long": "DMT_LONG",
-"boolean": "DMT_BOOL",
-"dateTime": "DMT_TIME",
-"hexBinary": "DMT_HEXBIN",
-"base64": "DMT_BASE64",
-}
+arrTypes = { "string": "DMT_STRING",
+			"unsignedInt": "DMT_UNINT",
+			"unsignedLong": "DMT_UNLONG",
+			"int": "DMT_INT",
+			"long": "DMT_LONG",
+			"boolean": "DMT_BOOL",
+			"dateTime": "DMT_TIME",
+			"hexBinary": "DMT_HEXBIN",
+			"base64": "DMT_BASE64"}
 
 def removefile( filename ):
 	try:
@@ -34,19 +29,13 @@ def securemkdir( folder ):
 		pass
 
 def getlastname( name ):
-	lastname = name
-	lastname = lastname.replace(".{i}", "")
-	namelist = lastname.split('.')
-	lastname = namelist[-1]
-	if lastname == "":
-		lastname = namelist[-2]
-	return lastname;
+	return name.replace(".{i}", "").split('.')[-2];
 
 def getname( objname ):
 	global model_root_name
 	OBJSname = objname
 	if (objname.count('.') > 1 and (objname.count('.') != 2 or objname.count('{i}') != 1) ):
-		OBJSname = objname.replace(dmroot, "", 1)
+		OBJSname = objname.replace("Device", "", 1)
 	OBJSname = OBJSname.replace("{i}", "")
 	OBJSname = OBJSname.replace(".", "")
 	if (objname.count('.') == 1):
@@ -60,58 +49,65 @@ def getname( objname ):
 	return OBJSname;
 
 def getoptionparam( value, option ):
-	val = "false"
-	if isinstance(value,dict):
-		for k,v in value.items():
-			if k == option:
-				return v
-	return val
+	if isinstance(value, dict):
+		for obj, val in value.items():
+			if obj == option:
+				return val
+	return None
+
+def getarrayoptionparam( value, option ):
+	if isinstance(value, dict):
+		for obj, val in value.items():
+			if obj == option and isinstance(val, list):
+				return val
+	return None
+
+def getobjectoptionparam( value, option ):
+	if isinstance(value, dict):
+		for obj, val in value.items():
+			print "obj=%s" % obj
+			print "val=%s" % val
+			if obj == option and isinstance(val, dict):
+				return val
+	return None
 
 def getprotocolsparam( value, option ):
-	val = "BBFDM_BOTH"
-	if isinstance(value,dict):
-		for k,v in value.items():
-			if k == option and isinstance(v, list):
-				if len(v) == 2:
+	if isinstance(value, dict):
+		for obj, val in value.items():
+			if obj == option and isinstance(val, list):
+				if len(val) == 2:
 					return "BBFDM_BOTH"
-				elif v[0] == "usp":
+				elif val[0] == "usp":
 					return "BBFDM_USP"
 				else:
 					return "BBFDM_CWMP"
-	return val
-
+	return "BBFDM_BOTH"
 
 def getargsparam( value ):
-	val1 = "false"
-	val2 = "false"
-	if isinstance(value,dict):
-		for k,v in value.items():
-			return k, v
-	return val1, val2
+	if isinstance(value, dict):
+		for obj, val in value.items():
+			return obj, val
+	return None, None
 
 def getparamtype( value ):
-	ptype = None
 	paramtype = getoptionparam(value, "type")
-	ptype = arrtype.get(paramtype, None)
-	if ptype == None:
-		ptype = "__NA__"
-	return ptype
+	return arrTypes.get(paramtype, None)
 
 def objhaschild( value ):
-	if isinstance(value,dict):
-		for k,v in value.items():
-			if isinstance(v,dict):
-				for k1,v1 in v.items():
-					if k1 == "type" and v1 == "object":
+	if isinstance(value, dict):
+		for obj, val in value.items():
+			if isinstance(val, dict):
+				for obj1, val1 in val.items():
+					if obj1 == "type" and val1 == "object":
 						return 1
 	return 0
 
 def objhasparam( value ):
-	if isinstance(value,dict):
-		for k,v in value.items():
-			if isinstance(v,dict):
-				for k1,v1 in v.items():
-					if k1 == "type" and v1 != "object":
+	if isinstance(value, dict):
+		for obj, val in value.items():
+			if isinstance(val, dict):
+				for obj1,val1 in val.items():
+					if obj1 == "type" and val1 != "object":
 						return 1
 	return 0
 
@@ -152,6 +148,15 @@ def get_mapping_param( mappingobj ):
 			i += 1
 		return type, command, list_length, value, "", ""
 
+def printGlobalstrCommon( str_exp ):
+	if "tr104" in sys.argv[1]:
+		common = "tr104/common.c"
+	else:
+		common = "tr181/common.c"
+	fp = open(common, 'a')
+	print >> fp, "%s" % str_exp
+	fp.close()
+
 def get_mapping_obj( mappingobj ):
 	type = getoptionparam(mappingobj, "type")
 	uciobj = getoptionparam(mappingobj, "uci")
@@ -160,6 +165,122 @@ def get_mapping_obj( mappingobj ):
 	sectiontype = getoptionparam(sectionobj, "type")
 	dmmapfile = getoptionparam(uciobj, "dmmapfile")
 	return type, file, sectiontype, dmmapfile
+
+def generate_validate_value(dmparam, value):
+	validate_value = ""
+	maxsizeparam = "NULL"
+	itemminparam = "NULL"
+	itemmaxparam = "NULL"
+	rangeminparam = "NULL"
+	rangemaxparam = "NULL"
+
+	listparam = getoptionparam(value, "list")
+	if listparam != None:
+		datatypeparam = getoptionparam(listparam, "datatype")
+		maxsizeparam = getoptionparam(listparam, "maxsize")
+		if maxsizeparam == None: maxsizeparam = "NULL"
+		itemparam = getoptionparam(listparam, "item")
+		if itemparam != None:
+			itemminparam = getoptionparam(itemparam, "min")
+			if itemminparam == None: itemminparam = "NULL"
+			itemmaxparam = getoptionparam(itemparam, "max")
+			if itemmaxparam == None: itemmaxparam = "NULL"
+		rangeparam = getoptionparam(listparam, "range")
+		if rangeparam != None:
+			rangeminparam = getoptionparam(rangeparam, "min")
+			if rangeminparam == None: rangeminparam = "NULL"
+			rangemaxparam = getoptionparam(rangeparam, "max")
+			if rangemaxparam == None: rangemaxparam = "NULL"
+		enumarationsparam = getarrayoptionparam(listparam, "enumerations")
+		if enumarationsparam != None:
+			list_enumarationsparam = enumarationsparam
+			enum_length = len(list_enumarationsparam)
+			enumarationsparam = dmparam if datatypeparam == "string" else datatypeparam
+			str_enum = "char *%s[] = {" % enumarationsparam
+			for i in range(enum_length):
+				str_enum += "\"%s\", " % list_enumarationsparam[i]
+			str_enum += "NULL};"
+			printGlobalstrCommon(str_enum)
+		else:
+			enumarationsparam = "NULL"
+		patternparam = getarrayoptionparam(listparam, "pattern")
+		if patternparam != None:
+			list_patternparam = patternparam
+			pattern_length = len(list_patternparam)
+			patternparam = dmparam if datatypeparam == "string" else datatypeparam
+			str_pattern = "char *%s[] = {" % patternparam
+			for i in range(pattern_length):
+				str_pattern += "\"^%s$\", " % list_patternparam[i]
+			str_pattern += "NULL};"
+			printGlobalstrCommon(str_pattern)
+		elif datatypeparam == "IPAddress":
+			patternparam = "IPAddress"
+		elif datatypeparam == "IPv6Address":
+			patternparam = "IPv6Address"
+		else:
+			patternparam = "NULL"
+		if datatypeparam == "unsignedInt":
+			validate_value += "			if (dm_validate_unsignedInt_list(value, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"))\n" % (itemminparam, itemmaxparam, maxsizeparam, rangeminparam, rangemaxparam)
+		elif datatypeparam == "int":
+			validate_value += "			if (dm_validate_int_list(value, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"))\n" % (itemminparam, itemmaxparam, maxsizeparam, rangeminparam, rangemaxparam)
+		else:
+			validate_value += "			if (dm_validate_string_list(value, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %s, %s))\n" % (itemminparam, itemmaxparam, maxsizeparam, rangeminparam, rangemaxparam, enumarationsparam, patternparam)
+	else:
+		datatypeparam = getoptionparam(value, "datatype")
+		rangeparam = getoptionparam(value, "range")
+		if rangeparam != None:
+			rangeminparam = getoptionparam(rangeparam, "min")
+			if rangeminparam == None: rangeminparam = "NULL"
+			rangemaxparam = getoptionparam(rangeparam, "max")
+			if rangemaxparam == None: rangemaxparam = "NULL"
+		enumarationsparam = getarrayoptionparam(value, "enumerations")
+		if enumarationsparam != None:
+			list_enumarationsparam = enumarationsparam
+			enum_length = len(list_enumarationsparam)
+			enumarationsparam = dmparam if datatypeparam == "string" else datatypeparam
+			str_enum = "char *%s[] = {" % enumarationsparam
+			for i in range(enum_length):
+				str_enum += "\"%s\", " % list_enumarationsparam[i]
+
+			str_enum += "NULL};"
+			printGlobalstrCommon(str_enum)
+		else:
+			enumarationsparam = "NULL"
+		patternparam = getarrayoptionparam(value, "pattern")
+		if patternparam != None:
+			list_patternparam = patternparam
+			pattern_length = len(list_patternparam)
+			patternparam = dmparam if datatypeparam == "string" else datatypeparam
+			str_pattern = "char *%s[] = {" % patternparam
+			for i in range(pattern_length):
+				str_pattern += "\"^%s$\", " % list_patternparam[i]
+			str_pattern += "NULL};"
+			printGlobalstrCommon(str_pattern)
+		elif datatypeparam == "IPAddress":
+			patternparam = "IPAddress"
+		elif datatypeparam == "IPv6Address":
+			patternparam = "IPv6Address"
+		else:
+			patternparam = "NULL"
+		if datatypeparam == "boolean":
+			validate_value += "			if (dm_validate_boolean(value))\n"
+		elif datatypeparam == "unsignedInt":
+			validate_value += "			if (dm_validate_unsignedInt(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)
+		elif datatypeparam == "int":
+			validate_value += "			if (dm_validate_int(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)
+		elif datatypeparam == "unsignedLong":
+			validate_value += "			if (dm_validate_unsignedLong(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)
+		elif datatypeparam == "long":
+			validate_value += "			if (dm_validate_long(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)
+		elif datatypeparam == "dateTime":
+			validate_value += "			if (dm_validate_dateTime(value))\n"
+		elif datatypeparam == "hexBinary":
+			validate_value += "			if (dm_validate_hexBinary(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)			
+		else:
+			validate_value += "			if (dm_validate_string(value, \"%s\", \"%s\", %s, %s))\n" % (rangeminparam, rangemaxparam, enumarationsparam, patternparam)
+	validate_value += "				return FAULT_9007;"
+	validate_value = validate_value.replace("\"NULL\"", "NULL")
+	return validate_value
 
 def printheaderObjCommon( objname ):
 	fp = open('./.objparamarray.c', 'a')
@@ -179,7 +300,7 @@ def hprintheaderOBJS( objname ):
 
 def cprinttopfile (fp, filename):
 	print >> fp, "/*"
-	print >> fp, " * Copyright (C) 2019 iopsys Software Solutions AB"
+	print >> fp, " * Copyright (C) 2020 iopsys Software Solutions AB"
 	print >> fp, " *"
 	print >> fp, " * This program is free software; you can redistribute it and/or modify"
 	print >> fp, " * it under the terms of the GNU Lesser General Public License version 2.1"
@@ -188,18 +309,12 @@ def cprinttopfile (fp, filename):
 	print >> fp, " *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>"
 	print >> fp, " */"
 	print >> fp, ""
-	print >> fp, "#include \"dmbbf.h\""
-	print >> fp, "#include \"dmcommon.h\""
-	print >> fp, "#include \"dmuci.h\""
-	print >> fp, "#include \"dmubus.h\""
-	print >> fp, "#include \"dmjson.h\""
-	print >> fp, "#include \"dmentry.h\""
 	print >> fp, "#include \"%s.h\"" % filename.lower()
 	print >> fp, ""
 
 def hprinttopfile (fp, filename):
 	print >> fp, "/*"
-	print >> fp, " * Copyright (C) 2019 iopsys Software Solutions AB"
+	print >> fp, " * Copyright (C) 2020 iopsys Software Solutions AB"
 	print >> fp, " *"
 	print >> fp, " * This program is free software; you can redistribute it and/or modify"
 	print >> fp, " * it under the terms of the GNU Lesser General Public License version 2.1"
@@ -211,6 +326,8 @@ def hprinttopfile (fp, filename):
 	print >> fp, "#ifndef __%s_H" % filename.upper()
 	print >> fp, "#define __%s_H" % filename.upper()
 	print >> fp, ""
+	print >> fp, "#include <libbbf_api/dmcommon.h>"
+	print >> fp, ""
 
 def hprintfootfile (fp, filename):
 	print >> fp, ""
@@ -221,7 +338,7 @@ def cprintAddDelObj( faddobj, fdelobj, name, mappingobj, dmobject ):
 	fp = open('./.objadddel.c', 'a')
 	print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char **instance)" % faddobj
 	print >> fp, "{"
-	if mappingobj != "false":
+	if mappingobj != None:
 		type, file, sectiontype, dmmapfile = get_mapping_obj(mappingobj)
 		if type == "uci":
 			print >> fp, "	char *inst, *value, *v;"
@@ -242,25 +359,25 @@ def cprintAddDelObj( faddobj, fdelobj, name, mappingobj, dmobject ):
 	print >> fp, ""
 	print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)" % fdelobj
 	print >> fp, "{"
-	if mappingobj != "false":
+	if mappingobj != None:
 		if type == "uci":
-			print >> fp, "	struct uci_section *s = NULL, *ss = NULL, *dmmap_section= NULL;"
+			print >> fp, "	struct uci_section *s = NULL, *ss = NULL, *dmmap_section = NULL;"
 			print >> fp, "	int found = 0;"
 			print >> fp, ""
 	print >> fp, "	switch (del_action) {"
-	if mappingobj != "false":
+	if mappingobj != None:
 		if type == "uci":
 			print >> fp, "		case DEL_INST:"
 			print >> fp, "			get_dmmap_section_of_config_section(\"%s\", \"%s\", section_name((struct uci_section *)data), &dmmap_section);" % (dmmapfile, sectiontype)
-			print >> fp, "			if(dmmap_section != NULL)"
+			print >> fp, "			if (dmmap_section != NULL)"
 			print >> fp, "				dmuci_delete_by_section(dmmap_section, NULL, NULL);"
 			print >> fp, "			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);"
 			print >> fp, "			break;"
 			print >> fp, "		case DEL_ALL:"
 			print >> fp, "			uci_foreach_sections(\"%s\", \"%s\", s) {" % (file, sectiontype)
-			print >> fp, "				if (found != 0){"
+			print >> fp, "				if (found != 0) {"
 			print >> fp, "					get_dmmap_section_of_config_section(\"%s\", \"%s\", section_name(ss), &dmmap_section);" % (dmmapfile, sectiontype)
-			print >> fp, "					if(dmmap_section != NULL)"
+			print >> fp, "					if (dmmap_section != NULL)"
 			print >> fp, "						dmuci_delete_by_section(dmmap_section, NULL, NULL);"
 			print >> fp, "					dmuci_delete_by_section(ss, NULL, NULL);"
 			print >> fp, "				}"
@@ -269,7 +386,7 @@ def cprintAddDelObj( faddobj, fdelobj, name, mappingobj, dmobject ):
 			print >> fp, "			}"
 			print >> fp, "			if (ss != NULL) {"
 			print >> fp, "				get_dmmap_section_of_config_section(\"%s\", \"%s\", section_name(ss), &dmmap_section);" % (dmmapfile, sectiontype)
-			print >> fp, "				if(dmmap_section != NULL)"
+			print >> fp, "				if (dmmap_section != NULL)"
 			print >> fp, "					dmuci_delete_by_section(dmmap_section, NULL, NULL);"
 			print >> fp, "				dmuci_delete_by_section(ss, NULL, NULL);"
 			print >> fp, "			}"
@@ -294,13 +411,21 @@ def hprintAddDelObj( faddobj, fdelobj ):
 	fp.close()
 
 def cprintBrowseObj( fbrowse, name, mappingobj, dmobject ):
+	# Open file
 	fp = open('./.objbrowse.c', 'a')
-	if mappingobj != "false":
+
+	### Mapping Parameter
+	if mappingobj != None:
 		type, file, sectiontype, dmmapfile = get_mapping_obj(mappingobj)
 		print >> fp, "/*#%s!%s:%s/%s/%s*/" % (dmobject, type.upper(), file, sectiontype, dmmapfile)
+
 	print >> fp, "int %s(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)" % fbrowse
 	print >> fp, "{"
-	if mappingobj != "false":
+
+	# Mapping exist
+	if mappingobj != None:
+
+		############################## UCI ########################################
 		if type == "uci" :
 			print >> fp, "	char *inst = NULL, *inst_last = NULL;"
 			print >> fp, "	struct dmmap_dup *p;"
@@ -313,11 +438,21 @@ def cprintBrowseObj( fbrowse, name, mappingobj, dmobject ):
 			print >> fp, "			break;"
 			print >> fp, "	}"
 			print >> fp, "	free_dmmap_config_dup_list(&dup_list);"
+
+
+		############################## UBUS ########################################
+		elif type == "ubus" :
+			print >> fp, "	"
+
+
+	# Mapping doesn't exist
 	else:
 		print >> fp, "	//TODO"
 	print >> fp, "	return 0;"
 	print >> fp, "}"
 	print >> fp, ""
+
+	# Close file
 	fp.close()
 
 def hprintBrowseObj( fbrowse ):
@@ -325,25 +460,38 @@ def hprintBrowseObj( fbrowse ):
 	print >> fp, "int %s(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance);" % fbrowse
 	fp.close()
 
-def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, parentname, dmparam):
+def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, parentname, dmparam, value):
+	# Open file
 	fp = open('./.getstevalue.c', 'a')
-	if mappingparam != "false":
+
+	# Generate Validate value
+	validate_value = ""
+	if setvalue != "NULL":
+		validate_value = generate_validate_value(dmparam, value)
+
+	# Mapping exist
+	if mappingparam != None:
 		count = len(mappingparam)
 		i = 0
-		header = ""
+		mapping = ""
 		tmpgetvalue = ""
 		tmpsetvalue = ""
 		set_value = ""
 		for element in mappingparam:
-			type, res1, res2, res3, res4, res5 =get_mapping_param(element)
+			type, res1, res2, res3, res4, res5 = get_mapping_param(element)
 			get_value = ""
 			i += 1
+
+
+			############################## UCI ########################################
 			if type == "uci":
-				if res3 != "false":
-					header = "%s:%s/%s,%s/%s" % (type.upper(), res1, res2, res3, res5)
+				### Mapping Parameter
+				if res3 != None:
+					mapping = "%s:%s/%s,%s/%s" % (type.upper(), res1, res2, res3, res5)
 				else:
-					header = "%s:%s/%s,%s/%s" % (type.upper(), res1, res2, res4, res5)
-				########################## GET VALUE ###############################################
+					mapping = "%s:%s/%s,%s/%s" % (type.upper(), res1, res2, res4, res5)
+
+				### GET VALUE Parameter
 				if "NumberOfEntries" in dmparam:
 					get_value += "	struct uci_section *s = NULL;\n"
 					get_value += "	int cnt = 0;\n"
@@ -357,15 +505,10 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 				else:
 					get_value += "	dmuci_get_option_value_string(\"%s\", \"%s\", \"%s\", value);" % (res1, res3, res5)
 
-
-				########################## SET VALUE ###############################################
-				if typeparam == "boolean":
-					set_value += "	bool b;\n"
+				### SET VALUE Parameter
 				set_value += "	switch (action)	{\n"
 				set_value += "		case VALUECHECK:\n"
-				if typeparam == "boolean":
-					set_value += "			if (string_to_bool(value, &b))\n"
-					set_value += "				return FAULT_9007;\n"
+				set_value += "%s\n" % validate_value
 				set_value += "			break;\n"
 				set_value += "		case VALUESET:\n"
 				if typeparam == "boolean":
@@ -378,14 +521,19 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 					set_value += "			dmuci_set_value_by_section((struct uci_section *)data, \"%s\", value);" % res5
 				else:
 					set_value += "			dmuci_set_value(\"%s\", \"%s\", \"%s\", value);" % (res1, res3, res5)
+			
+
+			############################## UBUS ########################################
 			elif type == "ubus":
-				if res3!= "false" and res4 != "false":
-					header = "%s:%s/%s/%s,%s/%s" % (type.upper(), res1, res2, res3, res4, res5)
+				### Mapping Parameter
+				if res3 != None and res4 != None:
+					mapping = "%s:%s/%s/%s,%s/%s" % (type.upper(), res1, res2, res3, res4, res5)
 				else:
-					header = "%s:%s/%s//%s" % (type.upper(), res1, res2, res5)
-				########################## GET VALUE ###############################################
+					mapping = "%s:%s/%s//%s" % (type.upper(), res1, res2, res5)
+
+				### GET VALUE Parameter
 				get_value += "	json_object *res;\n"
-				if res3 == "false" and res4 == "false":
+				if res3 == None and res4 == None:
 					get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{}, 0, &res);\n" % (res1, res2)
 				else:
 					if i == 2 and res4 == "prev_value":
@@ -411,21 +559,27 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 					get_value += "	*value = dmjson_get_value(res, 1, \"%s\");" % option[0]
 				if i == 2 and res4 == "@Name":
 					get_value += "\n	}"
-				########################## SET VALUE ###############################################
-					set_value += "	switch (action)	{\n"
-					set_value += "		case VALUECHECK:\n"
-					set_value += "			break;\n"
-					set_value += "		case VALUESET:\n"
-					set_value += "			//TODO"
+
+				### SET VALUE Parameter
+				set_value += "	switch (action)	{\n"
+				set_value += "		case VALUECHECK:\n"
+				set_value += "%s\n" % validate_value
+				set_value += "			break;\n"
+				set_value += "		case VALUESET:\n"
+				set_value += "			//TODO"
+
+
+			############################## CLI ########################################
 			elif type == "cli":
-					get_value += "	dmcmd(\"%s\", %s, %s);" % (res1, res2, res3)
+				### GET VALUE Parameter
+				get_value += "	dmcmd(\"%s\", %s, %s);" % (res1, res2, res3)
 
 			if count == 2 and i == 1:
-				tmpheader = header
+				tmpmapping = mapping
 				tmpgetvalue = get_value
 				tmpsetvalue = set_value
 			elif count == 2 and i == 2:
-				print >> fp, "/*#%s!%s&%s*/" % (parentname+dmparam, tmpheader, header)
+				print >> fp, "/*#%s!%s&%s*/" % (parentname+dmparam, tmpmapping, mapping)
 				print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)" % getvalue
 				print >> fp, "{"
 				print >> fp, "%s" % tmpgetvalue
@@ -443,7 +597,7 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 					print >> fp, "}"
 					print >> fp, ""
 			else:
-				print >> fp, "/*#%s!%s*/" % (parentname+dmparam, header)
+				print >> fp, "/*#%s!%s*/" % (parentname+dmparam, mapping)
 				print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)" % getvalue
 				print >> fp, "{"
 				print >> fp, "%s" % get_value
@@ -460,6 +614,8 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 					print >> fp, "}"
 					print >> fp, ""
 	
+
+	# Mapping doesn't exist
 	else:
 		print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)" % getvalue
 		print >> fp, "{"
@@ -472,6 +628,7 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 			print >> fp, "{"
 			print >> fp, "	switch (action)	{"
 			print >> fp, "		case VALUECHECK:"
+			print >> fp, "%s" % validate_value
 			print >> fp, "			break;"
 			print >> fp, "		case VALUESET:"
 			print >> fp, "			//TODO"
@@ -480,6 +637,8 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 			print >> fp, "	return 0;"
 			print >> fp, "}"
 			print >> fp, ""
+
+	# Close file
 	fp.close()
 
 def hprintGetSetValue(getvalue, setvalue):
@@ -522,7 +681,7 @@ def printPARAMline( parentname, dmparam, value ):
 	else:
 		instance = "FALSE"
 
-	cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, parentname, dmparam)
+	cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, parentname, dmparam, value)
 	hprintGetSetValue(getvalue, setvalue)
 
 	fp = open('./.objparamarray.c', 'a')
@@ -577,11 +736,17 @@ def printOBJline( dmobject, value ):
 	fp.close()
 
 def printusage():
-	print "Usage: " + sys.argv[0] + " <json data model>"
+	print "Usage: " + sys.argv[0] + " <json data model>" + " [Object path]"
 	print "Examples:"
 	print "  - " + sys.argv[0] + " tr181.json"
 	print "    ==> Generate the C code of all data model in tr181/ folder"
 	print "  - " + sys.argv[0] + " tr104.json"
+	print "    ==> Generate the C code of all data model in tr104/ folder"
+	print "  - " + sys.argv[0] + " tr181.json" + " Device.DeviceInfo."
+	print "    ==> Generate the C code of all data model in tr181/ folder"
+	print "  - " + sys.argv[0] + " tr181.json" + " Device.WiFi."
+	print "    ==> Generate the C code of all data model in tr181/ folder"
+	print "  - " + sys.argv[0] + " tr104.json" + " Device.Services.VoiceService.{i}.Capabilities."
 	print "    ==> Generate the C code of all data model in tr104/ folder"
 
 def object_parse_childs( dmobject , value, nextlevel ):
@@ -626,7 +791,7 @@ def object_parse_childs( dmobject , value, nextlevel ):
 						if k1 == "type" and v1 == "object":
 							object_parse_childs(k , v, 0)
 
-def generatecfromobj(pobj, pvalue, pdir, nextlevel):
+def generatecfromobj( pobj, pvalue, pdir, nextlevel ):
 	securemkdir(pdir)
 	removetmpfiles()
 	object_parse_childs(pobj, pvalue, nextlevel)
@@ -662,8 +827,8 @@ def generatecfromobj(pobj, pvalue, pdir, nextlevel):
 		exists = os.path.isfile("./.objbrowse.c")
 		if exists:
 			print >> dmfpc,  "/*************************************************************"
-			print >> dmfpc,  " * ENTRY METHOD"
-			print >> dmfpc,  "/*************************************************************/"
+			print >> dmfpc,  "* ENTRY METHOD"
+			print >> dmfpc,  "**************************************************************/"
 		tmpf = open("./.objbrowse.c", "r")
 		tmpd = tmpf.read()
 		tmpf.close()
@@ -682,8 +847,8 @@ def generatecfromobj(pobj, pvalue, pdir, nextlevel):
 		exists = os.path.isfile("./.objadddel.c")
 		if exists:
 			print >> dmfpc,  "/*************************************************************"
-			print >> dmfpc,  " * ADD & DEL OBJ"
-			print >> dmfpc,  "/*************************************************************/"
+			print >> dmfpc,  "* ADD & DEL OBJ"
+			print >> dmfpc,  "**************************************************************/"
 		tmpf = open("./.objadddel.c", "r")
 		tmpd = tmpf.read()
 		tmpf.close()
@@ -702,8 +867,8 @@ def generatecfromobj(pobj, pvalue, pdir, nextlevel):
 		exists = os.path.isfile("./.getstevalue.c")
 		if exists:
 			print >> dmfpc,  "/*************************************************************"
-			print >> dmfpc,  " * GET & SET PARAM"
-			print >> dmfpc,  "/*************************************************************/"
+			print >> dmfpc,  "* GET & SET PARAM"
+			print >> dmfpc,  "**************************************************************/"
 		tmpf = open("./.getstevalue.c", "r")
 		tmpd = tmpf.read()
 		tmpf.close()
@@ -743,36 +908,50 @@ if (sys.argv[1]).lower() == "-h" or (sys.argv[1]).lower() == "--help":
 	exit(1)
 
 model_root_name = "Root"
-json_file = sys.argv[1]
+json_file = sys.argv[1] # tr181.json
 
+# load json file
 with open(json_file) as file:
 	data = json.loads(file.read(), object_pairs_hook=OrderedDict)
 
-if "tr181" in sys.argv[1]:
+if "tr181" in sys.argv[1]: # TR181 JSON File
 	gendir = "tr181"
-elif "tr104" in sys.argv[1]:
+elif "tr104" in sys.argv[1]: # TR104 JSON File 
 	gendir = "tr104"
-elif "tr106" in sys.argv[1]:
+elif "tr106" in sys.argv[1]: # TR106 JSON File 
 	gendir = "tr106"
 else:
 	gendir = "source_" + time.strftime("%Y-%m-%d_%H-%M-%S")
 
-for i,(key,value) in enumerate(data.items()):
-	objstart = key
-	device = key.split(".")
-	dmroot = device[0]
-
-	if dmroot == None:
+for obj, value in data.items():
+	if obj == None:
 		print "Wrong JSON Data model format!"
 		exit(1)
 
-	generatecfromobj(objstart, value, gendir, 1)
-	if isinstance(value,dict):
-		for k,v in value.items():
-			if isinstance(v,dict):
-				for k1,v1 in v.items():
-					if k1 == "type" and v1 == "object":
-						generatecfromobj(k, v, gendir, 0)
+	# Generate the object file if it is defined by "sys.argv[2]" argument
+	if (len(sys.argv) > 2):
+		if sys.argv[2] != obj:
+			if isinstance(value, dict):
+				for obj1, value1 in value.items():
+					if obj1 == sys.argv[2]:
+						if isinstance(value1, dict):
+							for obj2, value2 in value1.items():
+								if obj2 == "type" and value2 == "object":
+									generatecfromobj(obj1, value1, gendir, 0)
+									break
+						break
+			break
+
+	# Generate the root object tree file if amin does not exist
+	generatecfromobj(obj, value, gendir, 1)
+
+	# Generate the sub object tree file if amin does not exist
+	if isinstance(value, dict):
+		for obj1, value1 in value.items():
+			if isinstance(value1, dict):
+				for obj2, value2 in value1.items():
+					if obj2 == "type" and value2 == "object":
+						generatecfromobj(obj1, value1, gendir, 0)
 
 if (os.path.isdir(gendir)):
 	print "Source code generated under \"./%s\" folder" % gendir

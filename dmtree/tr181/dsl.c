@@ -485,6 +485,8 @@ int set_DSLLine_Enable(char *refparam, struct dmctx *ctx, void *data, char *inst
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -510,6 +512,8 @@ int set_DSLLine_Alias(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct dsl_line_args *)data)->line_sec, "dsl_line_alias", value);
@@ -534,6 +538,8 @@ int set_DSLLine_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1106,6 +1112,8 @@ int set_DSLChannel_Enable(char *refparam, struct dmctx *ctx, void *data, char *i
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1131,6 +1139,8 @@ int set_DSLChannel_Alias(char *refparam, struct dmctx *ctx, void *data, char *in
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct dsl_channel_args *)data)->channel_sec, "dsl_channel_alias", value);

@@ -541,8 +541,6 @@ int dmuci_rename_section(char *package, char *section, char *value)
 /**** UCI LOOKUP by section pointer ****/
 int dmuci_lookup_ptr_by_section(struct uci_context *ctx, struct uci_ptr *ptr, struct uci_section *s, char *option, char *value)
 {
-	struct uci_element *e;
-
 	if (s == NULL || s->package == NULL)
 		return -1;
 

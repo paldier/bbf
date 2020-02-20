@@ -73,6 +73,8 @@ int set_management_server_url(char *refparam, struct dmctx *ctx, void *data, cha
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value("cwmp", "acs", "dhcp_discovery", "disable");
@@ -93,7 +95,9 @@ int get_management_server_username(char *refparam, struct dmctx *ctx, void *data
 int set_management_server_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
-		case VALUECHECK:			
+		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "acs", "userid", value);
@@ -107,7 +111,9 @@ int set_management_server_username(char *refparam, struct dmctx *ctx, void *data
 int set_management_server_passwd(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
-		case VALUECHECK:			
+		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "acs", "passwd", value);
@@ -137,15 +143,12 @@ int set_management_server_periodic_inform_enable(char *refparam, struct dmctx *c
 
 	switch (action) {
 		case VALUECHECK:			
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if (b)
-				dmuci_set_value("cwmp", "acs", "periodic_inform_enable", "1");
-			else
-				dmuci_set_value("cwmp", "acs", "periodic_inform_enable", "0");
+			dmuci_set_value("cwmp", "acs", "periodic_inform_enable", b ? "1" : "0");
 			cwmp_set_end_session(END_SESSION_RELOAD);
 			return 0;
 	}
@@ -162,7 +165,9 @@ int get_management_server_periodic_inform_interval(char *refparam, struct dmctx 
 int set_management_server_periodic_inform_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
-		case VALUECHECK:			
+		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "acs", "periodic_inform_interval", value);
@@ -195,12 +200,12 @@ int set_management_server_periodic_inform_time(char *refparam, struct dmctx *ctx
 	char buf[16];
 
 	switch (action) {
-		case VALUECHECK:			
+		case VALUECHECK:
+			if (dm_validate_dateTime(value))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (!(strptime(value, "%Y-%m-%dT%H:%M:%S", &tm))) {
-				return 0;
-			}
+			strptime(value, "%Y-%m-%dT%H:%M:%S", &tm);
 			snprintf(buf, sizeof(buf), "%ld", mktime(&tm));
 			dmuci_set_value("cwmp", "acs", "periodic_inform_time", buf);
 			cwmp_set_end_session(END_SESSION_RELOAD);
@@ -214,7 +219,6 @@ int get_management_server_connection_request_url(char *refparam, struct dmctx *c
 {
 	char *ip, *port, *iface;
 
-	*value = "";
 	dmuci_get_option_value_string("cwmp", "cpe", "default_wan_interface", &iface);
 	network_get_ipaddr(&ip, iface);	
 	dmuci_get_option_value_string("cwmp", "cpe", "port", &port);
@@ -236,7 +240,9 @@ int get_management_server_connection_request_username(char *refparam, struct dmc
 int set_management_server_connection_request_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
-		case VALUECHECK:			
+		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "cpe", "userid", value);
@@ -251,6 +257,8 @@ int set_management_server_connection_request_passwd(char *refparam, struct dmctx
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "cpe", "passwd", value);
@@ -274,10 +282,7 @@ int get_lwn_protocol_used(char *refparam, struct dmctx *ctx, void *data, char *i
 	
 	dmuci_get_option_value_string("cwmp", "lwn", "enable", &tmp);
 	string_to_bool(tmp, &b);
-	if (b)
-		*value = "UDP";
-	else	
-		*value = "";
+	*value = b ? "UDP" : "";
 	return 0;
 }
 
@@ -285,16 +290,15 @@ int set_lwn_protocol_used(char *refparam, struct dmctx *ctx, void *data, char *i
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, NULL, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value,"UDP") ==0) {
+			if (strcmp(value,"UDP") == 0)
 				dmuci_set_value("cwmp", "lwn", "enable", "1");
-				cwmp_set_end_session(END_SESSION_RELOAD);
-			} 
-			else {
+			else
 				dmuci_set_value("cwmp", "lwn", "enable", "0");
-				cwmp_set_end_session(END_SESSION_RELOAD);
-			}
+			cwmp_set_end_session(END_SESSION_RELOAD);
 			return 0;
 	}
 	return 0;
@@ -311,6 +315,8 @@ int set_lwn_host(char *refparam, struct dmctx *ctx, void *data, char *instance, 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "lwn", "hostname", value);
@@ -331,6 +337,8 @@ int set_lwn_port(char *refparam, struct dmctx *ctx, void *data, char *instance, 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "lwn", "port", value);
@@ -357,13 +365,14 @@ int set_management_server_http_compression(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action) {
 		case VALUECHECK:
-			 if (0 == strcasecmp(value, "gzip") || 0 == strcasecmp(value, "deflate") || 0 == strncasecmp(value, "disable", 7)) {
-				 return 0;
-			 }
-			return FAULT_9007;
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
+			return 0;
 		case VALUESET:
-			dmuci_set_value("cwmp", "acs", "compression", value);
-			cwmp_set_end_session(END_SESSION_RELOAD);
+			if (strcasecmp(value, "gzip") == 0 || strcasecmp(value, "deflate") == 0 || strncasecmp(value, "disable", 7) == 0) {
+				dmuci_set_value("cwmp", "acs", "compression", value);
+				cwmp_set_end_session(END_SESSION_RELOAD);
+			}
 			return 0;
 	}
 	return 0;
@@ -378,14 +387,11 @@ int get_management_server_retry_min_wait_interval(char *refparam, struct dmctx *
 
 int set_management_server_retry_min_wait_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	int a;
 	switch (action) {
 		case VALUECHECK:
-			a = atoi(value);
-			if (a <= 65535 && a >= 1) {
-				 return 0;
-			}
-			return FAULT_9007;
+			if (dm_validate_unsignedInt(value, "1", "65535"))
+				return FAULT_9007;
+			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "acs", "retry_min_wait_interval", value);
 			cwmp_set_end_session(END_SESSION_RELOAD);
@@ -403,14 +409,11 @@ int get_management_server_retry_interval_multiplier(char *refparam, struct dmctx
 
 int set_management_server_retry_interval_multiplier(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	int a;
 	switch (action) {
 		case VALUECHECK:
-			a = atoi(value);
-			if (a <= 65535 && a >= 1000) {
-				 return 0;
-			}
-			return FAULT_9007;
+			if (dm_validate_unsignedInt(value, "1000", "65535"))
+				return FAULT_9007;
+			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "acs", "retry_interval_multiplier", value);
 			cwmp_set_end_session(END_SESSION_RELOAD);
@@ -423,12 +426,10 @@ int set_management_server_retry_interval_multiplier(char *refparam, struct dmctx
 int get_alias_based_addressing(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "amd_version", value);
-	if((*value)[0] == '\0'|| atoi(*value) <= AMD_4) {
+	if ((*value)[0] == '\0'|| atoi(*value) <= AMD_4)
 		*value = "false";
-	}
-	else {
+	else
 		*value = "true";
-	}
 	return 0;
 }
 
@@ -443,10 +444,9 @@ int set_instance_mode(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action) {
 		case VALUECHECK:
-			if (0 == strcmp(value, "InstanceNumber") || 0 == strcmp(value, "InstanceAlias") ) {
-				return 0;
-			}
-			return FAULT_9007;
+			if (dm_validate_string(value, NULL, NULL, InstanceMode, NULL))
+				return FAULT_9007;
+			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "cpe", "instance_mode", value);
 			cwmp_set_end_session(END_SESSION_RELOAD);
@@ -481,6 +481,8 @@ int set_stun_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
@@ -508,6 +510,8 @@ int set_stun_server_address(char *refparam, struct dmctx *ctx, void *data, char 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_stun", "stun", "server_address", value);
@@ -527,6 +531,8 @@ int set_stun_server_port(char *refparam, struct dmctx *ctx, void *data, char *in
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_stun", "stun", "server_port", value);
@@ -546,6 +552,8 @@ int set_stun_username(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_stun", "stun", "username", value);
@@ -565,6 +573,8 @@ int set_stun_password(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_stun", "stun", "password", value);
@@ -584,6 +594,8 @@ int set_stun_maximum_keepalive_period(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_int(value, "-1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_stun", "stun", "max_keepalive", value);
@@ -603,6 +615,8 @@ int set_stun_minimum_keepalive_period(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_stun", "stun", "min_keepalive", value);
@@ -612,17 +626,16 @@ int set_stun_minimum_keepalive_period(char *refparam, struct dmctx *ctx, void *d
 }
 
 /*#Device.ManagementServer.NATDetected!UCI:cwmp_stun/stun,stun/nat_detected*/
-int get_nat_detected(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value){
+int get_nat_detected(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	char *path = "/etc/rc.d/*icwmp_stund";
 	char *v;
 
 	if (check_file(path)) { //stun is enabled
 		dmuci_get_varstate_string("cwmp_stun", "stun", "nat_detected", &v);
 		*value = (*v == '1') ? "true" : "false";
-	}
-	else {
+	} else
 		*value = "false";
-	}
 	return 0;
 }
 
@@ -640,6 +653,8 @@ int set_management_server_conn_rep_allowed_jabber_id(char *refparam, struct dmct
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, "32", NULL, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_xmpp", "xmpp", "allowed_jid", value);
@@ -688,6 +703,8 @@ int set_management_server_conn_req_xmpp_connection(char *refparam, struct dmctx 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if ((str = strstr(value, "Device.XMPP.Connection."))) {

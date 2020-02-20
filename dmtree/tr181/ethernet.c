@@ -433,7 +433,7 @@ int delObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void *data,
 			dmuci_delete_by_section_unnamed(((struct dm_args *)data)->section, NULL, NULL);
 		} else {
 			get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name(((struct dm_args *)data)->section), &dmmap_section);
-			if(dmmap_section != NULL)
+			if (dmmap_section != NULL)
 				dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
 			dmuci_delete_by_section(((struct dm_args *)data)->section, NULL, NULL);
 		}
@@ -442,7 +442,7 @@ int delObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void *data,
 		uci_foreach_sections("network", "device", s) {
 			if (found != 0){
 				get_dmmap_section_of_config_section("dmmap_network", "device", section_name(s), &dmmap_section);
-				if(dmmap_section != NULL)
+				if (dmmap_section != NULL)
 					dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
@@ -451,7 +451,7 @@ int delObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void *data,
 		}
 		if (ss != NULL){
 			get_dmmap_section_of_config_section("dmmap_network", "device", section_name(ss), &dmmap_section);
-			if(dmmap_section != NULL)
+			if (dmmap_section != NULL)
 				dmuci_delete_by_section(dmmap_section, NULL, NULL);
 			dmuci_delete_by_section(ss, NULL, NULL);
 		}
@@ -469,8 +469,7 @@ int get_Ethernet_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, voi
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_foreach_sections("ports", "ethport", s)
-	{
+	uci_foreach_sections("ports", "ethport", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -483,8 +482,7 @@ int get_Ethernet_LinkNumberOfEntries(char *refparam, struct dmctx *ctx, void *da
 	int cnt = 0;
 
 	dmmap_synchronizeEthernetLink(ctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(bbfdm, DMMAP, "link", s)
-	{
+	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -498,8 +496,7 @@ int get_Ethernet_VLANTerminationNumberOfEntries(char *refparam, struct dmctx *ct
 	char *type, *vlan_method;
 	int cnt = 0;
 
-	uci_foreach_sections("network", "device", s)
-	{
+	uci_foreach_sections("network", "device", s) {
 		dmuci_get_value_by_section_string(s, "type", &type);
 		dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
 		if ((strcmp(vlan_method, "2") != 0 && strcmp(vlan_method, "1") != 0) || (strcmp(vlan_method, "1") == 0 && strcmp(type, "untagged") == 0))
@@ -535,7 +532,7 @@ int set_EthernetInterface_Enable(char *refparam, struct dmctx *ctx, void *data, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -565,25 +562,29 @@ int get_EthernetInterface_Status(char *refparam, struct dmctx *ctx, void *data, 
 
 int get_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_ports", "ethport", section_name(((struct eth_port_args *)data)->eth_port_sec), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "eth_port_alias", value);
-	if(*value == NULL || strlen(*value)<1)
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "eth_port_alias", value);
+	if (*value == NULL || strlen(*value) < 1)
 		dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "name", value);
 	return 0;
 }
 
 int set_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_ports", "ethport", section_name(((struct eth_port_args *)data)->eth_port_sec), &dmmap_section);
-			dmuci_set_value_by_section(dmmap_section, "eth_port_alias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "eth_port_alias", value);
 			return 0;
 	}
 	return 0;
@@ -628,6 +629,8 @@ int set_EthernetInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -677,19 +680,20 @@ int set_EthernetInterface_MaxBitRate(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_int(value, "-1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcasecmp(value, "0") == 0 ) {
+			if (strcasecmp(value, "0") == 0 )
 				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", "disabled");
-			} else if (strcmp(value, "-1") == 0) {
+			else if (strcmp(value, "-1") == 0)
 				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", "auto");
-			} else {
+			else {
 				dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "speed", &duplex);
 				if (strcmp(duplex, "auto") == 0 || strcmp(duplex, "disabled") == 0)
 					p = "FDAUTO";
-				else {
+				else
 					p = strchr(duplex, 'F') ? strchr(duplex, 'F') : strchr(duplex, 'H');
-				}
 				if (p) dmastrcat(&val, value, p);
 				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", val);
 				dmfree(val);
@@ -720,11 +724,11 @@ int get_EthernetInterface_CurrentBitRate(char *refparam, struct dmctx *ctx, void
 int get_EthernetInterface_DuplexMode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "speed", value);
-	if (*value[0] == '\0') {
+	if (*value[0] == '\0')
 		*value = "";
-	} else if (strcmp(*value, "auto") == 0) {
+	else if (strcmp(*value, "auto") == 0)
 		*value = "Auto";
-	} else {
+	else {
 		if (strchr(*value, 'F'))
 			*value = "Full";
 		else if (strchr(*value, 'H'))
@@ -741,6 +745,8 @@ int set_EthernetInterface_DuplexMode(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, DuplexMode, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcasecmp(value, "auto") == 0) {
@@ -877,6 +883,8 @@ int set_EthernetLink_Enable(char *refparam, struct dmctx *ctx, void *data, char 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -900,6 +908,8 @@ int set_EthernetLink_Alias(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct dm_args *)data)->section, "link_alias", value);
@@ -981,6 +991,8 @@ int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void *data, 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1085,6 +1097,8 @@ int set_EthernetVLANTermination_Enable(char *refparam, struct dmctx *ctx, void *
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1100,34 +1114,39 @@ int get_EthernetVLANTermination_Status(char *refparam, struct dmctx *ctx, void *
 
 int get_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
-	char *vlan_method= NULL;
+	struct uci_section *dmmap_section = NULL;
+	char *vlan_method = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_network", "device", section_name(((struct dm_args *)data)->section), &dmmap_section);
-	dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-	if(strcmp(vlan_method, "2") == 0)
-		dmuci_get_value_by_section_string(dmmap_section, "all_vlan_term_alias", value);
-	else
-		dmuci_get_value_by_section_string(dmmap_section, "vlan_term_alias", value);
-
+	if (dmmap_section) {
+		dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
+		if(strcmp(vlan_method, "2") == 0)
+			dmuci_get_value_by_section_string(dmmap_section, "all_vlan_term_alias", value);
+		else
+			dmuci_get_value_by_section_string(dmmap_section, "vlan_term_alias", value);
+	}
 	return 0;
 }
 
 int set_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
-	char *vlan_method= NULL;
+	struct uci_section *dmmap_section = NULL;
+	char *vlan_method = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "device", section_name(((struct dm_args *)data)->section), &dmmap_section);
-			dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-			if(strcmp(vlan_method, "2") == 0)
-				dmuci_set_value_by_section(dmmap_section, "all_vlan_term_alias", value);
-			else
-				dmuci_set_value_by_section(dmmap_section, "vlan_term_alias", value);
+			if (dmmap_section) {
+				dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
+				if(strcmp(vlan_method, "2") == 0)
+					dmuci_set_value_by_section(dmmap_section, "all_vlan_term_alias", value);
+				else
+					dmuci_set_value_by_section(dmmap_section, "vlan_term_alias", value);
+			}
 			return 0;
 	}
 	return 0;
@@ -1188,9 +1207,11 @@ int set_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx *ctx, v
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (value[strlen(value)-1]!='.') {
+			if (value[strlen(value)-1] != '.') {
 				dmasprintf(&newvalue, "%s.", value);
 				adm_entry_get_linker_value(ctx, newvalue, &linker);
 			} else
@@ -1229,6 +1250,8 @@ int set_EthernetVLANTermination_VLANID(char *refparam, struct dmctx *ctx, void *
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "4094"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET: {
 			dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);
@@ -1258,7 +1281,7 @@ int get_EthernetVLANTermination_TPID(char *refparam, struct dmctx *ctx, void *da
 	else if (strcmp(type, "8021ad") == 0)
 		*value = "34984";
 	else
-		return -1;
+		*value = "37120";
 	return 0;
 }
 
@@ -1266,6 +1289,8 @@ int set_EthernetVLANTermination_TPID(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "33024") == 0)

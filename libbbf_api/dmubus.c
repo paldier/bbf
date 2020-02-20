@@ -11,6 +11,7 @@
  *	Author: Anis Ellouze <anis.ellouze@pivasoftware.com>
  */
 
+#include <json-c/json.h>
 #include <libubus.h>
 #include "dmubus.h"
 #include "dmmem.h"
@@ -245,8 +246,7 @@ static void dm_ubus_cache_entry_free(struct dm_ubus_cache_entry *entry)
 	free(entry);
 }
 
-int dmubus_call(char *obj, char *method, struct ubus_arg u_args[],
-		int u_args_size, json_object **req_res)
+int dmubus_call(char *obj, char *method, struct ubus_arg u_args[], int u_args_size, json_object **req_res)
 {
 	const struct dm_ubus_req req = {
 		.obj = obj,

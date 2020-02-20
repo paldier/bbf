@@ -36,8 +36,8 @@ DMLEAF tDeviceInfoParams[] = {
 {"SpecVersion", &DMREAD, DMT_STRING, get_device_specversion, NULL,  &DMFINFRM, NULL, BBFDM_BOTH},
 {"ProvisioningCode", &DMWRITE, DMT_STRING, get_device_provisioningcode, set_device_provisioningcode, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
 {CUSTOM_PREFIX"BaseMacAddr", &DMREAD, DMT_STRING, get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"CATVEnabled", &DMWRITE, DMT_STRING, get_catv_enabled, set_device_catvenabled, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"MemoryBank", &DMWRITE, DMT_STRING, get_device_memory_bank, set_device_memory_bank, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"CATVEnabled", &DMWRITE, DMT_BOOL, get_catv_enabled, set_device_catvenabled, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"MemoryBank", &DMWRITE, DMT_INT, get_device_memory_bank, set_device_memory_bank, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -157,7 +157,7 @@ char *get_deviceid_manufactureroui()
 				}
 			}
 		} else
-			mac = dm_ubus_get_value(res, 2, "system", "basemac");
+			mac = dmjson_get_value(res, 2, "system", "basemac");
 
 		if(mac) {
 			size_t ln = strlen(mac);
@@ -272,7 +272,7 @@ int get_device_devicelog(char *refparam, struct dmctx *ctx, void *data, char *in
 		return 0;
 	buff[len] = '\0';
 	char *p = buff;
-	while (*p) { //TODO to optimize, we can avoid this if the '<' and '>' does not cause problem in the tests.
+	while (*p) {
 		if (*p == '<') {
 			*p = '(';
 			if (p == buff || *(p-1) == '\n') {
@@ -288,7 +288,7 @@ int get_device_devicelog(char *refparam, struct dmctx *ctx, void *data, char *in
 			*p = ')';
 		p++;
 	}
-	if(msg == NULL)
+	if (msg == NULL)
 		*value = "";
 	else
 		*value = dmstrdup(msg);// MEM WILL BE FREED IN DMMEMCLEAN
@@ -311,7 +311,9 @@ int get_device_provisioningcode(char *refparam, struct dmctx *ctx, void *data, c
 int set_device_provisioningcode(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
-		case VALUECHECK:			
+		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp", "cpe", "provisioning_code", value);
@@ -325,7 +327,7 @@ int get_base_mac_addr(char *refparam, struct dmctx *ctx, void *data, char *insta
 	json_object *res;
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	*value = dm_ubus_get_value(res, 2, "system", "basemac");
+	*value = dmjson_get_value(res, 2, "system", "basemac");
 	return 0;
 }
 
@@ -334,7 +336,7 @@ int get_device_memory_bank(char *refparam, struct dmctx *ctx, void *data, char *
 	json_object *res;
 	dmubus_call("router.system", "memory_bank", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	*value = dm_ubus_get_value(res, 1, "code");
+	*value = dmjson_get_value(res, 1, "code");
 	return 0;
 }
 
@@ -342,6 +344,7 @@ int set_device_memory_bank(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	switch (action) {
 		case VALUECHECK:
+			//TODO
 			return 0;
 		case VALUESET:
 			dmubus_call_set("router.system", "memory_bank", UBUS_ARGS{{"bank", value, Integer}}, 1);
@@ -364,19 +367,14 @@ int get_catv_enabled(char *refparam, struct dmctx *ctx, void *data, char *instan
 int set_device_catvenabled(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	char *stat;
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if (b)
-				stat = "on";
-			else
-				stat = "off";
-			dmuci_set_value("catv", "catv", "enable", stat);
+			dmuci_set_value("catv", "catv", "enable", b ? "on" : "off");
 			return 0;
 	}
 	return 0;
@@ -387,7 +385,7 @@ int get_catv_optical_input_level(char *refparam, struct dmctx *ctx, void *data, 
 	json_object *res;
 	dmubus_call("catv", "vpd", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	*value = dm_ubus_get_value(res, 1, "VPD");
+	*value = dmjson_get_value(res, 1, "VPD");
 	return 0;
 }
 
@@ -396,7 +394,7 @@ int get_catv_rf_output_level(char *refparam, struct dmctx *ctx, void *data, char
 	json_object *res;
 	dmubus_call("catv", "rf", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	*value = dm_ubus_get_value(res, 1, "RF");
+	*value = dmjson_get_value(res, 1, "RF");
 	return 0;
 }
 
@@ -405,7 +403,7 @@ int get_catv_temperature(char *refparam, struct dmctx *ctx, void *data, char *in
 	json_object *res;
 	dmubus_call("catv", "temp", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	*value = dm_ubus_get_value(res, 1, "Temperature");
+	*value = dmjson_get_value(res, 1, "Temperature");
 	return 0;
 }
 
@@ -414,7 +412,7 @@ int get_catv_voltage(char *refparam, struct dmctx *ctx, void *data, char *instan
 	json_object *res;
 	dmubus_call("catv", "vcc", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	*value = dm_ubus_get_value(res, 1, "VCC");
+	*value = dmjson_get_value(res, 1, "VCC");
 	return 0;
 }
 
@@ -476,6 +474,8 @@ int set_vcf_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "vcf_alias", value);
@@ -519,6 +519,8 @@ int set_vlf_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "vlf_alias", value);
@@ -552,7 +554,7 @@ int get_memory_status_total(char* refparam, struct dmctx *ctx, void *data, char 
 	json_object *res;
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "0");
-	*value = dm_ubus_get_value(res, 2, "memoryKB", "total");
+	*value = dmjson_get_value(res, 2, "memoryKB", "total");
 	return 0;
 }
 
@@ -562,7 +564,7 @@ int get_memory_status_free(char* refparam, struct dmctx *ctx, void *data, char *
 	json_object *res;
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "0");
-	*value = dm_ubus_get_value(res, 2, "memoryKB", "free");
+	*value = dmjson_get_value(res, 2, "memoryKB", "free");
 	return 0;
 }
 
@@ -572,7 +574,7 @@ int get_process_cpu_usage(char* refparam, struct dmctx *ctx, void *data, char *i
 	json_object *res;
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "0");
-	*value = dm_ubus_get_value(res, 2, "system", "cpu_per");
+	*value = dmjson_get_value(res, 2, "system", "cpu_per");
 	return 0;
 }
 
@@ -620,7 +622,7 @@ int get_process_priority(char* refparam, struct dmctx *ctx, void *data, char *in
 		if (val < 0) val = 0;
 		dmasprintf(value, "%ld", val);
 	} else
-		*value= "0";
+		*value = "0";
 	return 0;
 }
 

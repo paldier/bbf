@@ -71,15 +71,12 @@ int set_power_mgmt_param_ethapd(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value("power_mgmt", "power_mgmt", "ethapd", "1");
-			else
-				dmuci_set_value("power_mgmt", "power_mgmt", "ethapd", "0");
+			dmuci_set_value("power_mgmt", "power_mgmt", "ethapd", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -91,15 +88,12 @@ int set_power_mgmt_param_eee(char *refparam, struct dmctx *ctx, void *data, char
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value("power_mgmt", "power_mgmt", "eee", "1");
-			else
-				dmuci_set_value("power_mgmt", "power_mgmt", "eee", "0");
+			dmuci_set_value("power_mgmt", "power_mgmt", "eee", b ? "1" : "0");
 			return 0;
 	}
 	return 0;

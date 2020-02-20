@@ -14,7 +14,8 @@ libbbf_api_la_CFLAGS =		\
 	$(AM_CFLAGS)			\
 	$(LIBUCI_CFLAGS)		\
 	$(LIBUBOX_CFLAGS)		\
-	$(LIBUBUS_CFLAGS)
+	$(LIBUBUS_CFLAGS) 		\
+	-Wall -Werror
 
 libbbf_api_la_LDFLAGS = 	\
 	$(AM_LDFLAGS)			\
@@ -116,7 +117,8 @@ libbbfdm_la_CFLAGS =		\
 	$(AM_CFLAGS)			\
 	$(LIBUCI_CFLAGS)		\
 	$(LIBUBOX_CFLAGS)		\
-	$(LIBUBUS_CFLAGS)
+	$(LIBUBUS_CFLAGS) 		\
+	-Wall -Werror
 
 libbbfdm_la_LDFLAGS = 		\
 	$(AM_LDFLAGS)			\

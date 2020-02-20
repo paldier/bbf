@@ -13,6 +13,7 @@
 #ifndef __DM_COMMON_H
 #define __DM_COMMON_H
 
+#define _XOPEN_SOURCE  /* for strptime */
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -32,6 +33,7 @@
 #include <assert.h>
 #include <getopt.h>
 #include <dlfcn.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
 #include <sys/stat.h>
@@ -51,6 +53,47 @@
 #include "dmuci.h"
 #include "dmubus.h"
 #include "dmjson.h"
+
+extern char *Encapsulation[];
+extern char *LinkType[];
+extern char *BridgeStandard[];
+extern char *BridgeType[];
+extern char *VendorClassIDMode[];
+extern char *DiagnosticsState[];
+extern char *SupportedProtocols[];
+extern char *InstanceMode[];
+extern char *NATProtocol[];
+extern char *Config[];
+extern char *Target[];
+extern char *ServerConnectAlgorithm[];
+extern char *KeepAlivePolicy[];
+extern char *DeliveryHeaderProtocol[];
+extern char *KeyIdentifierGenerationPolicy[];
+extern char *PreambleType[];
+extern char *MFPConfig[];
+extern char *DuplexMode[];
+extern char *RequestedState[];
+extern char *BulkDataProtocols[];
+extern char *EncodingTypes[];
+extern char *CSVReportFormat[];
+extern char *RowTimestamp[];
+extern char *JSONReportFormat[];
+extern char *StaticType[];
+extern char *ProtocolVersion[];
+extern char *ServerSelectionProtocol[];
+extern char *DHCPType[];
+extern char *DropAlgorithm[];
+extern char *SchedulerAlgorithm[];
+extern char *DTMFMethod[];
+extern char *ProfileEnable[];
+extern char *PIN[];
+extern char *DestinationAddress[];
+extern char *RegulatoryDomain[];
+extern char *ConformingAction[];
+extern char *IPv4Address[];
+extern char *IPv6Address[];
+extern char *IPAddress[];
+extern char *MACAddress[];
 
 #define NVRAM_FILE "/proc/nvram/WpaKey"
 #define MAX_DHCP_LEASES 256
@@ -254,11 +297,22 @@ int copy_temporary_file_to_original_file(char *f1, char *f2);
 struct uci_section *is_dmmap_section_exist(char* package, char* section);
 struct uci_section *is_dmmap_section_exist_eq(char* package, char* section, char* opt, char* value);
 int isfolderexist(char *folderpath);
-bool match(const char *string, const char *pattern);
 char * dmmap_file_path_get(const char *dmmap_package);
 int dm_read_sysfs_file(const char *file, char *dst, unsigned len);
 int get_net_iface_sysfs(const char *uci_iface, const char *name, char **value);
 int get_net_device_sysfs(const char *uci_iface, const char *name, char **value);
 char *get_device_from_wifi_iface(const char *wifi_iface, const char *wifi_section);
 int dm_time_format(time_t ts, char **dst);
+bool match(const char *string, const char *pattern);
+int dm_validate_string(char *value, char *min, char *max, char *enumeration[], char *pattern[]);
+int dm_validate_boolean(char *value);
+int dm_validate_unsignedInt(char *value, char *min, char *max);
+int dm_validate_int(char *value, char *min, char *max);
+int dm_validate_unsignedLong(char *value, char *min, char *max);
+int dm_validate_long(char *value, char *min, char *max);
+int dm_validate_dateTime(char *value);
+int dm_validate_hexBinary(char *value, char *min, char *max);
+int dm_validate_string_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max, char *enumeration[], char *pattern[]);
+int dm_validate_unsignedInt_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max);
+int dm_validate_int_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max);
 #endif

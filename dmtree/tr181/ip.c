@@ -84,7 +84,7 @@ DMLEAF tIPInterfaceIPv4AddressParams[] = {
 {CUSTOM_PREFIX"FirewallEnabled", &DMWRITE, DMT_BOOL, get_firewall_enabled, set_firewall_enabled, &IPv4INFRM, NULL, BBFDM_BOTH},
 {"IPAddress", &DMWRITE, DMT_STRING, get_ipv4_address, set_ipv4_address, &IPv4INFRM, NULL, BBFDM_BOTH},
 {"SubnetMask", &DMWRITE, DMT_STRING, get_ipv4_netmask, set_ipv4_netmask, &IPv4INFRM, NULL, BBFDM_BOTH},
-{"AddressingType", &DMWRITE, DMT_STRING, get_ipv4_addressing_type, set_ipv4_addressing_type, &IPv4INFRM, NULL, BBFDM_BOTH},
+{"AddressingType", &DMREAD, DMT_STRING, get_ipv4_addressing_type, NULL, &IPv4INFRM, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -277,6 +277,8 @@ int set_IP_IPv4Enable(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -306,6 +308,8 @@ int set_IP_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -329,6 +333,8 @@ int set_IP_ULAPrefix(char *refparam, struct dmctx *ctx, void *data, char *instan
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "49", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value("network", "globals", "ula_prefix", value);
@@ -368,7 +374,7 @@ int set_IPInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *
 	bool b;
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -407,6 +413,8 @@ int set_IPInterface_IPv4Enable(char *refparam, struct dmctx *ctx, void *data, ch
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -426,9 +434,10 @@ int get_IPInterface_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, ch
 int set_IPInterface_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -459,6 +468,8 @@ int set_IPInterface_Router(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -479,7 +490,7 @@ int set_IPInterface_Reset(char *refparam, struct dmctx *ctx, void *data, char *i
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -505,6 +516,8 @@ int set_IPInterface_MaxMTUSize(char *refparam, struct dmctx *ctx, void *data, ch
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "64", "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "mtu", value);
@@ -535,6 +548,8 @@ int set_IPInterface_Loopback(char *refparam, struct dmctx *ctx, void *data, char
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -637,7 +652,7 @@ int set_firewall_enabled(char *refparam, struct dmctx *ctx, void *data, char *in
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -665,8 +680,11 @@ int get_ipv4_address(char *refparam, struct dmctx *ctx, void *data, char *instan
 int set_ipv4_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *proto;
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "15", NULL, IPv4Address))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct ip_args *)data)->ip_sec, "proto", &proto);
@@ -703,6 +721,8 @@ int set_ipv4_netmask(char *refparam, struct dmctx *ctx, void *data, char *instan
 	char *proto;
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "15", NULL, IPv4Address))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct ip_args *)data)->ip_sec, "proto", &proto);
@@ -714,7 +734,7 @@ int set_ipv4_netmask(char *refparam, struct dmctx *ctx, void *data, char *instan
 }
 
 /*#Device.IP.Interface.{i}.IPv4Address.{i}.AddressingType!UCI:network/interface,@i-1/proto*/
-int get_ipv4_addressing_type (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int get_ipv4_addressing_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct ip_args *)data)->ip_sec, "proto", value);
 	if (strcmp(*value, "static") == 0)
@@ -723,25 +743,6 @@ int get_ipv4_addressing_type (char *refparam, struct dmctx *ctx, void *data, cha
 		*value = "DHCP";
 	else
 		*value = "";
-	return 0;
-}
-
-int set_ipv4_addressing_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action) {
-		case VALUECHECK:
-			return 0;
-		case VALUESET:
-			if (strcasecmp(value, "static") == 0) {
-				dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "proto", "static");
-				dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ipaddr", "0.0.0.0");
-			}
-			if (strcasecmp(value, "dhcp") == 0) {
-				dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "proto", "dhcp");
-				dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ipaddr", "");
-			}
-			return 0;
-	}
 	return 0;
 }
 
@@ -784,6 +785,8 @@ int set_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (value[strlen(value)-1]!='.') {
@@ -819,6 +822,8 @@ int set_IPInterfaceIPv6Address_IPAddress(char *refparam, struct dmctx *ctx, void
 	char *proto;
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "45", NULL, IPv6Address))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct ipv6_args *)data)->ip_sec, "proto", &proto);
@@ -839,6 +844,8 @@ int set_IPInterfaceIPv6Address_Enable(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -896,6 +903,8 @@ int set_IPInterfaceIPv6Address_Prefix(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -921,6 +930,8 @@ int set_IPInterfaceIPv6Address_PreferredLifetime(char *refparam, struct dmctx *c
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_dateTime(value))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct ipv6_args *)data)->ip_sec, "proto", &proto);
@@ -953,6 +964,8 @@ int set_IPInterfaceIPv6Address_ValidLifetime(char *refparam, struct dmctx *ctx, 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_dateTime(value))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct ipv6_args *)data)->ip_sec, "proto", &proto);
@@ -980,6 +993,8 @@ int set_IPInterfaceIPv6Prefix_Enable(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1016,6 +1031,8 @@ int set_IPInterfaceIPv6Prefix_Prefix(char *refparam, struct dmctx *ctx, void *da
 	char *proto;
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "49", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct ipv6prefix_args *)data)->ip_sec, "proto", &proto);
@@ -1053,6 +1070,8 @@ int set_IPInterfaceIPv6Prefix_StaticType(char *refparam, struct dmctx *ctx, void
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, StaticType, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1075,6 +1094,8 @@ int set_IPInterfaceIPv6Prefix_ParentPrefix(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1092,6 +1113,8 @@ int set_IPInterfaceIPv6Prefix_ChildPrefixBits(char *refparam, struct dmctx *ctx,
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "49", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1114,6 +1137,8 @@ int set_IPInterfaceIPv6Prefix_PreferredLifetime(char *refparam, struct dmctx *ct
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_dateTime(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1136,6 +1161,8 @@ int set_IPInterfaceIPv6Prefix_ValidLifetime(char *refparam, struct dmctx *ctx, v
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_dateTime(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1245,7 +1272,7 @@ int set_IPInterfaceTWAMPReflector_Enable(char *refparam, struct dmctx *ctx, void
 
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1290,6 +1317,7 @@ int set_IPInterfaceTWAMPReflector_Enable(char *refparam, struct dmctx *ctx, void
 int get_IPInterfaceTWAMPReflector_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *enable;
+
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", &enable);
 	if (strcmp(enable, "1") == 0)
 		*value = "Active";
@@ -1308,6 +1336,8 @@ int set_IPInterfaceTWAMPReflector_Alias(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "twamp_alias", value);
@@ -1326,6 +1356,8 @@ int set_IPInterfaceTWAMPReflector_Port(char *refparam, struct dmctx *ctx, void *
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "port", value);
@@ -1344,6 +1376,8 @@ int set_IPInterfaceTWAMPReflector_MaximumTTL(char *refparam, struct dmctx *ctx, 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "255"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "max_ttl", value);
@@ -1362,6 +1396,8 @@ int set_IPInterfaceTWAMPReflector_IPAllowedList(char *refparam, struct dmctx *ct
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, "255", NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "ip_list", value);
@@ -1380,6 +1416,8 @@ int set_IPInterfaceTWAMPReflector_PortAllowedList(char *refparam, struct dmctx *
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, "255", NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "port_list", value);
@@ -1393,23 +1431,24 @@ int set_IPInterfaceTWAMPReflector_PortAllowedList(char *refparam, struct dmctx *
 **************************************************************/
 int get_IPInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct ip_args *)data)->ip_sec), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "ip_int_alias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "ip_int_alias", value);
 	return 0;
 }
 
 int set_IPInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section =NULL;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct ip_args *)data)->ip_sec), &dmmap_section);
-			if(dmmap_section != NULL)
+			if (dmmap_section != NULL)
 				dmuci_set_value_by_section(dmmap_section, "ip_int_alias", value);
 			return 0;
 	}
@@ -1418,23 +1457,24 @@ int set_IPInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *i
 
 int get_ipv4_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct ip_args *)data)->ip_sec), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "ipv4_alias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "ipv4_alias", value);
 	return 0;
 }
 
 int set_ipv4_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section =NULL;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct ip_args *)data)->ip_sec), &dmmap_section);
-			if(dmmap_section != NULL)
+			if (dmmap_section != NULL)
 				dmuci_set_value_by_section(dmmap_section, "ipv4_alias", value);
 			return 0;
 	}
@@ -1443,7 +1483,7 @@ int set_ipv4_alias(char *refparam, struct dmctx *ctx, void *data, char *instance
 
 int get_IPInterfaceIPv6Address_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 	char *name;
 
 	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6", "ipv6_instance", instance, dmmap_section) {
@@ -1456,7 +1496,7 @@ int get_IPInterfaceIPv6Address_Alias(char *refparam, struct dmctx *ctx, void *da
 
 int set_IPInterfaceIPv6Address_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 	char *name;
 
 	switch (action) {
@@ -1468,7 +1508,8 @@ int set_IPInterfaceIPv6Address_Alias(char *refparam, struct dmctx *ctx, void *da
 				if(strcmp(name, section_name(((struct ipv6_args *)data)->ip_sec)) == 0)
 					break;
 			}
-			dmuci_set_value_by_section(dmmap_section, "ipv6_alias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "ipv6_alias", value);
 			return 0;
 	}
 	return 0;
@@ -1476,7 +1517,7 @@ int set_IPInterfaceIPv6Address_Alias(char *refparam, struct dmctx *ctx, void *da
 
 int get_IPInterfaceIPv6Prefix_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 	char *name;
 
 	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6prefix", "ipv6prefix_instance", instance, dmmap_section) {
@@ -1489,7 +1530,7 @@ int get_IPInterfaceIPv6Prefix_Alias(char *refparam, struct dmctx *ctx, void *dat
 
 int set_IPInterfaceIPv6Prefix_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 	char *name;
 
 	switch (action) {
@@ -1501,7 +1542,8 @@ int set_IPInterfaceIPv6Prefix_Alias(char *refparam, struct dmctx *ctx, void *dat
 				if(strcmp(name, section_name(((struct ipv6prefix_args *)data)->ip_sec)) == 0)
 					break;
 			}
-			dmuci_set_value_by_section(dmmap_section, "ipv6prefix_alias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "ipv6prefix_alias", value);
 			return 0;
 	}
 	return 0;
@@ -1781,8 +1823,9 @@ int delObjIPInterfaceTWAMPReflector(char *refparam, struct dmctx *ctx, void *dat
 /**************************************************************************
 * LINKER
 ***************************************************************************/
-int get_linker_ip_interface(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker) {
-	if(data && ((struct ip_args *)data)->ip_sec) {
+int get_linker_ip_interface(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+{
+	if (data && ((struct ip_args *)data)->ip_sec) {
 		dmasprintf(linker,"%s", section_name(((struct ip_args *)data)->ip_sec));
 		return 0;
 	} else {
@@ -1791,8 +1834,9 @@ int get_linker_ip_interface(char *refparam, struct dmctx *dmctx, void *data, cha
 	}
 }
 
-int get_linker_ipv6_prefix(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker) {
-	if(((struct ipv6prefix_args *)data)->ip_sec) {
+int get_linker_ipv6_prefix(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+{
+	if (((struct ipv6prefix_args *)data)->ip_sec) {
 		dmasprintf(linker,"%s", get_child_prefix_linker(section_name(((struct ipv6prefix_args *)data)->ip_sec)));
 		return 0;
 	} else {

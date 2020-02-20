@@ -70,7 +70,7 @@ int set_x_bcm_com_ip_acc_list_cfgobj_enable(char *refparam, struct dmctx *ctx, v
 	
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -247,7 +247,7 @@ int set_port_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, ch
 	
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -276,15 +276,12 @@ int set_port_forwarding_loopback(char *refparam, struct dmctx *ctx, void *data, 
 	
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value_by_section((struct uci_section *)data, "reflection", "1");
-			else 
-				dmuci_set_value_by_section((struct uci_section *)data, "reflection", "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "reflection", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -549,20 +546,22 @@ int add_ipacccfg_rule(char *refparam, struct dmctx *ctx, void *data, char **inst
 
 int delete_ipacccfg_rule(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct uci_section *s = NULL, *ss = NULL, *dmmap_section;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_section = NULL;
 	int found = 0;
 
 	switch (del_action) {
 		case DEL_INST:
 			get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+			if (dmmap_section)
+				dmuci_delete_by_section(dmmap_section, NULL, NULL);
 			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("firewall", "rule", s) {
 				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name(s), &dmmap_section);
-					if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					if (dmmap_section)
+						dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
@@ -570,7 +569,8 @@ int delete_ipacccfg_rule(char *refparam, struct dmctx *ctx, void *data, char *in
 			}
 			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name(ss), &dmmap_section);
-				if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+				if (dmmap_section)
+					dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			break;
@@ -601,19 +601,21 @@ int add_ipacccfg_port_forwarding(char *refparam, struct dmctx *ctx, void *data, 
 int delete_ipacccfg_port_forwarding(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	int found = 0;
-	struct uci_section *forwardsection = (struct uci_section *)data, *s = NULL, *ss = NULL, *dmmap_section;
+	struct uci_section *forwardsection = (struct uci_section *)data, *s = NULL, *ss = NULL, *dmmap_section = NULL;
 	
 	switch (del_action) {
 		case DEL_INST:
 			get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(forwardsection), &dmmap_section);
-			if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+			if (dmmap_section)
+				dmuci_delete_by_section(dmmap_section, NULL, NULL);
 			dmuci_delete_by_section(forwardsection, NULL, NULL);
 			break;
 		case DEL_ALL:
 			uci_foreach_option_eq("firewall", "redirect", "target", "DNAT", s) {
 				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(s), &dmmap_section);
-					if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					if (dmmap_section)
+						dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
@@ -621,7 +623,8 @@ int delete_ipacccfg_port_forwarding(char *refparam, struct dmctx *ctx, void *dat
 			}
 			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(ss), &dmmap_section);
-				if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+				if (dmmap_section)
+					dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			break;
@@ -633,24 +636,28 @@ int delete_ipacccfg_port_forwarding(char *refparam, struct dmctx *ctx, void *dat
 int get_x_iopsys_eu_cfgobj_address_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *ipaccsection = (struct uci_section *)data;
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name(ipaccsection), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "frulealias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "frulealias", value);
 	return 0;
 }
 
 int set_x_iopsys_eu_cfgobj_address_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *ipaccsection = (struct uci_section *)data;
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
-	get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name(ipaccsection), &dmmap_section);
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(dmmap_section, "frulealias", value);
+			get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name(ipaccsection), &dmmap_section);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "frulealias", value);
 			return 0;
 	}
 	return 0;
@@ -659,24 +666,28 @@ int set_x_iopsys_eu_cfgobj_address_alias(char *refparam, struct dmctx *ctx, void
 int get_port_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *forwardsection = (struct uci_section *)data;
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(forwardsection), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "forwardalias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "forwardalias", value);
 	return 0;
 }
 
 int set_port_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *forwardsection = (struct uci_section *)data;
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
-	get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(forwardsection), &dmmap_section);
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(dmmap_section, "forwardalias", value);
+			get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(forwardsection), &dmmap_section);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "forwardalias", value);
 			return 0;
 	}
 	return 0;

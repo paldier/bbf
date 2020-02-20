@@ -81,8 +81,8 @@ void upnp_getInterfaceStatus(char *interfaceName, char **status){
 		*status = NULL;
 		goto end_bloc;
 	}
-	up = dm_ubus_get_value(res, 1, "up");
-	if(up == NULL) {
+	up = dmjson_get_value(res, 1, "up");
+	if (up == NULL) {
 		*status = NULL;
 		goto end_bloc;
 	}

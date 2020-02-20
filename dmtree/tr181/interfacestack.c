@@ -466,8 +466,7 @@ int get_Device_InterfaceStackNumberOfEntries(char *refparam, struct dmctx *ctx, 
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_path_foreach_sections(bbfdm, "dmmap_interface_stack", "interface_stack", s)
-	{
+	uci_path_foreach_sections(bbfdm, "dmmap_interface_stack", "interface_stack", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -489,6 +488,8 @@ int set_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			uci_path_foreach_option_eq(bbfdm, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", instance, s) {
@@ -501,28 +502,24 @@ int set_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char
 
 int get_InterfaceStack_HigherLayer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct interfacestack_data *ifdata = (struct interfacestack_data *) data;
-	*value = dmstrdup(ifdata->higherlayer);
+	*value = dmstrdup(((struct interfacestack_data *)data)->higherlayer);
 	return 0;
 }
 
 int get_InterfaceStack_LowerLayer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct interfacestack_data *ifdata = (struct interfacestack_data *) data;
-	*value = dmstrdup(ifdata->lowerlayer);
+	*value = dmstrdup(((struct interfacestack_data *)data)->lowerlayer);
 	return 0;
 }
 
 int get_InterfaceStack_HigherAlias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct interfacestack_data *ifdata = (struct interfacestack_data *) data;
-	*value = dmstrdup(ifdata->higheralias);
+	*value = dmstrdup(((struct interfacestack_data *)data)->higheralias);
 	return 0;
 }
 
 int get_InterfaceStack_LowerAlias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct interfacestack_data *ifdata = (struct interfacestack_data *) data;
-	*value = dmstrdup(ifdata->loweralias);
+	*value = dmstrdup(((struct interfacestack_data *)data)->loweralias);
 	return 0;
 }

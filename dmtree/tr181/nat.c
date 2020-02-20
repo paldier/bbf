@@ -45,8 +45,8 @@ DMLEAF tNATPortMappingParams[] = {
 {"Status", &DMWRITE, DMT_STRING, get_nat_port_mapping_status, NULL, NULL, NULL, BBFDM_BOTH},
 {"Alias", &DMWRITE, DMT_STRING, get_nat_port_mapping_alias, set_nat_port_mapping_alias, NULL, NULL, BBFDM_BOTH},
 {"Interface", &DMWRITE, DMT_STRING, get_nat_port_mapping_interface, set_nat_port_mapping_interface, NULL, NULL, BBFDM_BOTH},
-{"AllInterfaces", &DMWRITE, DMT_BOOL, get_nat_port_mapping_all_interface, set_nat_port_mapping_all_interface, NULL, NULL, BBFDM_BOTH},
-{"LeaseDuration", &DMWRITE, DMT_UNINT, get_nat_port_mapping_lease_duration, set_nat_port_mapping_lease_duration, NULL, NULL, BBFDM_BOTH},
+//{"AllInterfaces", &DMWRITE, DMT_BOOL, get_nat_port_mapping_all_interface, set_nat_port_mapping_all_interface, NULL, NULL, BBFDM_BOTH},
+//{"LeaseDuration", &DMWRITE, DMT_UNINT, get_nat_port_mapping_lease_duration, set_nat_port_mapping_lease_duration, NULL, NULL, BBFDM_BOTH},
 {"RemoteHost", &DMWRITE, DMT_STRING, get_nat_port_mapping_remote_host, set_nat_port_mapping_remote_host, NULL, NULL, BBFDM_BOTH},
 {"ExternalPort", &DMWRITE, DMT_UNINT, get_nat_port_mapping_external_port, set_nat_port_mapping_external_port, NULL, NULL, BBFDM_BOTH},
 {"ExternalPortEndRange", &DMWRITE, DMT_UNINT, get_nat_port_mapping_external_port_end_range, set_nat_port_mapping_external_port_end_range, NULL, NULL, BBFDM_BOTH},
@@ -89,14 +89,16 @@ int delete_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *data, c
 	switch (del_action) {
 		case DEL_INST:
 			get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name((struct uci_section *)data), &dmmap_firewall);
-			if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+			if (dmmap_firewall)
+				dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("firewall", "zone", s) {
 				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name(ss), &dmmap_firewall);
-					if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+					if (dmmap_firewall)
+						dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
@@ -104,7 +106,8 @@ int delete_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *data, c
 			}
 			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name(ss), &dmmap_firewall);
-				if(dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+				if(dmmap_firewall)
+					dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			return 0;
@@ -141,14 +144,16 @@ int delete_NAT_PortMapping(char *refparam, struct dmctx *ctx, void *data, char *
 	switch (del_action) {
 		case DEL_INST:
 			get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name((struct uci_section *)data), &dmmap_firewall);
-			if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+			if (dmmap_firewall)
+				dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("firewall", "redirect", s) {
 				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(ss), &dmmap_firewall);
-					if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+					if (dmmap_firewall)
+						dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
@@ -156,7 +161,8 @@ int delete_NAT_PortMapping(char *refparam, struct dmctx *ctx, void *data, char *
 			}
 			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name(ss), &dmmap_firewall);
-				if (dmmap_firewall) dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
+				if (dmmap_firewall)
+					dmuci_delete_by_section(dmmap_firewall, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			return 0;
@@ -173,8 +179,7 @@ int get_nat_interface_setting_number_of_entries(char *refparam, struct dmctx *ct
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_foreach_sections("firewall", "zone", s)
-	{
+	uci_foreach_sections("firewall", "zone", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -187,8 +192,7 @@ int get_nat_port_mapping_number_of_entries(char *refparam, struct dmctx *ctx, vo
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_foreach_sections("firewall", "redirect", s)
-	{
+	uci_foreach_sections("firewall", "redirect", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -209,7 +213,7 @@ int set_nat_interface_setting_enable(char *refparam, struct dmctx *ctx, void *da
 	bool b;
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -231,23 +235,27 @@ int get_nat_interface_setting_status(char *refparam, struct dmctx *ctx, void *da
 
 int get_nat_interface_setting_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "interface_setting_alias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "interface_setting_alias", value);
 	return 0;
 }
 
 int set_nat_interface_setting_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "interface_setting_alias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "interface_setting_alias", value);
 			return 0;
 	}
 	return 0;
@@ -281,6 +289,8 @@ int set_nat_interface_setting_interface(char *refparam, struct dmctx *ctx, void 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			strcpy(buf, value);
@@ -309,9 +319,10 @@ int get_nat_port_mapping_enable(char *refparam, struct dmctx *ctx, void *data, c
 int set_nat_port_mapping_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -333,23 +344,27 @@ int get_nat_port_mapping_status(char *refparam, struct dmctx *ctx, void *data, c
 
 int get_nat_port_mapping_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name((struct uci_section *)data), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "port_mapping_alias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "port_mapping_alias", value);
 	return 0;
 }
 
 int set_nat_port_mapping_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
-	get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name((struct uci_section *)data), &dmmap_section);
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(dmmap_section, "port_mapping_alias", value);
+			get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name((struct uci_section *)data), &dmmap_section);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "port_mapping_alias", value);
 			return 0;
 	}
 	return 0;
@@ -391,14 +406,15 @@ int set_nat_port_mapping_interface(char *refparam, struct dmctx *ctx, void *data
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &iface);
 			if (iface[0] != '\0') {
-				uci_foreach_sections("firewall", "zone", s)
-				{
+				uci_foreach_sections("firewall", "zone", s) {
 					dmuci_get_value_by_section_string(s, "network", &network);
-					if (is_strword_in_optionvalue(network, iface)){
+					if (is_strword_in_optionvalue(network, iface)) {
 						dmuci_get_value_by_section_string(s, "name", &zone);
 						dmuci_set_value_by_section((struct uci_section *)data, "src", zone);
 						break;
@@ -412,19 +428,19 @@ int set_nat_port_mapping_interface(char *refparam, struct dmctx *ctx, void *data
 
 int get_nat_port_mapping_all_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int set_nat_port_mapping_all_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	bool b;
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
+			//TODO
 			return 0;
 	}
 	return 0;
@@ -433,7 +449,7 @@ int set_nat_port_mapping_all_interface(char *refparam, struct dmctx *ctx, void *
 int get_nat_port_mapping_lease_duration(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	// CPE only supports static port forwards
-	*value = "0";
+	//TODO
 	return 0;
 }
 
@@ -441,12 +457,12 @@ int set_nat_port_mapping_lease_duration(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action) {
 		case VALUECHECK:
-			// CPE only supports static port forwards
-			if (strcmp(value, "0") != 0)
+			if (dm_validate_unsignedInt(value, NULL, NULL))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			// Nothing to set for static port forwards
+			//TODO
 			return 0;
 	}
 	return 0;
@@ -463,6 +479,8 @@ int set_nat_port_mapping_remote_host(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "src_dip", value);
@@ -490,8 +508,11 @@ int get_nat_port_mapping_external_port(char *refparam, struct dmctx *ctx, void *
 int set_nat_port_mapping_external_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *dport, buffer[64];
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "src_dport", &dport);
@@ -519,8 +540,11 @@ int get_nat_port_mapping_external_port_end_range(char *refparam, struct dmctx *c
 int set_nat_port_mapping_external_port_end_range(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *dport, *tmp, buffer[64];
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "src_dport", &dport);
@@ -548,6 +572,8 @@ int set_nat_port_mapping_internal_port(char *refparam, struct dmctx *ctx, void *
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "dest_port", value);
@@ -561,32 +587,29 @@ int get_nat_port_mapping_protocol(char *refparam, struct dmctx *ctx, void *data,
 {
 	char *proto;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "proto", &proto);
-	if (strcasecmp(proto, "tcp") == 0)
+	if (strcmp(proto, "tcp") == 0)
 		*value = "TCP";
-	else if (strcasecmp(proto, "udp") == 0)
+	else if (strcmp(proto, "udp") == 0)
 		*value = "UDP";
 	else
 		*value = "TCP/UDP";
-	return 0;
 	return 0;
 }
 
 int set_nat_port_mapping_protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *v;
 	switch (action) {
 		case VALUECHECK:
-			if (strcasecmp("TCP", value) != 0 && strcasecmp("UDP", value) != 0 && strcasecmp("TCP/UDP", value) != 0)
+			if (dm_validate_string(value, NULL, NULL, NATProtocol, NULL))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcasecmp("TCP", value) == 0)
-				v = "tcp";
+				dmuci_set_value_by_section((struct uci_section *)data, "proto", "tcp");
 			else if (strcasecmp("UDP", value) == 0)
-				v = "udp";
+				dmuci_set_value_by_section((struct uci_section *)data, "proto", "udp");
 			else
-				v = "tcpudp";
-			dmuci_set_value_by_section((struct uci_section *)data, "proto", v);
+				dmuci_set_value_by_section((struct uci_section *)data, "proto", "tcpudp");
 			return 0;
 	}
 	return 0;
@@ -603,6 +626,8 @@ int set_nat_port_mapping_internal_client(char *refparam, struct dmctx *ctx, void
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "dest_ip", value);
@@ -622,6 +647,8 @@ int set_nat_port_mapping_description(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "name", value);

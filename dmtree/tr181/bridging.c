@@ -71,7 +71,7 @@ DMLEAF tBridgingBridgePortParams[] = {
 {"Name", &DMREAD, DMT_STRING, get_br_port_name, NULL, NULL, NULL, BBFDM_BOTH},
 {"LastChange", &DMREAD, DMT_UNINT, get_br_port_last_change, NULL, NULL, NULL, BBFDM_BOTH},
 {"LowerLayers", &DMWRITE, DMT_STRING, get_port_lower_layer, set_port_lower_layer, NULL, NULL, BBFDM_BOTH},
-{"ManagementPort", &DMWRITE, DMT_STRING, get_br_port_management, set_br_port_management, NULL, NULL, BBFDM_BOTH},
+{"ManagementPort", &DMWRITE, DMT_BOOL, get_br_port_management, set_br_port_management, NULL, NULL, BBFDM_BOTH},
 {"Type", &DMWRITE, DMT_STRING, get_br_port_type, set_br_port_type, NULL, NULL, BBFDM_BOTH},
 {"DefaultUserPriority", &DMWRITE, DMT_UNINT, get_br_port_default_user_priority, set_br_port_default_user_priority, NULL, NULL, BBFDM_BOTH},
 {"PriorityRegeneration", &DMWRITE, DMT_STRING, get_br_port_priority_regeneration, set_br_port_priority_regeneration, NULL, NULL, BBFDM_BOTH},
@@ -84,20 +84,20 @@ DMLEAF tBridgingBridgePortParams[] = {
 /*** Bridging.Bridge.{i}.Port.{i}.Stats. ***/
 DMLEAF tBridgingBridgePortStatsParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"BytesSent", &DMREAD, DMT_UNINT, get_br_port_stats_tx_bytes, NULL, NULL, NULL, BBFDM_BOTH},
-{"BytesReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_bytes, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsSent", &DMREAD, DMT_UNINT, get_br_port_stats_tx_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsSent", &DMREAD, DMT_UNINT, get_br_port_stats_tx_errors, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_errors, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsSent", &DMREAD, DMT_UNINT, get_br_port_stats_tx_unicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_unicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"UnicastPacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_unicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"UnicastPacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_unicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsSent", &DMREAD, DMT_UNINT, get_br_port_stats_tx_discard_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_discard_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"MulticastPacketsSent", &DMREAD, DMT_UNINT, get_br_port_stats_tx_multicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"MulticastPacketsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_multicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"BroadcastPacketsSent", &DMREAD, DMT_UNINT, get_br_port_stats_tx_broadcast_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"BroadcastPacketsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_broadcast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"MulticastPacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_multicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"MulticastPacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_multicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"BroadcastPacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_broadcast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"BroadcastPacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_broadcast_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {"UnknownProtoPacketsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_unknown_proto_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
@@ -108,7 +108,7 @@ DMLEAF tBridgingBridgeVLANParams[] = {
 {"Enable", &DMWRITE, DMT_BOOL, get_br_vlan_enable, set_br_vlan_enable, NULL, NULL, BBFDM_BOTH},
 {"Alias", &DMWRITE, DMT_STRING,get_br_vlan_alias, set_br_vlan_alias, NULL, NULL, BBFDM_BOTH},
 {"Name", &DMWRITE, DMT_STRING, get_br_vlan_name, set_br_vlan_name, NULL, NULL, BBFDM_BOTH},
-{"VLANID", &DMWRITE, DMT_STRING, get_br_vlan_vid, set_br_vlan_vid, NULL, NULL, BBFDM_BOTH},
+{"VLANID", &DMWRITE, DMT_INT, get_br_vlan_vid, set_br_vlan_vid, NULL, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"VLANPriority", &DMWRITE, DMT_STRING, get_br_vlan_priority, set_br_vlan_priority, NULL, NULL, BBFDM_BOTH},
 {0}
 };
@@ -129,8 +129,8 @@ DMLEAF tBridgingBridgeVLANPortParams[] = {
 ***************************************************************************/
 int get_linker_br_port(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if(data && ((struct bridging_port_args *)data)->bridge_port_sec) {
-		dmasprintf(linker,"%s+%s", section_name(((struct bridging_port_args *)data)->bridge_port_sec), ((struct bridging_port_args *)data)->ifname);
+	if (data && ((struct bridging_port_args *)data)->bridge_port_sec) {
+		dmasprintf(linker, "%s+%s", section_name(((struct bridging_port_args *)data)->bridge_port_sec), ((struct bridging_port_args *)data)->ifname);
 		return 0;
 	}
 	*linker = "";
@@ -139,8 +139,8 @@ int get_linker_br_port(char *refparam, struct dmctx *dmctx, void *data, char *in
 
 int get_linker_br_vlan(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if(data && ((struct bridging_vlan_args *)data)->vlan_port) {
-		dmasprintf(linker,"vlan%s_%s", ((struct bridging_vlan_args *)data)->vlan_port, ((struct bridging_vlan_args *)data)->br_inst);
+	if (data && ((struct bridging_vlan_args *)data)->vlan_port) {
+		dmasprintf(linker, "vlan%s_%s", ((struct bridging_vlan_args *)data)->vlan_port, ((struct bridging_vlan_args *)data)->br_inst);
 		return 0;
 	}
 	*linker = "";
@@ -189,10 +189,10 @@ char *get_last_vid(void)
 		if(!vlan_s)
 			break;
 		dmuci_get_value_by_section_string(vlan_s, "type", &type);
-		if (strcmp(type, "untagged")==0)
+		if (strcmp(type, "untagged") == 0)
 			continue;
 		dmuci_get_value_by_section_string(vlan_s, "vid", &vid);
-		if( atoi(vid)> num_vid )
+		if (atoi(vid) > num_vid)
 			num_vid = atoi(vid);
 		dmasprintf(&vid, "%d", num_vid);
 	}
@@ -206,7 +206,7 @@ int check_ifname_exist_in_br_ifname_list(char *ifname)
 
 	uci_foreach_option_eq("network", "interface", "type", "bridge", s) {
 		dmuci_get_value_by_section_string(s, "ifname", &br_ifname_list);
-		if(br_ifname_list[0] == '\0')
+		if (br_ifname_list[0] == '\0')
 			return 0;
 		br_ifname_dup = dmstrdup(br_ifname_list);
 		for (pch = strtok_r(br_ifname_dup, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
@@ -404,8 +404,7 @@ int get_Bridge_Number_Of_Entries(char *refparam, struct dmctx *ctx, void *data, 
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_foreach_option_eq("network", "interface", "type", "bridge", s)
-	{
+	uci_foreach_option_eq("network", "interface", "type", "bridge", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -428,7 +427,7 @@ int set_br_enable(char *refparam, struct dmctx *ctx, void *data, char *instance,
 	bool b;
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -447,7 +446,7 @@ int get_br_status(char *refparam, struct dmctx *ctx, void *data, char *instance,
 	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", section_name(((struct bridging_args *)data)->bridge_sec), String}}, 1, &res);
 	DM_ASSERT(res, *value = "Disabled");
 	*value = dmjson_get_value(res, 1, "up");
-	if(strcmp(*value, "true") == 0)
+	if (strcmp(*value, "true") == 0)
 		*value = "Enabled";
 	else
 		*value = "Disabled";
@@ -464,6 +463,8 @@ int set_br_standard(char *refparam, struct dmctx *ctx, void *data, char *instanc
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, BridgeStandard, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			return 0;
@@ -517,6 +518,8 @@ int set_br_associated_interfaces(char *refparam, struct dmctx *ctx, void *data, 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct bridging_args *)data)->bridge_sec, "ifname", value);
@@ -555,10 +558,9 @@ int get_br_port_enable(char *refparam, struct dmctx *ctx, void *data, char *inst
 
 int set_br_port_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	bool b;
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -573,10 +575,7 @@ int get_br_port_status(char *refparam, struct dmctx *ctx, void *data, char *inst
 	bool b;
 	get_br_port_enable(refparam, ctx, data, instance, value);
 	string_to_bool(*value, &b);
-	if (b)
-		*value = "Up";
-	else
-		*value = "Down";
+	*value = b ? "Up" : "Down";
 	return 0;
 }
 
@@ -603,17 +602,17 @@ int get_br_port_management(char *refparam, struct dmctx *ctx, void *data, char *
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
-	if (!dmmap_section) dmmap_section = ((struct bridging_port_args *)data)->bridge_port_sec;
+	if (!dmmap_section)
+		dmmap_section = ((struct bridging_port_args *)data)->bridge_port_sec;
 	dmuci_get_value_by_section_string(dmmap_section, "mg_port", value);
 	return 0;
 }
 
 int set_br_port_management(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	bool b;
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -646,6 +645,8 @@ int set_br_port_type(char *refparam, struct dmctx *ctx, void *data, char *instan
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, BridgeType, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			return 0;
@@ -676,6 +677,8 @@ int set_br_port_default_user_priority(char *refparam, struct dmctx *ctx, void *d
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "7"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "name", &name);
@@ -700,6 +703,8 @@ int set_br_port_priority_regeneration(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt_list(value, "8", "8", NULL, "0", "7"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			return 0;
@@ -710,6 +715,7 @@ int set_br_port_priority_regeneration(char *refparam, struct dmctx *ctx, void *d
 int get_br_port_port_state(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *name;
+
 	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "name", &name);
 	if (check_if_ifname_is_tagged(name) != NULL)
 		*value = "Forwarding";
@@ -742,6 +748,8 @@ int set_br_port_pvid(char *refparam, struct dmctx *ctx, void *data, char *instan
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_int(value, "1", "4094"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "name", &name);
@@ -769,13 +777,14 @@ int set_br_port_pvid(char *refparam, struct dmctx *ctx, void *data, char *instan
 int get_br_port_tpid(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *type;
+
 	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "type", &type);
 	if (strcmp(type, "8021q") == 0 || strcmp(type, "untagged") == 0)
 		*value = "33024";
 	else if (strcmp(type, "8021ad") == 0)
 		*value = "34984";
 	else
-		*value = "";
+		*value = "37120";
 	return 0;
 }
 
@@ -783,6 +792,8 @@ int set_br_port_tpid(char *refparam, struct dmctx *ctx, void *data, char *instan
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "33024") == 0)
@@ -943,8 +954,7 @@ static int update_br_vlan_ifname(struct bridging_vlan_args *curr_arg, int status
 int get_br_vlan_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "false";
-	int status;
-	status = is_bridge_vlan_enabled((struct bridging_vlan_args *)data);
+	int status = is_bridge_vlan_enabled((struct bridging_vlan_args *)data);
 	if (status)
 		*value = "true";
 	return 0;
@@ -957,7 +967,7 @@ int set_br_vlan_enable(char *refparam, struct dmctx *ctx, void *data, char *inst
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -984,9 +994,11 @@ int set_br_vlan_name(char *refparam, struct dmctx *ctx, void *data, char *instan
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			 dmuci_rename_section_by_section(((struct bridging_vlan_args *)data)->bridge_vlan_sec,value);
+			 dmuci_rename_section_by_section(((struct bridging_vlan_args *)data)->bridge_vlan_sec, value);
 			return 0;
 	}
 	return 0;
@@ -1005,6 +1017,8 @@ int set_br_vlan_vid(char *refparam, struct dmctx *ctx, void *data, char *instanc
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_int(value, "1", "4094"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct bridging_vlan_args *)data)->bridge_vlan_sec, "vid", value);
@@ -1032,6 +1046,7 @@ int set_br_vlan_priority(char *refparam, struct dmctx *ctx, void *data, char *in
 {
 	switch (action) {
 		case VALUECHECK:
+			//TODO
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct bridging_vlan_args *)data)->bridge_vlan_sec, "priority", value);
@@ -1044,23 +1059,27 @@ int set_br_vlan_priority(char *refparam, struct dmctx *ctx, void *data, char *in
 **************************************************************/
 int get_br_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct bridging_args *)data)->bridge_sec), &dmmap_section);
-	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "bridge_alias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "bridge_alias", value);
 	return 0;
 }
 
 int set_br_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct bridging_args *)data)->bridge_sec), &dmmap_section);
-			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "bridge_alias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "bridge_alias", value);
 			return 0;
 	}
 	return 0;
@@ -1071,7 +1090,8 @@ int get_br_port_alias(char *refparam, struct dmctx *ctx, void *data, char *insta
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
-	if (!dmmap_section) dmmap_section= ((struct bridging_port_args *)data)->bridge_port_sec;
+	if (!dmmap_section)
+		dmmap_section = ((struct bridging_port_args *)data)->bridge_port_sec;
 	dmuci_get_value_by_section_string(dmmap_section, "bridge_port_alias", value);
 	return 0;
 }
@@ -1082,10 +1102,13 @@ int set_br_port_alias(char *refparam, struct dmctx *ctx, void *data, char *insta
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
-			if(!dmmap_section) dmmap_section= ((struct bridging_port_args *)data)->bridge_port_sec;
+			if(!dmmap_section)
+				dmmap_section = ((struct bridging_port_args *)data)->bridge_port_sec;
 			dmuci_set_value_by_section(dmmap_section, "bridge_port_alias", value);
 			return 0;
 	}
@@ -1094,23 +1117,27 @@ int set_br_port_alias(char *refparam, struct dmctx *ctx, void *data, char *insta
 
 int get_br_vlan_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_network", "device", section_name(((struct bridging_vlan_args *)data)->bridge_vlan_sec), &dmmap_section);
-	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "bridge_vlan_alias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "bridge_vlan_alias", value);
 	return 0;
 }
 
 int set_br_vlan_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "device", section_name(((struct bridging_vlan_args *)data)->bridge_vlan_sec), &dmmap_section);
-			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "bridge_vlan_alias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "bridge_vlan_alias", value);
 			return 0;
 	}
 	return 0;
@@ -1124,7 +1151,7 @@ int add_bridge(char *refparam, struct dmctx *ctx, void *data, char **instance)
 	char *last_inst, *v;
 	char bridge_name[16], ib[8];
 	char *p = bridge_name;
-	struct uci_section* dmmap_bridge= NULL;
+	struct uci_section* dmmap_bridge = NULL;
 
 	last_inst = get_last_instance_lev2_bbfdm("network", "interface", "dmmap_network", "bridge_instance", "type", "bridge");
 	snprintf(ib, sizeof(ib), "%d", last_inst ? atoi(last_inst)+1 : 1);
@@ -1432,6 +1459,8 @@ int set_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *in
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
 			dmuci_get_value_by_section_string(dmmap_section, "mg_port", &mg_port);
 			if (value[strlen(value)-1]!='.') {
@@ -1503,7 +1532,7 @@ int set_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *in
 int get_vlan_port_vlan_ref(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char linker[8];
-	snprintf(linker, sizeof(linker),"vlan%s_%s", ((struct bridging_vlan_args *)data)->vlan_port, ((struct bridging_vlan_args *)data)->br_inst);
+	snprintf(linker, sizeof(linker), "vlan%s_%s", ((struct bridging_vlan_args *)data)->vlan_port, ((struct bridging_vlan_args *)data)->br_inst);
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value); // MEM WILL BE FREED IN DMMEMCLEAN
 	if (*value == NULL)
 		*value = "";
@@ -1514,6 +1543,8 @@ int set_vlan_port_vlan_ref(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			return 0;
@@ -1525,7 +1556,7 @@ int get_vlan_port_port_ref(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	char linker[16], *name;
 	dmuci_get_value_by_section_string(((struct bridging_vlan_args *)data)->bridge_vlan_sec, "name", &name);
-	snprintf(linker, sizeof(linker),"%s+%s", section_name(((struct bridging_vlan_args *)data)->bridge_vlan_sec), name);
+	snprintf(linker, sizeof(linker), "%s+%s", section_name(((struct bridging_vlan_args *)data)->bridge_vlan_sec), name);
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value); // MEM WILL BE FREED IN DMMEMCLEAN
 	if (*value == NULL)
 		*value = "";
@@ -1534,11 +1565,12 @@ int get_vlan_port_port_ref(char *refparam, struct dmctx *ctx, void *data, char *
 
 int set_vlan_port_port_ref(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *linker = NULL, *vid, *enable, *vifname, tmp[8], *pch, *p, *br_ifname;
-	char new_ifname[16];
+	char *linker = NULL, *vid, *enable, *vifname, *pch, *p, *br_ifname, tmp[8], new_ifname[16];
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &linker);
@@ -1604,6 +1636,8 @@ int set_br_vlan_untagged(char *refparam, struct dmctx *ctx, void *data, char *in
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			return 0;

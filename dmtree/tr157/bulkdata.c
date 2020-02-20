@@ -355,9 +355,10 @@ int get_BulkData_Enable(char *refparam, struct dmctx *ctx, void *data, char *ins
 int set_BulkData_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -438,9 +439,10 @@ int get_BulkDataProfile_Enable(char *refparam, struct dmctx *ctx, void *data, ch
 int set_BulkDataProfile_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -462,6 +464,8 @@ int set_BulkDataProfile_Alias(char *refparam, struct dmctx *ctx, void *data, cha
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "profile_alias", value);
@@ -481,6 +485,8 @@ int set_BulkDataProfile_Name(char *refparam, struct dmctx *ctx, void *data, char
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "255", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "name", value);
@@ -500,6 +506,8 @@ int set_BulkDataProfile_NumberOfRetainedFailedReports(char *refparam, struct dmc
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_int(value, "-1", NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "nbre_of_retained_failed_reports", value);
@@ -512,7 +520,7 @@ int set_BulkDataProfile_NumberOfRetainedFailedReports(char *refparam, struct dmc
 int get_BulkDataProfile_Protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "protocol", value);
-	if(strcmp(*value, "http") == 0)
+	if (strcmp(*value, "http") == 0)
 		*value = "HTTP";
 	return 0;
 }
@@ -521,6 +529,8 @@ int set_BulkDataProfile_Protocol(char *refparam, struct dmctx *ctx, void *data, 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, BulkDataProtocols, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if(strcmp(value, "HTTP") == 0)
@@ -545,6 +555,8 @@ int set_BulkDataProfile_EncodingType(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, EncodingTypes, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if(strcmp(value, "JSON") == 0)
@@ -567,6 +579,8 @@ int set_BulkDataProfile_ReportingInterval(char *refparam, struct dmctx *ctx, voi
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "reporting_interval", value);
@@ -596,8 +610,11 @@ int set_BulkDataProfile_TimeReference(char *refparam, struct dmctx *ctx, void *d
 {
 	struct tm tm;
 	char buf[16];
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_dateTime(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if (!(strptime(value, "%Y-%m-%dT%H:%M:%S", &tm)))
@@ -619,6 +636,8 @@ int set_BulkDataProfile_StreamingHost(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -637,6 +656,8 @@ int set_BulkDataProfile_StreamingPort(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -655,6 +676,8 @@ int set_BulkDataProfile_StreamingSessionID(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "65", "90"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -673,6 +696,8 @@ int set_BulkDataProfile_FileTransferURL(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -691,6 +716,8 @@ int set_BulkDataProfile_FileTransferUsername(char *refparam, struct dmctx *ctx, 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -709,6 +736,8 @@ int set_BulkDataProfile_FileTransferPassword(char *refparam, struct dmctx *ctx, 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -727,6 +756,8 @@ int set_BulkDataProfile_ControlFileFormat(char *refparam, struct dmctx *ctx, voi
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "128", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -770,6 +801,8 @@ int set_BulkDataProfileParameter_Name(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "name", value);
@@ -789,6 +822,8 @@ int set_BulkDataProfileParameter_Reference(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "reference", value);
@@ -808,6 +843,8 @@ int set_BulkDataProfileCSVEncoding_FieldSeparator(char *refparam, struct dmctx *
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "csv_encoding_field_separator", value);
@@ -827,6 +864,8 @@ int set_BulkDataProfileCSVEncoding_RowSeparator(char *refparam, struct dmctx *ct
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if((strcmp(value, "&#10;") == 0) || (strcmp(value, "&#13;") == 0))
@@ -847,6 +886,8 @@ int set_BulkDataProfileCSVEncoding_EscapeCharacter(char *refparam, struct dmctx 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if(strcmp(value, "&quot;") == 0)
@@ -871,6 +912,8 @@ int set_BulkDataProfileCSVEncoding_ReportFormat(char *refparam, struct dmctx *ct
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, CSVReportFormat, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if(strcmp(value, "ParameterPerRow") == 0)
@@ -899,6 +942,8 @@ int set_BulkDataProfileCSVEncoding_RowTimestamp(char *refparam, struct dmctx *ct
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, RowTimestamp, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if(strcmp(value, "Unix-Epoch") == 0)
@@ -927,6 +972,8 @@ int set_BulkDataProfileJSONEncoding_ReportFormat(char *refparam, struct dmctx *c
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, JSONReportFormat, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if(strcmp(value, "ObjectHierarchy") == 0)
@@ -955,6 +1002,8 @@ int set_BulkDataProfileJSONEncoding_ReportTimestamp(char *refparam, struct dmctx
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, RowTimestamp, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if(strcmp(value, "Unix-Epoch") == 0)
@@ -979,6 +1028,8 @@ int set_BulkDataProfileHTTP_URL(char *refparam, struct dmctx *ctx, void *data, c
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "1024", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "http_url", value);
@@ -998,6 +1049,8 @@ int set_BulkDataProfileHTTP_Username(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "http_username", value);
@@ -1017,6 +1070,8 @@ int set_BulkDataProfileHTTP_Password(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "http_password", value);
@@ -1048,6 +1103,8 @@ int set_BulkDataProfileHTTP_Compression(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if(strcmp(value, "GZIP") == 0)
@@ -1082,6 +1139,8 @@ int set_BulkDataProfileHTTP_Method(char *refparam, struct dmctx *ctx, void *data
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if(strcmp(value, "POST") == 0)
@@ -1103,9 +1162,10 @@ int get_BulkDataProfileHTTP_UseDateHeader(char *refparam, struct dmctx *ctx, voi
 int set_BulkDataProfileHTTP_UseDateHeader(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1126,9 +1186,10 @@ int get_BulkDataProfileHTTP_RetryEnable(char *refparam, struct dmctx *ctx, void 
 int set_BulkDataProfileHTTP_RetryEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1150,6 +1211,8 @@ int set_BulkDataProfileHTTP_RetryMinimumWaitInterval(char *refparam, struct dmct
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "http_retry_minimum_wait_interval", value);
@@ -1169,6 +1232,8 @@ int set_BulkDataProfileHTTP_RetryIntervalMultiplier(char *refparam, struct dmctx
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1000", "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "http_retry_interval_multiplier", value);
@@ -1205,9 +1270,10 @@ int get_BulkDataProfileHTTP_PersistAcrossReboot(char *refparam, struct dmctx *ct
 int set_BulkDataProfileHTTP_PersistAcrossReboot(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1229,6 +1295,8 @@ int set_BulkDataProfileHTTPRequestURIParameter_Name(char *refparam, struct dmctx
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "name", value);
@@ -1248,6 +1316,8 @@ int set_BulkDataProfileHTTPRequestURIParameter_Reference(char *refparam, struct 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "reference", value);

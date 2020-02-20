@@ -51,9 +51,9 @@ int browseXIopsysEuDropbear(struct dmctx *dmctx, DMNODE *parent_node, void *prev
 int get_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "PasswordAuth", value);
-	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1') {
+	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1')
 		*value = "1";
-	} else
+	else
 		*value = "0";
 	return 0;
 }
@@ -64,15 +64,12 @@ int set_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, vo
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value_by_section((struct uci_section *)data, "PasswordAuth", "1");
-			else
-				dmuci_set_value_by_section((struct uci_section *)data, "PasswordAuth", "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "PasswordAuth", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -81,9 +78,9 @@ int set_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, vo
 int get_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "RootPasswordAuth", value);
-	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1') {
+	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1')
 		*value = "1";
-	} else
+	else
 		*value = "0";
 	return 0;
 }
@@ -94,15 +91,12 @@ int set_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ct
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value_by_section((struct uci_section *)data, "RootPasswordAuth", "1");
-			else
-				dmuci_set_value_by_section((struct uci_section *)data, "RootPasswordAuth", "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "RootPasswordAuth", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -136,9 +130,8 @@ int set_x_iopsys_eu_dropbear_port(char *refparam, struct dmctx *ctx, void *data,
 int get_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "RootLogin", value);
-	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1' ) {
+	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1' )
 		*value = "1";
-	}
 	else
 		*value = "0";
 	return 0;
@@ -150,15 +143,12 @@ int set_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx, void 
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value_by_section((struct uci_section *)data, "RootLogin", "1");
-			else
-				dmuci_set_value_by_section((struct uci_section *)data, "RootLogin", "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "RootLogin", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -167,9 +157,8 @@ int set_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx, void 
 int get_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "verbose", value);
-	if ((*value)[0] == '\0' || (*value)[0] == '0' ) {
+	if ((*value)[0] == '\0' || (*value)[0] == '0' )
 		*value = "0";
-	}
 	else
 		*value = "1";
 	return 0;
@@ -181,15 +170,12 @@ int set_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value_by_section((struct uci_section *)data, "verbose", "1");
-			else
-				dmuci_set_value_by_section((struct uci_section *)data, "verbose", "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "verbose", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -198,9 +184,9 @@ int set_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *da
 int get_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "GatewayPorts", value);
-	if ((*value)[0] == '\0' || (*value)[0] == '0' ) {
+	if ((*value)[0] == '\0' || (*value)[0] == '0' )
 		*value = "0";
-	} else
+	else
 		*value = "1";
 	return 0;
 }
@@ -211,15 +197,12 @@ int set_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, vo
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value_by_section((struct uci_section *)data, "GatewayPorts", "1");
-			else
-				dmuci_set_value_by_section((struct uci_section *)data, "GatewayPorts", "");
+			dmuci_set_value_by_section((struct uci_section *)data, "GatewayPorts", b ? "1" : "");
 			return 0;
 	}
 	return 0;
@@ -355,23 +338,27 @@ int set_x_iopsys_eu_dropbear_banner_file(char *refparam, struct dmctx *ctx, void
 
 int get_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "dropbearalias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "dropbearalias", value);
 	return 0;
 }
 
 int set_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "dropbearalias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "dropbearalias", value);
 			return 0;
 	}
 	return 0;

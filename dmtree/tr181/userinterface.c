@@ -72,7 +72,7 @@ int set_userint_remoteaccesss_enable(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -112,9 +112,10 @@ int set_userint_remoteaccesss_port(char *refparam, struct dmctx *ctx, void *data
 	struct uci_section *ss;
 	char *rule_name, *owsd;
 
-	switch (action)
-	{
+	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			uci_foreach_sections("firewall", "rule", ss) {
@@ -184,9 +185,11 @@ int set_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *
 	char *rule_name, *name_http;
 	int found;
 
-	switch (action)
-	{
+	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, SupportedProtocols, NULL))
+				return FAULT_9007;
+
 			found = get_supportedprotocols();
 			if (found) {
 				if ((strcmp(value, "HTTP") != 0) && (strcmp(value, "HTTPS") != 0))

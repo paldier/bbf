@@ -509,17 +509,15 @@ int get_UPnPDevice_Enable(char *refparam, struct dmctx *ctx, void *data, char *i
 int set_UPnPDevice_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value("upnpd", "config", "enabled", "");
-			else
-				dmuci_set_value("upnpd", "config", "enabled", "0");
+			dmuci_set_value("upnpd", "config", "enabled", b ? "" : "0");
 			return 0;
 	}
 	return 0;
@@ -528,40 +526,29 @@ int set_UPnPDevice_Enable(char *refparam, struct dmctx *ctx, void *data, char *i
 int get_upnp_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	pid_t pid = get_pid("miniupnpd");
-
-	if (pid < 0) {
-		*value = "Down";
-	}
-	else {
-		*value = "Up";
-	}
+	*value = (pid < 0) ? "Down" : "Up";
 	return 0;
 }
 
 int get_UPnPDevice_UPnPMediaServer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *path = "/etc/rc.d/*minidlna";
-	if (check_file(path))
-		*value = "1";
-	else
-		*value = "0";
+	*value = (check_file(path)) ? "1" : "0";
 	return 0;
 }
 
 int set_UPnPDevice_UPnPMediaServer(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmcmd("/etc/init.d/minidlna", 1, "enable");
-			else
-				dmcmd("/etc/init.d/minidlna", 1, "disable");
+			dmcmd("/etc/init.d/minidlna", 1, b ? "enable" : "disable");
 			break;
 	}
 	return 0;
@@ -577,6 +564,8 @@ int set_UPnPDevice_UPnPMediaRenderer(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -595,6 +584,8 @@ int set_UPnPDevice_UPnPWLANAccessPoint(char *refparam, struct dmctx *ctx, void *
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -613,6 +604,8 @@ int set_UPnPDevice_UPnPQoSDevice (char *refparam, struct dmctx *ctx, void *data,
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -631,6 +624,8 @@ int set_UPnPDevice_UPnPQoSPolicyHolder(char *refparam, struct dmctx *ctx, void *
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -642,27 +637,22 @@ int set_UPnPDevice_UPnPQoSPolicyHolder(char *refparam, struct dmctx *ctx, void *
 int get_UPnPDevice_UPnPIGD(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *path = "/etc/rc.d/*miniupnpd";
-	if (check_file(path))
-		*value = "1";
-	else
-		*value = "0";
+	*value = (check_file(path)) ? "1" : "0";
 	return 0;
 }
 
 int set_UPnPDevice_UPnPIGD(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmcmd("/etc/init.d/miniupnpd", 1, "enable");
-			else
-				dmcmd("/etc/init.d/miniupnpd", 1, "disable");
+			dmcmd("/etc/init.d/miniupnpd", 1, b ? "enable" : "disable");
 			break;
 	}
 	return 0;
@@ -678,6 +668,8 @@ int set_UPnPDevice_UPnPDMBasicMgmt(char *refparam, struct dmctx *ctx, void *data
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -696,6 +688,8 @@ int set_UPnPDevice_UPnPDMConfigurationMgmt(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -714,6 +708,8 @@ int set_UPnPDevice_UPnPDMSoftwareMgmt(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -870,15 +866,13 @@ int get_UPnPDiscoveryRootDevice_Status(char *refparam, struct dmctx *ctx, void *
 
 int get_UPnPDiscoveryRootDevice_UUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnpdiscovery *dev = (struct upnpdiscovery *)data;
-	*value= dev->uuid;
+	*value = ((struct upnpdiscovery *)data)->uuid;
 	return 0;
 }
 
 int get_UPnPDiscoveryRootDevice_USN(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnpdiscovery *dev = (struct upnpdiscovery *)data;
-	*value= dev->usn;
+	*value = ((struct upnpdiscovery *)data)->usn;
 	return 0;
 }
 
@@ -890,8 +884,7 @@ int get_UPnPDiscoveryRootDevice_LeaseTime(char *refparam, struct dmctx *ctx, voi
 
 int get_UPnPDiscoveryRootDevice_Location(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnpdiscovery *dev = (struct upnpdiscovery *)data;
-	*value= dev->descurl;
+	*value = ((struct upnpdiscovery *)data)->descurl;
 	return 0;
 }
 
@@ -921,15 +914,13 @@ int get_UPnPDiscoveryDevice_Status(char *refparam, struct dmctx *ctx, void *data
 
 int get_UPnPDiscoveryDevice_UUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnpdiscovery *dev = (struct upnpdiscovery *)data;
-	*value= dev->uuid;
+	*value = ((struct upnpdiscovery *)data)->uuid;
 	return 0;
 }
 
 int get_UPnPDiscoveryDevice_USN(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnpdiscovery *dev = (struct upnpdiscovery *)data;
-	*value= dev->usn;
+	*value = ((struct upnpdiscovery *)data)->usn;
 	return 0;
 }
 
@@ -941,8 +932,7 @@ int get_UPnPDiscoveryDevice_LeaseTime(char *refparam, struct dmctx *ctx, void *d
 
 int get_UPnPDiscoveryDevice_Location(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnpdiscovery *dev = (struct upnpdiscovery *)data;
-	*value= dev->descurl;
+	*value = ((struct upnpdiscovery *)data)->descurl;
 	return 0;
 }
 
@@ -972,8 +962,7 @@ int get_UPnPDiscoveryService_Status(char *refparam, struct dmctx *ctx, void *dat
 
 int get_UPnPDiscoveryService_USN(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnpdiscovery *dev = (struct upnpdiscovery *)data;
-	*value= dev->usn;
+	*value = ((struct upnpdiscovery *)data)->usn;
 	return 0;
 }
 
@@ -985,8 +974,7 @@ int get_UPnPDiscoveryService_LeaseTime(char *refparam, struct dmctx *ctx, void *
 
 int get_UPnPDiscoveryService_Location(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnpdiscovery *dev = (struct upnpdiscovery *)data;
-	*value= dev->descurl;
+	*value = ((struct upnpdiscovery *)data)->descurl;
 	return 0;
 }
 
@@ -1010,15 +998,15 @@ int get_UPnPDiscoveryService_LastUpdate(char *refparam, struct dmctx *ctx, void 
 
 int get_UPnPDiscoveryService_ParentDevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnpdiscovery *dev = (struct upnpdiscovery *)data;
 	char *rootdevlink = NULL, *devlink = NULL;
-	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDiscovery%cRootDevice%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), dev->uuid, &rootdevlink);
-	if(rootdevlink != NULL){
+
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDiscovery%cRootDevice%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), ((struct upnpdiscovery *)data)->uuid, &rootdevlink);
+	if (rootdevlink != NULL) {
 		*value = rootdevlink;
 		return 0;
 	}
-	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDiscovery%cDevice%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), dev->uuid, &devlink);
-	if(devlink != NULL){
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDiscovery%cDevice%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), ((struct upnpdiscovery *)data)->uuid, &devlink);
+	if (devlink != NULL) {
 		*value = devlink;
 		return 0;
 	}
@@ -1086,8 +1074,7 @@ int get_UPnPDescription_ServiceInstanceNumberOfEntries(char *refparam, struct dm
 
 int get_UPnPDescriptionDeviceDescription_URLBase(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_description_file_info *upnp_desc = (struct upnp_description_file_info *)data;
-	*value = upnp_desc->desc_url;
+	*value = ((struct upnp_description_file_info *)data)->desc_url;
 	return 0;
 }
 
@@ -1105,17 +1092,16 @@ int get_UPnPDescriptionDeviceDescription_Host(char *refparam, struct dmctx *ctx,
 
 int get_UPnPDescriptionDeviceInstance_UDN(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
-	*value = upnpdevinst->udn;
+	*value = ((struct upnp_device_inst *)data)->udn;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_ParentDevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
 	char *devinstlink = NULL;
-	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDescription%cDeviceInstance%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), upnpdevinst->parentudn, &devinstlink);
-	if(devinstlink != NULL){
+
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDescription%cDeviceInstance%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), ((struct upnp_device_inst *)data)->parentudn, &devinstlink);
+	if (devinstlink != NULL) {
 		*value = devinstlink;
 		return 0;
 	}
@@ -1147,15 +1133,13 @@ int get_UPnPDescriptionDeviceInstance_DiscoveryDevice(char *refparam, struct dmc
 
 int get_UPnPDescriptionDeviceInstance_DeviceType(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
-	*value = upnpdevinst->device_type;
+	*value = ((struct upnp_device_inst *)data)->device_type;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_FriendlyName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
-	*value = upnpdevinst->friendly_name;
+	*value = ((struct upnp_device_inst *)data)->friendly_name;
 	return 0;
 }
 
@@ -1167,8 +1151,7 @@ int get_UPnPDescriptionDeviceInstance_DeviceCategory(char *refparam, struct dmct
 
 int get_UPnPDescriptionDeviceInstance_Manufacturer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
-	*value = upnpdevinst->manufacturer;
+	*value = ((struct upnp_device_inst *)data)->manufacturer;
 	return 0;
 }
 
@@ -1180,66 +1163,58 @@ int get_UPnPDescriptionDeviceInstance_ManufacturerOUI(char *refparam, struct dmc
 
 int get_UPnPDescriptionDeviceInstance_ManufacturerURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
-	*value = upnpdevinst->manufacturer_url;
+	*value = ((struct upnp_device_inst *)data)->manufacturer_url;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_ModelDescription(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
-	*value = upnpdevinst->model_description;
+	*value = ((struct upnp_device_inst *)data)->model_description;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_ModelName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
-	*value = upnpdevinst->model_name;
+	*value = ((struct upnp_device_inst *)data)->model_name;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_ModelNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
-	*value = upnpdevinst->model_number;
+	*value = ((struct upnp_device_inst *)data)->model_number;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_ModelURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
-	*value = upnpdevinst->model_url;
+	*value = ((struct upnp_device_inst *)data)->model_url;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_SerialNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
-	*value = upnpdevinst->serial_number;
+	*value = ((struct upnp_device_inst *)data)->serial_number;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_UPC(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst = (struct upnp_device_inst *)data;
-	*value = upnpdevinst->upc;
+	*value = ((struct upnp_device_inst *)data)->upc;
 	return 0;
 }
 
 int get_UPnPDescriptionDeviceInstance_PresentationURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_device_inst *upnpdevinst= (struct upnp_device_inst *)data;
-	*value = upnpdevinst->preentation_url;
+	*value = ((struct upnp_device_inst *)data)->preentation_url;
 	return 0;
 }
 
 int get_UPnPDescriptionServiceInstance_ParentDevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
 	char *devinstlink = NULL;
-	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDescription%cDeviceInstance%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), upnpserviceinst->parentudn, &devinstlink);
-	if(devinstlink != NULL){
+
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDescription%cDeviceInstance%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), ((struct upnp_service_inst *)data)->parentudn, &devinstlink);
+	if (devinstlink != NULL) {
 		*value = devinstlink;
 		return 0;
 	}
@@ -1248,16 +1223,15 @@ int get_UPnPDescriptionServiceInstance_ParentDevice(char *refparam, struct dmctx
 
 int get_UPnPDescriptionServiceInstance_ServiceId(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
-	*value = upnpserviceinst->serviceid;
+	*value = ((struct upnp_service_inst *)data)->serviceid;
 	return 0;
 }
 
 int get_UPnPDescriptionServiceInstance_ServiceDiscovery(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
 	char *usn = NULL, *devlink = NULL;
-	dmasprintf(&usn, "%s::%s", upnpserviceinst->parentudn, upnpserviceinst->servicetype);
+
+	dmasprintf(&usn, "%s::%s", ((struct upnp_service_inst *)data)->parentudn, ((struct upnp_service_inst *)data)->servicetype);
 	if (usn && usn[0]) {
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cUPnP%cDiscovery%cService%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), usn, &devlink);
 		if (devlink != NULL) {
@@ -1271,28 +1245,24 @@ int get_UPnPDescriptionServiceInstance_ServiceDiscovery(char *refparam, struct d
 
 int get_UPnPDescriptionServiceInstance_ServiceType(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
-	*value = upnpserviceinst->servicetype;
+	*value = ((struct upnp_service_inst *)data)->servicetype;
 	return 0;
 }
 
 int get_UPnPDescriptionServiceInstance_SCPDURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
-	*value = upnpserviceinst->scpdurl;
+	*value = ((struct upnp_service_inst *)data)->scpdurl;
 	return 0;
 }
 
 int get_UPnPDescriptionServiceInstance_ControlURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
-	*value = upnpserviceinst->controlurl;
+	*value = ((struct upnp_service_inst *)data)->controlurl;
 	return 0;
 }
 
 int get_UPnPDescriptionServiceInstance_EventSubURL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct upnp_service_inst *upnpserviceinst = (struct upnp_service_inst *)data;
-	*value = upnpserviceinst->eventsuburl;
+	*value = ((struct upnp_service_inst *)data)->eventsuburl;
 	return 0;
 }

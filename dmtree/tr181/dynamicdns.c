@@ -405,9 +405,10 @@ int get_DynamicDNSClient_Enable(char *refparam, struct dmctx *ctx, void *data, c
 int set_DynamicDNSClient_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -455,22 +456,27 @@ int get_DynamicDNSClient_Status(char *refparam, struct dmctx *ctx, void *data, c
 
 int get_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
+
 	get_dmmap_section_of_config_section("dmmap_ddns", "service", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "clientalias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "clientalias", value);
 	return 0;
 }
 
 int set_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_ddns", "service", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "clientalias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "clientalias", value);
 			break;
 	}
 	return 0;
@@ -529,6 +535,8 @@ int set_DynamicDNSClient_Server(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &linker);
@@ -558,6 +566,8 @@ int set_DynamicDNSClient_Interface(char *refparam, struct dmctx *ctx, void *data
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &linker);
@@ -581,6 +591,8 @@ int set_DynamicDNSClient_Username(char *refparam, struct dmctx *ctx, void *data,
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "username", value);
@@ -600,6 +612,8 @@ int set_DynamicDNSClient_Password(char *refparam, struct dmctx *ctx, void *data,
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "password", value);
@@ -626,9 +640,10 @@ int get_DynamicDNSClientHostname_Enable(char *refparam, struct dmctx *ctx, void 
 int set_DynamicDNSClientHostname_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -683,6 +698,8 @@ int set_DynamicDNSClientHostname_Name(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "domain", value);
@@ -747,6 +764,8 @@ int set_DynamicDNSServer_Enable(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "enabled", value);
@@ -772,6 +791,8 @@ int set_DynamicDNSServer_Name(char *refparam, struct dmctx *ctx, void *data, cha
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "section_name", value);
@@ -795,6 +816,8 @@ int set_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "serveralias", value);
@@ -817,6 +840,8 @@ int set_DynamicDNSServer_ServiceName(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "service_name", &service_name);
@@ -853,6 +878,8 @@ int set_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "dns_server", &dns_server);
@@ -879,11 +906,7 @@ int set_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *
 						strcpy(new, value);
 					dmuci_set_value_by_section(s, "dns_server", new);
 				}
-
-
 			}
-
-
 			break;
 	}
 	return 0;
@@ -912,6 +935,8 @@ int set_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, void *dat
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "dns_server", &dns_server);
@@ -972,6 +997,8 @@ int set_DynamicDNSServer_Protocol(char *refparam, struct dmctx *ctx, void *data,
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, SupportedProtocols, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			if (strcmp(value, "HTTP") == 0)
@@ -1007,6 +1034,8 @@ int set_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "check_unit", &check_unit);
@@ -1045,6 +1074,8 @@ int set_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx, void *
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "retry_unit", &retry_unit);
@@ -1081,6 +1112,8 @@ int set_DynamicDNSServer_MaxRetries(char *refparam, struct dmctx *ctx, void *dat
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "retry_count", value);

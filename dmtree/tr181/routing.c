@@ -521,6 +521,8 @@ int set_RoutingRouter_Enable(char *refparam, struct dmctx *ctx, void *data, char
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -586,7 +588,7 @@ int set_router_ipv4forwarding_enable(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -633,6 +635,8 @@ int set_router_ipv4forwarding_destip(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "15", NULL, IPv4Address))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct routingfwdargs *)data)->routefwdsection, "target", value);
@@ -655,6 +659,8 @@ int set_router_ipv4forwarding_destmask(char *refparam, struct dmctx *ctx, void *
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "15", NULL, IPv4Address))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct routingfwdargs *)data)->routefwdsection, "netmask", value);
@@ -700,6 +706,8 @@ int set_router_ipv4forwarding_gatewayip(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "15", NULL, IPv4Address))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct routingfwdargs *)data)->routefwdsection, "gateway", value);
@@ -728,6 +736,8 @@ int set_router_ipv4forwarding_interface_linker_parameter(char *refparam, struct 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &linker);
@@ -754,6 +764,8 @@ int set_router_ipv4forwarding_metric(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_int(value, "-1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct routingfwdargs *)data)->routefwdsection, "metric", value);
@@ -772,6 +784,8 @@ int set_RoutingRouterIPv6Forwarding_Enable(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -799,6 +813,8 @@ int set_RoutingRouterIPv6Forwarding_DestIPPrefix(char *refparam, struct dmctx *c
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "49", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct routingfwdargs *)data)->routefwdsection, "target", value);
@@ -817,6 +833,8 @@ int set_RoutingRouterIPv6Forwarding_ForwardingPolicy(char *refparam, struct dmct
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_int(value, "-1", NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -838,6 +856,8 @@ int set_RoutingRouterIPv6Forwarding_NextHop(char *refparam, struct dmctx *ctx, v
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "45", NULL, IPv6Address))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct routingfwdargs *)data)->routefwdsection, "gateway", value);
@@ -866,6 +886,8 @@ int set_RoutingRouterIPv6Forwarding_Interface(char *refparam, struct dmctx *ctx,
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &linker);
@@ -899,6 +921,8 @@ int set_RoutingRouterIPv6Forwarding_ForwardingMetric(char *refparam, struct dmct
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_int(value, "-1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct routingfwdargs *)data)->routefwdsection, "metric", value);
@@ -923,6 +947,8 @@ int set_RoutingRouteInformation_Enable(char *refparam, struct dmctx *ctx, void *
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -1061,6 +1087,8 @@ int set_RoutingRouter_Alias(char *refparam, struct dmctx *ctx, void *data, char 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "router_alias", value);
@@ -1071,7 +1099,7 @@ int set_RoutingRouter_Alias(char *refparam, struct dmctx *ctx, void *data, char 
 
 int get_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	if(((struct routingfwdargs *)data)->type == ROUTE_DYNAMIC)
 		dmmap_section= ((struct routingfwdargs *)data)->routefwdsection;
@@ -1079,25 +1107,29 @@ int get_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *dat
 		get_dmmap_section_of_config_section("dmmap_route_forwarding", "route", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
 	else
 		get_dmmap_section_of_config_section("dmmap_route_forwarding", "route_disabled", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "routealias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "routealias", value);
 	return 0;
 }
 
 int set_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if(((struct routingfwdargs *)data)->type == ROUTE_DYNAMIC)
-				dmmap_section= ((struct routingfwdargs *)data)->routefwdsection;
+				dmmap_section = ((struct routingfwdargs *)data)->routefwdsection;
 			else if (((struct routingfwdargs *)data)->type == ROUTE_STATIC)
 				get_dmmap_section_of_config_section("dmmap_route_forwarding", "route", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
 			else
 				get_dmmap_section_of_config_section("dmmap_route_forwarding", "route_disabled", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-			dmuci_set_value_by_section(dmmap_section, "routealias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "routealias", value);
 			return 0;
 	}
 	return 0;
@@ -1105,29 +1137,33 @@ int set_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *dat
 
 int get_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	if(((struct routingfwdargs *)data)->type == ROUTE_DYNAMIC)
 		dmmap_section = ((struct routingfwdargs *)data)->routefwdsection;
 	else
 		get_dmmap_section_of_config_section("dmmap_route_forwarding", "route6", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "route6alias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "route6alias", value);
 	return 0;
 }
 
 int set_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if(((struct routingfwdargs *)data)->type == ROUTE_DYNAMIC)
 				dmmap_section = ((struct routingfwdargs *)data)->routefwdsection;
 			else
 				get_dmmap_section_of_config_section("dmmap_route_forwarding", "route6", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-			dmuci_set_value_by_section(dmmap_section, "route6alias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "route6alias", value);
 			return 0;
 	}
 	return 0;
@@ -1210,7 +1246,8 @@ int delete_ipv6Forwarding(char *refparam, struct dmctx *ctx, void *data, char *i
 	switch (del_action) {
 		case DEL_INST:
 			get_dmmap_section_of_config_section("dmmap_route_forwarding", "route6", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-			if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+			if (dmmap_section)
+				dmuci_delete_by_section(dmmap_section, NULL, NULL);
 			dmuci_delete_by_section(((struct routingfwdargs *)data)->routefwdsection, NULL, NULL);
 			break;
 		case DEL_ALL:
@@ -1329,4 +1366,3 @@ int browseRoutingRouteInformationInterfaceSettingInst(struct dmctx *dmctx, DMNOD
 	}
 	return 0;
 }
-

@@ -93,7 +93,6 @@ int set_ipv4_address(char *refparam, struct dmctx *ctx, void *data, char *instan
 int get_ipv4_netmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int set_ipv4_netmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);
 int get_ipv4_addressing_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int set_ipv4_addressing_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);
 
 int get_IPInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int set_IPInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);

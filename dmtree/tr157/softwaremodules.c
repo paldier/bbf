@@ -37,10 +37,10 @@ DMLEAF tSoftwareModulesExecEnvParams[] = {
 {"Alias", &DMWRITE, DMT_STRING, get_SoftwareModulesExecEnv_Alias, set_SoftwareModulesExecEnv_Alias, NULL, NULL, BBFDM_BOTH},
 {"Name", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Name, NULL, NULL, NULL, BBFDM_BOTH},
 {"Type", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Type, NULL, NULL, NULL, BBFDM_BOTH},
-{"InitialRunLevel", &DMWRITE, DMT_UNINT, get_SoftwareModulesExecEnv_InitialRunLevel, set_SoftwareModulesExecEnv_InitialRunLevel, NULL, NULL, BBFDM_BOTH},
-{"RequestedRunLevel", &DMWRITE, DMT_INT, get_SoftwareModulesExecEnv_RequestedRunLevel, set_SoftwareModulesExecEnv_RequestedRunLevel, NULL, NULL, BBFDM_CWMP},
-{"CurrentRunLevel", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_CurrentRunLevel, NULL, NULL, NULL, BBFDM_BOTH},
-{"InitialExecutionUnitRunLevel", &DMWRITE, DMT_INT, get_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel, set_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel, NULL, NULL, BBFDM_BOTH},
+//{"InitialRunLevel", &DMWRITE, DMT_UNINT, get_SoftwareModulesExecEnv_InitialRunLevel, set_SoftwareModulesExecEnv_InitialRunLevel, NULL, NULL, BBFDM_BOTH},
+//{"RequestedRunLevel", &DMWRITE, DMT_INT, get_SoftwareModulesExecEnv_RequestedRunLevel, set_SoftwareModulesExecEnv_RequestedRunLevel, NULL, NULL, BBFDM_CWMP},
+//{"CurrentRunLevel", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_CurrentRunLevel, NULL, NULL, NULL, BBFDM_BOTH},
+//{"InitialExecutionUnitRunLevel", &DMWRITE, DMT_INT, get_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel, set_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel, NULL, NULL, BBFDM_BOTH},
 {"Vendor", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Vendor, NULL, NULL, NULL, BBFDM_BOTH},
 {"Version", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Version, NULL, NULL, NULL, BBFDM_BOTH},
 {"ParentExecEnv", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_ParentExecEnv, NULL, NULL, NULL, BBFDM_BOTH},
@@ -76,7 +76,7 @@ DMLEAF tSoftwareModulesDeploymentUnitParams[] = {
 /* *** Device.SoftwareModules.ExecutionUnit.{i}. *** */
 DMOBJ tSoftwareModulesExecutionUnitObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Extensions", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, BBFDM_BOTH},
+//{"Extensions", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -87,11 +87,11 @@ DMLEAF tSoftwareModulesExecutionUnitParams[] = {
 {"Name", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Name, NULL, NULL, NULL, BBFDM_BOTH},
 {"ExecEnvLabel", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecEnvLabel, NULL, NULL, NULL, BBFDM_BOTH},
 {"Status", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Status, NULL, NULL, NULL, BBFDM_BOTH},
-{"RequestedState", &DMWRITE, DMT_STRING, get_SoftwareModulesExecutionUnit_RequestedState, set_SoftwareModulesExecutionUnit_RequestedState, NULL, NULL, BBFDM_CWMP},
-{"ExecutionFaultCode", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionFaultCode, NULL, NULL, NULL, BBFDM_BOTH},
-{"ExecutionFaultMessage", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionFaultMessage, NULL, NULL, NULL, BBFDM_BOTH},
-{"AutoStart", &DMWRITE, DMT_BOOL, get_SoftwareModulesExecutionUnit_AutoStart, set_SoftwareModulesExecutionUnit_AutoStart, NULL, NULL, BBFDM_BOTH},
-{"RunLevel", &DMWRITE, DMT_UNINT, get_SoftwareModulesExecutionUnit_RunLevel, set_SoftwareModulesExecutionUnit_RunLevel, NULL, NULL, BBFDM_BOTH},
+//{"RequestedState", &DMWRITE, DMT_STRING, get_SoftwareModulesExecutionUnit_RequestedState, set_SoftwareModulesExecutionUnit_RequestedState, NULL, NULL, BBFDM_CWMP},
+//{"ExecutionFaultCode", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionFaultCode, NULL, NULL, NULL, BBFDM_BOTH},
+//{"ExecutionFaultMessage", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionFaultMessage, NULL, NULL, NULL, BBFDM_BOTH},
+//{"AutoStart", &DMWRITE, DMT_BOOL, get_SoftwareModulesExecutionUnit_AutoStart, set_SoftwareModulesExecutionUnit_AutoStart, NULL, NULL, BBFDM_BOTH},
+//{"RunLevel", &DMWRITE, DMT_UNINT, get_SoftwareModulesExecutionUnit_RunLevel, set_SoftwareModulesExecutionUnit_RunLevel, NULL, NULL, BBFDM_BOTH},
 {"Vendor", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Vendor, NULL, NULL, NULL, BBFDM_BOTH},
 {"Version", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Version, NULL, NULL, NULL, BBFDM_BOTH},
 {"Description", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Description, NULL, NULL, NULL, BBFDM_BOTH},
@@ -255,14 +255,19 @@ int get_SoftwareModulesExecEnv_Enable(char *refparam, struct dmctx *ctx, void *d
 
 int set_SoftwareModulesExecEnv_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	bool b;
 	char *env_name;
+
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
+			string_to_bool(value, &b);
 			env_name = dmjson_get_value((json_object *)data, 1, "name");
 			if (strcmp(env_name, "OpenWRT_Linux")) {
-				if (value)
+				if (b)
 					dmcmd_no_wait("/usr/bin/lxc-start", 2, "-n", env_name);
 				else
 					dmcmd_no_wait("/usr/bin/lxc-stop", 2, "-n", env_name);
@@ -287,15 +292,19 @@ int get_SoftwareModulesExecEnv_Reset(char *refparam, struct dmctx *ctx, void *da
 
 int set_SoftwareModulesExecEnv_Reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	bool b;
 	char *env_name;
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
+			string_to_bool(value, &b);
 			env_name = dmjson_get_value((json_object *)data, 1, "name");
 			if (strcmp(env_name, "OpenWRT_Linux") == 0) {
-				if (value) dmcmd_no_wait("/sbin/defaultreset", 0);
+				if (b) dmcmd_no_wait("/sbin/defaultreset", 0);
 			}
 			break;
 	}
@@ -326,6 +335,8 @@ int set_SoftwareModulesExecEnv_Alias(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			name = dmjson_get_value((json_object *)data, 1, "name");
@@ -359,7 +370,7 @@ int get_SoftwareModulesExecEnv_Type(char *refparam, struct dmctx *ctx, void *dat
 
 int get_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "-1";
+	//TODO
 	return 0;
 }
 
@@ -367,8 +378,11 @@ int set_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
+			//TODO
 			break;
 	}
 	return 0;
@@ -376,7 +390,7 @@ int set_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx
 
 int get_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "-1";
+	//TODO
 	return 0;
 }
 
@@ -384,8 +398,11 @@ int set_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *c
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_int(value, "-1", "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
+			//TODO
 			break;
 	}
 	return 0;
@@ -393,13 +410,13 @@ int set_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *c
 
 int get_SoftwareModulesExecEnv_CurrentRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "-1";
+	//TODO
 	return 0;
 }
 
 int get_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "-1";
+	//TODO
 	return 0;
 }
 
@@ -407,8 +424,11 @@ int set_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel(char *refparam, stru
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_int(value, "-1", "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
+			//TODO
 			break;
 	}
 	return 0;
@@ -545,6 +565,8 @@ int set_SoftwareModulesDeploymentUnit_Alias(char *refparam, struct dmctx *ctx, v
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			name = dmjson_get_value((json_object *)data, 1, "name");
@@ -712,6 +734,8 @@ int set_SoftwareModulesExecutionUnit_Alias(char *refparam, struct dmctx *ctx, vo
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			euid = dmjson_get_value((json_object *)data, 1, "euid");
@@ -758,7 +782,7 @@ int get_SoftwareModulesExecutionUnit_Status(char *refparam, struct dmctx *ctx, v
 
 int get_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "Active";
+	//TODO
 	return 0;
 }
 
@@ -766,8 +790,11 @@ int set_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, RequestedState, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
+			//TODO
 			break;
 	}
 	return 0;
@@ -775,19 +802,19 @@ int set_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx
 
 int get_SoftwareModulesExecutionUnit_ExecutionFaultCode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "NoFault";
+	//TODO
 	return 0;
 }
 
 int get_SoftwareModulesExecutionUnit_ExecutionFaultMessage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "";
+	//TODO
 	return 0;
 }
 
 int get_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
@@ -795,8 +822,11 @@ int set_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
+			//TODO
 			break;
 	}
 	return 0;
@@ -804,7 +834,7 @@ int set_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx
 
 int get_SoftwareModulesExecutionUnit_RunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
@@ -812,8 +842,11 @@ int set_SoftwareModulesExecutionUnit_RunLevel(char *refparam, struct dmctx *ctx,
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, "65535"))
+				return FAULT_9007;
 			break;
 		case VALUESET:
+			//TODO
 			break;
 	}
 	return 0;

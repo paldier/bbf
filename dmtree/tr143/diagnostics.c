@@ -285,15 +285,15 @@ int set_ip_ping_diagnostics_state(char *refparam, struct dmctx *ctx, void *data,
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "Requested") == 0) {
 				IPPING_STOP
 				curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
+				if (!curr_section)
 					dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
-				}
 				dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "DiagnosticState", value);
 				cwmp_set_end_session(END_SESSION_IPPING_DIAGNOSTIC);
 			}
@@ -315,14 +315,14 @@ int set_ip_ping_interface(char *refparam, struct dmctx *ctx, void *data, char *i
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			IPPING_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "interface", value);
 			return 0;
 	}
@@ -342,17 +342,15 @@ int set_ip_ping_protocolversion(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "IPv4") == 0 || strcmp(value, "IPv6") == 0) {
-				IPPING_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "ProtocolVersion", value);
-			}
+			IPPING_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "ProtocolVersion", value);
 			return 0;
 	}
 	return 0;
@@ -371,14 +369,14 @@ int set_ip_ping_host(char *refparam, struct dmctx *ctx, void *data, char *instan
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			IPPING_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "Host", value);
 			return 0;
 	}
@@ -398,17 +396,15 @@ int set_ip_ping_repetition_number(char *refparam, struct dmctx *ctx, void *data,
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 1) {
-				IPPING_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "NumberOfRepetitions", value);
-			}
+			IPPING_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "NumberOfRepetitions", value);
 			return 0;
 	}
 	return 0;
@@ -427,17 +423,15 @@ int set_ip_ping_timeout(char *refparam, struct dmctx *ctx, void *data, char *ins
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 1) {
-				IPPING_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "Timeout", value);
-			}
+			IPPING_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "Timeout", value);
 			return 0;
 	}
 	return 0;
@@ -457,17 +451,15 @@ int set_ip_ping_block_size(char *refparam, struct dmctx *ctx, void *data, char *
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if ((atoi(value) >= 1) && (atoi(value) <= 65535)) {
-				IPPING_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "DataBlockSize", value);
-			}
+			IPPING_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "DataBlockSize", value);
 	}
 	return 0;
 }
@@ -485,18 +477,16 @@ int set_ip_ping_DSCP(char *refparam, struct dmctx *ctx, void *data, char *instan
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "63"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if ((atoi(value) >= 0) && (atoi(value) <= 63)) {
-				TRACEROUTE_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "DSCP", value);
-				return 0;
-			}
+			TRACEROUTE_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "ippingdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "ippingdiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@ippingdiagnostic[0]", "DSCP", value);
+			return 0;
 	}
 	return 0;
 }
@@ -576,15 +566,15 @@ int set_IPDiagnosticsTraceRoute_DiagnosticsState(char *refparam, struct dmctx *c
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "Requested") == 0) {
 				TRACEROUTE_STOP
 				curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
+				if (!curr_section)
 					dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
-				}
 				dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "DiagnosticState", value);
 				cwmp_set_end_session(END_SESSION_TRACEROUTE_DIAGNOSTIC);
 			}
@@ -606,14 +596,14 @@ int set_IPDiagnosticsTraceRoute_Interface(char *refparam, struct dmctx *ctx, voi
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			TRACEROUTE_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "interface", value);
 			return 0;
 	}
@@ -633,17 +623,15 @@ int set_IPDiagnosticsTraceRoute_ProtocolVersion(char *refparam, struct dmctx *ct
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "IPv4") == 0 || strcmp(value, "IPv6") == 0) {
-				TRACEROUTE_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "ProtocolVersion", value);
-			}
+			TRACEROUTE_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "ProtocolVersion", value);
 			return 0;
 	}
 	return 0;
@@ -662,14 +650,14 @@ int set_IPDiagnosticsTraceRoute_Host(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			TRACEROUTE_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "Host", value);
 			return 0;
 	}
@@ -689,17 +677,15 @@ int set_IPDiagnosticsTraceRoute_NumberOfTries(char *refparam, struct dmctx *ctx,
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "3"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if ((atoi(value) >= 1) && (atoi(value) <= 3)) {
-				TRACEROUTE_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "NumberOfTries", value);
-			}
+			TRACEROUTE_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "NumberOfTries", value);
 			return 0;
 	}
 	return 0;
@@ -718,17 +704,15 @@ int set_IPDiagnosticsTraceRoute_Timeout(char *refparam, struct dmctx *ctx, void 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 1) {
-				TRACEROUTE_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "Timeout", value);
-			}
+			TRACEROUTE_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "Timeout", value);
 			return 0;
 	}
 	return 0;
@@ -747,17 +731,15 @@ int set_IPDiagnosticsTraceRoute_DataBlockSize(char *refparam, struct dmctx *ctx,
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if ((atoi(value) >= 1) && (atoi(value) <= 65535)) {
-				TRACEROUTE_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "DataBlockSize", value);
-			}
+			TRACEROUTE_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "DataBlockSize", value);
 			return 0;
 	}
 	return 0;
@@ -776,17 +758,15 @@ int set_IPDiagnosticsTraceRoute_DSCP(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "63"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if ((atoi(value) >= 0) && (atoi(value) <= 63)) {
-				TRACEROUTE_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "DSCP", value);
-			}
+			TRACEROUTE_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "DSCP", value);
 			return 0;
 	}
 	return 0;
@@ -805,17 +785,15 @@ int set_IPDiagnosticsTraceRoute_MaxHopCount(char *refparam, struct dmctx *ctx, v
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "64"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if ((atoi(value) >= 1) && (atoi(value) <= 64)) {
-				TRACEROUTE_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "MaxHops", value);
-			}
+			TRACEROUTE_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "traceroutediagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "traceroutediagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@traceroutediagnostic[0]", "MaxHops", value);
 			return 0;
 	}
 	return 0;
@@ -881,17 +859,18 @@ int set_IPDiagnosticsDownloadDiagnostics_DiagnosticsState(char *refparam, struct
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "Requested") == 0) {
 				DOWNLOAD_DIAGNOSTIC_STOP
 				curr_section = dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
+				if (!curr_section)
 					dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
-				}
 				dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "DiagnosticState", value);
 				cwmp_set_end_session(END_SESSION_DOWNLOAD_DIAGNOSTIC);
 			}
@@ -918,6 +897,8 @@ int set_IPDiagnosticsDownloadDiagnostics_Interface(char *refparam, struct dmctx 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &linker);
@@ -928,10 +909,8 @@ int set_IPDiagnosticsDownloadDiagnostics_Interface(char *refparam, struct dmctx 
 				if (device) {
 					DOWNLOAD_DIAGNOSTIC_STOP
 					curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-					if(!curr_section)
-					{
+					if (!curr_section)
 						dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
-					}
 					dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "interface", linker);
 					dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "device", device);
 				}
@@ -954,14 +933,14 @@ int set_IPDiagnosticsDownloadDiagnostics_DownloadURL(char *refparam, struct dmct
 	struct uci_section *curr_section = NULL;
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			DOWNLOAD_DIAGNOSTIC_STOP
 			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "url", value);
 			return 0;
 	}
@@ -990,16 +969,17 @@ int set_IPDiagnosticsDownloadDiagnostics_DSCP(char *refparam, struct dmctx *ctx,
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "63"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			DOWNLOAD_DIAGNOSTIC_STOP
 			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "DSCP", value);
 			return 0;
 	}
@@ -1016,16 +996,17 @@ int set_IPDiagnosticsDownloadDiagnostics_EthernetPriority(char *refparam, struct
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "7"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			DOWNLOAD_DIAGNOSTIC_STOP
 			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "ethernetpriority", value);
 			return 0;
 	}
@@ -1042,19 +1023,18 @@ int set_IPDiagnosticsDownloadDiagnostics_ProtocolVersion(char *refparam, struct 
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "IPv4") == 0 || strcmp(value, "IPv6") == 0) {
-				DOWNLOAD_DIAGNOSTIC_STOP
-				curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "ProtocolVersion", value);
-			}
+			DOWNLOAD_DIAGNOSTIC_STOP
+			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "ProtocolVersion", value);
 			return 0;
 	}
 	return 0;
@@ -1070,19 +1050,18 @@ int set_IPDiagnosticsDownloadDiagnostics_NumberOfConnections(char *refparam, str
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "1") == 0) {
-				DOWNLOAD_DIAGNOSTIC_STOP
-				curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "NumberOfConnections", value);
-			}
+			DOWNLOAD_DIAGNOSTIC_STOP
+			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "NumberOfConnections", value);
 			return 0;
 	}
 	return 0;
@@ -1180,19 +1159,17 @@ int set_IPDiagnosticsDownloadDiagnostics_EnablePerConnectionResults(char *refpar
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
-	bool b;
+
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			DOWNLOAD_DIAGNOSTIC_STOP
 			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "downloaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "downloaddiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@downloaddiagnostic[0]", "EnablePerConnection", value);
 			return 0;
 	}
@@ -1271,17 +1248,18 @@ int set_IPDiagnosticsUploadDiagnostics_DiagnosticsState(char *refparam, struct d
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "Requested") == 0) {
 				UPLOAD_DIAGNOSTIC_STOP
 				curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
+				if (!curr_section)
 					dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
-				}
 				dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "DiagnosticState", value);
 				cwmp_set_end_session(END_SESSION_UPLOAD_DIAGNOSTIC);
 			}
@@ -1302,12 +1280,14 @@ int get_IPDiagnosticsUploadDiagnostics_Interface(char *refparam, struct dmctx *c
 
 int set_IPDiagnosticsUploadDiagnostics_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *linker = NULL, *tmp, *device= NULL;
+	char *linker = NULL, *tmp, *device = NULL;
 	struct uci_section *curr_section = NULL;
 	json_object *res;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &linker);
@@ -1318,10 +1298,8 @@ int set_IPDiagnosticsUploadDiagnostics_Interface(char *refparam, struct dmctx *c
 				if (device) {
 					UPLOAD_DIAGNOSTIC_STOP
 					curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-					if(!curr_section)
-					{
+					if (!curr_section)
 						dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
-					}
 					dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "interface", linker);
 					dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "device", device);
 				}
@@ -1342,16 +1320,17 @@ int set_IPDiagnosticsUploadDiagnostics_UploadURL(char *refparam, struct dmctx *c
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			UPLOAD_DIAGNOSTIC_STOP
 			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "url", value);
 			return 0;
 	}
@@ -1377,14 +1356,14 @@ int set_IPDiagnosticsUploadDiagnostics_DSCP(char *refparam, struct dmctx *ctx, v
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "63"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			UPLOAD_DIAGNOSTIC_STOP
 			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "DSCP", value);
 			return 0;
 	}
@@ -1404,14 +1383,14 @@ int set_IPDiagnosticsUploadDiagnostics_EthernetPriority(char *refparam, struct d
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "7"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			UPLOAD_DIAGNOSTIC_STOP
 			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "ethernetpriority", value);
 			return 0;
 	}
@@ -1430,14 +1409,14 @@ int set_IPDiagnosticsUploadDiagnostics_TestFileLength(char *refparam, struct dmc
 	struct uci_section *curr_section = NULL;
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			UPLOAD_DIAGNOSTIC_STOP
 			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "TestFileLength", value);
 			return 0;
 	}
@@ -1454,19 +1433,18 @@ int set_IPDiagnosticsUploadDiagnostics_ProtocolVersion(char *refparam, struct dm
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
+
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "IPv4") == 0 || strcmp(value, "IPv6") == 0) {
-				UPLOAD_DIAGNOSTIC_STOP
-				curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "ProtocolVersion", value);
-			}
+			UPLOAD_DIAGNOSTIC_STOP
+			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "ProtocolVersion", value);
 			return 0;
 	}
 	return 0;
@@ -1484,17 +1462,15 @@ int set_IPDiagnosticsUploadDiagnostics_NumberOfConnections(char *refparam, struc
 	struct uci_section *curr_section = NULL;
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "1") == 0) {
-				UPLOAD_DIAGNOSTIC_STOP
-				curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "NumberOfConnections", value);
-			}
+			UPLOAD_DIAGNOSTIC_STOP
+			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "NumberOfConnections", value);
 			return 0;
 	}
 	return 0;
@@ -1592,19 +1568,17 @@ int set_IPDiagnosticsUploadDiagnostics_EnablePerConnectionResults(char *refparam
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
-	bool b;
+
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			UPLOAD_DIAGNOSTIC_STOP
 			curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "uploaddiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "uploaddiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@uploaddiagnostic[0]", "EnablePerConnection", value);
 			return 0;
 	}
@@ -1677,7 +1651,7 @@ int set_IPDiagnosticsUDPEchoConfig_Enable(char *refparam, struct dmctx *ctx, voi
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1686,8 +1660,7 @@ int set_IPDiagnosticsUDPEchoConfig_Enable(char *refparam, struct dmctx *ctx, voi
 				if( access( file, F_OK ) != -1 )
 					dmcmd("/bin/rm", 1, file);
 				dmuci_set_value("cwmp_udpechoserver", "udpechoserver", "enable", "1");
-			}
-			else
+			} else
 				dmuci_set_value("cwmp_udpechoserver", "udpechoserver", "enable", "0");
 			return 0;
 	}
@@ -1704,6 +1677,8 @@ int set_IPDiagnosticsUDPEchoConfig_Interface(char *refparam, struct dmctx *ctx, 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_udpechoserver", "udpechoserver", "interface", value);
@@ -1722,6 +1697,8 @@ int set_IPDiagnosticsUDPEchoConfig_SourceIPAddress(char *refparam, struct dmctx 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "45", NULL, IPAddress))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_udpechoserver", "udpechoserver", "address", value);
@@ -1740,6 +1717,8 @@ int set_IPDiagnosticsUDPEchoConfig_UDPPort(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("cwmp_udpechoserver", "udpechoserver", "server_port", value);
@@ -1760,15 +1739,12 @@ int set_IPDiagnosticsUDPEchoConfig_EchoPlusEnabled(char *refparam, struct dmctx 
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if (b)
-				dmuci_set_value("cwmp_udpechoserver", "udpechoserver", "plus", "1");
-			else
-				dmuci_set_value("cwmp_udpechoserver", "udpechoserver", "plus", "0");
+			dmuci_set_value("cwmp_udpechoserver", "udpechoserver", "plus", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -1853,15 +1829,15 @@ int set_IPDiagnosticsUDPEchoDiagnostics_DiagnosticsState(char *refparam, struct 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "Requested") == 0) {
 				UDPECHO_STOP;
 				curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
+				if (!curr_section)
 					dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-				}
 				dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "DiagnosticState", value);
 				cwmp_set_end_session(END_SESSION_UDPECHO_DIAGNOSTIC);
 			}
@@ -1883,14 +1859,14 @@ int set_IPDiagnosticsUDPEchoDiagnostics_Interface(char *refparam, struct dmctx *
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			UDPECHO_STOP;
 			curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "Interface", value);
 			return 0;
 	}
@@ -1910,14 +1886,14 @@ int set_IPDiagnosticsUDPEchoDiagnostics_Host(char *refparam, struct dmctx *ctx, 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			UDPECHO_STOP;
 			curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "Host", value);
 			return 0;
 	}
@@ -1937,17 +1913,15 @@ int set_IPDiagnosticsUDPEchoDiagnostics_Port(char *refparam, struct dmctx *ctx, 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 1 && atoi(value) <= 65535) {
-				UDPECHO_STOP;
-				curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "port", value);
-			}
+			UDPECHO_STOP;
+			curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "port", value);
 			return 0;
 	}
 	return 0;
@@ -1966,14 +1940,14 @@ int set_IPDiagnosticsUDPEchoDiagnostics_NumberOfRepetitions(char *refparam, stru
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			UDPECHO_STOP;
 			curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "NumberOfRepetitions", value);
 			return 0;
 	}
@@ -1993,14 +1967,14 @@ int set_IPDiagnosticsUDPEchoDiagnostics_Timeout(char *refparam, struct dmctx *ct
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			UDPECHO_STOP;
 			curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "Timeout", value);
 			return 0;
 	}
@@ -2020,17 +1994,15 @@ int set_IPDiagnosticsUDPEchoDiagnostics_DataBlockSize(char *refparam, struct dmc
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 1 && atoi(value) <= 65535) {
-				UDPECHO_STOP;
-				curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "DataBlockSize", value);
-			}
+			UDPECHO_STOP;
+			curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "DataBlockSize", value);
 			return 0;
 	}
 	return 0;
@@ -2049,17 +2021,15 @@ int set_IPDiagnosticsUDPEchoDiagnostics_DSCP(char *refparam, struct dmctx *ctx, 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "63"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 0 && atoi(value) <= 63) {
-				UDPECHO_STOP;
-				curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "DSCP", value);
-			}
+			UDPECHO_STOP;
+			curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "DSCP", value);
 			return 0;
 	}
 	return 0;
@@ -2078,17 +2048,15 @@ int set_IPDiagnosticsUDPEchoDiagnostics_InterTransmissionTime(char *refparam, st
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 1 && atoi(value) <= 65535) {
-				UDPECHO_STOP;
-				curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "InterTransmissionTime", value);
-			}
+			UDPECHO_STOP;
+			curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "InterTransmissionTime", value);
 			return 0;
 	}
 	return 0;
@@ -2107,17 +2075,15 @@ int set_IPDiagnosticsUDPEchoDiagnostics_ProtocolVersion(char *refparam, struct d
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "IPv4") == 0 || strcmp(value, "IPv6") == 0) {
-				UDPECHO_STOP;
-				curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "ProtocolVersion", value);
-			}
+			UDPECHO_STOP;
+			curr_section = dmuci_walk_state_section("cwmp", "udpechodiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "udpechodiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@udpechodiagnostic[0]", "ProtocolVersion", value);
 			return 0;
 	}
 	return 0;
@@ -2180,15 +2146,15 @@ int set_IPDiagnosticsServerSelectionDiagnostics_DiagnosticsState(char *refparam,
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "Requested") == 0) {
 				SERVERSELECTION_STOP
 				curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
+				if (!curr_section)
 					dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
-				}
 				dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "DiagnosticState", value);
 				cwmp_set_end_session(END_SESSION_SERVERSELECTION_DIAGNOSTIC);
 			}
@@ -2210,14 +2176,14 @@ int set_IPDiagnosticsServerSelectionDiagnostics_Interface(char *refparam, struct
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			SERVERSELECTION_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "interface", value);
 			return 0;
 	}
@@ -2237,17 +2203,15 @@ int set_IPDiagnosticsServerSelectionDiagnostics_ProtocolVersion(char *refparam, 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "IPv4") == 0 || strcmp(value, "IPv6") == 0) {
-				SERVERSELECTION_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "ProtocolVersion", value);
-			}
+			SERVERSELECTION_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "ProtocolVersion", value);
 			return 0;
 	}
 	return 0;
@@ -2266,17 +2230,15 @@ int set_IPDiagnosticsServerSelectionDiagnostics_Protocol(char *refparam, struct 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, ServerSelectionProtocol, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "ICMP") == 0 || strcmp(value, "UDP Echo") == 0) {
-				SERVERSELECTION_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "Protocol", value);
-			}
+			SERVERSELECTION_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "Protocol", value);
 			return 0;
 	}
 	return 0;
@@ -2295,17 +2257,15 @@ int set_IPDiagnosticsServerSelectionDiagnostics_Port(char *refparam, struct dmct
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 1 && atoi(value) <= 65535) {
-				SERVERSELECTION_STOP;
-				curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "port", value);
-			}
+			SERVERSELECTION_STOP;
+			curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "port", value);
 			return 0;
 	}
 	return 0;
@@ -2324,14 +2284,14 @@ int set_IPDiagnosticsServerSelectionDiagnostics_HostList(char *refparam, struct 
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, "10", NULL, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			SERVERSELECTION_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "HostList", value);
 			return 0;
 	}
@@ -2351,17 +2311,15 @@ int set_IPDiagnosticsServerSelectionDiagnostics_NumberOfRepetitions(char *refpar
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 1) {
-				SERVERSELECTION_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "NumberOfRepetitions", value);
-			}
+			SERVERSELECTION_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "NumberOfRepetitions", value);
 			return 0;
 	}
 	return 0;
@@ -2380,17 +2338,15 @@ int set_IPDiagnosticsServerSelectionDiagnostics_Timeout(char *refparam, struct d
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (atoi(value) >= 1) {
-				SERVERSELECTION_STOP
-				curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
-					dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
-				}
-				dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "Timeout", value);
-			}
+			SERVERSELECTION_STOP
+			curr_section = dmuci_walk_state_section("cwmp", "serverselectiondiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
+			if (!curr_section)
+				dmuci_add_state_section("cwmp", "serverselectiondiagnostic", &curr_section, &tmp);
+			dmuci_set_varstate_value("cwmp", "@serverselectiondiagnostic[0]", "Timeout", value);
 			return 0;
 	}
 	return 0;
@@ -2425,8 +2381,7 @@ int browseIPDiagnosticsTraceRouteRouteHopsInst(struct dmctx *dmctx, DMNODE *pare
 	struct uci_section *s = NULL;
 	char *instance, *idx_last = NULL;
 
-	uci_foreach_sections_state("cwmp", "RouteHops", s)
-	{
+	uci_foreach_sections_state("cwmp", "RouteHops", s) {
 		instance = handle_update_instance(2, dmctx, &idx_last, update_instance_alias, 3, (void *)s, "routehop_instance", "routehop_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, instance) == DM_STOP)
 			break;
@@ -2439,8 +2394,7 @@ int browseIPDiagnosticsDownloadDiagnosticsPerConnectionResultInst(struct dmctx *
 	struct uci_section *s = NULL;
 	char *instance, *idx_last = NULL;
 
-	uci_foreach_sections_state("cwmp", "DownloadPerConnection", s)
-	{
+	uci_foreach_sections_state("cwmp", "DownloadPerConnection", s) {
 		instance = handle_update_instance(2, dmctx, &idx_last, update_instance_alias, 3, (void *)s, "perconnection_instance", "perconnection_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, instance) == DM_STOP)
 			break;
@@ -2453,8 +2407,7 @@ int browseIPDiagnosticsUploadDiagnosticsPerConnectionResultInst(struct dmctx *dm
 	struct uci_section *s = NULL;
 	char *instance, *idx_last = NULL;
 
-	uci_foreach_sections_state("cwmp", "UploadPerConnection", s)
-	{
+	uci_foreach_sections_state("cwmp", "UploadPerConnection", s) {
 		instance = handle_update_instance(2, dmctx, &idx_last, update_instance_alias, 3, (void *)s, "perconnection_instance", "perconnection_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, instance) == DM_STOP)
 			break;

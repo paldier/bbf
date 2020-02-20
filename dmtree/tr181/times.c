@@ -47,7 +47,7 @@ int set_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -97,6 +97,8 @@ int set_time_LocalTimeZone(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value("system", "@system[0]", "timezone", value);
@@ -204,6 +206,8 @@ int set_time_ntpserver(char *refparam, struct dmctx *ctx, int action, char *valu
 	
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_get_option_value_list("system", "ntp", "server", &v);

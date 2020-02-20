@@ -1,18 +1,45 @@
 #!/usr/bin/python
 
-#      This program is free software: you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation, either version 2 of the License, or
-#      (at your option) any later version.
-#
-#      Copyright (C) 2019 iopsys Software Solutions AB
-#		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
-
+# Copyright (C) 2020 iopsys Software Solutions AB
+# Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
 
 import os, sys, time, re, json
 import xml.etree.ElementTree as xml
 from collections import OrderedDict
 from shutil import copyfile
+
+listTypes = ["string",
+			 "unsignedInt",
+			 "unsignedLong",
+			 "int",
+			 "long",
+			 "boolean",
+			 "dateTime",
+			 "hexBinary",
+			 "base64"]
+
+listdataTypes = ["string", 
+				 "unsignedInt", 
+				 "unsignedLong", 
+				 "int",
+				 "long",
+				 "boolean",
+				 "dateTime",
+				 "hexBinary",
+				 "base64",
+				 "IPAddress",
+				 "IPv4Address",
+				 "IPv6Address",
+				 "IPPrefix",
+				 "IPv4Prefix",
+				 "IPv6Prefix",
+				 "MACAddress",
+				 "decimal",
+				 "IoTDeviceType",
+				 "IoTLevelType",
+				 "IoTUnitType",
+				 "IoTEnumSensorType",
+				 "IoTEnumControlType"]
 
 def removefile( filename ):
 	try:
@@ -65,61 +92,130 @@ def getparamtype( dmparam ):
 		ptype = "__NA__"
 	return ptype
 
-def getparamrange( dmparam ):
-	min = None
-	max = None
-	for s in dmparam:
-		if s.tag == "syntax":
-			for c in s:
-				for o in c:
-					if o.tag == "range":
-						min = o.get("minInclusive")
-						max = o.get("maxInclusive")
-						break
-	if min == None:
-		min = ""
-	if max == None:
-		max = ""
-	return min, max
+def getMinMaxEnumerationUnitPatternparam(paramtype, c):
+	paramvalmin = None
+	paramvalmax = None
+	paramenum = None
+	paramunit = None
+	parampattern = None
+	if paramtype == "string" or paramtype == "hexBinary" or paramtype == "base64":
+		for cc in c:
+			if cc.tag == "size":
+				paramvalmin = cc.get("minLength")
+				paramvalmax = cc.get("maxLength")
+			if cc.tag == "enumeration":
+				if paramenum == None:
+					paramenum = "\"%s\"" % cc.get('value')
+				else:
+					paramenum = "%s, \"%s\"" % (paramenum, cc.get('value'))
+			if cc.tag == "pattern":
+				if parampattern == None and cc.get('value') != "":
+					parampattern = "\"%s\"" % cc.get('value')
+				elif cc.get('value') != "":
+					parampattern = "%s,\"%s\"" % (parampattern, cc.get('value'))
 
-def getparamunit( dmparam ):
-	unit = None
-	for s in dmparam:
-		if s.tag == "syntax":
-			for c in s:
-				for o in c:
-					if o.tag == "units":
-						unit = o.get("value")
-						break
-	if unit == None:
-		unit = ""
-	return unit
+	elif paramtype == "unsignedInt" or paramtype == "int" or paramtype == "unsignedLong" or paramtype == "long":
+		for cc in c:
+			if cc.tag == "range":
+				paramvalmin = cc.get("minInclusive")
+				paramvalmax = cc.get("maxInclusive")
+			if cc.tag == "units":
+				paramunit = cc.get("value")
 
-def getparamvalues( dmparam ):
-	hasvalues = 0
-	values = ""
+	return paramvalmin, paramvalmax, paramenum, paramunit, parampattern
+
+
+def getparamdatatyperef( datatyperef ):
+	paramvalmin = None
+	paramvalmax = None
+	paramenum = None
+	paramunit = None
+	parampattern = None
+	for d in xmlroot1:
+		if d.tag == "dataType" and d.get("name") == datatyperef:
+			if d.get("base") != "" and d.get("base") != None and d.get("name") == "Alias":
+				paramvalmin, paramvalmax, paramenum, paramunit, parampattern = getparamdatatyperef(d.get("base"))
+			else:
+				for dd in d:
+					if dd.tag in listTypes:
+						paramvalmin, paramvalmax, paramenum, paramunit, parampattern = getMinMaxEnumerationUnitPatternparam(dd.tag, dd)
+						break
+					if dd.tag == "size":
+						paramvalmin = dd.get("minLength")
+						paramvalmax = dd.get("maxLength")
+					if dd.tag == "enumeration":
+						if paramenum == None:
+							paramenum = "\"%s\"" % dd.get('value')
+						else:
+							paramenum = "%s, \"%s\"" % (paramenum, dd.get('value'))
+					if dd.tag == "pattern" and dd.get('value') != "":
+						if parampattern == None:
+							parampattern = "\"%s\"" % dd.get('value')
+						elif dd.get('value') != "":
+							parampattern = "%s,\"%s\"" % (parampattern, dd.get('value'))
+				break
+
+	return paramvalmin, paramvalmax, paramenum, paramunit, parampattern
+
+def getparamlist( dmparam ):
+	minItem = None
+	maxItem = None
+	maxsize = None
+	minItem = dmparam.get("minItems")
+	maxItem = dmparam.get("maxItems")
+	for cc in dmparam:
+		if cc.tag == "size":
+			maxsize = cc.get("maxLength")
+
+	return minItem, maxItem, maxsize
+
+def getparamoption( dmparam ):
+	datatype = None
+	paramvalmin = None
+	paramvalmax = None
+	paramenum = None
+	paramunit = None
+	parampattern = None
+	listminItem = None
+	listmaxItem = None
+	listmaxsize = None
+	islist = 0
 	for s in dmparam:
 		if s.tag == "syntax":
 			for c in s:
-				if c.tag == "string":
-					for a in c:
-						if a.tag == "enumeration":
-							hasvalues = 1
-							for x in c.findall('enumeration'):
-								if values:
-									values = "%s, \"%s\"" % (values, x.get('value'))
-								else:
-									values = "\"%s\"" % x.get('value')
+				if c.tag == "list":
+					islist = 1
+					listminItem, listmaxItem, listmaxsize = getparamlist(c)
+					for c in s:
+						datatype = c.tag if c.tag in listdataTypes else None
+						if datatype != None:
+							paramvalmin, paramvalmax, paramenum, paramunit, parampattern = getMinMaxEnumerationUnitPatternparam(datatype, c)
 							break
-				
+						if c.tag == "dataType":
+							datatype = c.get("ref")
+							paramvalmin, paramvalmax, paramenum, paramunit, parampattern = getparamdatatyperef(c.get("ref"))
+							break
+
+				if islist == 0:
+					datatype = c.tag if c.tag in listdataTypes else None
+					if datatype != None:
+						paramvalmin, paramvalmax, paramenum, paramunit, parampattern = getMinMaxEnumerationUnitPatternparam(datatype, c)
+						break
+					if c.tag == "dataType":
+						datatype = c.get("ref")
+						paramvalmin, paramvalmax, paramenum, paramunit, parampattern = getparamdatatyperef(datatype)
+						break
 			break
-	return hasvalues, values
+
+	return islist, datatype, paramvalmin, paramvalmax, paramenum, paramunit, parampattern, listminItem, listmaxItem, listmaxsize
 
 listmapping = []
 def generatelistfromfile(dmobject):
 	obj = dmobject.get('name').split(".")
 	if "tr-104" in sys.argv[1]:
 		pathfilename = "../dmtree/tr104/voice_services.c"
+	elif obj[1] == "SoftwareModules" or obj[1] == "BulkData" :
+		pathfilename = "../dmtree/tr157/" + obj[1].lower() + ".c"
 	else:
 		pathfilename = "../dmtree/tr181/" + obj[1].lower() + ".c"
 	exists = os.path.isfile(pathfilename)
@@ -169,15 +265,13 @@ def getobjmapping(dmobject):
 
 def objhaschild (parentname, level, check_obj):
 	hasobj = 0
-	if check_obj == 0:
-		model = model2
-	else:
-		model = model1
+	model = model2 if check_obj == 0 else model1
 	for c in model:
 		objname = c.get('name')
 		if c.tag == "object" and parentname in objname and (objname.count('.') - objname.count('{i}')) == level:
 			hasobj = 1
 			break;
+
 	return hasobj
 
 def objhasparam (dmobject):
@@ -186,6 +280,7 @@ def objhasparam (dmobject):
 		if c.tag == "parameter":
 			hasparam = 1
 			break;
+
 	return hasparam
 
 def printopenobject (obj):
@@ -258,7 +353,7 @@ def printPARAMMaPPING (mapping):
 				print >> fp, "\"index\": \"%s\"" % var[1]
 			elif len(var) > 1:
 				print >> fp, "\"type\": \"%s\"," % var[0]
-				print >> fp, "\"name\": \"%s\"" % var[1]		
+				print >> fp, "\"name\": \"%s\"" % var[1]	
 			print >> fp, "}"
 			if len(var) > 1:
 				print >> fp, "\"option\": {"
@@ -273,7 +368,6 @@ def printPARAMMaPPING (mapping):
 				print >> fp, "\"%s\": \"%s\"" % (args[0], args[1])
 			print >> fp, "}"
 			print >> fp, "\"key\": \"%s\"" % config[3]
-
 		else:
 			print >> fp, "\"command\": \"%s\"," % config[0]
 			print >> fp, "\"args\": \"%s\"" % config[1]
@@ -312,6 +406,7 @@ def updatejsontmpfile ():
 	replace_data_in_file ("}\n},\n}\n}\n},", "}\n}\n}\n}\n},")
 	replace_data_in_file ("}\n}\n}\n},\n}\n},", "}\n}\n}\n}\n}\n},")
 	replace_data_in_file ("}\n}\n}\n}\n}\n}\n},", "}\n}\n}\n}\n}\n}\n},")
+	replace_data_in_file ("}\n}\n}\n},\n}\n}\n}\n},", "}\n}\n}\n}\n}\n}\n}\n},")
 	replace_data_in_file ("},\n]", "}\n]")
 
 def removetmpfiles():
@@ -342,51 +437,78 @@ def printOBJ( dmobject, hasobj, hasparam, bbfdm_type ):
 
 def printPARAM( dmparam, dmobject, bbfdm_type ):
 	hasmapping, mapping = getparammapping(dmobject, dmparam)
-	ptype = getparamtype(dmparam)
-	min, max = getparamrange(dmparam)
-	unit = getparamunit(dmparam)
-	hasvalues, values = getparamvalues(dmparam)
-	if (dmparam.get('access') == "readOnly"):
-		access = "false"
-	else:
-		access = "true"
+	islist, datatype, paramvalmin, paramvalmax, paramenum, paramunit, parampattern, listminItem, listmaxItem, listmaxsize = getparamoption(dmparam)
 
 	fp = open('./.json_tmp', 'a')
 	print >> fp,  "\"%s\" : {" % dmparam.get('name')
-	print >> fp,  "\"type\" : \"%s\"," % ptype
-	print >> fp,  "\"protocols\" : [%s]," % bbfdm_type
-	if min != "" and max != "":
-		print >> fp,  "\"range\" : {"
-		print >> fp,  "\"min\" : \"%s\"," % min
-		print >> fp,  "\"max\" : \"%s\"" % max
-		print >> fp,  "},"
-	elif min != "" and max == "":
-		print >> fp,  "\"range\" : {"
-		print >> fp,  "\"min\" : \"%s\"" % min
-		print >> fp,  "},"
-	elif min == "" and max != "":
-		print >> fp,  "\"range\" : {"
-		print >> fp,  "\"max\" : \"%s\"" % max
-		print >> fp,  "},"
-	if unit != "":
-		print >> fp,  "\"unit\" : \"%s\"," % unit
+	print >> fp,  "\"type\" : \"%s\"," % getparamtype(dmparam)
 	print >> fp,  "\"read\" : true,"
-	if hasvalues and hasmapping:
-		print >> fp,  "\"write\" : %s," % access
-		print >> fp,  "\"values\": [%s]," % values
-		fp.close()
-		printPARAMMaPPING(mapping)
-	elif hasvalues and hasmapping == 0:
-		print >> fp,  "\"write\" : %s," % access
-		print >> fp,  "\"values\": [%s]" % values
-		print >> fp,  "}"
-		fp.close()
-	elif hasvalues == 0 and hasmapping:
-		print >> fp,  "\"write\" : %s," % access
+	print >> fp,  "\"write\" : %s," % ("false" if dmparam.get('access') == "readOnly" else "true")
+	print >> fp,  "\"protocols\" : [%s]," % bbfdm_type
+
+	# create list
+	if islist == 1:
+		print >> fp,  "\"list\" : {"
+
+	# add datatype
+	print >> fp,  ("\"datatype\" : \"%s\"," % datatype) if (listmaxsize != None or listminItem != None or listmaxItem != None or paramvalmin != None or paramvalmax != None or paramunit != None or paramenum != None or parampattern != None or (hasmapping and islist == 0)) else ("\"datatype\" : \"%s\"" % datatype)
+
+	if islist == 1:
+		# add maximum size of list
+		if listmaxsize != None:
+			print >> fp,  ("\"maxsize\" : %s," % listmaxsize) if (listminItem != None or listmaxItem != None or paramvalmin != None or paramvalmax != None or paramunit != None or paramenum != None or parampattern != None) else ("\"maxsize\" : %s" % listmaxsize)
+
+		# add minimun and maximum item values
+		if listminItem != None and listmaxItem != None:
+			print >> fp,  "\"item\" : {"
+			print >> fp,  "\"min\" : %s," % listminItem
+			print >> fp,  "\"max\" : %s" % listmaxItem
+			print >> fp,  ("},") if (paramvalmin != None or paramvalmax != None or paramunit != None or paramenum != None or parampattern != None) else ("}")
+		elif listminItem != None and listmaxItem == None:
+			print >> fp,  "\"item\" : {"
+			print >> fp,  "\"min\" : %s" % listminItem
+			print >> fp,  ("},") if (paramvalmin != None or paramvalmax != None or paramunit != None or paramenum != None or parampattern != None) else ("}")
+		elif listminItem == None and listmaxItem != None:
+			print >> fp,  "\"item\" : {"
+			print >> fp,  "\"max\" : %s" % listmaxItem
+			print >> fp,  ("},") if (paramvalmin != None or paramvalmax != None or paramunit != None or paramenum != None or parampattern != None) else ("}")
+
+	# add minimun and maximum values
+	if paramvalmin != None and paramvalmax != None:
+		print >> fp,  "\"range\" : {"
+		print >> fp,  "\"min\" : %s," % paramvalmin
+		print >> fp,  "\"max\" : %s" % paramvalmax
+		print >> fp,  ("},") if (paramunit != None or paramenum != None or parampattern != None or (hasmapping and islist == 0)) else ("}")
+	elif paramvalmin != None and paramvalmax == None:
+		print >> fp,  "\"range\" : {"
+		print >> fp,  "\"min\" : %s" % paramvalmin
+		print >> fp,  ("},") if (paramunit != None or paramenum != None or parampattern != None or (hasmapping and islist == 0)) else ("}")
+	elif paramvalmin == None and paramvalmax != None:
+		print >> fp,  "\"range\" : {"
+		print >> fp,  "\"max\" : %s" % paramvalmax
+		print >> fp,  ("},") if (paramunit != None or paramenum != None or parampattern != None or (hasmapping and islist == 0)) else ("}")
+
+	# add unit
+	if paramunit != None: 
+		print >> fp,  ("\"unit\" : \"%s\"," % paramunit) if (paramenum != None or parampattern != None or (hasmapping and islist == 0)) else ("\"unit\" : \"%s\"" % paramunit)
+
+	# add enumaration
+	if paramenum != None: 
+		print >> fp,  ("\"enumerations\" : [%s]," % paramenum) if (parampattern != None or (hasmapping and islist == 0)) else ("\"enumerations\" : [%s]" % paramenum)
+
+	# add pattern
+	if parampattern != None:
+		print >> fp,  ("\"pattern\" : [%s]," % parampattern.replace("\\", "\\\\")) if (hasmapping and islist == 0) else ("\"pattern\" : [%s]" % parampattern.replace("\\", "\\\\"))
+
+	# close list
+	if islist == 1:
+		print >> fp,  ("},") if hasmapping else ("}")
+
+	# add mapping
+	if hasmapping:
 		fp.close()
 		printPARAMMaPPING(mapping)
 	else:
-		print >> fp,  "\"write\" : %s" % access
 		print >> fp,  "}"
 		fp.close()
 

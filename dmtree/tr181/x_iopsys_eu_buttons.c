@@ -123,15 +123,12 @@ int set_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data,
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value_by_section((struct uci_section *)data, "enable", "");
-			else
-				dmuci_set_value_by_section((struct uci_section *)data, "enable", "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "enable", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -139,23 +136,27 @@ int set_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data,
 ////////////////////////SET AND GET ALIAS/////////////////////////////////
 int get_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_buttons", "button", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "buttonalias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "buttonalias", value);
 	return 0;
 }
 
 int set_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_buttons", "button", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "buttonalias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "buttonalias", value);
 			return 0;
 	}
 	return 0;

@@ -190,15 +190,12 @@ int set_igmp_multicast_enable(char *refparam, struct dmctx *ctx, void *data, cha
 	
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if (b)
-				dmuci_set_value("mcpd", "mcpd", "igmp_lan_to_lan_multicast", "1");
-			else
-				dmuci_set_value("mcpd", "mcpd", "igmp_lan_to_lan_multicast", "");
+			dmuci_set_value("mcpd", "mcpd", "igmp_lan_to_lan_multicast", b ? "1" : "");
 			return 0;
 	}
 	return 0;
@@ -219,15 +216,12 @@ int set_igmp_fastleave_enable(char *refparam, struct dmctx *ctx, void *data, cha
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if (b)
-				dmuci_set_value("mcpd", "mcpd", "igmp_fast_leave", "1");
-			else
-				dmuci_set_value("mcpd", "mcpd", "igmp_fast_leave", "");
+			dmuci_set_value("mcpd", "mcpd", "igmp_fast_leave", b ? "1" : "");
 			return 0;
 	}
 	return 0;
@@ -248,15 +242,12 @@ int set_igmp_joinimmediate_enable(char *refparam, struct dmctx *ctx, void *data,
 	
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if (b)
-				dmuci_set_value("mcpd", "mcpd", "igmp_join_immediate", "1");
-			else
-				dmuci_set_value("mcpd", "mcpd", "igmp_join_immediate", "");
+			dmuci_set_value("mcpd", "mcpd", "igmp_join_immediate", b ? "1" : "");
 			return 0;
 	}
 	return 0;
@@ -277,15 +268,12 @@ int set_igmp_proxy_enable(char *refparam, struct dmctx *ctx, void *data, char *i
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if (b)
-				dmuci_set_value("mcpd", "mcpd", "igmp_proxy_enable", "1");
-			else
-				dmuci_set_value("mcpd", "mcpd", "igmp_proxy_enable", "");
+			dmuci_set_value("mcpd", "mcpd", "igmp_proxy_enable", b ? "1" : "");
 			return 0;
 	}
 	return 0;

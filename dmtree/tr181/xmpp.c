@@ -141,7 +141,7 @@ int get_xmpp_connection_nbr_entry(char *refparam, struct dmctx *ctx, void *data,
 
 int get_xmpp_connection_supported_server_connect_algorithms(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "DNS-SRV , ServerTable";
+	*value = "DNS-SRV,ServerTable";
 	return 0;
 }
 
@@ -158,7 +158,7 @@ int set_connection_enable(char *refparam, struct dmctx *ctx, void *data, char *i
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -180,6 +180,8 @@ int set_xmpp_connection_alias(char *refparam, struct dmctx *ctx, void *data, cha
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "connection_alias", value);
@@ -199,6 +201,8 @@ int set_xmpp_connection_username(char *refparam, struct dmctx *ctx, void *data, 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "username", value);
@@ -218,6 +222,8 @@ int set_xmpp_connection_password(char *refparam, struct dmctx *ctx, void *data, 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "password", value);
@@ -237,6 +243,8 @@ int set_xmpp_connection_domain(char *refparam, struct dmctx *ctx, void *data, ch
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "domain", value);
@@ -245,7 +253,7 @@ int set_xmpp_connection_domain(char *refparam, struct dmctx *ctx, void *data, ch
 	return 0;
 }
 
-/*#Device.XMPP.Connection.{i}.Ressource!UCI:cwmp_xmpp/xmpp_connection,@i-1/resource*/
+/*#Device.XMPP.Connection.{i}.Resource!UCI:cwmp_xmpp/xmpp_connection,@i-1/resource*/
 int get_xmpp_connection_resource(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "resource", value);
@@ -256,6 +264,8 @@ int set_xmpp_connection_resource(char *refparam, struct dmctx *ctx, void *data, 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "resource", value);
@@ -275,10 +285,11 @@ int set_xmpp_connection_server_connect_algorithm(char *refparam, struct dmctx *c
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, NULL, ServerConnectAlgorithm))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcmp(value, "DNS-SRV") == 0 || strcmp(value, "ServerTable") == 0)
-				dmuci_set_value_by_section((struct uci_section *)data, "serveralgorithm", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "serveralgorithm", value);
 			return 0;
 	}
 	return 0;
@@ -295,6 +306,8 @@ int set_xmpp_connection_keepalive_interval(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_long(value, "-1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "interval", value);
@@ -314,6 +327,8 @@ int set_xmpp_connection_server_attempts(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "attempt", value);
@@ -333,6 +348,8 @@ int set_xmpp_connection_retry_initial_interval(char *refparam, struct dmctx *ctx
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "initial_retry_interval", value);
@@ -352,6 +369,8 @@ int set_xmpp_connection_retry_interval_multiplier(char *refparam, struct dmctx *
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1000", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "retry_interval_multiplier", value);
@@ -371,6 +390,8 @@ int set_xmpp_connection_retry_max_interval(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "1", NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "retry_max_interval", value);
@@ -392,7 +413,7 @@ int set_xmpp_connection_server_usetls(char *refparam, struct dmctx *ctx, void *d
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -423,7 +444,7 @@ int get_xmpp_connection_status(char *refparam, struct dmctx *ctx, void *data, ch
 	char *status;
 
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", &status);
-	if (strcmp(status,"1") == 0)
+	if (strcmp(status, "1") == 0)
 			*value = "Enabled";
 		else
 			*value = "Disabled";
@@ -449,7 +470,7 @@ int set_xmpp_connection_server_enable(char *refparam, struct dmctx *ctx, void *d
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -471,6 +492,8 @@ int set_xmpp_connection_server_alias(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "connection_server_alias", value);
@@ -490,6 +513,8 @@ int set_xmpp_connection_server_server_address(char *refparam, struct dmctx *ctx,
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "server_address", value);
@@ -509,6 +534,8 @@ int set_xmpp_connection_server_port(char *refparam, struct dmctx *ctx, void *dat
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, "0", "65535"))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "port", value);
@@ -557,9 +584,9 @@ int browsexmpp_connection_serverInst(struct dmctx *dmctx, DMNODE *parent_node, v
 
 	dmuci_get_value_by_section_string(connsection, "connection_instance", &prev_connection_instance);
 	uci_foreach_option_eq("cwmp_xmpp", "xmpp_connection_server", "id_connection", prev_connection_instance, s) {
-	iconnectionserver = handle_update_instance(1, dmctx, &iconnectionserver_last, update_instance_alias, 3, s, "connection_server_instance", "connection_server_instance_alias");
-	if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, iconnectionserver) == DM_STOP)
-		break;
+		iconnectionserver = handle_update_instance(1, dmctx, &iconnectionserver_last, update_instance_alias, 3, s, "connection_server_instance", "connection_server_instance_alias");
+		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, iconnectionserver) == DM_STOP)
+			break;
 	}
 	return 0;
 }

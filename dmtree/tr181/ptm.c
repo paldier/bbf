@@ -39,10 +39,10 @@ DMLEAF tPTMLinkParams[] = {
 /* *** Device.PTM.Link.{i}.Stats. *** */
 DMLEAF tPTMLinkStatsParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"BytesSent", &DMREAD, DMT_UNINT, get_ptm_stats_bytes_sent, NULL, NULL, NULL, BBFDM_BOTH},
-{"BytesReceived", &DMREAD, DMT_UNINT, get_ptm_stats_bytes_received, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsSent", &DMREAD, DMT_UNINT, get_ptm_stats_pack_sent, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsReceived", &DMREAD, DMT_UNINT, get_ptm_stats_pack_received, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesSent", &DMREAD, DMT_UNLONG, get_ptm_stats_bytes_sent, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesReceived", &DMREAD, DMT_UNLONG, get_ptm_stats_bytes_received, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsSent", &DMREAD, DMT_UNLONG, get_ptm_stats_pack_sent, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsReceived", &DMREAD, DMT_UNLONG, get_ptm_stats_pack_received, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -51,8 +51,8 @@ DMLEAF tPTMLinkStatsParams[] = {
 ***************************************************************************/
 int get_ptm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct ptm_args *)data)->ifname){
-		*linker =  ((struct ptm_args *)data)->ifname;
+	if (data && ((struct ptm_args *)data)->ifname) {
+		*linker = ((struct ptm_args *)data)->ifname;
 		return 0;
 	}
 	*linker = "" ;
@@ -93,7 +93,7 @@ static inline int ubus_ptm_stats(char **value, char *stat_mod, void *data)
 {
 	json_object *res = NULL;
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct ptm_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "");
+	DM_ASSERT(res, *value = "0");
 	*value = dmjson_get_value(res, 2, "statistics", stat_mod);
 	return 0;
 }
@@ -163,7 +163,7 @@ int delete_ptm_link(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	switch (del_action) {
 	case DEL_INST:
 		get_dmmap_section_of_config_section("dmmap_dsl", "ptm-device", section_name(((struct ptm_args *)data)->ptm_sec), &dmmap_section);
-		if(dmmap_section != NULL)
+		if (dmmap_section != NULL)
 			dmuci_delete_by_section(dmmap_section, NULL, NULL);
 		dmuci_delete_by_section(((struct ptm_args *)data)->ptm_sec, NULL, NULL);
 		uci_foreach_option_cont("network", "interface", "ifname", ((struct ptm_args *)data)->ifname, s) {
@@ -178,7 +178,7 @@ int delete_ptm_link(char *refparam, struct dmctx *ctx, void *data, char *instanc
 		uci_foreach_sections("dsl", "ptm-device", s) {
 			if (ss){
 				get_dmmap_section_of_config_section("dmmap_dsl", "ptm-device", section_name(ss), &dmmap_section);
-				if(dmmap_section != NULL)
+				if (dmmap_section != NULL)
 					dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_get_value_by_section_string(ss, "device", &ifname);
 				dmuci_delete_by_section(ss, NULL, NULL);
@@ -194,7 +194,7 @@ int delete_ptm_link(char *refparam, struct dmctx *ctx, void *data, char *instanc
 		}
 		if (ss != NULL) {
 			get_dmmap_section_of_config_section("dmmap_dsl", "ptm-device", section_name(ss), &dmmap_section);
-			if(dmmap_section != NULL)
+			if (dmmap_section != NULL)
 				dmuci_delete_by_section(dmmap_section, NULL, NULL);
 			dmuci_get_value_by_section_string(ss, "device", &ifname);
 			dmuci_delete_by_section(ss, NULL, NULL);
@@ -216,23 +216,27 @@ int delete_ptm_link(char *refparam, struct dmctx *ctx, void *data, char *instanc
 *************************************************************/
 int get_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_dsl", "ptm-device", section_name(((struct ptm_args *)data)->ptm_sec), &dmmap_section);
-	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "ptmlinkalias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "ptmlinkalias", value);
 	return 0;
 }
 
 int set_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_dsl", "ptm-device", section_name(((struct ptm_args *)data)->ptm_sec), &dmmap_section);
-			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "ptmlinkalias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "ptmlinkalias", value);
 			return 0;
 	}
 	return 0;

@@ -21,14 +21,7 @@ DMLEAF tSe_IceParam[] = {
 
 int get_ice_cloud_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	bool b;
 	dmuci_get_option_value_string("ice", "cloud", "enabled", value);
-
-	string_to_bool(*value, &b);
-	if (b)
-		*value = "1";
-	else
-		*value = "0";
 	return 0;
 }
 
@@ -38,15 +31,12 @@ int set_ice_cloud_enable(char *refparam, struct dmctx *ctx, void *data, char *in
 	
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if (b)
-				dmuci_set_value("ice", "cloud", "enabled", "1");
-			else
-				dmuci_set_value("ice", "cloud", "enabled", "0");
+			dmuci_set_value("ice", "cloud", "enabled", b ? "1" : "0");
 			return 0;
 	}
 	return 0;

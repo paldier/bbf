@@ -129,6 +129,7 @@ char *DMT_TYPE[] = {
 [DMT_STRING] = "xsd:string",
 [DMT_UNINT] = "xsd:unsignedInt",
 [DMT_INT] = "xsd:int",
+[DMT_UNLONG] = "xsd:unsignedLong",
 [DMT_LONG] = "xsd:long",
 [DMT_BOOL] = "xsd:boolean",
 [DMT_TIME] = "xsd:dateTime",
@@ -602,10 +603,10 @@ char *update_instance_without_section(int action, char **last_inst, void *argv[]
 	long instnbr = (long) argv[0];
 
 	if (action == INSTANCE_MODE_ALIAS) {
-		sprintf(buf, "[cpe-%ld]", instnbr);
+		snprintf(buf, sizeof(buf), "[cpe-%ld]", instnbr);
 		instance = dmstrdup(buf);
 	} else {
-		sprintf(buf, "%ld", instnbr);
+		snprintf(buf, sizeof(buf), "%ld", instnbr);
 		instance = dmstrdup(buf);
 	}
 	return instance;

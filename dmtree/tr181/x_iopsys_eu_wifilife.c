@@ -61,14 +61,15 @@ int get_x_iopsys_eu_wifilife_enable(char *refparam, struct dmctx *ctx, void *dat
 int set_x_iopsys_eu_wifilife_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			dmuci_set_value("wifilife", "@wifilife[0]", "enabled", b?"1":"0");
+			dmuci_set_value("wifilife", "@wifilife[0]", "enabled", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -85,14 +86,15 @@ int get_wifilife_steering_enable(char *refparam, struct dmctx *ctx, void *data, 
 int set_wifilife_steering_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			dmuci_set_value_by_section((struct uci_section *)data, "enabled", b?"1":"0");
+			dmuci_set_value_by_section((struct uci_section *)data, "enabled", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
@@ -109,14 +111,15 @@ int get_wifilife_steering_legacy_fallback(char *refparam, struct dmctx *ctx, voi
 int set_wifilife_steering_legacy_fallback(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
+
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			dmuci_set_value_by_section((struct uci_section *)data, "fallback_legacy", b?"1":"0");
+			dmuci_set_value_by_section((struct uci_section *)data, "fallback_legacy", b ? "1" : "0");
 			return 0;
 	}
 	return 0;

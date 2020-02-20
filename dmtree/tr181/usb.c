@@ -259,10 +259,9 @@ int browseUSBInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_
 {
 	DIR *dir;
 	struct dirent *ent;
-	char *iface_path, *statistics_path, *v, *instnbr = NULL, *instance = NULL;
+	char *iface_path, *statistics_path, *instnbr = NULL, *instance = NULL;
 	size_t length;
 	char **foldersplit;
-	struct uci_section *s;
 	struct usb_interface iface= {};
 	LIST_HEAD(dup_list);
 	struct sysfs_dmsection *p;
@@ -369,25 +368,23 @@ int browseUSBUSBHostsHostInst(struct dmctx *dmctx, DMNODE *parent_node, void *pr
 int synchronize_usb_devices_with_dmmap_opt_recursively(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, int is_root, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
-	FILE *fp;
 	DIR *dir;
 	struct dirent *ent;
-	char *v, *dmmap_file_path, *sysfs_rep_path, *instance= NULL;
+	char *v, *sysfs_rep_path, *instance = NULL;
 	struct sysfs_dmsection *p;
-	regex_t regex1 = {};
-	regex_t regex2 = {};
+	regex_t regex1 = {}, regex2 = {};
 
 	regcomp(&regex1, "^[0-9][0-9]*-[0-9]*[0-9]$", 0);
 	regcomp(&regex2, "^[0-9][0-9]*-[0-9]*[0-9]\\.[0-9]*[0-9]$", 0);
 
 	LIST_HEAD(dup_list_no_inst);
-	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+	dmmap_file_path_get(dmmap_package);
 
 	sysfs_foreach_file(sysfsrep, dir, ent) {
 		if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
 			continue;
 
-		if(regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) ==0){
+		if (regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) ==0) {
 			char deviceClassFile[256];
 			char deviceClass[16];
 
@@ -412,7 +409,7 @@ int synchronize_usb_devices_with_dmmap_opt_recursively(char *sysfsrep, char *dmm
 			/*
 			 * Add system and dmmap sections to the list
 			 */
-			if(instance == NULL || strlen(instance) <= 0)
+			if (instance == NULL || strlen(instance) <= 0)
 				add_sysfs_sectons_list_paramameter(&dup_list_no_inst, dmmap_sect, ent->d_name, sysfs_rep_path);
 			else
 				add_sysfs_sectons_list_paramameter(dup_list, dmmap_sect, ent->d_name, sysfs_rep_path);
@@ -466,11 +463,9 @@ int browseUSBUSBHostsHostDeviceInst(struct dmctx *dmctx, DMNODE *parent_node, vo
 int browseUSBUSBHostsHostDeviceConfigurationInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	const struct usb_port *usb_dev = prev_data;
-	struct usb_port port= {};
+	struct usb_port port = {};
 	struct uci_section *s;
-	char *v, *instance, *instnbr = NULL;
-	char *filepath= NULL;
-	char nbre[16];
+	char nbre[16], *v, *instnbr = NULL;
 
 	__read_sysfs_usb_port(usb_dev, "bNumConfigurations", nbre, sizeof(nbre));
 	if(nbre[0] == '0')
@@ -593,6 +588,7 @@ int get_USBInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char 
 		*value = "1";
 	else
 		*value = "0";
+	return 0;
 }
 
 int set_USBInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
@@ -617,6 +613,7 @@ int get_USBInterface_Status(char *refparam, struct dmctx *ctx, void *data, char 
 		*value = "up";
 	else
 		*value = "down";
+	return 0;
 }
 
 int get_USBInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -906,6 +903,7 @@ int get_USBUSBHostsHost_Enable(char *refparam, struct dmctx *ctx, void *data, ch
 
 	__read_sysfs_usb_port(data, "power/wakeup", up, sizeof(up));
 	*value = strcmp(up, "enabled") == 0 ? "1" : "0";
+	return 0;
 }
 
 int set_USBUSBHostsHost_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
@@ -1017,6 +1015,7 @@ int get_USBUSBHostsHost_USBVersion(char *refparam, struct dmctx *ctx, void *data
 	dm_read_sysfs_file(file, buf, sizeof(buf));
 
 	dmasprintf(value, "%c.%c", buf[1], buf[2]);
+	return 0;
 }
 
 int get_number_devices(char *folderpath, int *nbre)
@@ -1030,7 +1029,7 @@ int get_number_devices(char *folderpath, int *nbre)
 	regcomp(&regex2, "^[0-9][0-9]*-[0-9]*[0-9]\\.[0-9]*[0-9]$", 0);
 
 	sysfs_foreach_file(folderpath, dir, ent) {
-		if(regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) ==0){
+		if (regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) == 0) {
 			char deviceClassFile[256];
 			char deviceClass[16];
 

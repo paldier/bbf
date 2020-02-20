@@ -52,7 +52,8 @@ DMLEAF tATMLinkStatsParams[] = {
 /**************************************************************************
 * LINKER
 ***************************************************************************/
-int get_atm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker) {
+int get_atm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+{
 	if (data && ((struct atm_args *)data)->ifname) {
 		*linker =  ((struct atm_args *)data)->ifname;
 		return 0;
@@ -81,33 +82,27 @@ int get_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, c
 
 	dmuci_get_value_by_section_string(((struct atm_args *)data)->atm_sec, "vpi", &vpi);
 	dmuci_get_value_by_section_string(((struct atm_args *)data)->atm_sec, "vci", &vci);
-	dmasprintf(value, "PVC: %s/%s", vpi, vci); // MEM WILL BE FREED IN DMMEMCLEAN
+	dmasprintf(value, "%s/%s", vpi, vci); // MEM WILL BE FREED IN DMMEMCLEAN
 	return 0;
 }
 
 int set_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *vpi = NULL, *vci = NULL, *spch, *val;
+	char *vpi = NULL, *vci = NULL, *spch;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, DestinationAddress))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-				if (strstr(value, "PVC: "))
-					value += 5;
-				else
-					return 0;
-				val = dmstrdup(value);
-				vpi = strtok_r(val, "/", &spch);
-				if (vpi) {
-					vci = strtok_r(NULL, "/", &spch);
-				}
-				if (vpi && vci) {
-					dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "vpi", vpi);
-					dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "vci", vci);
-				}
-				dmfree(val);
-				break;
+			vpi = strtok_r(value, "/", &spch);
+			if (vpi)
+				vci = strtok_r(NULL, "/", &spch);
+			if (vpi && vci) {
+				dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "vpi", vpi);
+				dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "vci", vci);
+			}
 			return 0;
 	}
 	return 0;
@@ -126,32 +121,27 @@ int get_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *i
 	char *encapsulation;
 
 	dmuci_get_value_by_section_string(((struct atm_args *)data)->atm_sec, "encapsulation", &encapsulation);
-	if (strcasecmp(encapsulation, "vcmux") == 0) {
+	if (strcmp(encapsulation, "vcmux") == 0)
 		*value = "VCMUX";
-	} else if (strcasecmp(encapsulation, "llc") == 0) {
+	else if (strcmp(encapsulation, "llc") == 0)
 		*value = "LLC";
-	} else {
+	else
 		*value = "";
-	}
 	return 0;
 }
 
 int set_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *encapsulation;
-
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, Encapsulation, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "VCMUX") == 0)
-				encapsulation = "vcmux";
+				dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "encapsulation", "vcmux");
 			else if (strcmp(value, "LLC") == 0)
-				encapsulation = "llc";
-			else
-				return 0;
-
-			dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "encapsulation", encapsulation);
+				dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "encapsulation", "llc");
 			return 0;
 	}
 	return 0;
@@ -160,8 +150,19 @@ int set_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *i
 /*#Device.ATM.Link.{i}.LinkType!UCI:dsl/atm-device,@i-1/link_type*/
 int get_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "";
-	dmuci_get_value_by_section_string(((struct atm_args *)data)->atm_sec, "link_type", value);
+	char *link_type;
+
+	dmuci_get_value_by_section_string(((struct atm_args *)data)->atm_sec, "link_type", &link_type);
+	if (strcmp(link_type, "eoa") == 0)
+		*value = "EoA";
+	else if (strcmp(link_type, "ipoa") == 0)
+		*value = "IPoA";
+	else if (strcmp(link_type, "pppoa") == 0)
+		*value = "PPPoA";
+	else if (strcmp(link_type, "cip") == 0)
+		*value = "CIP";
+	else
+		*value = "Unconfigured";
 	return 0;
 }
 
@@ -169,9 +170,20 @@ int set_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, LinkType, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "link_type", value);
+			if (strcmp(value, "EoA") == 0)
+				dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "link_type", "eoa");
+			else if (strcmp(value, "IPoA") == 0)
+				dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "link_type", "ipoa");
+			else if (strcmp(value, "PPPoA") == 0)
+				dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "link_type", "pppoa");
+			else if (strcmp(value, "CIP") == 0)
+				dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "link_type", "cip");
+			else
+				dmuci_set_value_by_section(((struct atm_args *)data)->atm_sec, "link_type", "");
 			return 0;
 	}
 	return 0;
@@ -317,23 +329,27 @@ int delete_atm_link(char *refparam, struct dmctx *ctx, void *data, char *instanc
 *************************************************************/
 int get_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_dsl", "atm-device", section_name(((struct atm_args *)data)->atm_sec), &dmmap_section);
-	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "atmlinkalias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "atmlinkalias", value);
 	return 0;
 }
 
 int set_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_dsl", "atm-device", section_name(((struct atm_args *)data)->atm_sec), &dmmap_section);
-			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "atmlinkalias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "atmlinkalias", value);
 			return 0;
 	}
 	return 0;

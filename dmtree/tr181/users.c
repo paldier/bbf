@@ -75,7 +75,7 @@ int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instanc
 
 int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	struct uci_section *s = NULL, *ss = NULL, *dmmap_section;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_section = NULL;
 	int found = 0;
 
 	switch (del_action) {
@@ -87,7 +87,8 @@ int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *insta
 				dmuci_delete_by_section_unnamed((struct uci_section *)data, NULL, NULL);
 			} else {
 				get_dmmap_section_of_config_section("dmmap_users", "user", section_name((struct uci_section *)data), &dmmap_section);
-				dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
+				if (dmmap_section)
+					dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			}
 			break;
@@ -95,7 +96,8 @@ int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *insta
 			uci_foreach_sections("users", "user", s) {
 				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_users", "user", section_name(ss), &dmmap_section);
-					if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					if (dmmap_section)
+						dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
@@ -103,7 +105,8 @@ int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *insta
 			}
 			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_users", "user", section_name(ss), &dmmap_section);
-				if (dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+				if (dmmap_section)
+					dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			break;
@@ -127,10 +130,11 @@ int get_users_user_number_of_entries(char *refparam, struct dmctx *ctx, void *da
 
 int get_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_users", "user", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section) dmuci_get_value_by_section_string(dmmap_section, "user_alias", value);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "user_alias", value);
     return 0;
 }
 
@@ -170,14 +174,17 @@ int get_user_language(char *refparam, struct dmctx *ctx, void *data, char *insta
 
 int set_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dmmap_section;
+	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_users", "user", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section) dmuci_set_value_by_section(dmmap_section, "user_alias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "user_alias", value);
 			return 0;
 	}
 	return 0;
@@ -187,6 +194,8 @@ int set_user_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "enabled", value);
@@ -199,6 +208,8 @@ int set_user_username(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_rename_section_by_section((struct uci_section *)data, value);
@@ -211,6 +222,8 @@ int set_user_password(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "password", value);
@@ -223,6 +236,8 @@ int set_user_remote_accessable(char *refparam, struct dmctx *ctx, void *data, ch
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "remote_access", value);
@@ -235,6 +250,8 @@ int set_user_language(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "16", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "language", value);

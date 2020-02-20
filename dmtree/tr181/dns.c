@@ -138,7 +138,7 @@ static inline char *nslookup_get(char *option, char *def)
 {
 	char *tmp;
 	dmuci_get_varstate_string("cwmp", "@nslookupdiagnostic[0]", option, &tmp);
-	if(tmp && tmp[0] == '\0')
+	if (tmp && tmp[0] == '\0')
 		return dmstrdup(def);
 	else
 		return tmp;
@@ -239,12 +239,10 @@ int browseServerInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, 
 	char *instance, *instnbr = NULL;
 
 	dmmap_synchronizeDNSClientRelayServer(dmctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s)
-	{
+	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s) {
 		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias_bbfdm, 3, s, "dns_server_instance", "dns_server_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, instance) == DM_STOP)
 			break;
-
 	}
 	return 0;
 }
@@ -255,8 +253,7 @@ int browseRelayForwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *pr
 	char *instance, *instnbr = NULL;
 
 	dmmap_synchronizeDNSClientRelayServer(dmctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s)
-	{
+	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s) {
 		instance = handle_update_instance(1, dmctx, &instnbr, update_instance_alias_bbfdm, 3, s, "dns_server_instance", "dns_server_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, instance) == DM_STOP)
 			break;
@@ -270,8 +267,7 @@ int browseResultInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, 
 	struct uci_section *s = NULL;
 	char *instance, *idx_last = NULL;
 
-	uci_foreach_sections_state("cwmp", "NSLookupResult", s)
-	{
+	uci_foreach_sections_state("cwmp", "NSLookupResult", s) {
 		instance = handle_update_instance(2, dmctx, &idx_last, update_instance_alias, 3, (void *)s, "nslookup_res_instance", "nslookup_res_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)s, instance) == DM_STOP)
 			break;
@@ -411,8 +407,7 @@ int get_client_server_number_of_entries(char *refparam, struct dmctx *ctx, void 
 	int cnt = 0;
 
 	dmmap_synchronizeDNSClientRelayServer(ctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s)
-	{
+	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -452,6 +447,8 @@ int get_server_interface(char *refparam, struct dmctx *ctx, void *data, char *in
 
 	dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &linker);
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+	if (*value == NULL)
+		*value = "";
 	return 0;
 }
 
@@ -462,12 +459,10 @@ int get_server_type(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	dmuci_get_value_by_section_string((struct uci_section *)data, "peerdns", &v);
 	if (*v == '1') {
 		dmuci_get_value_by_section_string((struct uci_section *)data, "ip", &v);
-		if (strchr(v, ':') == NULL) {
+		if (strchr(v, ':') == NULL)
 			*value = "DHCPv4";
-		}
-		else {
+		else
 			*value = "DHCPv6";
-		}
 	}
 	return 0;
 }
@@ -498,8 +493,7 @@ int get_relay_forward_number_of_entries(char *refparam, struct dmctx *ctx, void 
 	int cnt = 0;
 
 	dmmap_synchronizeDNSClientRelayServer(ctx, NULL, NULL, NULL);
-	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s)
-	{
+	uci_path_foreach_sections(bbfdm, "dmmap_dns", "dns_server", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -539,6 +533,8 @@ int get_forwarding_interface(char *refparam, struct dmctx *ctx, void *data, char
 
 	dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &linker);
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+	if (*value == NULL)
+		*value = "";
 	return 0;
 }
 
@@ -549,12 +545,10 @@ int get_forwarding_type(char *refparam, struct dmctx *ctx, void *data, char *ins
 	dmuci_get_value_by_section_string((struct uci_section *)data, "peerdns", &v);
 	if (*v == '1') {
 		dmuci_get_value_by_section_string((struct uci_section *)data, "ip", &v);
-		if (strchr(v, ':') == NULL) {
+		if (strchr(v, ':') == NULL)
 			*value = "DHCPv4";
-		}
-		else {
+		else
 			*value = "DHCPv6";
-		}
 	}
 	return 0;
 }
@@ -606,8 +600,7 @@ int get_nslookupdiagnostics_result_number_of_entries(char *refparam, struct dmct
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_foreach_sections_state("cwmp", "NSLookupResult", s)
-	{
+	uci_foreach_sections_state("cwmp", "NSLookupResult", s) {
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt); // MEM WILL BE FREED IN DMMEMCLEAN
@@ -654,6 +647,8 @@ int set_client_enable(char *refparam, struct dmctx *ctx, void *data, char *insta
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			break;
@@ -668,7 +663,7 @@ int set_server_enable(char *refparam, struct dmctx *ctx, void *data, char *insta
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -683,12 +678,10 @@ int set_server_enable(char *refparam, struct dmctx *ctx, void *data, char *insta
 			dmuci_set_value_by_section((struct uci_section *)data, "enable", b ? "1" : "0");
 			dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &interface);
 			dmuci_get_value_by_section_string((struct uci_section *)data, "ip", &ip);
-			if (b == 1) {
+			if (b == 1)
 				dmuci_add_list_value("network", interface, "dns", ip);
-			}
-			else {
+			else
 				dmuci_del_list_value("network", interface, "dns", ip);
-			}
 			break;
 	}
 	return 0;
@@ -698,6 +691,8 @@ int set_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instan
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "dns_server_alias", value);
@@ -716,6 +711,8 @@ int set_server_dns_server(char *refparam, struct dmctx *ctx, void *data, char *i
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "45", NULL, IPAddress))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "ip", &oip);
@@ -755,6 +752,8 @@ int set_server_interface(char *refparam, struct dmctx *ctx, void *data, char *in
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &ointerface);
@@ -767,9 +766,8 @@ int set_server_interface(char *refparam, struct dmctx *ctx, void *data, char *in
 			dmuci_get_value_by_section_string((struct uci_section *)data, "ip", &ip);
 			dmuci_del_list_value("network", ointerface, "dns", ip);
 			dmuci_get_value_by_section_string((struct uci_section *)data, "enable", &str);
-			if (str[0] == '1') {
+			if (str[0] == '1')
 				dmuci_add_list_value("network", interface, "dns", ip);
-			}
 			dmuci_set_value_by_section((struct uci_section *)data, "interface", interface);
 			break;
 	}
@@ -782,15 +780,12 @@ int set_relay_enable(char *refparam, struct dmctx *ctx, void *data, char *instan
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmcmd("/etc/init.d/dnsmasq", 1, "enable");
-			else
-				dmcmd("/etc/init.d/dnsmasq", 1, "disable");
+			dmcmd("/etc/init.d/dnsmasq", 1, b ? "enable" : "disable");
 			break;
 	}
 	return 0;
@@ -803,7 +798,7 @@ int set_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *i
 
 	switch (action) {
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -818,12 +813,10 @@ int set_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *i
 			dmuci_set_value_by_section((struct uci_section *)data, "enable", b ? "1" : "0");
 			dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &interface);
 			dmuci_get_value_by_section_string((struct uci_section *)data, "ip", &ip);
-			if (b == 1) {
+			if (b == 1)
 				dmuci_add_list_value("network", interface, "dns", ip);
-			}
-			else {
+			else
 				dmuci_del_list_value("network", interface, "dns", ip);
-			}
 			break;
 	}
 	return 0;
@@ -833,6 +826,8 @@ int set_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *in
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "dns_server_alias", value);
@@ -851,6 +846,8 @@ int set_forwarding_dns_server(char *refparam, struct dmctx *ctx, void *data, cha
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "45", NULL, IPAddress))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "ip", &oip);
@@ -890,6 +887,8 @@ int set_forwarding_interface(char *refparam, struct dmctx *ctx, void *data, char
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &ointerface);
@@ -902,9 +901,8 @@ int set_forwarding_interface(char *refparam, struct dmctx *ctx, void *data, char
 			dmuci_get_value_by_section_string((struct uci_section *)data, "ip", &ip);
 			dmuci_del_list_value("network", ointerface, "dns", ip);
 			dmuci_get_value_by_section_string((struct uci_section *)data, "enable", &str);
-			if (str[0] == '1') {
+			if (str[0] == '1')
 				dmuci_add_list_value("network", interface, "dns", ip);
-			}
 			dmuci_set_value_by_section((struct uci_section *)data, "interface", interface);
 			break;
 	}
@@ -918,15 +916,15 @@ int set_nslookupdiagnostics_diagnostics_state(char *refparam, struct dmctx *ctx,
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			if (strcmp(value, "Requested") == 0) {
 				NSLOOKUP_STOP
 				curr_section = (struct uci_section *)dmuci_walk_state_section("cwmp", "nslookupdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-				if(!curr_section)
-				{
+				if (!curr_section)
 					dmuci_add_state_section("cwmp", "nslookupdiagnostic", &curr_section, &tmp);
-				}
 				dmuci_set_varstate_value("cwmp", "@nslookupdiagnostic[0]", "DiagnosticState", value);
 				cwmp_set_end_session(END_SESSION_NSLOOKUP_DIAGNOSTIC);
 			}
@@ -942,14 +940,14 @@ int set_nslookupdiagnostics_interface(char *refparam, struct dmctx *ctx, void *d
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			NSLOOKUP_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "nslookupdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "nslookupdiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@nslookupdiagnostic[0]", "interface", value);
 			return 0;
 	}
@@ -963,14 +961,14 @@ int set_nslookupdiagnostics_host_name(char *refparam, struct dmctx *ctx, void *d
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			NSLOOKUP_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "nslookupdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "nslookupdiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@nslookupdiagnostic[0]", "HostName", value);
 			return 0;
 	}
@@ -984,14 +982,14 @@ int set_nslookupdiagnostics_d_n_s_server(char *refparam, struct dmctx *ctx, void
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			NSLOOKUP_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "nslookupdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "nslookupdiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@nslookupdiagnostic[0]", "DNSServer", value);
 			return 0;
 	}
@@ -1005,14 +1003,14 @@ int set_nslookupdiagnostics_timeout(char *refparam, struct dmctx *ctx, void *dat
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			NSLOOKUP_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "nslookupdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "nslookupdiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@nslookupdiagnostic[0]", "Timeout", value);
 			return 0;
 	}
@@ -1026,14 +1024,14 @@ int set_nslookupdiagnostics_number_of_repetitions(char *refparam, struct dmctx *
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, NULL, NULL))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			NSLOOKUP_STOP
 			curr_section = dmuci_walk_state_section("cwmp", "nslookupdiagnostic", NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
-			if(!curr_section)
-			{
+			if (!curr_section)
 				dmuci_add_state_section("cwmp", "nslookupdiagnostic", &curr_section, &tmp);
-			}
 			dmuci_set_varstate_value("cwmp", "@nslookupdiagnostic[0]", "NumberOfRepetitions", value);
 			return 0;
 	}

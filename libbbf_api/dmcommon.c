@@ -11,31 +11,6 @@
  *		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  */
 
-#define _XOPEN_SOURCE  /* for strptime */
-#include <time.h>
-#include <arpa/inet.h>
-#include <glob.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <uci.h>
-#include <ctype.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <net/if_arp.h>
-#include <fcntl.h>
-
-#include "dmbbf.h"
-#include "dmuci.h"
-#include "dmubus.h"
 #include "dmcommon.h"
 
 char *array_notifcation_char[__MAX_notification] = {
@@ -47,6 +22,48 @@ char *array_notifcation_char[__MAX_notification] = {
 	[notification_aactive_lw] = "5",
 	[notification_passive_active_lw] = "6",
 };
+
+char *Encapsulation[] = {"LLC", "VCMUX", NULL};
+char *LinkType[] = {"EoA", "IPoA", "PPPoA", "CIP", "Unconfigured", NULL};
+char *BridgeStandard[] = {"802.1D-2004", "802.1Q-2005", "802.1Q-2011", NULL};
+char *BridgeType[] = {"ProviderNetworkPort", "CustomerNetworkPort", "CustomerEdgePort", "CustomerVLANPort", "VLANUnawarePort", NULL};
+char *VendorClassIDMode[] = {"Exact", "Prefix", "Suffix", "Substring", NULL};
+char *DiagnosticsState[] = {"None", "Requested", "Canceled", "Complete", "Error", NULL};
+char *SupportedProtocols[] = {"HTTP", "HTTPS", NULL};
+char *InstanceMode[] = {"InstanceNumber", "InstanceAlias", NULL};
+char *NATProtocol[] = {"TCP", "UDP", "TCP/UDP", NULL};
+char *Config[] = {"High", "Low", "Off", "Advanced", NULL};
+char *Target[] = {"Drop", "Accept", "Reject", "Return", "TargetChain", NULL};
+char *ServerConnectAlgorithm[] = {"DNS-SRV", "DNS", "ServerTable", "WebSocket", NULL};
+char *KeepAlivePolicy[] = {"ICMP", "None", NULL};
+char *DeliveryHeaderProtocol[] = {"IPv4", "IPv6", NULL};
+char *KeyIdentifierGenerationPolicy[] = {"Disabled", "Provisioned", "CPE_Generated", NULL};
+char *PreambleType[] = {"short", "long", "auto", NULL};
+char *MFPConfig[] = {"Disabled", "Optional", "Required", NULL};
+char *DuplexMode[] = {"Half", "Full", "Auto", NULL};
+char *RequestedState[] = {"Idle", "Active", NULL};
+char *BulkDataProtocols[] = {"Streaming", "File", "HTTP", NULL};
+char *EncodingTypes[] = {"XML", "XDR", "CSV", "JSON", NULL};
+char *CSVReportFormat[] = {"ParameterPerRow", "ParameterPerColumn", NULL};
+char *RowTimestamp[] = {"Unix-Epoch", "ISO-8601", "None", NULL};
+char *JSONReportFormat[] = {"ObjectHierarchy", "NameValuePair", NULL};
+char *StaticType[] = {"Static", "Inapplicable", "PrefixDelegation", "Child", NULL};
+char *ProtocolVersion[] = {"Any", "IPv4", "IPv6", NULL};
+char *ServerSelectionProtocol[] = {"ICMP", "UDP Echo", NULL};
+char *DHCPType[] = {"DHCPv4", "DHCPv6", NULL};
+char *DropAlgorithm[] = {"RED", "DT", "WRED", "BLUE", NULL};
+char *SchedulerAlgorithm[] = {"WFQ", "WRR", "SP", NULL};
+char *DTMFMethod[] = {"InBand", "RFC2833", "SIPInfo", NULL};
+char *ProfileEnable[] = {"Disabled", "Quiescent", "Enabled", NULL};
+
+char *PIN[] = {"^\\d{4}|\\d{8}$", NULL};
+char *DestinationAddress[] = {"^\\d+/\\d+$", NULL};
+char *RegulatoryDomain[] = {"^[A-Z][A-Z][ OI]$", NULL};
+char *ConformingAction[] = {"^Null$", "^Drop$", "^[0-9]|[1-5][0-9]|6[0-3]$", "^:[0-7]$", "^([0-9]|[1-5][0-9]|6[0-3]):[0-7]$", NULL};
+char *IPv4Address[] = {"^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$", NULL};
+char *IPv6Address[] = {"^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$", NULL};
+char *IPAddress[] = {"^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$", "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$", NULL};
+char *MACAddress[] = {"^([0-9A-Fa-f][0-9A-Fa-f]:){5}([0-9A-Fa-f][0-9A-Fa-f])$", NULL};
 
 void compress_spaces(char *str)
 {
@@ -371,9 +388,9 @@ int network_get_ipaddr(char **value, char *iface)
 	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", iface, String}}, 1, &res);
 	DM_ASSERT(res, *value = "");
 	jobj = dmjson_select_obj_in_array_idx(res, 0, 1, "ipv4-address");
-	*value = dm_ubus_get_value(jobj, 1, "address");
+	*value = dmjson_get_value(jobj, 1, "address");
 	jobj = dmjson_select_obj_in_array_idx(res, 0, 1, "ipv6-address");
-	ipv6_value = dm_ubus_get_value(jobj, 1, "address");
+	ipv6_value = dmjson_get_value(jobj, 1, "address");
 
 	if((*value)[0] == '\0' || ipv6_value[0] == '\0') {
 		if ((*value)[0] == '\0')
@@ -869,10 +886,9 @@ struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* secti
 void synchronize_specific_config_sections_with_dmmap(char *package, char *section_type, char *dmmap_package, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
-	FILE *fp;
-	char *v, *dmmap_file_path;
+	char *v;
 
-	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+	dmmap_file_path_get(dmmap_package);
 
 	uci_foreach_sections(package, section_type, s) {
 		/*
@@ -903,10 +919,9 @@ void synchronize_specific_config_sections_with_dmmap(char *package, char *sectio
 void synchronize_specific_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package,char* option_name, char* option_value, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
-	FILE *fp;
-	char *v, *dmmap_file_path;
+	char *v;
 
-	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+	dmmap_file_path_get(dmmap_package);
 
 	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
 		/*
@@ -937,10 +952,9 @@ void synchronize_specific_config_sections_with_dmmap_eq(char *package, char *sec
 void synchronize_specific_config_sections_with_dmmap_eq_no_delete(char *package, char *section_type, char *dmmap_package, char* option_name, char* option_value, struct list_head *dup_list)
 {
 	struct uci_section *s, *dmmap_sect;
-	FILE *fp;
-	char *v, *dmmap_file_path;
+	char *v;
 
-	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+	dmmap_file_path_get(dmmap_package);
 
 	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
 		/*
@@ -964,10 +978,9 @@ void synchronize_specific_config_sections_with_dmmap_eq_no_delete(char *package,
 void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *section_type, char *dmmap_package,char* option_name, char* option_value, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
-	FILE *fp;
-	char *v, *dmmap_file_path;
+	char *v;
 
-	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+	dmmap_file_path_get(dmmap_package);
 
 	uci_foreach_option_cont(package, section_type, option_name, option_value, s) {
 		/*
@@ -999,11 +1012,10 @@ void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *s
 bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
-	FILE *fp;
-	char *v, *dmmap_file_path, *pack, *sect;
+	char *v, *pack, *sect;
 	bool found = false;
 
-	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+	dmmap_file_path_get(dmmap_package);
 
 	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
 		found = true;
@@ -1030,7 +1042,7 @@ bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *sectio
 		dmuci_get_value_by_section_string(s, "section_name", &v);
 		dmuci_get_value_by_section_string(s, "package", &pack);
 		dmuci_get_value_by_section_string(s, "section", &sect);
-		if(v!=NULL && strlen(v)>0 && strcmp(package, pack)==0 && strcmp(section_type, sect)== 0){
+		if (v!=NULL && strlen(v)>0 && strcmp(package, pack)==0 && strcmp(section_type, sect)== 0) {
 			if(get_origin_section_from_config(package, section_type, v) == NULL){
 				dmuci_delete_by_section(s, NULL, NULL);
 			}
@@ -1043,11 +1055,10 @@ bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *sectio
 bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char* opt_diff_name, char* opt_diff_value, void* additional_attribute, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
-	FILE *fp;
-	char *v, *dmmap_file_path, *pack, *sect, *optval;
+	char *v, *pack, *sect, *optval;
 	bool found= false;
 
-	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+	dmmap_file_path_get(dmmap_package);
 
 	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
 		found = true;
@@ -1101,14 +1112,13 @@ void add_sysfs_sectons_list_paramameter(struct list_head *dup_list, struct uci_s
 int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
-	FILE *fp;
 	DIR *dir;
 	struct dirent *ent;
-	char *v, *dmmap_file_path, *sysfs_rep_path, *instance= NULL;
+	char *v, *sysfs_rep_path, *instance= NULL;
 	struct sysfs_dmsection *p, *tmp;
 	LIST_HEAD(dup_list_no_inst);
 
-	dmmap_file_path = dmmap_file_path_get(dmmap_package);
+	dmmap_file_path_get(dmmap_package);
 
 	sysfs_foreach_file(sysfsrep, dir, ent) {
 		if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
@@ -1159,11 +1169,11 @@ void get_dmmap_section_of_config_section(char* dmmap_package, char* section_type
 {
 	struct uci_section* s;
 
-	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, "section_name", section_name, s){
-		*dmmap_section= s;
+	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, "section_name", section_name, s) {
+		*dmmap_section = s;
 		return;
 	}
-	*dmmap_section= NULL;
+	*dmmap_section = NULL;
 }
 
 void get_dmmap_section_of_config_section_eq(char* dmmap_package, char* section_type, char *opt, char* value, struct uci_section **dmmap_section)
@@ -1171,19 +1181,19 @@ void get_dmmap_section_of_config_section_eq(char* dmmap_package, char* section_t
 	struct uci_section* s;
 
 	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, opt, value, s){
-		*dmmap_section= s;
+		*dmmap_section = s;
 		return;
 	}
-	*dmmap_section= NULL;
+	*dmmap_section = NULL;
 }
 
 void get_config_section_of_dmmap_section(char* package, char* section_type, char *section_name, struct uci_section **config_section)
 {
 	struct uci_section* s;
 
-	uci_foreach_sections(package, section_type, s){
-		if(strcmp(section_name(s), section_name)==0){
-			*config_section= s;
+	uci_foreach_sections(package, section_type, s) {
+		if (strcmp(section_name(s), section_name) == 0) {
+			*config_section = s;
 			return;
 		}
 	}
@@ -1192,9 +1202,7 @@ void get_config_section_of_dmmap_section(char* package, char* section_type, char
 
 void check_create_dmmap_package(char *dmmap_package)
 {
-	FILE *fp;
 	char *dmmap_file_path = dmmap_file_path_get(dmmap_package);
-
 	dmfree(dmmap_file_path);
 }
 
@@ -1621,16 +1629,6 @@ int copy_temporary_file_to_original_file(char *f1, char *f2)
 	return 1;
 }
 
-bool match(const char *string, const char *pattern)
-{
-	regex_t re;
-	if (regcomp(&re, pattern, REG_EXTENDED) != 0) return 0;
-	int status = regexec(&re, string, 0, NULL, 0);
-	regfree(&re);
-	if (status != 0) return false;
-	return true;
-}
-
 static inline int char_is_valid(char c)
 {
 	return c > 0x20 && c < 0x7f;
@@ -1716,5 +1714,339 @@ int dm_time_format(time_t ts, char **dst)
 	time_buf[26] = '\0';
 
 	*dst = dmstrdup(time_buf);
+	return 0;
+}
+
+bool match(const char *string, const char *pattern)
+{
+	regex_t re;
+	if (regcomp(&re, pattern, REG_EXTENDED) != 0) return 0;
+	int status = regexec(&re, string, 0, NULL, 0);
+	regfree(&re);
+	if (status != 0) return false;
+	return true;
+}
+
+int dm_validate_string_length(char *value, char *min, char *max)
+{
+	if (min != NULL && max != NULL) {
+		if ((strlen(value) > atoi(max)) || (strlen(value) < atoi(min))) return -1;
+	} else if (min != NULL && max == NULL) {
+		if (strlen(value) < atoi(min)) return -1;
+	} else if (min == NULL && max != NULL) {
+		if (strlen(value) > atoi(max)) return -1;
+	}
+	return 0;
+}
+
+int dm_validate_string_enumeration(char *value, char *enumeration[])
+{
+	for (; *enumeration; enumeration++) {
+		if (strcmp(*enumeration, value) == 0)
+			return 0;
+	}
+	return -1;
+}
+
+int dm_validate_string_pattern(char *value, char *pattern[])
+{
+	for (; *pattern; pattern++) {
+		if (match(value, *pattern))
+			return 0;
+	}
+	return -1;
+}
+
+int dm_validate_string(char *value, char *min, char *max, char *enumeration[], char *pattern[])
+{
+	/* check size */
+	if (min != NULL || max != NULL) {
+		if (dm_validate_string_length(value, min, max))
+			return -1;
+	}
+
+	/* check enumeration */
+	if (enumeration != NULL) {
+		if (dm_validate_string_enumeration(value, enumeration))
+			return -1;
+	}
+
+	/* check pattern */
+	if (pattern != NULL) {
+		if (dm_validate_string_pattern(value, pattern))
+			return -1;
+	}
+
+	return 0;
+}
+
+int dm_validate_boolean(char *value)
+{
+	/* check format */
+	if ((value[0] == '1' && value[1] == '\0') || (value[0] == '0' && value[1] == '\0')
+		|| (strcasecmp(value, "true") == 0) || (strcasecmp(value, "false") == 0)) {
+		return 0;
+	}
+	return -1;
+}
+
+int dm_validate_unsignedInt(char *value, char *min, char *max)
+{
+	unsigned long val = 0, minval = 0, maxval = 0;
+	char *endval = NULL, *endmin = NULL, *endmax = NULL;
+
+	if (min) minval = strtoul(min, &endmin, 10);
+	if (max) maxval = strtoul(max, &endmax, 10);
+
+	/* reset errno to 0 before call */
+	errno = 0;
+
+	val = strtoul(value, &endval, 10);
+
+	if ((*endval != 0) || (errno != 0)) return -1;
+
+	/* check size */
+	if (min != NULL && max != NULL) {
+		if ((val > maxval) || (val < minval)) return -1;
+	} else if (min != NULL && max == NULL) {
+		if (val < minval) return -1;
+	} else if (min == NULL && max != NULL) {
+		if (val > maxval) return -1;
+	} else {
+		if ((val > (unsigned int)UINT_MAX) || (val < 0)) return -1;
+	}
+
+	return 0;
+}
+
+int dm_validate_int(char *value, char *min, char *max)
+{
+	long val = 0, minval = 0, maxval = 0;
+	char *endval = NULL, *endmin = NULL, *endmax = NULL;
+
+	if (min) minval = strtol(min, &endmin, 10);
+	if (max) maxval = strtol(max, &endmax, 10);
+
+	/* reset errno to 0 before call */
+	errno = 0;
+
+	val = strtol(value, &endval, 10);
+
+	if ((*endval != 0) || (errno != 0)) return -1;
+
+	/* check size */
+	if (min != NULL && max != NULL) {
+		if ((val > maxval) || (val < minval)) return -1;
+	} else if (min != NULL && max == NULL) {
+		if (val < minval) return -1;
+	} else if (min == NULL && max != NULL) {
+		if (val > maxval) return -1;
+	} else {
+		if ((val > INT_MAX) || (val < INT_MIN)) return -1;
+	}
+
+	return 0;
+}
+
+int dm_validate_unsignedLong(char *value, char *min, char *max)
+{
+	unsigned long val = 0, minval = 0, maxval = 0;
+	char *endval = NULL, *endmin = NULL, *endmax = NULL;
+
+	if (min) minval = strtoul(min, &endmin, 10);
+	if (max) maxval = strtoul(max, &endmax, 10);
+
+	/* reset errno to 0 before call */
+	errno = 0;
+
+	val = strtoul(value, &endval, 10);
+
+	if ((*endval != 0) || (errno != 0)) return -1;
+
+	/* check size */
+	if (min != NULL && max != NULL) {
+		if ((val > maxval) || (val < minval)) return -1;
+	} else if (min != NULL && max == NULL) {
+		if (val < minval) return -1;
+	} else if (min == NULL && max != NULL) {
+		if (val > maxval) return -1;
+	} else {
+		if ((val > (unsigned long)ULONG_MAX) || (val < 0)) return -1;
+	}
+
+	return 0;
+}
+
+int dm_validate_long(char *value, char *min, char *max)
+{
+	long val = 0, minval = 0, maxval = 0;
+	char *endval = NULL, *endmin = NULL, *endmax = NULL;
+
+	if (min) minval = strtol(min, &endmin, 10);
+	if (max) maxval = strtol(max, &endmax, 10);
+
+	/* reset errno to 0 before call */
+	errno = 0;
+
+	val = strtol(value, &endval, 10);
+
+	if ((*endval != 0) || (errno != 0)) return -1;
+
+	/* check size */
+	if (min != NULL && max != NULL) {
+		if ((val > maxval) || (val < minval)) return -1;
+	} else if (min != NULL && max == NULL) {
+		if (val < minval) return -1;
+	} else if (min == NULL && max != NULL) {
+		if (val > maxval) return -1;
+	}
+
+	return 0;
+}
+
+int dm_validate_dateTime(char *value)
+{
+	/* check format */
+	struct tm tm;
+	if (!(strptime(value, "%Y-%m-%dT%H:%M:%S", &tm)))
+		return -1;
+	return 0;
+}
+
+int dm_validate_hexBinary(char *value, char *min, char *max)
+{
+	/* check format */
+	int i;
+	for (i = 0; i < strlen(value); i++) {
+		if (!isxdigit(value[i]))
+			return -1;
+	}
+
+	/* check size */
+	if (min != NULL && max != NULL) {
+		if (strcmp(min, max) == 0) {
+			if (strlen(value) != (2 * atoi(max))) return -1;
+		} else {
+			if ((strlen(value) > atoi(max)) || (strlen(value) < atoi(min))) return -1;
+		}
+	} else if (min != NULL && max == NULL) {
+		if (strlen(value) < atoi(min)) return -1;
+	} else if (min == NULL && max != NULL) {
+		if (strlen(value) > atoi(max)) return -1;
+	}
+
+	return 0;
+}
+
+int dm_validate_size_list(char *min_item, char *max_item, int nbr_item)
+{
+	if (min_item != NULL && max_item != NULL) {
+		if (strcmp(min_item, max_item) == 0) {
+			if (nbr_item != (2 * atoi(max_item))) return -1;
+		} else {
+			if ((nbr_item > atoi(max_item)) || (nbr_item < atoi(min_item))) return -1;
+		}
+	} else if (min_item != NULL && max_item == NULL) {
+		if (nbr_item < atoi(min_item)) return -1;
+	} else if (min_item == NULL && max_item != NULL) {
+		if (nbr_item > atoi(max_item)) return -1;
+	}
+
+	return 0;
+}
+
+int dm_validate_string_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max, char *enumeration[], char *pattern[])
+{
+	char *pch, *pchr;
+	int nbr_item = 0;
+
+	/* check length of list */
+	if (max_size != NULL) {
+		if (strlen(value) > atoi(max_size))
+			return -1;
+	}
+
+	/* copy data in buffer */
+	char buf[strlen(value)+1];
+	strncpy(buf, value, sizeof(buf));
+	buf[strlen(value)] = '\0';
+
+	/* for each value, validate string */
+	for (pch = strtok_r(buf, ",", &pchr); pch != NULL; pch = strtok_r(NULL, ",", &pchr)) {
+		if (dm_validate_string(pch, min, max, enumeration, pattern))
+			return -1;
+		nbr_item ++;
+	}
+
+	/* check size of list */
+	if (min_item != NULL || max_item != NULL) {
+		if (dm_validate_size_list(min_item, max_item, nbr_item))
+			return -1;
+	}
+
+	return 0;
+}
+
+int dm_validate_unsignedInt_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max)
+{
+	char *pch, *pchr;
+	int nbr_item = 0;
+
+	/* check length of list */
+	if (max_size != NULL) {
+		if (strlen(value) > atoi(max_size))
+			return -1;
+	}
+
+	/* copy data in buffer */
+	char buf[strlen(value)+1];
+	strncpy(buf, value, sizeof(buf));
+	buf[strlen(value)] = '\0';
+
+	/* for each value, validate string */
+	for (pch = strtok_r(buf, ",", &pchr); pch != NULL; pch = strtok_r(NULL, ",", &pchr)) {
+		if (dm_validate_unsignedInt(pch, min, max))
+			return -1;
+		nbr_item ++;
+	}
+
+	/* check size of list */
+	if (min_item != NULL || max_item != NULL) {
+		if (dm_validate_size_list(min_item, max_item, nbr_item))
+			return -1;
+	}
+
+	return 0;
+}
+
+int dm_validate_int_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max)
+{
+	char *pch, *pchr;
+	int nbr_item = 0;
+
+	/* check length of list */
+	if (max_size != NULL) {
+		if (strlen(value) > atoi(max_size))
+			return -1;
+	}
+
+	/* copy data in buffer */
+	char buf[strlen(value)+1];
+	strncpy(buf, value, sizeof(buf));
+	buf[strlen(value)] = '\0';
+
+	/* for each value, validate string */
+	for (pch = strtok_r(buf, ",", &pchr); pch != NULL; pch = strtok_r(NULL, ",", &pchr)) {
+		if (dm_validate_int(pch, min, max))
+			return -1;
+		nbr_item ++;
+	}
+
+	/* check size of list */
+	if (min_item != NULL || max_item != NULL) {
+		if (dm_validate_size_list(min_item, max_item, nbr_item))
+			return -1;
+	}
+
 	return 0;
 }

@@ -40,12 +40,12 @@ DMLEAF tUSBInterfaceParams[] = {
 {"Status", &DMREAD, DMT_STRING, get_USBInterface_Status, NULL, NULL, NULL, BBFDM_BOTH},
 {"Alias", &DMWRITE, DMT_STRING, get_USBInterface_Alias, set_USBInterface_Alias, NULL, NULL, BBFDM_BOTH},
 {"Name", &DMREAD, DMT_STRING, get_USBInterface_Name, NULL, NULL, NULL, BBFDM_BOTH},
-{"LastChange", &DMREAD, DMT_UNINT, get_USBInterface_LastChange, NULL, NULL, NULL, BBFDM_BOTH},
+//{"LastChange", &DMREAD, DMT_UNINT, get_USBInterface_LastChange, NULL, NULL, NULL, BBFDM_BOTH},
 {"LowerLayers", &DMWRITE, DMT_STRING, get_USBInterface_LowerLayers, set_USBInterface_LowerLayers, NULL, NULL, BBFDM_BOTH},
-{"Upstream", &DMREAD, DMT_BOOL, get_USBInterface_Upstream, NULL, NULL, NULL, BBFDM_BOTH},
+//{"Upstream", &DMREAD, DMT_BOOL, get_USBInterface_Upstream, NULL, NULL, NULL, BBFDM_BOTH},
 {"MACAddress", &DMREAD, DMT_STRING, get_USBInterface_MACAddress, NULL, NULL, NULL, BBFDM_BOTH},
 {"MaxBitRate", &DMREAD, DMT_UNINT, get_USBInterface_MaxBitRate, NULL, NULL, NULL, BBFDM_BOTH},
-{"Port", &DMREAD, DMT_STRING, get_USBInterface_Port, NULL, NULL, NULL, BBFDM_BOTH},
+//{"Port", &DMREAD, DMT_STRING, get_USBInterface_Port, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -109,7 +109,7 @@ DMLEAF tUSBUSBHostsHostParams[] = {
 {"Enable", &DMWRITE, DMT_BOOL, get_USBUSBHostsHost_Enable, set_USBUSBHostsHost_Enable, NULL, NULL, BBFDM_BOTH},
 {"Name", &DMREAD, DMT_STRING, get_USBUSBHostsHost_Name, NULL, NULL, NULL, BBFDM_BOTH},
 {"Type", &DMREAD, DMT_STRING, get_USBUSBHostsHost_Type, NULL, NULL, NULL, BBFDM_BOTH},
-{"Reset", &DMWRITE, DMT_BOOL, get_USBUSBHostsHost_Reset, set_USBUSBHostsHost_Reset, NULL, NULL, BBFDM_BOTH},
+//{"Reset", &DMWRITE, DMT_BOOL, get_USBUSBHostsHost_Reset, set_USBUSBHostsHost_Reset, NULL, NULL, BBFDM_BOTH},
 {"PowerManagementEnable", &DMWRITE, DMT_BOOL, get_USBUSBHostsHost_PowerManagementEnable, set_USBUSBHostsHost_PowerManagementEnable, NULL, NULL, BBFDM_BOTH},
 {"USBVersion", &DMREAD, DMT_STRING, get_USBUSBHostsHost_USBVersion, NULL, NULL, NULL, BBFDM_BOTH},
 {"DeviceNumberOfEntries", &DMREAD, DMT_UNINT, get_USBUSBHostsHost_DeviceNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
@@ -129,7 +129,7 @@ DMLEAF tUSBUSBHostsHostDeviceParams[] = {
 {"USBVersion", &DMREAD, DMT_STRING, get_USBUSBHostsHostDevice_USBVersion, NULL, NULL, NULL, BBFDM_BOTH},
 {"DeviceClass", &DMREAD, DMT_HEXBIN, get_USBUSBHostsHostDevice_DeviceClass, NULL, NULL, NULL, BBFDM_BOTH},
 {"DeviceSubClass", &DMREAD, DMT_HEXBIN, get_USBUSBHostsHostDevice_DeviceSubClass, NULL, NULL, NULL, BBFDM_BOTH},
-{"DeviceVersion", &DMREAD, DMT_UNINT, get_USBUSBHostsHostDevice_DeviceVersion, NULL, NULL, NULL, BBFDM_BOTH},
+//{"DeviceVersion", &DMREAD, DMT_UNINT, get_USBUSBHostsHostDevice_DeviceVersion, NULL, NULL, NULL, BBFDM_BOTH},
 {"DeviceProtocol", &DMREAD, DMT_HEXBIN, get_USBUSBHostsHostDevice_DeviceProtocol, NULL, NULL, NULL, BBFDM_BOTH},
 {"ProductID", &DMREAD, DMT_UNINT, get_USBUSBHostsHostDevice_ProductID, NULL, NULL, NULL, BBFDM_BOTH},
 {"VendorID", &DMREAD, DMT_UNINT, get_USBUSBHostsHostDevice_VendorID, NULL, NULL, NULL, BBFDM_BOTH},
@@ -176,22 +176,22 @@ DMLEAF tUSBUSBHostsHostDeviceConfigurationInterfaceParams[] = {
 *************************************************************/
 static void init_usb_port(struct uci_section *dm, char *folder_name, char *folder_path, struct usb_port *port)
 {
-	port->dm_usb_port= dm;
-	port->folder_name= dmstrdup(folder_name);
-	port->folder_path= dmstrdup(folder_path);
+	port->dm_usb_port = dm;
+	port->folder_name = dmstrdup(folder_name);
+	port->folder_path = dmstrdup(folder_path);
 }
 
 static void init_usb_interface(struct uci_section *dm, char *iface_name, char *iface_path, char *statistics_path, char *portlink, struct usb_interface *iface)
 {
-	iface->dm_usb_iface= dm;
-	iface->iface_name= dmstrdup(iface_name);
-	iface->iface_path= dmstrdup(iface_path);
-	iface->portlink= dmstrdup(portlink);
-	iface->statistics_path= dmstrdup(statistics_path);
+	iface->dm_usb_iface = dm;
+	iface->iface_name = dmstrdup(iface_name);
+	iface->iface_path = dmstrdup(iface_path);
+	iface->portlink = dmstrdup(portlink);
+	iface->statistics_path = dmstrdup(statistics_path);
 }
 
 /*************************************************************
- * ENTRY METHOD
+* ENTRY METHOD
 *************************************************************/
 static int read_sysfs_file(const char *file, char **value)
 {
@@ -595,9 +595,10 @@ int set_USBInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
-			//TODO
 			break;
 	}
 	return 0;
@@ -628,6 +629,8 @@ int set_USBInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *
 	struct usb_interface *usbiface= (struct usb_interface *)data;
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, usbiface->dm_usb_iface, "usb_iface_alias", value);
@@ -661,9 +664,10 @@ int set_USBInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, 
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
-			//TODO
 			break;
 	}
 	return 0;
@@ -781,9 +785,11 @@ int get_USBPort_Alias(char *refparam, struct dmctx *ctx, void *data, char *insta
 
 int set_USBPort_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct usb_port* port=(struct usb_port *)data;
+	struct usb_port* port = (struct usb_port *)data;
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section(port->dm_usb_port, "usb_port_alias", value);
@@ -795,7 +801,7 @@ int set_USBPort_Alias(char *refparam, struct dmctx *ctx, void *data, char *insta
 int get_USBPort_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	const struct usb_port *port = data;
-	*value= dmstrdup(port->folder_name);
+	*value = dmstrdup(port->folder_name);
 	return 0;
 }
 
@@ -855,9 +861,9 @@ int get_USBPort_Power(char *refparam, struct dmctx *ctx, void *data, char *insta
 	if (pwrctl[0] == 0)
 		*value = "";
 	else if (!strcmp(pwrctl, "auto"))
-		*value="Self";
+		*value ="Self";
 	else
-		*value="Bus";
+		*value ="Bus";
 
 	return 0;
 }
@@ -889,6 +895,8 @@ int set_USBUSBHostsHost_Alias(char *refparam, struct dmctx *ctx, void *data, cha
 	struct usb_port* port=(struct usb_port *)data;
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section(port->dm_usb_port, "usb_host_alias", value);
@@ -914,6 +922,8 @@ int set_USBUSBHostsHost_Enable(char *refparam, struct dmctx *ctx, void *data, ch
 
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			string_to_bool(value, &b);
@@ -953,7 +963,7 @@ int get_USBUSBHostsHost_Type(char *refparam, struct dmctx *ctx, void *data, char
 
 int get_USBUSBHostsHost_Reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value= "false";
+	//TODO
 	return 0;
 }
 
@@ -961,6 +971,8 @@ int set_USBUSBHostsHost_Reset(char *refparam, struct dmctx *ctx, void *data, cha
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -990,7 +1002,7 @@ int set_USBUSBHostsHost_PowerManagementEnable(char *refparam, struct dmctx *ctx,
 
 	switch (action)	{
 		case VALUECHECK:
-			if (string_to_bool(value, &b))
+			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1134,7 +1146,7 @@ int get_USBUSBHostsHostDevice_Port(char *refparam, struct dmctx *ctx, void *data
 
 	regcomp(&regex1, "^[0-9][0-9]*-[0-9]*[0-9]$", 0);
 	regcomp(&regex2, "^[0-9][0-9]*-[0-9]*[0-9]\\.[0-9]*[0-9]$", 0);
-	if(regexec(&regex1, port->folder_name, 0, NULL, 0) == 0 || regexec(&regex2, port->folder_name, 0, NULL, 0) ==0){
+	if (regexec(&regex1, port->folder_name, 0, NULL, 0) == 0 || regexec(&regex2, port->folder_name, 0, NULL, 0) == 0) {
 		busname = strsplit(port->folder_name, "-", &length);
 		portname = strsplit(busname[1], ".", &length);
 		*value = dmstrdup(portname[0]);
@@ -1161,18 +1173,19 @@ int get_USBUSBHostsHostDevice_Rate(char *refparam, struct dmctx *ctx, void *data
 
 int get_USBUSBHostsHostDevice_Parent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct usb_port *port= (struct usb_port*)data;
+	struct usb_port *port = (struct usb_port*)data;
 	char *v;
 	regex_t regex1 = {};
 
 	regcomp(&regex1, "^[0-9][0-9]*-[0-9]*[0-9]\\.[0-9]*[0-9]$", 0);
 	if(regexec(&regex1, port->folder_name, 0, NULL, 0) != 0 || port->dmsect == NULL){
-		*value= "";
+		*value = "";
 		goto out;
 	}
 	dmuci_get_value_by_section_string(port->dmsect, "usb_host_instance", &v);
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cUSB%cUSBHosts%cHost%c%s%vDevice%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim, v, dm_delim, dm_delim), port->folder_name, value);
-
+	if (*value == NULL)
+		*value = "";
 out:
 	regfree(&regex1);
 	return 0;
@@ -1236,10 +1249,11 @@ int get_USBUSBHostsHostDeviceConfigurationInterface_InterfaceProtocol(char *refp
 	return read_sysfs_usb_port(data, "bInterfaceProtocol", value);
 }
 
-int get_linker_usb_port(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker) {
-	struct usb_port *port= (struct usb_port *)data;
-	if(port && port->folder_name) {
-		*linker= dmstrdup(port->folder_name);
+int get_linker_usb_port(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+{
+	struct usb_port *port = (struct usb_port *)data;
+	if (port && port->folder_name) {
+		*linker = dmstrdup(port->folder_name);
 		return 0;
 	} else {
 		*linker = "";
@@ -1247,10 +1261,11 @@ int get_linker_usb_port(char *refparam, struct dmctx *dmctx, void *data, char *i
 	}
 }
 
-int get_linker_usb_host_device(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker){
-	struct usb_port *port= (struct usb_port *)data;
+int get_linker_usb_host_device(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+{
+	struct usb_port *port = (struct usb_port *)data;
 	if(port && port->folder_name) {
-		*linker= dmstrdup(port->folder_name);
+		*linker = dmstrdup(port->folder_name);
 		return 0;
 	} else {
 		*linker = "";

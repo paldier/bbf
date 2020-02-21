@@ -13,49 +13,6 @@
 #include "dmentry.h"
 #include "dhcpv4.h"
 
-#define DELIMITOR ","
-
-
-struct dhcp_lease {
-	uint64_t ts;
-	char hwaddr[20];
-	char ipaddr[16];
-	struct list_head list;
-};
-
-struct dhcp_args {
-	struct uci_section *dhcp_sec;
-	char *interface;
-	struct list_head leases;
-	unsigned n_leases;
-};
-
-struct dhcp_static_args {
-	struct uci_section *dhcpsection;
-};
-
-struct client_args {
-	const struct dhcp_lease *lease;
-};
-
-struct dhcp_client_args {
-	struct uci_section *dhcp_client_conf;
-	struct uci_section *dhcp_client_dm;
-	struct uci_section *macclassifier;
-	struct uci_section *vendorclassidclassifier;
-	struct uci_section *userclassclassifier;
-	char *ip;
-	char *mask;
-};
-
-struct dhcp_client_option_args {
-	struct uci_section *opt_sect;
-	struct uci_section *client_sect;
-	char *option_tag;
-	char *value;
-};
-
-
 /*** DHCPv4. ***/
 DMOBJ tDHCPv4Obj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
@@ -252,6 +209,45 @@ DMLEAF tDHCPv4RelayForwardingParams[] = {
 //{"LocallyServed", &DMWRITE, DMT_BOOL, get_DHCPv4RelayForwarding_LocallyServed, set_DHCPv4RelayForwarding_LocallyServed, NULL, NULL, BBFDM_BOTH},
 //{"DHCPServerIPAddress", &DMWRITE, DMT_STRING, get_DHCPv4RelayForwarding_DHCPServerIPAddress, set_DHCPv4RelayForwarding_DHCPServerIPAddress, NULL, NULL, BBFDM_BOTH},
 {0}
+};
+
+struct dhcp_lease {
+	uint64_t ts;
+	char hwaddr[20];
+	char ipaddr[16];
+	struct list_head list;
+};
+
+struct dhcp_args {
+	struct uci_section *dhcp_sec;
+	char *interface;
+	struct list_head leases;
+	unsigned n_leases;
+};
+
+struct dhcp_static_args {
+	struct uci_section *dhcpsection;
+};
+
+struct client_args {
+	const struct dhcp_lease *lease;
+};
+
+struct dhcp_client_args {
+	struct uci_section *dhcp_client_conf;
+	struct uci_section *dhcp_client_dm;
+	struct uci_section *macclassifier;
+	struct uci_section *vendorclassidclassifier;
+	struct uci_section *userclassclassifier;
+	char *ip;
+	char *mask;
+};
+
+struct dhcp_client_option_args {
+	struct uci_section *opt_sect;
+	struct uci_section *client_sect;
+	char *option_tag;
+	char *value;
 };
 
 /**************************************************************************

@@ -1358,7 +1358,7 @@ char **strsplit(const char* str, const char* delim, size_t* numtokens)
 		tokens = dmrealloc(tokens, tokens_used * sizeof(char*));
 	}
 	*numtokens = tokens_used;
-	free(s);
+	FREE(s);
 	return tokens;
 }
 
@@ -1367,36 +1367,36 @@ char **strsplit_by_str(const char str[], char *delim)
 	char *substr = NULL;
 	size_t tokens_alloc = 1;
 	size_t tokens_used = 0;
-	char **tokens = calloc(tokens_alloc, sizeof(char*));
+	char **tokens = dmcalloc(tokens_alloc, sizeof(char*));
 	char *strparse = strdup(str);
 	do {
 		substr = strstr(strparse, delim);
 		if (substr == NULL && (strparse == NULL || strparse[0] == '\0'))
 				break;
+
 		if (substr == NULL) {
 			substr = strdup(strparse);
-			tokens[tokens_used] = calloc(strlen(substr)+1, sizeof(char));
+			tokens[tokens_used] = dmcalloc(strlen(substr)+1, sizeof(char));
 			strncpy(tokens[tokens_used], strparse, strlen(strparse));
 			FREE(strparse);
 			break;
 		}
+
 		if (tokens_used == tokens_alloc) {
 			if (strparse == NULL)
 				tokens_alloc++;
 			else
 				tokens_alloc += 2;
-			char **new_tokens = realloc(tokens, tokens_alloc * sizeof(char*));
-			if (new_tokens == NULL)
-				FREE(tokens);
-			else
-				tokens = new_tokens;
+			tokens = dmrealloc(tokens, tokens_alloc * sizeof(char*));
 		}
-		tokens[tokens_used] = calloc(substr-strparse+1, sizeof(char));
+
+		tokens[tokens_used] = dmcalloc(substr-strparse+1, sizeof(char));
 		strncpy(tokens[tokens_used], strparse, substr-strparse);
 		tokens_used++;
 		FREE(strparse);
 		strparse = strdup(substr+strlen(delim));
 	} while (substr != NULL);
+	FREE(strparse);
 	return tokens;
 }
 

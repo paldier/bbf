@@ -15580,20 +15580,7 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt", 
-						"mapping": [
-							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_over_errors"
-								}
-							}
-						]
+						"datatype": "unsignedInt"
 					}
 				}
 			}, 
@@ -16279,20 +16266,7 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt", 
-						"mapping": [
-							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_over_errors"
-								}
-							}
-						]
+						"datatype": "unsignedInt"
 					}
 				}
 			}, 
@@ -26573,12 +26547,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_bytes"
+									"object": "wifi.radio.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_bytes"
 								}
 							}
 						]
@@ -26596,12 +26568,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_bytes"
+									"object": "wifi.radio.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_bytes"
 								}
 							}
 						]
@@ -26619,12 +26589,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_packets"
+									"object": "wifi.radio.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_packets"
 								}
 							}
 						]
@@ -26642,12 +26610,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_packets"
+									"object": "wifi.radio.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_packets"
 								}
 							}
 						]
@@ -26665,12 +26631,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_errors"
+									"object": "wifi.radio.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_error_packets"
 								}
 							}
 						]
@@ -26688,12 +26652,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_errors"
+									"object": "wifi.radio.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_error_packets"
 								}
 							}
 						]
@@ -26711,12 +26673,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_dropped"
+									"object": "wifi.radio.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_dropped_packets"
 								}
 							}
 						]
@@ -26734,12 +26694,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_dropped"
+									"object": "wifi.radio.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_dropped_packets"
 								}
 							}
 						]
@@ -26762,7 +26720,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.radio.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_fcs_error_packets"
+								}
+							}
+						]
 					}, 
 					"InvalidMACCount": {
 						"type": "unsignedInt", 
@@ -27382,12 +27351,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_bytes"
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_bytes"
 								}
 							}
 						]
@@ -27405,12 +27372,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_bytes"
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_bytes"
 								}
 							}
 						]
@@ -27428,12 +27393,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_packets"
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_packets"
 								}
 							}
 						]
@@ -27451,12 +27414,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_packets"
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_packets"
 								}
 							}
 						]
@@ -27474,12 +27435,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_errors"
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_error_packets"
 								}
 							}
 						]
@@ -27492,7 +27451,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_retrans_packets"
+								}
+							}
+						]
 					}, 
 					"FailedRetransCount": {
 						"type": "unsignedInt", 
@@ -27502,7 +27472,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_retrans_fail_packets"
+								}
+							}
+						]
 					}, 
 					"RetryCount": {
 						"type": "unsignedInt", 
@@ -27512,7 +27493,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_retry_packets"
+								}
+							}
+						]
 					}, 
 					"MultipleRetryCount": {
 						"type": "unsignedInt", 
@@ -27522,7 +27514,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_multi_retry_packets"
+								}
+							}
+						]
 					}, 
 					"ACKFailureCount": {
 						"type": "unsignedInt", 
@@ -27532,7 +27535,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "ack_fail_packets"
+								}
+							}
+						]
 					}, 
 					"AggregatedPacketCount": {
 						"type": "unsignedInt", 
@@ -27542,7 +27556,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "aggregate_packets"
+								}
+							}
+						]
 					}, 
 					"ErrorsReceived": {
 						"type": "unsignedInt", 
@@ -27557,12 +27582,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_errors"
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_error_packets"
 								}
 							}
 						]
@@ -27575,7 +27598,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_unicast_packets"
+								}
+							}
+						]
 					}, 
 					"UnicastPacketsReceived": {
 						"type": "unsignedLong", 
@@ -27585,7 +27619,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_unicast_packets"
+								}
+							}
+						]
 					}, 
 					"DiscardPacketsSent": {
 						"type": "unsignedInt", 
@@ -27600,12 +27645,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_dropped"
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_dropped_packets"
 								}
 							}
 						]
@@ -27623,12 +27666,10 @@
 							{
 								"type": "ubus", 
 								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_dropped"
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_dropped_packets"
 								}
 							}
 						]
@@ -27641,7 +27682,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_multicast_packets"
+								}
+							}
+						]
 					}, 
 					"MulticastPacketsReceived": {
 						"type": "unsignedLong", 
@@ -27651,7 +27703,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_multicast_packets"
+								}
+							}
+						]
 					}, 
 					"BroadcastPacketsSent": {
 						"type": "unsignedLong", 
@@ -27661,7 +27724,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "tx_broadcast_packets"
+								}
+							}
+						]
 					}, 
 					"BroadcastPacketsReceived": {
 						"type": "unsignedLong", 
@@ -27671,7 +27745,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_broadcast_packets"
+								}
+							}
+						]
 					}, 
 					"UnknownProtoPacketsReceived": {
 						"type": "unsignedInt", 
@@ -27681,7 +27766,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stats", 
+									"args": {}, 
+									"key": "rx_unknown_packets"
+								}
+							}
+						]
 					}
 				}
 			}, 
@@ -32153,20 +32249,7 @@
 								"cwmp", 
 								"usp"
 							], 
-							"datatype": "unsignedInt", 
-							"mapping": [
-								{
-									"type": "ubus", 
-									"ubus": {
-										"object": "network.device", 
-										"method": "status", 
-										"args": {
-											"name": "@Name"
-										}, 
-										"key": "statistics.rx_over_errors"
-									}
-								}
-							]
+							"datatype": "unsignedInt"
 						}
 					}, 
 					"Device.Bridging.Bridge.{i}.Port.{i}.PriorityCodePoint.": {
@@ -33954,20 +34037,7 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt", 
-						"mapping": [
-							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_over_errors"
-								}
-							}
-						]
+						"datatype": "unsignedInt"
 					}
 				}, 
 				"Device.PPP.Interface.{i}.PPPoA.": {
@@ -34311,20 +34381,7 @@
 					"range": {
 						"min": 64, 
 						"max": 65535
-					}, 
-					"mapping": [
-						{
-							"type": "ubus", 
-							"ubus": {
-								"object": "network.interface", 
-								"method": "status", 
-								"args": {
-									"interface": "@Name"
-								}, 
-								"key": "mtu"
-							}
-						}
-					]
+					}
 				}, 
 				"Type": {
 					"type": "string", 
@@ -52733,6 +52790,17 @@
 						}, 
 						"pattern": [
 							"[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}"
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "discovery", 
+									"args": {}, 
+									"key": "devices[i-1].st"
+								}
+							}
 						]
 					}, 
 					"USN": {
@@ -52746,7 +52814,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "discovery", 
+									"args": {}, 
+									"key": "devices[i-1].usn"
+								}
+							}
+						]
 					}, 
 					"LeaseTime": {
 						"type": "unsignedInt", 
@@ -52770,7 +52849,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "discovery", 
+									"args": {}, 
+									"key": "devices[i-1].descurl"
+								}
+							}
+						]
 					}, 
 					"Server": {
 						"type": "string", 
@@ -52849,6 +52939,17 @@
 						}, 
 						"pattern": [
 							"[0-9A-Fa-f]{8}-([0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}"
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "discovery", 
+									"args": {}, 
+									"key": "devices[i-1].st"
+								}
+							}
 						]
 					}, 
 					"USN": {
@@ -52862,7 +52963,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "discovery", 
+									"args": {}, 
+									"key": "devices[i-1].usn"
+								}
+							}
+						]
 					}, 
 					"LeaseTime": {
 						"type": "unsignedInt", 
@@ -52886,7 +52998,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "discovery", 
+									"args": {}, 
+									"key": "devices[i-1].descurl"
+								}
+							}
+						]
 					}, 
 					"Server": {
 						"type": "string", 
@@ -52962,7 +53085,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "discovery", 
+									"args": {}, 
+									"key": "services[i-1].usn"
+								}
+							}
+						]
 					}, 
 					"LeaseTime": {
 						"type": "unsignedInt", 
@@ -52986,7 +53120,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "discovery", 
+									"args": {}, 
+									"key": "services[i-1].descurl"
+								}
+							}
+						]
 					}, 
 					"Server": {
 						"type": "string", 
@@ -53099,7 +53244,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "descriptions[i-1].descurl"
+								}
+							}
+						]
 					}, 
 					"SpecVersion": {
 						"type": "string", 
@@ -53157,6 +53313,17 @@
 						}, 
 						"pattern": [
 							"[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}"
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].UDN"
+								}
+							}
 						]
 					}, 
 					"ParentDevice": {
@@ -53196,7 +53363,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].deviceType"
+								}
+							}
+						]
 					}, 
 					"FriendlyName": {
 						"type": "string", 
@@ -53209,7 +53387,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 128
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].friendlyName"
+								}
+							}
+						]
 					}, 
 					"DeviceCategory": {
 						"type": "string", 
@@ -53234,7 +53423,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 128
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].manufacturer"
+								}
+							}
+						]
 					}, 
 					"ManufacturerOUI": {
 						"type": "string", 
@@ -53264,7 +53464,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].manufacturerURL"
+								}
+							}
+						]
 					}, 
 					"ModelDescription": {
 						"type": "string", 
@@ -53277,7 +53488,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].modelDescription"
+								}
+							}
+						]
 					}, 
 					"ModelName": {
 						"type": "string", 
@@ -53290,7 +53512,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 64
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].modelName"
+								}
+							}
+						]
 					}, 
 					"ModelNumber": {
 						"type": "string", 
@@ -53303,7 +53536,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 64
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].modelNumber"
+								}
+							}
+						]
 					}, 
 					"ModelURL": {
 						"type": "string", 
@@ -53316,7 +53560,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].modelURL"
+								}
+							}
+						]
 					}, 
 					"SerialNumber": {
 						"type": "string", 
@@ -53329,7 +53584,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 128
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].serialNumber"
+								}
+							}
+						]
 					}, 
 					"UPC": {
 						"type": "string", 
@@ -53342,7 +53608,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 12
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].UPC"
+								}
+							}
+						]
 					}, 
 					"PresentationURL": {
 						"type": "string", 
@@ -53355,7 +53632,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "devicesinstances[i-1].preentation_url"
+								}
+							}
+						]
 					}
 				}, 
 				"Device.UPnP.Description.ServiceInstance.{i}.": {
@@ -53390,7 +53678,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "servicesinstances[i-1].serviceId"
+								}
+							}
+						]
 					}, 
 					"ServiceDiscovery": {
 						"type": "string", 
@@ -53416,7 +53715,18 @@
 						"datatype": "string", 
 						"range": {
 							"max": 256
-						}
+						}, 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "servicesinstances[i-1].serviceType"
+								}
+							}
+						]
 					}, 
 					"SCPDURL": {
 						"type": "string", 
@@ -53426,7 +53736,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "string"
+						"datatype": "string", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "servicesinstances[i-1].SCPDURL"
+								}
+							}
+						]
 					}, 
 					"ControlURL": {
 						"type": "string", 
@@ -53436,7 +53757,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "string"
+						"datatype": "string", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "servicesinstances[i-1].controlURL"
+								}
+							}
+						]
 					}, 
 					"EventSubURL": {
 						"type": "string", 
@@ -53446,7 +53778,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "string"
+						"datatype": "string", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "upnpc", 
+									"method": "description", 
+									"args": {}, 
+									"key": "servicesinstances[i-1].eventSubURL"
+								}
+							}
+						]
 					}
 				}
 			}

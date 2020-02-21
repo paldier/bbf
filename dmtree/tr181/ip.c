@@ -123,21 +123,21 @@ DMLEAF tIPInterfaceIPv6PrefixParams[] = {
 /* *** Device.IP.Interface.{i}.Stats. *** */
 DMLEAF tIPInterfaceStatsParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"BytesSent", &DMREAD, DMT_UNINT, get_ip_interface_statistics_tx_bytes, NULL, NULL, NULL, BBFDM_BOTH},
-{"BytesReceived", &DMREAD, DMT_UNINT, get_ip_interface_statistics_rx_bytes, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsSent", &DMREAD, DMT_UNINT, get_ip_interface_statistics_tx_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsReceived", &DMREAD, DMT_UNINT, get_ip_interface_statistics_rx_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesSent", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_tx_bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesReceived", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_rx_bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsSent", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_tx_packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsReceived", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_rx_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsSent", &DMREAD, DMT_UNINT, get_ip_interface_statistics_tx_errors, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsReceived", &DMREAD, DMT_UNINT, get_ip_interface_statistics_rx_errors, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsSent", &DMREAD, DMT_UNINT, get_ip_interface_statistics_tx_discardpackets, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsReceived", &DMREAD, DMT_UNINT, get_ip_interface_statistics_rx_discardpackets, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsSent", &DMREAD, DMT_UNINT, get_ip_interface_statistics_tx_unicastpackets, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsReceived", &DMREAD, DMT_UNINT, get_ip_interface_statistics_rx_unicastpackets, NULL, NULL, NULL, BBFDM_BOTH},
-{"MulticastPacketsSent", &DMREAD, DMT_UNINT, get_ip_interface_statistics_tx_multicastpackets, NULL, NULL, NULL, BBFDM_BOTH},
-{"MulticastPacketsReceived", &DMREAD, DMT_UNINT, get_ip_interface_statistics_rx_multicastpackets, NULL, NULL, NULL, BBFDM_BOTH},
-{"BroadcastPacketsSent", &DMREAD, DMT_UNINT, get_ip_interface_statistics_tx_broadcastpackets, NULL, NULL, NULL, BBFDM_BOTH},
-{"BroadcastPacketsReceived", &DMREAD, DMT_UNINT, get_ip_interface_statistics_rx_broadcastpackets, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnknownProtoPacketsReceived", &DMREAD, DMT_UNINT, get_ip_interface_statistics_rx_unknownprotopackets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"UnicastPacketsSent", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_tx_unicastpackets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"UnicastPacketsReceived", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_rx_unicastpackets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"MulticastPacketsSent", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_tx_multicastpackets, NULL, NULL, NULL, BBFDM_BOTH},
+{"MulticastPacketsReceived", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_rx_multicastpackets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"BroadcastPacketsSent", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_tx_broadcastpackets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"BroadcastPacketsReceived", &DMREAD, DMT_UNLONG, get_ip_interface_statistics_rx_broadcastpackets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"UnknownProtoPacketsReceived", &DMREAD, DMT_UNINT, get_ip_interface_statistics_rx_unknownprotopackets, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -506,7 +506,6 @@ int set_IPInterface_Reset(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
-/*#Device.IP.Interface.{i}.MaxMTUSize!UBUS:network.interface/status/interface,@Name/mtu*/
 int get_IPInterface_MaxMTUSize(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return get_ip_iface_sysfs(data, "mtu", value);
@@ -1215,19 +1214,19 @@ int get_ip_interface_statistics_rx_discardpackets(char *refparam, struct dmctx *
 
 int get_ip_interface_statistics_tx_unicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int get_ip_interface_statistics_rx_unicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int get_ip_interface_statistics_tx_multicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
@@ -1238,19 +1237,19 @@ int get_ip_interface_statistics_rx_multicastpackets(char *refparam, struct dmctx
 
 int get_ip_interface_statistics_tx_broadcastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int get_ip_interface_statistics_rx_broadcastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int get_ip_interface_statistics_rx_unknownprotopackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 

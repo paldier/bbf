@@ -90,15 +90,15 @@ DMLEAF tBridgingBridgePortStatsParams[] = {
 {"PacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsSent", &DMREAD, DMT_UNINT, get_br_port_stats_tx_errors, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_errors, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_unicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_unicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"UnicastPacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_unicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"UnicastPacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_unicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsSent", &DMREAD, DMT_UNINT, get_br_port_stats_tx_discard_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_discard_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"MulticastPacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_multicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"MulticastPacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_multicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {"MulticastPacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_multicast_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"BroadcastPacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_broadcast_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"BroadcastPacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_broadcast_packets, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnknownProtoPacketsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_unknown_proto_packets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"BroadcastPacketsSent", &DMREAD, DMT_UNLONG, get_br_port_stats_tx_broadcast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"BroadcastPacketsReceived", &DMREAD, DMT_UNLONG, get_br_port_stats_rx_broadcast_packets, NULL, NULL, NULL, BBFDM_BOTH},
+//{"UnknownProtoPacketsReceived", &DMREAD, DMT_UNINT, get_br_port_stats_rx_unknown_proto_packets, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -854,13 +854,13 @@ int get_br_port_stats_rx_errors(char *refparam, struct dmctx *ctx, void *data, c
 
 int get_br_port_stats_tx_unicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int get_br_port_stats_rx_unicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
@@ -878,7 +878,7 @@ int get_br_port_stats_rx_discard_packets(char *refparam, struct dmctx *ctx, void
 
 int get_br_port_stats_tx_multicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
@@ -889,20 +889,19 @@ int get_br_port_stats_rx_multicast_packets(char *refparam, struct dmctx *ctx, vo
 
 int get_br_port_stats_tx_broadcast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int get_br_port_stats_rx_broadcast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
-/*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.UnknownProtoPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_over_errors*/
 int get_br_port_stats_rx_unknown_proto_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 

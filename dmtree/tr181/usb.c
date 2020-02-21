@@ -52,21 +52,21 @@ DMLEAF tUSBInterfaceParams[] = {
 /* *** Device.USB.Interface.{i}.Stats. *** */
 DMLEAF tUSBInterfaceStatsParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"BytesSent", &DMREAD, DMT_UNINT, get_USBInterfaceStats_BytesSent, NULL, NULL, NULL, BBFDM_BOTH},
-{"BytesReceived", &DMREAD, DMT_UNINT, get_USBInterfaceStats_BytesReceived, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsSent", &DMREAD, DMT_UNINT, get_USBInterfaceStats_PacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsReceived", &DMREAD, DMT_UNINT, get_USBInterfaceStats_PacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesSent", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_BytesSent, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesReceived", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_BytesReceived, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsSent", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_PacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsReceived", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_PacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsSent", &DMREAD, DMT_UNINT, get_USBInterfaceStats_ErrorsSent, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsReceived", &DMREAD, DMT_UNINT, get_USBInterfaceStats_ErrorsReceived, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsSent", &DMREAD, DMT_UNINT, get_USBInterfaceStats_UnicastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsReceived", &DMREAD, DMT_UNINT, get_USBInterfaceStats_UnicastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
+//{"UnicastPacketsSent", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_UnicastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
+//{"UnicastPacketsReceived", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_UnicastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsSent", &DMREAD, DMT_UNINT, get_USBInterfaceStats_DiscardPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsReceived", &DMREAD, DMT_UNINT, get_USBInterfaceStats_DiscardPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
-{"MulticastPacketsSent", &DMREAD, DMT_UNINT, get_USBInterfaceStats_MulticastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
-{"MulticastPacketsReceived", &DMREAD, DMT_UNINT, get_USBInterfaceStats_MulticastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
-{"BroadcastPacketsSent", &DMREAD, DMT_UNINT, get_USBInterfaceStats_BroadcastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
-{"BroadcastPacketsReceived", &DMREAD, DMT_UNINT, get_USBInterfaceStats_BroadcastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnknownProtoPacketsReceived", &DMREAD, DMT_UNINT, get_USBInterfaceStats_UnknownProtoPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
+//{"MulticastPacketsSent", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_MulticastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
+{"MulticastPacketsReceived", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_MulticastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
+//{"BroadcastPacketsSent", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_BroadcastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
+//{"BroadcastPacketsReceived", &DMREAD, DMT_UNLONG, get_USBInterfaceStats_BroadcastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
+//{"UnknownProtoPacketsReceived", &DMREAD, DMT_UNINT, get_USBInterfaceStats_UnknownProtoPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -727,13 +727,13 @@ int get_USBInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void
 
 int get_USBInterfaceStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int get_USBInterfaceStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
@@ -749,7 +749,7 @@ int get_USBInterfaceStats_DiscardPacketsReceived(char *refparam, struct dmctx *c
 
 int get_USBInterfaceStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
@@ -760,19 +760,19 @@ int get_USBInterfaceStats_MulticastPacketsReceived(char *refparam, struct dmctx 
 
 int get_USBInterfaceStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int get_USBInterfaceStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 
 int get_USBInterfaceStats_UnknownProtoPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	//TODO
 	return 0;
 }
 

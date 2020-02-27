@@ -75,6 +75,17 @@ def check_param(param, res):
 	else:
 		return "false"
 
+def check_commands(param):
+	cmd = 'awk \'/static struct op_cmd operate_helper/,/^};$/\' ../dmoperate.c'
+	res = os.popen(cmd).read()
+	param = param.replace(".{i}.", ".*.")
+	param = param.replace("()", "")
+	string = "\n\t{\"%s\"," % param
+	if string in res:
+		return "true"
+	else:
+		return "false"
+
 def load_param(dmobject):
 	if dmobject.count('.') == 1:
 		cmd = 'awk \'/DMLEAF tRoot_181_Params/,/^{0}$/\' ../dmtree/tr181/device.c'
@@ -141,7 +152,10 @@ def object_parse_childs( dmobject , value ):
 				if isinstance(v,dict):
 					for k1,v1 in v.items():
 						if k1 == "type" and v1 != "object":
-							if load == "0":
+							if "()" in k:
+								supported = check_commands(dmobject + k)
+								printOBJPARAM(dmobject + k, supported)
+							elif load == "0":
 								printOBJPARAM(dmobject + k, "false")
 							else:
 								supported = check_param(k, res)

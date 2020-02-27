@@ -68,7 +68,7 @@ def getname( objname ):
 		model_root_name = OBJSname
 		OBJSname = "Services" + OBJSname
 		return OBJSname
-	return OBJSname;
+	return OBJSname
 
 def getparamtype( dmparam ):
 	ptype = None
@@ -270,7 +270,7 @@ def objhaschild (parentname, level, check_obj):
 		objname = c.get('name')
 		if c.tag == "object" and parentname in objname and (objname.count('.') - objname.count('{i}')) == level:
 			hasobj = 1
-			break;
+			break
 
 	return hasobj
 
@@ -279,7 +279,7 @@ def objhasparam (dmobject):
 	for c in dmobject:
 		if c.tag == "parameter":
 			hasparam = 1
-			break;
+			break
 
 	return hasparam
 
@@ -512,6 +512,42 @@ def printPARAM( dmparam, dmobject, bbfdm_type ):
 		print >> fp,  "}"
 		fp.close()
 
+def printCOMMAND( dmparam, dmobject, bbfdm_type ):
+	fp = open('./.json_tmp', 'a')
+	print >> fp,  "\"%s\" : {" % dmparam.get('name')
+	print >> fp,  "\"type\" : \"command\","
+	inputfound = 0
+	outputfound = 0
+	for c in dmparam:
+		if c.tag == "input":
+			inputfound = 1
+		elif c.tag == "output":
+			outputfound = 1
+
+	print >> fp, ("\"protocols\" : [\"usp\"],") if (inputfound or outputfound) else ("\"protocols\" : [\"usp\"]")
+
+	for c in dmparam:
+		if c.tag == "input":
+			print >> fp,  "\"input\" : {"
+			for param in c:
+				if param.tag == "parameter":
+					fp.close()
+					printPARAM(param, dmobject, "\"usp\"")
+			fp = open('./.json_tmp', 'a')
+			print >> fp,  "}" if outputfound else "},"
+
+		if c.tag == "output":
+			print >> fp,  "\"output\" : {"
+			for param in c:
+				if param.tag == "parameter":
+					fp.close()
+					printPARAM(param, dmobject, "\"usp\"")
+			fp = open('./.json_tmp', 'a')
+			print >> fp,  "}"
+
+	print >> fp,  "}"
+	fp.close()
+
 def printusage():
 	if "tr-181" in sys.argv[1]:
 		print "Usage: " + sys.argv[0] + " <tr-181 cwmp xml data model> <tr-181 usp xml data model> [Object path]"
@@ -544,7 +580,7 @@ def chech_each_obj_with_other_obj(model1, model2):
 			for obj in model1:
 				if obj.tag == "object" and (obj.get('name') == c.get('name')):
 					found = 1
-					break;
+					break
 			if found == 0:
 				if c.get('name').count(".") - (c.get('name')).count("{i}.") != 2:
 					continue
@@ -587,11 +623,13 @@ def chech_obj_with_other_obj(obj, dmobject):
 				printPARAM(c, obj, "\"usp\"")
 			elif exist == 0 and "usp" in sys.argv[1]:
 				printPARAM(c, obj, "\"cwmp\"")
+		if c.tag == "command":
+			printCOMMAND(c, obj, "\"usp\"")
 
 def object_parse_childs(dmobject, level, generatelist, check_obj):
 	if generatelist == 0 and (dmobject.get('name')).count(".") == 2:
 		generatelistfromfile(dmobject)
-	if check_obj ==1 and "tr-181" in sys.argv[1]:
+	if check_obj == 1 and "tr-181" in sys.argv[1]:
 		obj, exist = check_if_obj_exist_in_other_xml_file(dmobject) 
 
 	hasobj = objhaschild(dmobject.get('name'), level, check_obj)
@@ -616,6 +654,8 @@ def object_parse_childs(dmobject, level, generatelist, check_obj):
 				else:
 					bbfdm_type = "\"cwmp\", \"usp\""
 				printPARAM(c, dmobject, bbfdm_type)
+			if c.tag == "command":
+				printCOMMAND(c, dmobject, "\"usp\"")
 
 	if check_obj == 1 and "tr-181" in sys.argv[1] and exist == 1:
 		chech_obj_with_other_obj(obj, dmobject)
@@ -636,7 +676,7 @@ def object_parse_childs(dmobject, level, generatelist, check_obj):
 				object_parse_childs(c, level+1, 0, 0)
 				printclosefile ()
 
-	return;
+	return
 
 def generatejsonfromobj(pobj, pdir):
 	generatelist = 0
@@ -715,7 +755,7 @@ dmroot1 = None
 for c in model1:
 	if c.tag == "object" and c.get("name").count(".") == 1:
 		dmroot1 = c
-		break;
+		break
 
 #If it is service data model
 if dmroot1 == None:
@@ -723,7 +763,7 @@ if dmroot1 == None:
 	for c in model1:
 		if c.tag == "object" and c.get("name").count(".") == 2:
 			dmroot1 = c
-			break;
+			break
 
 if dmroot1 == None:
 	print "Wrong %s XML Data model format!" % sys.argv[1]
@@ -746,7 +786,7 @@ if "tr-181" in sys.argv[1]:
 	for c in model2:
 		if c.tag == "object" and c.get("name").count(".") == 1:
 			dmroot2 = c
-			break;
+			break
 
 	if dmroot2 == None:
 		print "Wrong %s XML Data model format!" % sys.argv[2]
@@ -778,4 +818,3 @@ if (os.path.isdir(gendir)):
 	print "Json file generated under \"./%s\"" % gendir
 else:
 	print "No json file generated!"
-

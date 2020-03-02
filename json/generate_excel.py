@@ -31,6 +31,18 @@ def objhasparam( value ):
 						return 1
 	return 0
 
+def getprotocols( value ):
+	if isinstance(value, dict):
+		for obj, val in value.items():
+			if obj == "protocols" and isinstance(val, list):
+				if len(val) == 2:
+					return "CWMP+USP"
+				elif val[0] == "usp":
+					return "USP"
+				else:
+					return "CWMP"
+	return "CWMP+USP"
+
 def check_obj(dmobject):
 	dmobject = dmobject.replace(".{i}.", ".")
 	obj = dmobject.split(".")
@@ -120,9 +132,9 @@ def load_param(dmobject):
 	else:
 		return res, 1
 
-def printOBJPARAM(obj, supported):
+def printOBJPARAM(obj, supported, protocols):
 	fp = open('./.tmp', 'a')
-	print >> fp,  "%s::%s::" % (obj, supported)
+	print >> fp,  "%s::%s::%s::" % (obj, supported, protocols)
 	fp.close()
 
 def printusage():
@@ -138,10 +150,10 @@ def object_parse_childs( dmobject , value ):
 	hasparam = objhasparam(value)
 
 	if dmobject.count('.') == 1:
-		printOBJPARAM(dmobject, "true")
+		printOBJPARAM(dmobject, "true", "CWMP+USP")
 	else:
 		supported = check_obj(dmobject)
-		printOBJPARAM(dmobject, supported)		
+		printOBJPARAM(dmobject, supported, getprotocols(value))		
 
 	if hasparam:
 		res, load = load_param(dmobject)
@@ -150,16 +162,17 @@ def object_parse_childs( dmobject , value ):
 				if k == "mapping":
 					continue
 				if isinstance(v,dict):
+					param_proto = getprotocols(v)
 					for k1,v1 in v.items():
 						if k1 == "type" and v1 != "object":
 							if "()" in k:
 								supported = check_commands(dmobject + k)
-								printOBJPARAM(dmobject + k, supported)
+								printOBJPARAM(dmobject + k, supported, param_proto)
 							elif load == "0":
-								printOBJPARAM(dmobject + k, "false")
+								printOBJPARAM(dmobject + k, "false", param_proto)
 							else:
 								supported = check_param(k, res)
-								printOBJPARAM(dmobject + k, supported)
+								printOBJPARAM(dmobject + k, supported, param_proto)
 							break
 
 	if hasobj:
@@ -177,11 +190,13 @@ def generatecfromobj(excel_file, pobj, pvalue):
 
 	wb = Workbook()
 	sheet = wb.add_sheet('CWMP-USP')
-	style0 = xlwt.easyxf('pattern: pattern solid, fore_colour yellow;''font: bold 1, color blue;''alignment: horizontal center;')
-	style1 = xlwt.easyxf('pattern: pattern solid, fore_colour red;''font: bold 1, color black;''alignment: horizontal center;')
-	style2 = xlwt.easyxf('pattern: pattern solid, fore_colour green;''font: bold 1, color black;''alignment: horizontal center;')
-	sheet.write(0, 0, 'OBJ/PARAM', style0)
-	sheet.write(0, 1, 'Status', style0)
+	style_name = xlwt.easyxf('pattern: pattern solid, fore_colour yellow;''font: bold 1, color blue;''alignment: horizontal center;')
+	style_status1 = xlwt.easyxf('pattern: pattern solid, fore_colour red;''font: bold 1, color black;''alignment: horizontal center;')
+	style_status2 = xlwt.easyxf('pattern: pattern solid, fore_colour green;''font: bold 1, color black;''alignment: horizontal center;')
+	sheet.write(0, 0, 'OBJ/PARAM/OPERATE', style_name)
+	sheet.write(0, 1, 'Status', style_name)
+	sheet.write(0, 2, 'Protocols', style_name)
+
 	i = 0
 	file = open("./.tmp", "r")
 	for line in file:
@@ -189,9 +204,10 @@ def generatecfromobj(excel_file, pobj, pvalue):
 		i += 1
 		sheet.write(i, 0, param[0])
 		if param[1] == "false":
-			sheet.write(i, 1, "Not Supported", style1)
+			sheet.write(i, 1, "Not Supported", style_status1)
 		else:
-			sheet.write(i, 1, "Supported", style2)
+			sheet.write(i, 1, "Supported", style_status2)
+		sheet.write(i, 2, param[2])
 
 	sheet.col(0).width = 1300*20
 	sheet.col(1).width = 175*20
@@ -216,16 +232,12 @@ elif "tr104" in sys.argv[1]:
 with open(sys.argv[1]) as file:
 	data = json.loads(file.read(), object_pairs_hook=OrderedDict)
 
-for i,(key,value) in enumerate(data.items()):
-	objstart = key
-	device = key.split(".")
-	dmroot = device[0]
-
-	if dmroot == None:
+for obj, value in data.items():
+	if obj == None:
 		print "Wrong JSON Data model format!"
 		exit(1)
 
-	generatecfromobj(excel_file, objstart, value)
+	generatecfromobj(excel_file, obj, value)
 
 if (os.path.isfile(excel_file)):
 	print "%s excel file generated" % excel_file

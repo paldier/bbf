@@ -62,15 +62,6 @@ def getarrayoptionparam( value, option ):
 				return val
 	return None
 
-def getobjectoptionparam( value, option ):
-	if isinstance(value, dict):
-		for obj, val in value.items():
-			print "obj=%s" % obj
-			print "val=%s" % val
-			if obj == option and isinstance(val, dict):
-				return val
-	return None
-
 def getprotocolsparam( value, option ):
 	if isinstance(value, dict):
 		for obj, val in value.items():

@@ -73,19 +73,19 @@ def check_obj(dmobject):
 			res = os.popen(cmd).read()
 			string = "\n{\"%s\"," % obj1[count - 1]
 		else:
-			return "false"
+			return "No"
 
 	if string in res:
-		return "true"
+		return "Yes"
 	else:
-		return "false"
+		return "No"
 
 def check_param(param, res):
 	string = "\n{\"%s\"," % param
 	if string in res:
-		return "true"
+		return "Yes"
 	else:
-		return "false"
+		return "No"
 
 def check_commands(param):
 	cmd = 'awk \'/static struct op_cmd operate_helper/,/^};$/\' ../dmoperate.c'
@@ -94,9 +94,9 @@ def check_commands(param):
 	param = param.replace("()", "")
 	string = "\n\t{\"%s\"," % param
 	if string in res:
-		return "true"
+		return "Yes"
 	else:
-		return "false"
+		return "No"
 
 def load_param(dmobject):
 	if dmobject.count('.') == 1:
@@ -132,9 +132,9 @@ def load_param(dmobject):
 	else:
 		return res, 1
 
-def printOBJPARAM(obj, supported, protocols):
+def printOBJPARAM(obj, supported, protocols, types):
 	fp = open('./.tmp', 'a')
-	print >> fp,  "%s::%s::%s::" % (obj, supported, protocols)
+	print >> fp,  "%s::%s::%s::%s::" % (obj, protocols, supported, types)
 	fp.close()
 
 def printusage():
@@ -150,10 +150,10 @@ def object_parse_childs( dmobject , value ):
 	hasparam = objhasparam(value)
 
 	if dmobject.count('.') == 1:
-		printOBJPARAM(dmobject, "true", "CWMP+USP")
+		printOBJPARAM(dmobject, "Yes", "CWMP+USP", "object")
 	else:
 		supported = check_obj(dmobject)
-		printOBJPARAM(dmobject, supported, getprotocols(value))		
+		printOBJPARAM(dmobject, supported, getprotocols(value), "object")		
 
 	if hasparam:
 		res, load = load_param(dmobject)
@@ -167,12 +167,12 @@ def object_parse_childs( dmobject , value ):
 						if k1 == "type" and v1 != "object":
 							if "()" in k:
 								supported = check_commands(dmobject + k)
-								printOBJPARAM(dmobject + k, supported, param_proto)
+								printOBJPARAM(dmobject + k, supported, param_proto, "operate")
 							elif load == "0":
-								printOBJPARAM(dmobject + k, "false", param_proto)
+								printOBJPARAM(dmobject + k, "No", param_proto, "parameter")
 							else:
 								supported = check_param(k, res)
-								printOBJPARAM(dmobject + k, supported, param_proto)
+								printOBJPARAM(dmobject + k, supported, param_proto, "parameter")
 							break
 
 	if hasobj:
@@ -188,29 +188,47 @@ def generatecfromobj(excel_file, pobj, pvalue):
 	removefile("./"+excel_file)
 	object_parse_childs(pobj, pvalue)
 
-	wb = Workbook()
+	wb = Workbook(style_compression=2)
 	sheet = wb.add_sheet('CWMP-USP')
-	style_name = xlwt.easyxf('pattern: pattern solid, fore_colour yellow;''font: bold 1, color blue;''alignment: horizontal center;')
-	style_status1 = xlwt.easyxf('pattern: pattern solid, fore_colour red;''font: bold 1, color black;''alignment: horizontal center;')
-	style_status2 = xlwt.easyxf('pattern: pattern solid, fore_colour green;''font: bold 1, color black;''alignment: horizontal center;')
-	sheet.write(0, 0, 'OBJ/PARAM/OPERATE', style_name)
-	sheet.write(0, 1, 'Status', style_name)
-	sheet.write(0, 2, 'Protocols', style_name)
+	xlwt.add_palette_colour("custom_colour_yellow", 0x10)
+	xlwt.add_palette_colour("custom_colour_green", 0x20)
+	xlwt.add_palette_colour("custom_colour_grey", 0x30)
+	wb.set_colour_RGB(0x10, 255, 255, 153)
+	wb.set_colour_RGB(0x20, 102, 205, 170)
+	wb.set_colour_RGB(0x30, 153, 153, 153)
+
+	style_title = xlwt.easyxf('pattern: pattern solid, fore_colour custom_colour_grey;''font: bold 1, color black;''alignment: horizontal center;')
+	sheet.write(0, 0, 'OBJ/PARAM/OPERATE', style_title)
+	sheet.write(0, 1, 'Protocols', style_title)
+	sheet.write(0, 2, 'Supported', style_title)
 
 	i = 0
 	file = open("./.tmp", "r")
 	for line in file:
 		param = line.split("::")
 		i += 1
-		sheet.write(i, 0, param[0])
-		if param[1] == "false":
-			sheet.write(i, 1, "Not Supported", style_status1)
+
+		if param[3] == "object":
+			style_name = xlwt.easyxf('pattern: pattern solid, fore_colour custom_colour_yellow')
+			style = xlwt.easyxf('pattern: pattern solid, fore_colour custom_colour_yellow;''alignment: horizontal center;')
+		elif param[3] == "operate":
+			style_name = xlwt.easyxf('pattern: pattern solid, fore_colour custom_colour_green')
+			style = xlwt.easyxf('pattern: pattern solid, fore_colour custom_colour_green;''alignment: horizontal center;')
 		else:
-			sheet.write(i, 1, "Supported", style_status2)
-		sheet.write(i, 2, param[2])
+			style_name = None
+			style = xlwt.easyxf('alignment: horizontal center;')
+
+		if style_name != None:
+			sheet.write(i, 0, param[0], style_name)
+		else:
+			sheet.write(i, 0, param[0])
+
+		sheet.write(i, 1, param[1], style)
+		sheet.write(i, 2, param[2], style)
 
 	sheet.col(0).width = 1300*20
 	sheet.col(1).width = 175*20
+	sheet.col(2).width = 175*20
 	wb.save(excel_file) 
 	removefile("./.tmp")
 
@@ -243,4 +261,3 @@ if (os.path.isfile(excel_file)):
 	print "%s excel file generated" % excel_file
 else:
 	print "No Excel file generated!"
-

@@ -570,11 +570,14 @@ int set_wlan_ssid(char *refparam, struct dmctx *ctx, void *data, char *instance,
 	return 0;
 }
 
-/*#Device.WiFi.SSID.{i}.BSSID!UBUS:router.wireless/status/vif,@Name/bssid*/
+/*#Device.WiFi.SSID.{i}.BSSID!UBUS:wifi.ap.@Name/status//bssid*/
 int get_wlan_bssid(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("router.wireless", "status", UBUS_ARGS{{"vif", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
+	json_object *res = NULL;
+	char object[32];
+
+	snprintf(object, sizeof(object), "wifi.ap.%s", ((struct wifi_ssid_args *)data)->ifname);
+	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
 	*value = dmjson_get_value(res, 1, "bssid");
 	return 0;
@@ -656,55 +659,46 @@ int get_WiFiRadio_Name(char *refparam, struct dmctx *ctx, void *data, char *inst
 	return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.MaxBitRate!UBUS:router.wireless/radios//@Name.rate*/
+/*#Device.WiFi.Radio.{i}.MaxBitRate!UBUS:wifi.radio.@Name/status//maxrate*/
 int get_radio_max_bit_rate (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	char *wlan_name, *rate;
+	json_object *res = NULL;
+	char object[32];
 
-	*value = "";
-	wlan_name = section_name(((struct wifi_radio_args *)data)->wifi_radio_sec);
-	dmubus_call("router.wireless", "radios", UBUS_ARGS{}, 0, &res);
-	if (res) {
-		rate = dmjson_get_value(res, 2, wlan_name, "rate");
-		*value = strtok(rate, " Mbps");
-	}
+	snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
+	DM_ASSERT(res, *value = "");
+	*value = dmjson_get_value(res, 1, "maxrate");
 	return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.OperatingFrequencyBand!UBUS:router.wireless/status/vif,@Name/frequency*/
+/*#Device.WiFi.Radio.{i}.OperatingFrequencyBand!UBUS:wifi.radio.@Name/status//band*/
 int get_radio_frequency(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *freq;
-	json_object *res;
-	char *wlan_name = section_name(((struct wifi_radio_args *)data)->wifi_radio_sec);
-	dmubus_call("router.wireless", "status", UBUS_ARGS{{"vif", wlan_name, String}}, 1, &res);
+	json_object *res = NULL;
+	char object[32];
+
+	snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	freq = dmjson_get_value(res, 1, "frequency");
-	if (strcmp(freq, "2") == 0 ) {
-		dmastrcat(value, freq, ".4GHz");  // MEM WILL BE FREED IN DMMEMCLEAN
-		return 0;
-	}
-	dmastrcat(value, freq, "GHz");  // MEM WILL BE FREED IN DMMEMCLEAN
+	*value = dmjson_get_value(res, 1, "band");
 	return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.OperatingChannelBandwidth!UCI:wireless/wifi-device,@i-1/bandwidth&UBUS:router.wireless/status/vif,@Name/bandwidth*/
+/*#Device.WiFi.Radio.{i}.OperatingChannelBandwidth!UCI:wireless/wifi-device,@i-1/bandwidth&UBUS:wifi.radio.@Name/status//bandwidth*/
 int get_radio_operating_channel_bandwidth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *bandwith, *wlan_name;
-	json_object *res;
+	json_object *res = NULL;
+	char object[32], *bandwith;
 
-	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "bandwidth", value);
-	if ((*value)[0] == '\0') {
-		wlan_name = section_name(((struct wifi_radio_args *)data)->wifi_radio_sec);
-		dmubus_call("router.wireless", "status", UBUS_ARGS{{"vif", wlan_name, String}}, 1, &res);
+	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "bandwidth", &bandwith);
+	if (bandwith[0] == '\0') {
+		snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+		dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
 		DM_ASSERT(res, *value = "");
 		bandwith = dmjson_get_value(res, 1, "bandwidth");
-		dmastrcat(value, bandwith, "MHz"); // MEM WILL BE FREED IN DMMEMCLEAN
 	}
-	else
-		dmastrcat(value, *value, "MHz"); // MEM WILL BE FREED IN DMMEMCLEAN
+	dmastrcat(value, *value, "MHz"); // MEM WILL BE FREED IN DMMEMCLEAN
 	return 0;
 }
 
@@ -749,6 +743,7 @@ int set_radio_maxassoc(char *refparam, struct dmctx *ctx, void *data, char *inst
 int get_radio_dfsenable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *val;
+	*value = "0";
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "band", &val);
 	if (val[0] == 'a') {
 		dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "dfsc", value);
@@ -779,39 +774,36 @@ int set_radio_dfsenable(char *refparam, struct dmctx *ctx, void *data, char *ins
 	return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.SupportedStandards!UBUS:router.wireless/radios//hwmodes*/
+/*#Device.WiFi.Radio.{i}.SupportedStandards!UBUS:wifi/status//radio[i-1].standard*/
 int get_radio_supported_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("router.wireless", "radios", UBUS_ARGS{}, 0, &res);
+	json_object *res = NULL, *radios = NULL, *arrobj = NULL;
+	char *name;
+	int i = 0;
+
+	dmubus_call("wifi", "status", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	json_object_object_foreach(res, key, radio_obj) {
-		if (strcmp(section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), key) == 0) {
-			*value = dmjson_get_value_array_all(radio_obj, DELIMITOR, 1, "hwmodes");
+	dmjson_foreach_obj_in_array(res, arrobj, radios, i, 1, "radios") {
+		name = dmjson_get_value(radios, 1, "name");
+		if (strcmp(name, section_name(((struct wifi_radio_args *)data)->wifi_radio_sec)) == 0) {
+			*value = dmjson_get_value(radios, 1, "standard");
+			return 0;
 		}
 	}
 	return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.OperatingStandards!UBUS:router.wireless/radios//opmode*/
+/*#Device.WiFi.Radio.{i}.OperatingStandards!UCI:wireless/wifi-device,@i-1/hwmode*/
 int get_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res = NULL;
-	dmubus_call("router.wireless", "radios", UBUS_ARGS{}, 0, &res);
-	DM_ASSERT(res, *value = "");
-	json_object_object_foreach(res, key, radio_obj) {
-		if (strcmp(section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), key) == 0) {
-			*value = dmjson_get_value(radio_obj, 1, "opmode");
-			break;
-		}
-	}
+	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "hwmode", value);
 	return 0;
 }
 
 int set_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *freq;
-	json_object *res;
+	json_object *res = NULL;
+	char object[32], *freq;
 
 	switch (action) {
 			case VALUECHECK:
@@ -819,15 +811,15 @@ int set_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, 
 					return FAULT_9007;
 				return 0;
 			case VALUESET:
-				dmubus_call("router.wireless", "status", UBUS_ARGS{{"vif", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
+				snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+				dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
 				if (!res) return 0;
 				freq = dmjson_get_value(res, 1, "frequency");
-				if (strcmp(freq, "5") == 0) {
+				if (strcmp(freq, "5Ghz") == 0) {
 					 if (strcmp(value, "n") == 0)
 						value = "11n"; 
 					 else if (strcmp(value, "ac") == 0)
 						value = "11ac";
-					dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "hwmode", value);
 				} else {
 					if (strcmp(value, "b") == 0)
 						value = "11b";
@@ -837,24 +829,25 @@ int set_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, 
 						value = "11g";
 					 else if (strcmp(value, "n") == 0)
 						value = "11n";
-					dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "hwmode", value);
 				}
+				dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "hwmode", value);
 				return 0;
 		}
 		return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.PossibleChannels!UBUS:router.wireless/radios//@Name.channels*/
+/*#Device.WiFi.Radio.{i}.PossibleChannels!UBUS:wifi.radio.@Name/status//supp_channels[0].channels*/
 int get_radio_possible_channels(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	char *wlan_name;
-	
-	*value = "";
-	wlan_name = section_name(((struct wifi_radio_args *)data)->wifi_radio_sec);
-	dmubus_call("router.wireless", "radios", UBUS_ARGS{}, 0, &res);
-	if(res)
-		*value = dmjson_get_value_array_all(res, DELIMITOR, 2, wlan_name, "channels");
+	json_object *res = NULL, *supp_channels = NULL;
+	char object[32];
+
+	snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
+	DM_ASSERT(res, *value = "");
+	supp_channels = dmjson_select_obj_in_array_idx(res, 0, 1, "supp_channels");
+	if (supp_channels)
+		*value = dmjson_get_value_array_all(supp_channels, DELIMITOR, 1, "channels");
 	return 0;
 }
 
@@ -976,14 +969,18 @@ int set_WiFiRadio_DTIMPeriod(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.SupportedOperatingChannelBandwidths!UBUS:router.wireless/radios//@Name.bandwidth*/
+/*#Device.WiFi.Radio.{i}.SupportedOperatingChannelBandwidths!UBUS:wifi.radio.@Name/status//supp_channels[0].bandwidth*/
 int get_WiFiRadio_SupportedOperatingChannelBandwidths(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
+	json_object *res = NULL, *supp_channels = NULL;
+	char object[32];
 
-	dmubus_call("router.wireless", "radios", UBUS_ARGS{{}}, 0, &res);
+	snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value_array_all(res, DELIMITOR, 2, section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), "bwcaps");
+	supp_channels = dmjson_select_obj_in_array_idx(res, 0, 1, "supp_channels");
+	if (supp_channels)
+		*value = dmjson_get_value(supp_channels, 1, "bandwidth");
 	return 0;
 }
 
@@ -992,7 +989,7 @@ int get_WiFiRadio_OperatingChannelBandwidth(char *refparam, struct dmctx *ctx, v
 {
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "bandwidth", value);
 	if(*value[0] == '\0') {
-		*value= "";
+		*value = "";
 		return 0;
 	}
 	dmastrcat(value, *value, "MHz");
@@ -1013,12 +1010,14 @@ int set_WiFiRadio_OperatingChannelBandwidth(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.CurrentOperatingChannelBandwidth!UBUS:router.wireless/radios//@Name.bandwidth*/
+/*#Device.WiFi.Radio.{i}.CurrentOperatingChannelBandwidth!UBUS:wifi.radio.@Name/status//bandwidth*/
 int get_WiFiRadio_CurrentOperatingChannelBandwidth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
+	char object[32];
 
-	dmubus_call("router.wireless", "status", UBUS_ARGS{{"vif", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), String}}, 1, &res);
+	snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
 	DM_ASSERT(res, *value = "");
 	*value = dmjson_get_value(res, 1, "bandwidth");
 	return 0;
@@ -1027,13 +1026,13 @@ int get_WiFiRadio_CurrentOperatingChannelBandwidth(char *refparam, struct dmctx 
 /*#Device.WiFi.Radio.{i}.PreambleType!UCI:wireless/wifi-device,@i-1/short_preamble*/
 int get_WiFiRadio_PreambleType(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *preamble= NULL;
+	char *preamble = NULL;
 
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "short_preamble", &preamble);
 	if (preamble[0] == '\0' || strlen(preamble) == 0 || strcmp(preamble, "1") != 0)
-		*value= "long";
+		*value = "long";
 	else
-		*value= "short";
+		*value = "short";
 	return 0;
 }
 
@@ -1146,12 +1145,13 @@ int set_WiFiRadio_RegulatoryDomain(char *refparam, struct dmctx *ctx, void *data
 /*#Device.WiFi.Radio.{i}.ChannelsInUse!UCI:wireless/wifi-device,@i-1/channel*/
 int get_radio_channel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	char *wlan_name;
+	json_object *res = NULL;
+
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "channel", value);
 	if (strcmp(*value, "auto") == 0 || (*value)[0] == '\0') {
-		wlan_name = section_name(((struct wifi_radio_args *)data)->wifi_radio_sec);
-		dmubus_call("router.wireless", "status", UBUS_ARGS{{"vif", wlan_name, String}}, 1, &res);
+		char object[32];
+		snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+		dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
 		DM_ASSERT(res, *value = "");
 		*value = dmjson_get_value(res, 1, "channel");
 	}
@@ -1186,8 +1186,7 @@ int get_radio_auto_channel_enable(char *refparam, struct dmctx *ctx, void *data,
 int set_radio_auto_channel_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	json_object *res;
-	char *wlan_name;
+	json_object *res = NULL;
 
 	switch (action) {
 		case VALUECHECK:
@@ -1199,8 +1198,9 @@ int set_radio_auto_channel_enable(char *refparam, struct dmctx *ctx, void *data,
 			if (b)
 				value = "auto";
 			else {
-				wlan_name = section_name(((struct wifi_radio_args *)data)->wifi_radio_sec);
-				dmubus_call("router.wireless", "status", UBUS_ARGS{{"vif", wlan_name, String}}, 1, &res);
+				char object[32];
+				snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+				dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
 				if (res) return 0;
 				value = dmjson_get_value(res, 1, "channel");
 			}
@@ -3016,7 +3016,7 @@ int get_WiFiEndPointWPS_Status(char *refparam, struct dmctx *ctx, void *data, ch
 	char *wps_status;
 
 	dmuci_get_value_by_section_string(((struct wifi_enp_args *)data)->wifi_enp_sec, "wps", &wps_status);
-	if(strcmp(wps_status, "0") == 0 || *value[0] == '\0')
+	if (strcmp(wps_status, "0") == 0 || wps_status[0] == '\0')
 		*value = "Disabled";
 	else
 		*value = "Configured";
@@ -3053,12 +3053,14 @@ int set_WiFiEndPointWPS_PIN(char *refparam, struct dmctx *ctx, void *data, char 
 int get_neighboring_wifi_diagnostics_diagnostics_state(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *ss;
-	json_object *res, *neighboring_wifi_obj;
+	json_object *res = NULL, *neighboring_wifi_obj = NULL;
+	char object[32];
 
 	uci_foreach_sections("wireless", "wifi-device", ss) {
-		dmubus_call("router.wireless", "scanresults", UBUS_ARGS{{"radio", section_name(ss), String}}, 1, &res);
+		snprintf(object, sizeof(object), "wifi.radio.%s", section_name(ss));
+		dmubus_call(object, "scanresults", UBUS_ARGS{}, 0, &res);
 		DM_ASSERT(res, *value = "None");
-		neighboring_wifi_obj = dmjson_select_obj_in_array_idx(res, 0, 1, "access_points");
+		neighboring_wifi_obj = dmjson_select_obj_in_array_idx(res, 0, 1, "accesspoints");
 		if (neighboring_wifi_obj) {
 			*value = "Complete";
 			break;
@@ -3080,7 +3082,9 @@ int set_neighboring_wifi_diagnostics_diagnostics_state(char *refparam, struct dm
 		case VALUESET:
 			if (strcmp(value, "Requested") == 0) {
 				uci_foreach_sections("wireless", "wifi-device", ss) {
-					dmubus_call_set("router.wireless", "scan", UBUS_ARGS{{"radio", section_name(ss), String}}, 1);
+					char object[32];
+					snprintf(object, sizeof(object), "wifi.radio.%s", section_name(ss));
+					dmubus_call_set(object, "scan", UBUS_ARGS{}, 0);
 				}
 				dmubus_call_set("tr069", "inform", UBUS_ARGS{{"event", "8 DIAGNOSTICS COMPLETE", String}}, 1);
 			}
@@ -3092,18 +3096,18 @@ int set_neighboring_wifi_diagnostics_diagnostics_state(char *refparam, struct dm
 int get_neighboring_wifi_diagnostics_result_number_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *ss;
-	json_object *res, *jobj;
-	int entries = 0, result = 0;
+	json_object *res = NULL, *accesspoints = NULL;
+	size_t entries = 0, result = 0;
+	char object[32];
 	*value = "0";
 
 	uci_foreach_sections("wireless", "wifi-device", ss) {
-		dmubus_call("router.wireless", "scanresults", UBUS_ARGS{{"radio", section_name(ss), String}}, 1, &res);
-		while (res) {
-			jobj = dmjson_select_obj_in_array_idx(res, entries, 1, "access_points");
-			if(jobj)
-				entries++;
-			else
-				break;
+		snprintf(object, sizeof(object), "wifi.radio.%s", section_name(ss));
+		dmubus_call(object, "scanresults", UBUS_ARGS{}, 0, &res);
+		if (res) {
+			json_object_object_get_ex(res, "accesspoints", &accesspoints);
+			if (accesspoints)
+				entries = json_object_array_length(accesspoints);
 		}
 		result = result + entries;
 		entries = 0;
@@ -3114,43 +3118,37 @@ int get_neighboring_wifi_diagnostics_result_number_entries(char *refparam, struc
 
 int get_neighboring_wifi_diagnostics_result_ssid(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct wifi_neighboring_diagnostic_args *cur_wifi_neighboring_diagnostic_args_ptr = (struct wifi_neighboring_diagnostic_args*)data;
-	dmasprintf(value, cur_wifi_neighboring_diagnostic_args_ptr->ssid);
+	*value = dmjson_get_value((json_object *)data, 1, "ssid");
 	return 0;
 }
 
 int get_neighboring_wifi_diagnostics_result_bssid(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct wifi_neighboring_diagnostic_args *cur_wifi_neighboring_diagnostic_args_ptr = (struct wifi_neighboring_diagnostic_args*)data;
-	dmasprintf(value, cur_wifi_neighboring_diagnostic_args_ptr->bssid);
+	*value = dmjson_get_value((json_object *)data, 1, "bssid");
 	return 0;
 }
 
 int get_neighboring_wifi_diagnostics_result_channel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct wifi_neighboring_diagnostic_args *cur_wifi_neighboring_diagnostic_args_ptr = (struct wifi_neighboring_diagnostic_args*)data;
-	dmasprintf(value, "%d", cur_wifi_neighboring_diagnostic_args_ptr->channel);
+	*value = dmjson_get_value((json_object *)data, 1, "channel");
 	return 0;
 }
 
 int get_neighboring_wifi_diagnostics_result_signal_strength(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct wifi_neighboring_diagnostic_args *cur_wifi_neighboring_diagnostic_args_ptr = (struct wifi_neighboring_diagnostic_args*)data;
-	dmasprintf(value, "%d", cur_wifi_neighboring_diagnostic_args_ptr->signalstrength);
+	*value = dmjson_get_value((json_object *)data, 1, "rssi");
 	return 0;
 }
 
 int get_neighboring_wifi_diagnostics_result_operating_frequency_band(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct wifi_neighboring_diagnostic_args *cur_wifi_neighboring_diagnostic_args_ptr = (struct wifi_neighboring_diagnostic_args*)data;
-	dmasprintf(value, cur_wifi_neighboring_diagnostic_args_ptr->operatingfrequencyband);
+	*value = dmjson_get_value((json_object *)data, 1, "band");
 	return 0;
 }
 
 int get_neighboring_wifi_diagnostics_result_noise(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct wifi_neighboring_diagnostic_args *cur_wifi_neighboring_diagnostic_args_ptr = (struct wifi_neighboring_diagnostic_args*)data;
-	dmasprintf(value, "%d", cur_wifi_neighboring_diagnostic_args_ptr->noise);
+	*value = dmjson_get_value((json_object *)data, 1, "snr");
 	return 0;
 }
 
@@ -3548,50 +3546,21 @@ int browse_wifi_associated_device(struct dmctx *dmctx, DMNODE *parent_node, void
 
 int browseWifiNeighboringWiFiDiagnosticResultInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	struct wifi_neighboring_diagnostic_args cur_wifi_neighboring_diagnostic_args = {0};
-	json_object *res, *neighboring_wifi_obj;
 	struct uci_section *ss;
-	char *bssid, *ssid, *signalstrength, *channel, *frequency, *noise, *idx, *idx_last = NULL;
-	int entries = 0, id = 0;
+	json_object *res = NULL, *accesspoints = NULL, *arrobj = NULL;
+	char object[32], *idx, *idx_last = NULL;
+	int id = 0, i = 0;
 
 	uci_foreach_sections("wireless", "wifi-device", ss) {
-		dmubus_call("router.wireless", "scanresults", UBUS_ARGS{{"radio", section_name(ss), String}}, 1, &res);
-		while (res) {
-			neighboring_wifi_obj = dmjson_select_obj_in_array_idx(res, entries, 1, "access_points");
-			if(neighboring_wifi_obj) {
-				bssid=dmjson_get_value(neighboring_wifi_obj, 1, "bssid");
-				if(bssid!=NULL && strlen(bssid)>0)
-					dmasprintf(&(cur_wifi_neighboring_diagnostic_args.bssid),dmjson_get_value(neighboring_wifi_obj, 1, "bssid"));
-				ssid=dmjson_get_value(neighboring_wifi_obj, 1, "ssid");
-				if(ssid!=NULL && strlen(ssid)>0)
-					dmasprintf(&(cur_wifi_neighboring_diagnostic_args.ssid),dmjson_get_value(neighboring_wifi_obj, 1, "ssid"));
-				channel=dmjson_get_value(neighboring_wifi_obj, 1, "channel");
-				if(channel!=NULL && strlen(channel)>0)
-					cur_wifi_neighboring_diagnostic_args.channel= atoi(channel);
-				else
-					cur_wifi_neighboring_diagnostic_args.channel = 0;
-				signalstrength=dmjson_get_value(neighboring_wifi_obj, 1, "rssi");
-				if(signalstrength!=NULL && strlen(signalstrength)>0)
-					cur_wifi_neighboring_diagnostic_args.signalstrength= atoi(signalstrength);
-				else
-					cur_wifi_neighboring_diagnostic_args.signalstrength = 0;
-				frequency=dmjson_get_value(neighboring_wifi_obj, 1, "frequency");
-				if(frequency!=NULL && strlen(frequency)>0)
-					dmasprintf(&(cur_wifi_neighboring_diagnostic_args.operatingfrequencyband),dmjson_get_value(neighboring_wifi_obj, 1, "frequency"));
-				noise=dmjson_get_value(neighboring_wifi_obj, 1, "snr");
-				if(noise!=NULL && strlen(noise)>0)
-					cur_wifi_neighboring_diagnostic_args.noise= atoi(noise);
-				else
-					cur_wifi_neighboring_diagnostic_args.noise = 0;
-				entries++;
+		snprintf(object, sizeof(object), "wifi.radio.%s", section_name(ss));
+		dmubus_call(object, "scanresults", UBUS_ARGS{}, 0, &res);
+		if (res) {
+			dmjson_foreach_obj_in_array(res, arrobj, accesspoints, i, 1, "accesspoints") {
 				idx = handle_update_instance(3, dmctx, &idx_last, update_instance_without_section, 1, ++id);
-				if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&cur_wifi_neighboring_diagnostic_args, idx) == DM_STOP)
+				if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)accesspoints, idx) == DM_STOP)
 					return 0;
 			}
-			else
-				break;
 		}
-		entries = 0;
 	}
 	return 0;
 }
@@ -3601,13 +3570,13 @@ int browseWiFiEndPointProfileInst(struct dmctx *dmctx, DMNODE *parent_node, void
 	struct uci_section *s= NULL;
 	char *v, *instnbr = NULL, *ep_instance;
 	struct wifi_enp_args *ep_args = (struct wifi_enp_args *)prev_data;
-	struct uci_section *dmmap_section= NULL;
+	struct uci_section *dmmap_section = NULL;
 
 	check_create_dmmap_package("dmmap_wireless");
 
 	get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(ep_args->wifi_enp_sec), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "endpointinstance", &ep_instance);
-	s=is_dmmap_section_exist_eq("dmmap_wireless", "ep_profile", "ep_key", ep_instance);
+	s = is_dmmap_section_exist_eq("dmmap_wireless", "ep_profile", "ep_key", ep_instance);
 	if(!s)
 		dmuci_add_section_bbfdm("dmmap_wireless", "ep_profile", &s, &v);
 	DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "ep_key", ep_instance);

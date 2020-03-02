@@ -299,8 +299,9 @@ The application should bring its JSON file under **'/etc/bbfdm/json/'** path wit
         }
 }
 ```
-- **UBUS command (format 1):** ubus call router.wireless status '{"vif":"wl0"}' | jsonfilter -e @.ssid<br/>
-- **@Name:** the section name of paraent object, in this example, the section name is "wl0"
+- **UBUS command (format 1):** ubus call network.interface status '{"interface":"lan"}' | jsonfilter -e @.device
+
+- **@Name:** the section name of paraent object, in this example, the section name is "lan"
 ```plain
 "SSID": {
     "type": "string", 
@@ -313,18 +314,18 @@ The application should bring its JSON file under **'/etc/bbfdm/json/'** path wit
     "mapping": {
         "type" : "ubus",
         "ubus" : {
-            "object" : "router.wireless",
+            "object" : "network.interface",
             "method" : "status",
             "args" : {
-                "vif" : "@Name"
+                "interface" : "@Name"
             },
-            "key" : "ssid"
+            "key" : "device"
         }
     }
 }
 ```
 
-- **UBUS command (format 2):** ubus call router.wireless radios | jsonfilter -e @.wl0.noise
+- **UBUS command (format 2):** ubus call wifi status | jsonfilter -e @.radios[0].noise
 ```plain
 "Noise": {
     "type": "int", 
@@ -337,10 +338,10 @@ The application should bring its JSON file under **'/etc/bbfdm/json/'** path wit
     "mapping": {
         "type" : "ubus",
         "ubus" : {
-            "object" : "router.wireless",
-            "method" : "radios",
+            "object" : "wifi",
+            "method" : "status",
             "args" : {},
-            "key" : "@Name.noise"
+            "key" : "radios[i-1].noise"
         }
     }
 }

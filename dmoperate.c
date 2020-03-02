@@ -291,17 +291,20 @@ static opr_ret_t vendor_conf_restore(struct dmctx *dmctx, char *path, char *inpu
 
 static void fill_wireless_scan_results(struct dmctx *dmctx, char *radio)
 {
-	json_object *scan, *res, *obj;
+	json_object *res = NULL, *obj = NULL;
 	struct neighboring_wiFi_diagnostic neighboring = {0};
-	char *ssid, *bssid, *channel, *frequency, *signal_stregth, *noise;
+	char object[32], *ssid, *bssid, *channel, *frequency, *signal_stregth, *noise;
 
-	dmubus_call(ROUTER_WIRELESS_UBUS_PATH, "scan", UBUS_ARGS{{"radio", radio, String}}, 1, &scan);
+	snprintf(object, sizeof(object), "wifi.radio.%s", radio);
+	dmubus_call_set(object, "scan", UBUS_ARGS{}, 0);
 	sleep(2); // Wait for results to get populated in scanresults
-	dmubus_call(ROUTER_WIRELESS_UBUS_PATH, "scanresults", UBUS_ARGS{{"radio", radio, String}}, 1, &res);
+	dmubus_call(object, "scanresults", UBUS_ARGS{}, 0, &res);
 
-	if(!json_object_object_get_ex(res,"access_points", &obj)) {
+	if (!res)
 		return;
-	}
+
+	if (!json_object_object_get_ex(res,"accesspoints", &obj))
+		return;
 
 	uint8_t len = json_object_array_length(obj);
 	for (uint8_t j = 0; j < len; j++ ) {
@@ -313,7 +316,6 @@ static void fill_wireless_scan_results(struct dmctx *dmctx, char *radio)
 		neighboring.frequency = dmjson_get_value(array_obj, 1, "frequency");
 		neighboring.signal_strength = dmjson_get_value(array_obj, 1, "rssi");
 		neighboring.noise = dmjson_get_value(array_obj, 1, "snr");
-
 
 		dmasprintf(&ssid, "Result.%d.SSID", wifi_neighbor_count);
 		dmasprintf(&bssid, "Result.%d.BSSID", wifi_neighbor_count);
@@ -333,12 +335,14 @@ static void fill_wireless_scan_results(struct dmctx *dmctx, char *radio)
 
 static opr_ret_t fetch_neighboring_wifi_diagnostic(struct dmctx *dmctx, char *path, char *input)
 {
-	json_object *res;
+	json_object *res = NULL, *radios = NULL, *arrobj = NULL;
+	int j = 0;
 
-	dmubus_call(ROUTER_WIRELESS_UBUS_PATH, "radios", UBUS_ARGS{}, 0, &res);
-	json_object_object_foreach(res, key, val) {
-		UNUSED(val);
-		fill_wireless_scan_results(dmctx, key);
+	dmubus_call("wifi", "status", UBUS_ARGS{}, 0, &res);
+	if (res) {
+		dmjson_foreach_obj_in_array(res, arrobj, radios, j, 1, "radios") {
+			fill_wireless_scan_results(dmctx, dmjson_get_value(radios, 1, "name"));
+		}
 	}
 	wifi_neighbor_count = 0;
 	return SUCCESS;

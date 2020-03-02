@@ -27599,10 +27599,10 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "router.wireless", 
-								"method": "radios", 
+								"object": "wifi.radio.@Name", 
+								"method": "status", 
 								"args": {}, 
-								"key": "@Name.rate"
+								"key": "maxrate"
 							}
 						}
 					]
@@ -27636,12 +27636,10 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "router.wireless", 
+								"object": "wifi.radio.@Name", 
 								"method": "status", 
-								"args": {
-									"vif": "@Name"
-								}, 
-								"key": "frequency"
+								"args": {}, 
+								"key": "band"
 							}
 						}
 					]
@@ -27669,10 +27667,10 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "router.wireless", 
-								"method": "radios", 
+								"object": "wifi", 
+								"method": "status", 
 								"args": {}, 
-								"key": "hwmodes"
+								"key": "radio[i-1].standard"
 							}
 						}
 					]
@@ -27690,12 +27688,16 @@
 					}, 
 					"mapping": [
 						{
-							"type": "ubus", 
-							"ubus": {
-								"object": "router.wireless", 
-								"method": "radios", 
-								"args": {}, 
-								"key": "opmode"
+							"type": "uci", 
+							"uci": {
+								"file": "wireless", 
+								"section": {
+									"type": "wifi-device", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "hwmode"
+								}
 							}
 						}
 					]
@@ -27716,10 +27718,10 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "router.wireless", 
-								"method": "radios", 
+								"object": "wifi.radio.@Name", 
+								"method": "status", 
 								"args": {}, 
-								"key": "@Name.channels"
+								"key": "supp_channels[0].channels"
 							}
 						}
 					]
@@ -27949,10 +27951,10 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "router.wireless", 
-								"method": "radios", 
+								"object": "wifi.radio.@Name", 
+								"method": "status", 
 								"args": {}, 
-								"key": "@Name.bandwidth"
+								"key": "supp_channels[0].bandwidth"
 							}
 						}
 					]
@@ -27983,11 +27985,9 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "router.wireless", 
+								"object": "wifi.radio.@Name", 
 								"method": "status", 
-								"args": {
-									"vif": "@Name"
-								}, 
+								"args": {}, 
 								"key": "bandwidth"
 							}
 						}
@@ -28013,10 +28013,10 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "router.wireless", 
-								"method": "radios", 
+								"object": "wifi.radio.@Name", 
+								"method": "status", 
 								"args": {}, 
-								"key": "@Name.bandwidth"
+								"key": "bandwidth"
 							}
 						}
 					]
@@ -29188,11 +29188,9 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "router.wireless", 
+								"object": "wifi.ap.@Name", 
 								"method": "status", 
-								"args": {
-									"vif": "@Name"
-								}, 
+								"args": {}, 
 								"key": "bssid"
 							}
 						}

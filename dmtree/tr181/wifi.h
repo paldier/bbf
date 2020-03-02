@@ -52,16 +52,6 @@ struct wifi_associative_device_args
 	int assoctime;
 };
 
-struct wifi_neighboring_diagnostic_args
-{
-	char *ssid;
-	char *bssid;
-	char *operatingfrequencyband;
-	int channel;
-	int signalstrength;
-	int noise;
-};
-
 extern DMOBJ tWiFiObj[];
 extern DMLEAF tWiFiParams[];
 extern DMOBJ tWiFiRadioObj[];

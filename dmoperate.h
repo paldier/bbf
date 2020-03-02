@@ -21,8 +21,6 @@
 
 #define SYSTEM_UBUS_PATH "system"
 #define NETWORK_INTERFACE_UBUS_PATH "network.interface"
-#define NETWORK_WIRELESS_UBUS_PATH "network.wireless"
-#define ROUTER_WIRELESS_UBUS_PATH "router.wireless"
 #define ICWMP_SCRIPT "/usr/sbin/icwmp"
 #define VCF_FILE_TYPE "3"
 
@@ -96,7 +94,6 @@ struct download_diagnostics {
 	char *proto;
 	char *num_of_connections;
 	char *enable_per_connection_results;
-
 	char *romtime;
 	char *bomtime;
 	char *eomtime;
@@ -109,7 +106,6 @@ struct download_diagnostics {
 	char *period_of_full_loading;
 	char *tcp_open_request_time;
 	char *tcp_open_response_time;
-
 	char *per_conn_romtime;
 	char *per_conn_bomtime;
 	char *per_conn_eomtime;
@@ -130,7 +126,6 @@ struct upload_diagnostics {
 	char *proto;
 	char *num_of_connections;
 	char *enable_per_connection_results;
-
 	char *romtime;
 	char *bomtime;
 	char *eomtime;
@@ -143,7 +138,6 @@ struct upload_diagnostics {
 	char *period_of_full_loading;
 	char *tcp_open_request_time;
 	char *tcp_open_response_time;
-
 	char *per_conn_romtime;
 	char *per_conn_bomtime;
 	char *per_conn_eomtime;

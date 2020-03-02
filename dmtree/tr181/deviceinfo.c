@@ -108,20 +108,6 @@ DMLEAF tDeviceInfoVendorLogFileParams[] = {
 {0}
 };
 
-/*************************************************************
-* INIT
-**************************************************************/
-static inline int init_process_args(struct process_args *args, char *pid, char *command, char* size, char* priority, char *cputime, char *state)
-{
-	args->pid = pid;
-	args->command= command;
-	args->size= size;
-	args->priority= priority;
-	args->state= state;
-	args->cputime= cputime;
-	return 0;
-}
-
 /*
  *DeviceInfo. functions
  */
@@ -583,107 +569,63 @@ int get_process_number_of_entries(char* refparam, struct dmctx *ctx, void *data,
 	json_object *res = NULL, *processes = NULL;
 	int nbre_process = 0;
 
-	dmubus_call("router.system", "processes", UBUS_ARGS{{}}, 0, &res);
+	dmubus_call("router.system", "processes", UBUS_ARGS{}, 0, &res);
 	if (res) {
 		json_object_object_get_ex(res, "processes", &processes);
 		if (processes)
-			nbre_process= json_object_array_length(processes);
+			nbre_process = json_object_array_length(processes);
 	}
-
 	dmasprintf(value, "%d", nbre_process);
 	return 0;
 }
 
 int get_process_pid(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = ((struct process_args *)data)->pid;
+	*value = dmjson_get_value((json_object *)data, 1, "pid");
 	return 0;
 }
 
 int get_process_command(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = ((struct process_args *)data)->command;
+	*value = dmjson_get_value((json_object *)data, 1, "command");
 	return 0;
 }
 
 int get_process_size(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct process_args *)data)->size != NULL)
-		*value = ((struct process_args *)data)->size;
-	else
-		*value = "0";
+	*value = dmjson_get_value((json_object *)data, 1, "vsz");
 	return 0;
 }
 
 int get_process_priority(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct process_args *)data)->priority != NULL) {
-		long val = atol(((struct process_args *)data)->priority);
-		if (val < 0) val = 0;
-		dmasprintf(value, "%ld", val);
-	} else
-		*value = "0";
+	*value = dmjson_get_value((json_object *)data, 1, "priority");
 	return 0;
 }
 
 int get_process_cpu_time(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct process_args *)data)->cputime != NULL)
-		*value = ((struct process_args *)data)->cputime;
+	*value = dmjson_get_value((json_object *)data, 1, "cputime");
 	return 0;
 }
 
 int get_process_state(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if(strchr(((struct process_args *)data)->state, 'S') != NULL) *value = "Sleeping";
-	else if (strchr(((struct process_args *)data)->state, 'R') != NULL) *value = "Running";
-	else if (strchr(((struct process_args *)data)->state, 'T') != NULL) *value = "Stopped";
-	else if (strchr(((struct process_args *)data)->state, 'D') != NULL) *value = "Uninterruptible";
-	else if (strchr(((struct process_args *)data)->state, 'Z') != NULL) *value = "Zombie";
-	else *value = ((struct process_args *)data)->state;
+	*value = dmjson_get_value((json_object *)data, 1, "state");
 	return 0;
 }
 
 int browsePocessEntriesInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	json_object *res = NULL,  *processes = NULL;
-	json_object *fields = NULL, *process = NULL;
-	char *pid_field, *command_field, *state_field, *mem_size_field, *cpu_time_field, *priority_field, *pid, *command, *mem_size, *state, *cpu_time, *priority, *idx, *idx_last= NULL;
-	int i, id = 0;
-	struct process_args proc_args = {0};
-	size_t nbre_process = 0;
+	json_object *res = NULL, *processes = NULL, *arrobj = NULL;
+	char *idx, *idx_last = NULL;
+	int id = 0, i = 0;
 
-	dmubus_call("router.system", "processes", UBUS_ARGS{{}}, 0, &res);
-
+	dmubus_call("router.system", "processes", UBUS_ARGS{}, 0, &res);
 	if (res) {
-		json_object_object_get_ex(res, "processes", &processes);
-		if (processes)
-			nbre_process = json_object_array_length(processes);
-	}
-
-	json_object_object_get_ex(res, "fields", &fields);
-	if (fields == NULL)
-		return 0;
-
-	pid_field = (char *)dmjson_get_value_in_array_idx(fields, 0, 0, NULL);
-	command_field = (char *)dmjson_get_value_in_array_idx(fields, 7, 0, NULL);
-	state_field = (char *)dmjson_get_value_in_array_idx(fields, 3, 0, NULL);
-	mem_size_field = (char *)dmjson_get_value_in_array_idx(fields, 4, 0, NULL);
-	priority_field = (char *)dmjson_get_value_in_array_idx(fields, 8, 0, NULL);
-	cpu_time_field = (char *)dmjson_get_value_in_array_idx(fields, 9, 0, NULL);
-
-	if (nbre_process > 0) {
-		for (i = 0; i < nbre_process; i++) {
-			process= json_object_array_get_idx(processes, i);
-			pid = dmjson_get_value(process, 1, pid_field);
-			command = dmjson_get_value(process, 1, command_field);
-			state = dmjson_get_value(process, 1, state_field);
-			mem_size = dmjson_get_value(process, 1, mem_size_field);
-			cpu_time = dmjson_get_value(process, 1, cpu_time_field);
-			priority = dmjson_get_value(process, 1, priority_field);
-			init_process_args(&proc_args, pid, command, mem_size, priority, cpu_time, state);
+		dmjson_foreach_obj_in_array(res, arrobj, processes, i, 1, "processes") {
 			idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, ++id);
-			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&proc_args, idx) == DM_STOP)
+			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)processes, idx) == DM_STOP)
 				break;
 		}
 	}

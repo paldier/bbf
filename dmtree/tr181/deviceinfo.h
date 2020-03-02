@@ -27,16 +27,6 @@ extern DMLEAF tDeviceInfoProcessStatusParams[];
 extern DMOBJ tDeviceInfoObj[];
 extern DMLEAF tDeviceInfoProcessStatusProcessParams[];
 
-struct process_args
-{
-	char *pid;
-	char *command;
-	char* size;
-	char* priority;
-	char *cputime;
-	char *state;
-};
-
 char *get_deviceid_manufacturer();
 char *get_deviceid_manufactureroui();
 char *get_deviceid_productclass();

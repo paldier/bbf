@@ -2,6 +2,7 @@ LIB_BBFDM_VERSION = 3:0:0
 
 lib_LTLIBRARIES = libbbf_api.la
 
+
 libbbf_api_la_SOURCES =				\
 	../libbbf_api/dmbbf.c			\
 	../libbbf_api/dmubus.c			\
@@ -85,7 +86,8 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/usb.c 						\
 	../dmtree/tr181/datamodelversion.c			\
 	../dmtree/tr181/gre.c 						\
-	../dmtree/tr181/dynamicdns.c
+	../dmtree/tr181/dynamicdns.c				\
+	../dmtree/tr181/security.c
 endif
 
 if BBF_TR104
@@ -118,7 +120,7 @@ libbbfdm_la_CFLAGS =		\
 	$(LIBUCI_CFLAGS)		\
 	$(LIBUBOX_CFLAGS)		\
 	$(LIBUBUS_CFLAGS) 		\
-	-Wall -Werror
+	-Wall
 
 libbbfdm_la_LDFLAGS = 		\
 	$(AM_LDFLAGS)			\
@@ -126,7 +128,9 @@ libbbfdm_la_LDFLAGS = 		\
 	$(LIBUBOX_LDFLAGS)		\
 	$(LIBUBUS_LDFLAGS)		\
 	-share					\
-	-version-info $(LIB_BBFDM_VERSION)
+	-version-info $(LIB_BBFDM_VERSION) \
+	-lssl	\
+	-lmbedtls				
 
 libbbfdm_la_LIBADD =		\
 	$(AM_LIBS)				\

@@ -18,6 +18,12 @@ AM_CONDITIONAL([BBF_TR157],[test "x$enable_tr157" = "xyes"])
 AC_ARG_ENABLE(tr064, [AS_HELP_STRING([--enable-tr064], [enable tr064 upnp feature])], AC_DEFINE(BBF_TR064),)
 AM_CONDITIONAL([BBF_TR064],[test "x$enable_tr064" = "xyes"])
 
+AC_ARG_ENABLE(libopenssl, [AS_HELP_STRING([--enable-libopenssl], [enable libopenssl feature])], AC_DEFINE(LOPENSSL),)
+AM_CONDITIONAL([LOPENSSL],[test "x$enable_libopenssl" = "xyes"])
+
+AC_ARG_ENABLE(libmbedtls, [AS_HELP_STRING([--enable-libmbedtls], [enable libmbedtls upnp feature])], AC_DEFINE(LMBEDTLS),)
+AM_CONDITIONAL([LMBEDTLS],[test "x$enable_libmbedtls" = "xyes"])
+
 # checks for programs
 AC_PROG_CC
 AM_PROG_CC_C_O

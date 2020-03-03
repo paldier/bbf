@@ -2050,3 +2050,116 @@ int dm_validate_int_list(char *value, char *min_item, char *max_item, char *max_
 
 	return 0;
 }
+
+int get_base64char_value(char b64) {
+	char *base64C = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	int i;
+	for(i = 0; i<64; i++)
+			if ( base64C[i] == b64 )
+					return i;
+	return -1;
+}
+
+char *decode64 (char *enc) {
+	int i, j=0;
+	size_t decsize = strlen(enc)*6/8;
+	char *dec = (char *)dmmalloc((decsize +1) * sizeof(char));
+
+	for (i=0; i<strlen(enc)-1; i++) {
+			dec[j] = (get_base64char_value(enc[i]) << (j%3==0?2:(j%3==1?4:6))) + (get_base64char_value(enc[i+1]) >> (j%3==0?4:     (j%3==1? 2:0)));
+			if( j%3 == 2)
+					i++;
+			j++;
+	}
+	dec[j] = '\0';
+	return dec;
+}
+
+int is_string_exist_in_str_array(char **cert_paths, int length, char *dirpath, char *filename) {
+	int i;
+
+	for(i=0; i<length; i++) {
+		if(strncmp(cert_paths[i], dirpath, strlen(dirpath)) == 0 && strstr(cert_paths[i], filename))
+			return 1;
+	}
+	return 0;
+}
+
+int is_regular_file(const char *path)
+{
+	if (access(path, F_OK)!=0)
+		return 1;
+    struct stat path_stat;
+    stat(path, &path_stat);
+    return S_ISREG(path_stat.st_mode);
+}
+
+char *get_cert_directory_path_from_uci(char *ucipath) {
+	char **uci_elts = NULL, **dirs = NULL;
+	char *pth = NULL;
+	size_t length;
+
+	uci_elts = strsplit(ucipath, ".", &length);
+	dmuci_get_option_value_string(uci_elts[0], uci_elts[1], uci_elts[2], &pth);
+	if(is_regular_file(pth)) {
+		dirs = strsplit(pth, "/", &length);
+		char *filenamepos = strstr(pth, dirs[length - 1]);
+		char *dirpath = (char *)dmmalloc((filenamepos - pth + 1)*sizeof(char));
+		memcpy(dirpath, pth, filenamepos - pth);
+		dirpath[filenamepos - pth] = '\0';
+		return dirpath;
+	}
+	return pth;
+}
+
+char **get_all_iop_certificates(int* length) {
+	char * certs_uci[] = {"openvpn.sample_server.cert", "openvpn.sample_client.cert", "owsd.ubusproxy.peer_cert", "owsd.wan_https.cert"};
+	int i, j=0;
+	char *dirpath = NULL;
+	int number_certs_dirs = sizeof(certs_uci)/sizeof(certs_uci[0]);
+
+	char **certificates_paths = NULL;
+	certificates_paths = (char**)dmmalloc(1024 * sizeof(char*));
+
+	for (i=0; i<number_certs_dirs; i++) {
+		dirpath = get_cert_directory_path_from_uci(certs_uci[i]);
+		if(dirpath && strlen(dirpath)>0) {
+			DIR *dir;
+			struct dirent *ent;
+			if ((dir = opendir(dirpath)) == NULL)
+				continue;
+			while ((ent = readdir (dir)) != NULL) {
+				if(ent->d_name[0] == '.' || is_string_exist_in_str_array(certificates_paths, j, dirpath, ent->d_name))
+					continue;
+				dmasprintf(&certificates_paths[j],"%s%s", dirpath, ent->d_name);
+				j++;
+			}
+			dmfree(dirpath);
+			dirpath = NULL;
+		}
+	}
+	*length = j;
+	return certificates_paths;
+}
+
+char* stringToHex(char *text, int length) {
+  char *hex = NULL;
+
+  hex = (char *)dmcalloc(100, sizeof(char));
+
+  for (int i = 0, j = 0; i < length; ++i, j += 3){
+    sprintf(hex + j, "%02x", text[i] & 0xff);
+    if(i<length-1)
+    	sprintf(hex + j+2, "%c", ':');
+  }
+  return hex;
+}
+
+char* replace_char(char* str, char find, char replace){
+    char *current_pos = strchr(str,find);
+    while (current_pos){
+        *current_pos = replace;
+        current_pos = strchr(current_pos,find);
+    }
+    return str;
+}

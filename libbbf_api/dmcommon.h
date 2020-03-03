@@ -315,4 +315,8 @@ int dm_validate_hexBinary(char *value, char *min, char *max);
 int dm_validate_string_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max, char *enumeration[], char *pattern[]);
 int dm_validate_unsignedInt_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max);
 int dm_validate_int_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max);
+char **get_all_iop_certificates(int* length);
+char *decode64 (char *enc);
+char* stringToHex(char *text, int length);
+char* replace_char(char* str, char find, char replace);
 #endif

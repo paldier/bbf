@@ -56,6 +56,7 @@
 #include "bulkdata.h"
 #include "softwaremodules.h"
 #endif
+#include "security.h"
 
 /* *** BBFDM *** */
 DMOBJ tEntry181Obj[] = {
@@ -117,5 +118,6 @@ DMOBJ tRoot_181_Obj[] = {
 {"BulkData", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataObj, tBulkDataParams, NULL, BBFDM_BOTH},
 {"SoftwareModules", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, tSoftwareModulesObj, tSoftwareModulesParams, NULL, BBFDM_BOTH},
 #endif
+{"Security", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL,  NULL, tSecurityObj, tSecurityParams, NULL, BBFDM_BOTH},
 {0}
 };

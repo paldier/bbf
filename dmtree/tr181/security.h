@@ -5,12 +5,12 @@
  * it under the terms of the GNU Lesser General Public License version 2.1
  * as published by the Free Software Foundation
  *
- *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
+ *	Author: Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
 #ifndef __SECURITY_H
 #define __SECURITY_H
-//#undef LOPENSSL
+
 #include <libbbf_api/dmcommon.h>
 #ifdef LOPENSSL
 #include <openssl/x509.h>
@@ -21,9 +21,6 @@
 #include <mbedtls/x509.h>
 #include <mbedtls/x509_crt.h>
 #endif
-#include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #define DATE_LEN 128
 

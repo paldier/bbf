@@ -5,7 +5,7 @@
  * it under the terms of the GNU Lesser General Public License version 2.1
  * as published by the Free Software Foundation
  *
- *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
+ *	Author: Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
 #include "security.h"
@@ -46,7 +46,8 @@ X509 *cert,
 #elif LMBEDTLS
 mbedtls_x509_crt cert,
 #endif
-struct uci_section *dmsect, struct certificate_profile *certprofile) {
+struct uci_section *dmsect, struct certificate_profile *certprofile)
+{
 	certprofile->path = path;
 #ifdef LOPENSSL
 	certprofile->openssl_cert = cert;
@@ -59,122 +60,124 @@ struct uci_section *dmsect, struct certificate_profile *certprofile) {
 #ifdef LOPENSSL
 int convert_ASN1TIME(ASN1_TIME *t, char* buf, size_t len)
 {
-        int rc;
-        BIO *b = BIO_new(BIO_s_mem());
-        rc = ASN1_TIME_print(b, t);
-        if (rc <= 0) {
-                BIO_free(b);
-                return EXIT_FAILURE;
-        }
-        rc = BIO_gets(b, buf, len);
-        if (rc <= 0) {
-                BIO_free(b);
-                return EXIT_FAILURE;
-        }
-        BIO_free(b);
-        return EXIT_SUCCESS;
+	int rc;
+	BIO *b = BIO_new(BIO_s_mem());
+	rc = ASN1_TIME_print(b, t);
+	if (rc <= 0) {
+		BIO_free(b);
+		return EXIT_FAILURE;
+	}
+	rc = BIO_gets(b, buf, len);
+	if (rc <= 0) {
+		BIO_free(b);
+		return EXIT_FAILURE;
+	}
+	BIO_free(b);
+	return EXIT_SUCCESS;
 }
 
-char *get_certificate_sig_alg(int sig_nid){
+char *get_certificate_sig_alg(int sig_nid)
+{
 	switch(sig_nid) {
-		case NID_sha256WithRSAEncryption:
-			return LN_sha256WithRSAEncryption;
-		case NID_sha384WithRSAEncryption:
-			return LN_sha384WithRSAEncryption;
-		case NID_sha512WithRSAEncryption:
-			return LN_sha512WithRSAEncryption;
-		case NID_sha224WithRSAEncryption:
-			return LN_sha224WithRSAEncryption;
-		case NID_sha512_224WithRSAEncryption:
-			return LN_sha512_224WithRSAEncryption;
-		case NID_sha512_256WithRSAEncryption:
-			return LN_sha512_224WithRSAEncryption;
-		case NID_pbeWithMD2AndDES_CBC:
-			return LN_pbeWithMD2AndDES_CBC;
-		case NID_pbeWithMD5AndDES_CBC:
-			return LN_pbeWithMD5AndDES_CBC;
-		case NID_pbeWithMD2AndRC2_CBC:
-			return LN_pbeWithMD5AndDES_CBC;
-		case NID_pbeWithMD5AndRC2_CBC:
-			return LN_pbeWithMD5AndRC2_CBC;
-		case NID_pbeWithSHA1AndDES_CBC:
-			return LN_pbeWithSHA1AndDES_CBC;
-		case NID_pbeWithSHA1AndRC2_CBC:
-			return LN_pbeWithSHA1AndDES_CBC;
-		case NID_pbe_WithSHA1And128BitRC4:
-			return LN_pbe_WithSHA1And128BitRC4;
-		case NID_pbe_WithSHA1And40BitRC4:
-			return LN_pbe_WithSHA1And40BitRC4;
-		case NID_pbe_WithSHA1And3_Key_TripleDES_CBC:
-			return LN_pbe_WithSHA1And3_Key_TripleDES_CBC;
-		case NID_pbe_WithSHA1And2_Key_TripleDES_CBC:
-			return LN_pbe_WithSHA1And2_Key_TripleDES_CBC;
-		case NID_pbe_WithSHA1And128BitRC2_CBC:
-			return LN_pbe_WithSHA1And128BitRC2_CBC;
-		case NID_pbe_WithSHA1And40BitRC2_CBC:
-			return LN_pbe_WithSHA1And40BitRC2_CBC;
-		case NID_sm3WithRSAEncryption:
-			return LN_sm3WithRSAEncryption;
-		case NID_shaWithRSAEncryption:
-			return LN_shaWithRSAEncryption;
-		case NID_md2WithRSAEncryption:
-			return LN_md2WithRSAEncryption;
-		case NID_md4WithRSAEncryption:
-			return LN_md4WithRSAEncryption;
-		case NID_md5WithRSAEncryption:
-			return LN_md5WithRSAEncryption;
-		case NID_sha1WithRSAEncryption:
-			return LN_sha1WithRSAEncryption;
-		default:
-			return "";
+	case NID_sha256WithRSAEncryption:
+		return LN_sha256WithRSAEncryption;
+	case NID_sha384WithRSAEncryption:
+		return LN_sha384WithRSAEncryption;
+	case NID_sha512WithRSAEncryption:
+		return LN_sha512WithRSAEncryption;
+	case NID_sha224WithRSAEncryption:
+		return LN_sha224WithRSAEncryption;
+	case NID_sha512_224WithRSAEncryption:
+		return LN_sha512_224WithRSAEncryption;
+	case NID_sha512_256WithRSAEncryption:
+		return LN_sha512_224WithRSAEncryption;
+	case NID_pbeWithMD2AndDES_CBC:
+		return LN_pbeWithMD2AndDES_CBC;
+	case NID_pbeWithMD5AndDES_CBC:
+		return LN_pbeWithMD5AndDES_CBC;
+	case NID_pbeWithMD2AndRC2_CBC:
+		return LN_pbeWithMD5AndDES_CBC;
+	case NID_pbeWithMD5AndRC2_CBC:
+		return LN_pbeWithMD5AndRC2_CBC;
+	case NID_pbeWithSHA1AndDES_CBC:
+		return LN_pbeWithSHA1AndDES_CBC;
+	case NID_pbeWithSHA1AndRC2_CBC:
+		return LN_pbeWithSHA1AndDES_CBC;
+	case NID_pbe_WithSHA1And128BitRC4:
+		return LN_pbe_WithSHA1And128BitRC4;
+	case NID_pbe_WithSHA1And40BitRC4:
+		return LN_pbe_WithSHA1And40BitRC4;
+	case NID_pbe_WithSHA1And3_Key_TripleDES_CBC:
+		return LN_pbe_WithSHA1And3_Key_TripleDES_CBC;
+	case NID_pbe_WithSHA1And2_Key_TripleDES_CBC:
+		return LN_pbe_WithSHA1And2_Key_TripleDES_CBC;
+	case NID_pbe_WithSHA1And128BitRC2_CBC:
+		return LN_pbe_WithSHA1And128BitRC2_CBC;
+	case NID_pbe_WithSHA1And40BitRC2_CBC:
+		return LN_pbe_WithSHA1And40BitRC2_CBC;
+	case NID_sm3WithRSAEncryption:
+		return LN_sm3WithRSAEncryption;
+	case NID_shaWithRSAEncryption:
+		return LN_shaWithRSAEncryption;
+	case NID_md2WithRSAEncryption:
+		return LN_md2WithRSAEncryption;
+	case NID_md4WithRSAEncryption:
+		return LN_md4WithRSAEncryption;
+	case NID_md5WithRSAEncryption:
+		return LN_md5WithRSAEncryption;
+	case NID_sha1WithRSAEncryption:
+		return LN_sha1WithRSAEncryption;
+	default:
+		return "";
 	}
 }
 #elif LMBEDTLS
-char *get_certificate_md(mbedtls_md_type_t sig_md) {
-    switch(sig_md) {
-            case MBEDTLS_MD_MD2:
-                    return "md2";
-            case MBEDTLS_MD_MD4:
-                    return "md4";
-                    break;
-            case MBEDTLS_MD_MD5:
-                    return "md5";
-            case MBEDTLS_MD_SHA1:
-                    return "sha1";
-            case MBEDTLS_MD_SHA224:
-                    return "sha224";
-            case MBEDTLS_MD_SHA256:
-                    return "sha256";
-            case MBEDTLS_MD_SHA384:
-                    return "sha384";
-            case MBEDTLS_MD_SHA512:
-                    return "sha512";
-            case MBEDTLS_MD_RIPEMD160:
-                    return "ripemd160";
-            default:
-                    return "";
-    }
-    return "";
+char *get_certificate_md(mbedtls_md_type_t sig_md)
+{
+	switch(sig_md) {
+	case MBEDTLS_MD_MD2:
+		return "md2";
+	case MBEDTLS_MD_MD4:
+		return "md4";
+	case MBEDTLS_MD_MD5:
+		return "md5";
+	case MBEDTLS_MD_SHA1:
+		return "sha1";
+	case MBEDTLS_MD_SHA224:
+		return "sha224";
+	case MBEDTLS_MD_SHA256:
+		return "sha256";
+	case MBEDTLS_MD_SHA384:
+		return "sha384";
+	case MBEDTLS_MD_SHA512:
+		return "sha512";
+	case MBEDTLS_MD_RIPEMD160:
+		return "ripemd160";
+	default:
+		return "";
+	}
+	return "";
 }
 
-char *get_certificate_pk(mbedtls_pk_type_t sig_pk) {
-    switch(sig_pk) {
-            case MBEDTLS_PK_RSA:
-                    return "RSA";
-            case MBEDTLS_PK_ECKEY:
-                   	return "ECKEY";
-            case MBEDTLS_PK_ECKEY_DH:
-                    return "ECKEYDH";
-            case MBEDTLS_PK_ECDSA:
-                    return "ECDSA";
-            case MBEDTLS_PK_RSA_ALT:
-                    return "RSAALT";
-            case MBEDTLS_PK_RSASSA_PSS:
-                    return "RSASSAPSS";
-            default:
-                    return "";
-    }
-    return "";
+char *get_certificate_pk(mbedtls_pk_type_t sig_pk)
+{
+	switch(sig_pk) {
+	case MBEDTLS_PK_RSA:
+		return "RSA";
+	case MBEDTLS_PK_ECKEY:
+		return "ECKEY";
+	case MBEDTLS_PK_ECKEY_DH:
+		return "ECKEYDH";
+	case MBEDTLS_PK_ECDSA:
+		return "ECDSA";
+	case MBEDTLS_PK_RSA_ALT:
+		return "RSAALT";
+	case MBEDTLS_PK_RSASSA_PSS:
+		return "RSASSAPSS";
+	default:
+		return "";
+	}
+	return "";
 }
 #endif
 
@@ -197,17 +200,17 @@ int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_node, void
 #ifdef LOPENSSL
 		FILE *fp = NULL;
 		fp = fopen(certifcates_paths[i], "r");
-        X509 *cert = PEM_read_X509(fp, NULL, NULL, NULL);
-        if (!cert) {
-        	fclose(fp);
-        	continue;
-        }
+		X509 *cert = PEM_read_X509(fp, NULL, NULL, NULL);
+		if (!cert) {
+			fclose(fp);
+			continue;
+		}
 		if ((dmmap_sect = get_dup_section_in_dmmap_opt("dmmap_security", "security_certificate", "path", certifcates_paths[i])) == NULL) {
 			dmuci_add_section_bbfdm("dmmap_security", "security_certificate", &dmmap_sect, &v);
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "path", certifcates_paths[i]);
 		}
 		init_certificate(certifcates_paths[i], cert, dmmap_sect, &certificateprofile);
-        cert_inst = handle_update_instance(1, dmctx, &cert_inst_last, update_instance_alias, 3, dmmap_sect, "security_certificate_instance", "security_certificate_alias");
+		cert_inst = handle_update_instance(1, dmctx, &cert_inst_last, update_instance_alias, 3, dmmap_sect, "security_certificate_instance", "security_certificate_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&certificateprofile, cert_inst) == DM_STOP)
 			break;
 
@@ -244,6 +247,7 @@ int get_Security_CertificateNumberOfEntries(char *refparam, struct dmctx *ctx, v
 	char **certifcates_paths = NULL;
 	certifcates_paths = get_all_iop_certificates(&length);
 	int number = 0;
+
 	for (i=0; i<length; i++) {
 #ifdef LOPENSSL
 		FILE *fp = NULL;
@@ -281,13 +285,13 @@ int get_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data
 int set_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
+	case VALUECHECK:
+		if (dm_validate_boolean(value))
+			return FAULT_9007;
+		break;
+	case VALUESET:
+		//TODO
+		break;
 	}
 	return 0;
 }

@@ -11,74 +11,12 @@
 #include "dmentry.h"
 #include "dynamicdns.h"
 
-/* *** Device.DynamicDNS. *** */
-DMOBJ tDynamicDNSObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Client", &DMWRITE, addObjDynamicDNSClient, delObjDynamicDNSClient, NULL, browseDynamicDNSClientInst, NULL, NULL, NULL, tDynamicDNSClientObj, tDynamicDNSClientParams, NULL, BBFDM_BOTH},
-{"Server", &DMWRITE, addObjDynamicDNSServer, delObjDynamicDNSServer, NULL, browseDynamicDNSServerInst, NULL, NULL, NULL, NULL, tDynamicDNSServerParams, get_linker_dynamicdns_server, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tDynamicDNSParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"ClientNumberOfEntries", &DMREAD, DMT_UNINT, get_DynamicDNS_ClientNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{"ServerNumberOfEntries", &DMREAD, DMT_UNINT, get_DynamicDNS_ServerNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{"SupportedServices", &DMREAD, DMT_STRING, get_DynamicDNS_SupportedServices, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DynamicDNS.Client.{i}. *** */
-DMOBJ tDynamicDNSClientObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Hostname", &DMWRITE, NULL, NULL, NULL, browseDynamicDNSClientHostnameInst, NULL, NULL, NULL, NULL, tDynamicDNSClientHostnameParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tDynamicDNSClientParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_DynamicDNSClient_Enable, set_DynamicDNSClient_Enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_DynamicDNSClient_Status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Alias, set_DynamicDNSClient_Alias, NULL, NULL, BBFDM_BOTH},
-{"LastError", &DMREAD, DMT_STRING, get_DynamicDNSClient_LastError, NULL, NULL, NULL, BBFDM_BOTH},
-{"Server", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Server, set_DynamicDNSClient_Server, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Interface, set_DynamicDNSClient_Interface, NULL, NULL, BBFDM_BOTH},
-{"Username", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Username, set_DynamicDNSClient_Username, NULL, NULL, BBFDM_BOTH},
-{"Password", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Password, set_DynamicDNSClient_Password, NULL, NULL, BBFDM_BOTH},
-{"HostnameNumberOfEntries", &DMREAD, DMT_UNINT, get_DynamicDNSClient_HostnameNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DynamicDNS.Client.{i}.Hostname.{i}. *** */
-DMLEAF tDynamicDNSClientHostnameParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_DynamicDNSClientHostname_Enable, set_DynamicDNSClientHostname_Enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_DynamicDNSClientHostname_Status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Name", &DMWRITE, DMT_STRING, get_DynamicDNSClientHostname_Name, set_DynamicDNSClientHostname_Name, NULL, NULL, BBFDM_BOTH},
-{"LastUpdate", &DMREAD, DMT_TIME, get_DynamicDNSClientHostname_LastUpdate, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DynamicDNS.Server.{i}. *** */
-DMLEAF tDynamicDNSServerParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_STRING, get_DynamicDNSServer_Enable, set_DynamicDNSServer_Enable, NULL, NULL, BBFDM_BOTH},
-{"Name", &DMWRITE, DMT_STRING, get_DynamicDNSServer_Name, set_DynamicDNSServer_Name, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_DynamicDNSServer_Alias, set_DynamicDNSServer_Alias, NULL, NULL, BBFDM_BOTH},
-{"ServiceName", &DMWRITE, DMT_STRING, get_DynamicDNSServer_ServiceName, set_DynamicDNSServer_ServiceName, NULL, NULL, BBFDM_BOTH},
-{"ServerAddress", &DMWRITE, DMT_STRING, get_DynamicDNSServer_ServerAddress, set_DynamicDNSServer_ServerAddress, NULL, NULL, BBFDM_BOTH},
-{"ServerPort", &DMWRITE, DMT_UNINT, get_DynamicDNSServer_ServerPort, set_DynamicDNSServer_ServerPort, NULL, NULL, BBFDM_BOTH},
-{"SupportedProtocols", &DMREAD, DMT_STRING, get_DynamicDNSServer_SupportedProtocols, NULL, NULL, NULL, BBFDM_BOTH},
-{"Protocol", &DMWRITE, DMT_STRING, get_DynamicDNSServer_Protocol, set_DynamicDNSServer_Protocol, NULL, NULL, BBFDM_BOTH},
-{"CheckInterval", &DMWRITE, DMT_UNINT, get_DynamicDNSServer_CheckInterval, set_DynamicDNSServer_CheckInterval, NULL, NULL, BBFDM_BOTH},
-{"RetryInterval", &DMWRITE, DMT_UNINT, get_DynamicDNSServer_RetryInterval, set_DynamicDNSServer_RetryInterval, NULL, NULL, BBFDM_BOTH},
-{"MaxRetries", &DMWRITE, DMT_UNINT, get_DynamicDNSServer_MaxRetries, set_DynamicDNSServer_MaxRetries, NULL, NULL, BBFDM_BOTH},
-{0}
-};
+#define DDNS_PROVIDERS_FILE "/etc/ddns/services"
 
 /**************************************************************************
 * LINKER
 ***************************************************************************/
-int get_linker_dynamicdns_server(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+static int get_linker_dynamicdns_server(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
 	char *service_name;
 	if (data) {
@@ -95,7 +33,7 @@ int get_linker_dynamicdns_server(char *refparam, struct dmctx *dmctx, void *data
 * ENTRY METHOD
 *************************************************************/
 /*#Device.DynamicDNS.Client.{i}.!UCI:ddns/service/dmmap_ddns*/
-int browseDynamicDNSClientInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseDynamicDNSClientInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *inst = NULL, *inst_last = NULL;
 	struct dmmap_dup *p;
@@ -185,7 +123,7 @@ static int dmmap_synchronizeDynamicDNSServer(struct dmctx *dmctx, DMNODE *parent
 }
 
 /*#Device.DynamicDNS.Server.{i}.!UCI:ddns/service/dmmap_ddns*/
-int browseDynamicDNSServerInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseDynamicDNSServerInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *inst = NULL, *inst_last = NULL;
 	struct uci_section *s = NULL;
@@ -200,7 +138,7 @@ int browseDynamicDNSServerInst(struct dmctx *dmctx, DMNODE *parent_node, void *p
 	return 0;
 }
 
-int browseDynamicDNSClientHostnameInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseDynamicDNSClientHostnameInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	DM_LINK_INST_OBJ(dmctx, parent_node, prev_data, "1");
 	return 0;
@@ -209,7 +147,7 @@ int browseDynamicDNSClientHostnameInst(struct dmctx *dmctx, DMNODE *parent_node,
 /*************************************************************
 * ADD & DEL OBJ
 *************************************************************/
-int addObjDynamicDNSClient(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int addObjDynamicDNSClient(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char inst[8], *last_inst, *value, *v, *s_name;
 	struct uci_section *dmmap = NULL, *s = NULL;
@@ -238,7 +176,7 @@ int addObjDynamicDNSClient(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
-int delObjDynamicDNSClient(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int delObjDynamicDNSClient(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *s = NULL, *ss = NULL, *dmmap_section = NULL;
 	int found = 0;
@@ -272,7 +210,7 @@ int delObjDynamicDNSClient(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
-int addObjDynamicDNSServer(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int addObjDynamicDNSServer(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char inst[8], *last_inst, *value, *v, *s_name;
 	struct uci_section *dmmap = NULL, *s = NULL;
@@ -301,7 +239,7 @@ int addObjDynamicDNSServer(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
-int delObjDynamicDNSServer(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int delObjDynamicDNSServer(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *s = NULL, *ss = NULL, *stmp = NULL, *dmmap_section= NULL;
 	int found = 0;
@@ -340,7 +278,7 @@ int delObjDynamicDNSServer(char *refparam, struct dmctx *ctx, void *data, char *
 /*************************************************************
 * GET & SET PARAM
 *************************************************************/
-int get_DynamicDNS_ClientNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNS_ClientNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
@@ -352,7 +290,7 @@ int get_DynamicDNS_ClientNumberOfEntries(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-int get_DynamicDNS_ServerNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNS_ServerNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
@@ -365,7 +303,7 @@ int get_DynamicDNS_ServerNumberOfEntries(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-int get_DynamicDNS_SupportedServices(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNS_SupportedServices(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	FILE *fp = NULL;
 	char line[256] = "", buf[1024] = "", buf_tmp[1024] = "", *pch = NULL, *spch = NULL;
@@ -394,7 +332,7 @@ int get_DynamicDNS_SupportedServices(char *refparam, struct dmctx *ctx, void *da
 }
 
 /*#Device.DynamicDNS.Client.{i}.Enable!UCI:ddns/service,@i-1/enabled*/
-int get_DynamicDNSClient_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClient_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enabled", value);
 	if (*value[0] == '\0')
@@ -402,7 +340,7 @@ int get_DynamicDNSClient_Enable(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int set_DynamicDNSClient_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSClient_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -420,7 +358,7 @@ int set_DynamicDNSClient_Enable(char *refparam, struct dmctx *ctx, void *data, c
 }
 
 /*#Device.DynamicDNS.Client.{i}.Status!UCI:ddns/service,@i-1/enabled*/
-int get_DynamicDNSClient_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClient_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	FILE* fp = NULL;
 	char buf[512] = "", path[64] = "", status[32] = "", *enable, *logdir = NULL;
@@ -454,7 +392,7 @@ int get_DynamicDNSClient_Status(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int get_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -464,7 +402,7 @@ int get_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 	return 0;
 }
 
-int set_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -482,7 +420,7 @@ int set_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 	return 0;
 }
 
-int get_DynamicDNSClient_LastError(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClient_LastError(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	FILE* fp = NULL;
 	char buf[512] = "", path[64] = "", status[32] = "", *enable, *logdir = NULL;
@@ -519,7 +457,7 @@ int get_DynamicDNSClient_LastError(char *refparam, struct dmctx *ctx, void *data
 }
 
 /*#Device.DynamicDNS.Client.{i}.Server!UCI:ddns/service,@i-1/service_name*/
-int get_DynamicDNSClient_Server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClient_Server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *service_name;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "service_name", &service_name);
@@ -529,7 +467,7 @@ int get_DynamicDNSClient_Server(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int set_DynamicDNSClient_Server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSClient_Server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker = NULL;
 
@@ -550,7 +488,7 @@ int set_DynamicDNSClient_Server(char *refparam, struct dmctx *ctx, void *data, c
 }
 
 /*#Device.DynamicDNS.Client.{i}.Interface!UCI:ddns/service,@i-1/interface*/
-int get_DynamicDNSClient_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClient_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *interface;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &interface);
@@ -560,7 +498,7 @@ int get_DynamicDNSClient_Interface(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-int set_DynamicDNSClient_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSClient_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker = NULL;
 
@@ -581,13 +519,13 @@ int set_DynamicDNSClient_Interface(char *refparam, struct dmctx *ctx, void *data
 }
 
 /*#Device.DynamicDNS.Client.{i}.Username!UCI:ddns/service,@i-1/username*/
-int get_DynamicDNSClient_Username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClient_Username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "username", value);
 	return 0;
 }
 
-int set_DynamicDNSClient_Username(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSClient_Username(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -602,13 +540,13 @@ int set_DynamicDNSClient_Username(char *refparam, struct dmctx *ctx, void *data,
 }
 
 /*#Device.DynamicDNS.Client.{i}.Password!UCI:ddns/service,@i-1/password*/
-int get_DynamicDNSClient_Password(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClient_Password(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "";
 	return 0;
 }
 
-int set_DynamicDNSClient_Password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSClient_Password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -622,14 +560,14 @@ int set_DynamicDNSClient_Password(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-int get_DynamicDNSClient_HostnameNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClient_HostnameNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "1";
 	return 0;
 }
 
 /*#Device.DynamicDNS.Client.{i}.Hostname.{i}.Enable!UCI:ddns/service,@i-1/enabled*/
-int get_DynamicDNSClientHostname_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClientHostname_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enabled", value);
 	if (*value[0] == '\0')
@@ -637,7 +575,7 @@ int get_DynamicDNSClientHostname_Enable(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int set_DynamicDNSClientHostname_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSClientHostname_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -655,7 +593,7 @@ int set_DynamicDNSClientHostname_Enable(char *refparam, struct dmctx *ctx, void 
 }
 
 /*#Device.DynamicDNS.Client.{i}.Hostname.{i}.Status!UCI:ddns/service,@i-1/enabled*/
-int get_DynamicDNSClientHostname_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClientHostname_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	FILE* fp = NULL;
 	char buf[512] = "", path[64] = "", status[32] = "", *enable, *logdir = NULL;
@@ -688,13 +626,13 @@ int get_DynamicDNSClientHostname_Status(char *refparam, struct dmctx *ctx, void 
 }
 
 /*#Device.DynamicDNS.Client.{i}.Hostname.{i}.Name!UCI:ddns/service,@i-1/domain*/
-int get_DynamicDNSClientHostname_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClientHostname_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "domain", value);
 	return 0;
 }
 
-int set_DynamicDNSClientHostname_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSClientHostname_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -709,7 +647,7 @@ int set_DynamicDNSClientHostname_Name(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-int get_DynamicDNSClientHostname_LastUpdate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSClientHostname_LastUpdate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct tm *ts;
 	time_t epoch_time, now = time(NULL);
@@ -749,7 +687,7 @@ int get_DynamicDNSClientHostname_LastUpdate(char *refparam, struct dmctx *ctx, v
 }
 
 /*#Device.DynamicDNS.Server.{i}.Enable!UCI:ddns/service,@i-1/enabled*/
-int get_DynamicDNSServer_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enabled", value);
 	if (*value[0] == '\0')
@@ -757,7 +695,7 @@ int get_DynamicDNSServer_Enable(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int set_DynamicDNSServer_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s;
 	char *service_name;
@@ -778,13 +716,13 @@ int set_DynamicDNSServer_Enable(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int get_DynamicDNSServer_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "section_name", value);
 	return 0;
 }
 
-int set_DynamicDNSServer_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s;
 	char *service_name;
@@ -806,13 +744,13 @@ int set_DynamicDNSServer_Name(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
-int get_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "serveralias", value);
 	return 0;
 }
 
-int set_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -827,13 +765,13 @@ int set_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 }
 
 /*#Device.DynamicDNS.Server.{i}.ServiceName!UCI:ddns/service,@i-1/service_name*/
-int get_DynamicDNSServer_ServiceName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_ServiceName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "service_name", value);
 	return 0;
 }
 
-int set_DynamicDNSServer_ServiceName(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_ServiceName(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s;
 	char *service_name;
@@ -855,7 +793,7 @@ int set_DynamicDNSServer_ServiceName(char *refparam, struct dmctx *ctx, void *da
 }
 
 /*#Device.DynamicDNS.Server.{i}.ServerAddress!UCI:ddns/service,@i-1/dns_server*/
-int get_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *dns_server;
 
@@ -871,7 +809,7 @@ int get_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-int set_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s;
 	char new[64], *dns_server, *service_name;
@@ -913,7 +851,7 @@ int set_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx, void *
 }
 
 /*#Device.DynamicDNS.Server.{i}.ServerPort!UCI:ddns/service,@i-1/dns_server*/
-int get_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *dns_server;
 	*value = "0";
@@ -928,7 +866,7 @@ int get_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int set_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s;
 	char new[64], *dns_server, *service_name;
@@ -973,14 +911,14 @@ int set_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int get_DynamicDNSServer_SupportedProtocols(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_SupportedProtocols(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "HTTP,HTTPS";
 	return 0;
 }
 
 /*#Device.DynamicDNS.Server.{i}.Protocol!UCI:ddns/service,@i-1/use_https*/
-int get_DynamicDNSServer_Protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_Protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "use_https", value);
 	if (*value[0] == '\0' || strcmp(*value, "0") == 0)
@@ -990,7 +928,7 @@ int get_DynamicDNSServer_Protocol(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-int set_DynamicDNSServer_Protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_Protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s;
 	char *service_name;
@@ -1018,7 +956,7 @@ int set_DynamicDNSServer_Protocol(char *refparam, struct dmctx *ctx, void *data,
 }
 
 /*#Device.DynamicDNS.Server.{i}.CheckInterval!UCI:ddns/service,@i-1/check_interval*/
-int get_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "check_interval", value);
 	if (*value[0] == '\0')
@@ -1026,7 +964,7 @@ int get_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-int set_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s;
 	char buf[16] = "", *check_unit, *service_name;
@@ -1058,7 +996,7 @@ int set_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *
 }
 
 /*#Device.DynamicDNS.Server.{i}.RetryInterval!UCI:ddns/service,@i-1/retry_interval*/
-int get_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "retry_interval", value);
 	if (*value[0] == '\0')
@@ -1066,7 +1004,7 @@ int get_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-int set_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s;
 	char buf[16] = "", *retry_unit, *service_name;
@@ -1097,7 +1035,7 @@ int set_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx, void *
 }
 
 /*#Device.DynamicDNS.Server.{i}.MaxRetries!UCI:ddns/service,@i-1/retry_count*/
-int get_DynamicDNSServer_MaxRetries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DynamicDNSServer_MaxRetries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "retry_count", value);
 	if (*value[0] == '\0')
@@ -1105,7 +1043,7 @@ int get_DynamicDNSServer_MaxRetries(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int set_DynamicDNSServer_MaxRetries(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_DynamicDNSServer_MaxRetries(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s;
 	char *service_name;
@@ -1126,3 +1064,66 @@ int set_DynamicDNSServer_MaxRetries(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
+/* *** Device.DynamicDNS. *** */
+DMOBJ tDynamicDNSObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Client", &DMWRITE, addObjDynamicDNSClient, delObjDynamicDNSClient, NULL, browseDynamicDNSClientInst, NULL, NULL, NULL, tDynamicDNSClientObj, tDynamicDNSClientParams, NULL, BBFDM_BOTH},
+{"Server", &DMWRITE, addObjDynamicDNSServer, delObjDynamicDNSServer, NULL, browseDynamicDNSServerInst, NULL, NULL, NULL, NULL, tDynamicDNSServerParams, get_linker_dynamicdns_server, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tDynamicDNSParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"ClientNumberOfEntries", &DMREAD, DMT_UNINT, get_DynamicDNS_ClientNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{"ServerNumberOfEntries", &DMREAD, DMT_UNINT, get_DynamicDNS_ServerNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{"SupportedServices", &DMREAD, DMT_STRING, get_DynamicDNS_SupportedServices, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DynamicDNS.Client.{i}. *** */
+DMOBJ tDynamicDNSClientObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Hostname", &DMWRITE, NULL, NULL, NULL, browseDynamicDNSClientHostnameInst, NULL, NULL, NULL, NULL, tDynamicDNSClientHostnameParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tDynamicDNSClientParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_DynamicDNSClient_Enable, set_DynamicDNSClient_Enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_DynamicDNSClient_Status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Alias, set_DynamicDNSClient_Alias, NULL, NULL, BBFDM_BOTH},
+{"LastError", &DMREAD, DMT_STRING, get_DynamicDNSClient_LastError, NULL, NULL, NULL, BBFDM_BOTH},
+{"Server", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Server, set_DynamicDNSClient_Server, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Interface, set_DynamicDNSClient_Interface, NULL, NULL, BBFDM_BOTH},
+{"Username", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Username, set_DynamicDNSClient_Username, NULL, NULL, BBFDM_BOTH},
+{"Password", &DMWRITE, DMT_STRING, get_DynamicDNSClient_Password, set_DynamicDNSClient_Password, NULL, NULL, BBFDM_BOTH},
+{"HostnameNumberOfEntries", &DMREAD, DMT_UNINT, get_DynamicDNSClient_HostnameNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DynamicDNS.Client.{i}.Hostname.{i}. *** */
+DMLEAF tDynamicDNSClientHostnameParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_DynamicDNSClientHostname_Enable, set_DynamicDNSClientHostname_Enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_DynamicDNSClientHostname_Status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Name", &DMWRITE, DMT_STRING, get_DynamicDNSClientHostname_Name, set_DynamicDNSClientHostname_Name, NULL, NULL, BBFDM_BOTH},
+{"LastUpdate", &DMREAD, DMT_TIME, get_DynamicDNSClientHostname_LastUpdate, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DynamicDNS.Server.{i}. *** */
+DMLEAF tDynamicDNSServerParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_STRING, get_DynamicDNSServer_Enable, set_DynamicDNSServer_Enable, NULL, NULL, BBFDM_BOTH},
+{"Name", &DMWRITE, DMT_STRING, get_DynamicDNSServer_Name, set_DynamicDNSServer_Name, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_DynamicDNSServer_Alias, set_DynamicDNSServer_Alias, NULL, NULL, BBFDM_BOTH},
+{"ServiceName", &DMWRITE, DMT_STRING, get_DynamicDNSServer_ServiceName, set_DynamicDNSServer_ServiceName, NULL, NULL, BBFDM_BOTH},
+{"ServerAddress", &DMWRITE, DMT_STRING, get_DynamicDNSServer_ServerAddress, set_DynamicDNSServer_ServerAddress, NULL, NULL, BBFDM_BOTH},
+{"ServerPort", &DMWRITE, DMT_UNINT, get_DynamicDNSServer_ServerPort, set_DynamicDNSServer_ServerPort, NULL, NULL, BBFDM_BOTH},
+{"SupportedProtocols", &DMREAD, DMT_STRING, get_DynamicDNSServer_SupportedProtocols, NULL, NULL, NULL, BBFDM_BOTH},
+{"Protocol", &DMWRITE, DMT_STRING, get_DynamicDNSServer_Protocol, set_DynamicDNSServer_Protocol, NULL, NULL, BBFDM_BOTH},
+{"CheckInterval", &DMWRITE, DMT_UNINT, get_DynamicDNSServer_CheckInterval, set_DynamicDNSServer_CheckInterval, NULL, NULL, BBFDM_BOTH},
+{"RetryInterval", &DMWRITE, DMT_UNINT, get_DynamicDNSServer_RetryInterval, set_DynamicDNSServer_RetryInterval, NULL, NULL, BBFDM_BOTH},
+{"MaxRetries", &DMWRITE, DMT_UNINT, get_DynamicDNSServer_MaxRetries, set_DynamicDNSServer_MaxRetries, NULL, NULL, BBFDM_BOTH},
+{0}
+};

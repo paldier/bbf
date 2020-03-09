@@ -12,24 +12,7 @@
 #include "dmentry.h"
 #include "times.h"
 
-/* *** Device.Time. *** */
-DMLEAF tTimeParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_time_enable, set_time_enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_time_status, NULL, NULL, NULL, BBFDM_BOTH},
-{"NTPServer1", &DMWRITE, DMT_STRING, get_time_ntpserver1, set_time_ntpserver1, NULL, NULL, BBFDM_BOTH},
-{"NTPServer2", &DMWRITE, DMT_STRING, get_time_ntpserver2, set_time_ntpserver2, NULL, NULL, BBFDM_BOTH},
-{"NTPServer3", &DMWRITE, DMT_STRING, get_time_ntpserver3, set_time_ntpserver3, NULL, NULL, BBFDM_BOTH},
-{"NTPServer4", &DMWRITE, DMT_STRING, get_time_ntpserver4, set_time_ntpserver4, NULL, NULL, BBFDM_BOTH},
-{"NTPServer5", &DMWRITE, DMT_STRING, get_time_ntpserver5, set_time_ntpserver5, NULL, NULL, BBFDM_BOTH},
-{"CurrentLocalTime", &DMREAD, DMT_TIME, get_time_CurrentLocalTime, NULL, NULL, NULL, BBFDM_BOTH},
-{"LocalTimeZone", &DMWRITE, DMT_STRING, get_time_LocalTimeZone, set_time_LocalTimeZone, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"LocalTimeZoneOlson", &DMREAD, DMT_STRING, get_local_time_zone_olson, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"SourceInterface", &DMWRITE, DMT_STRING, get_time_source_interface, set_time_source_interface, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-int get_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *path = "/etc/rc.d/*ntpd";
 
@@ -40,7 +23,7 @@ int get_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	return 0;
 }
 
-int set_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 	pid_t pid;
@@ -70,7 +53,7 @@ int set_time_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	return 0;
 }
 
-int get_time_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *path = "/etc/rc.d/*ntpd";
 
@@ -81,19 +64,19 @@ int get_time_status(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	return 0;
 }
 
-int get_time_CurrentLocalTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_CurrentLocalTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return dm_time_format(time(NULL), value);
 }
 
 /*#Device.Time.LocalTimeZone!UCI:system/system,@system[0]/timezone*/
-int get_time_LocalTimeZone(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_LocalTimeZone(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("system", "@system[0]", "timezone", value);
 	return 0;
 }
 
-int set_time_LocalTimeZone(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_time_LocalTimeZone(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -107,13 +90,13 @@ int set_time_LocalTimeZone(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
-int get_local_time_zone_olson(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_local_time_zone_olson(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("system", "@system[0]", "zonename", value);
 	return 0;
 }
 
-int get_time_ntpserver(char *refparam, struct dmctx *ctx, char **value, int index)
+static int get_time_ntpserver(char *refparam, struct dmctx *ctx, char **value, int index)
 {
 	bool found = 0;
 	int element = 0;
@@ -141,7 +124,7 @@ int get_time_ntpserver(char *refparam, struct dmctx *ctx, char **value, int inde
 	return 0;
 }
 
-int get_time_source_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_source_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *iface = NULL, *interface = NULL;
 	*value = "";
@@ -155,32 +138,32 @@ int get_time_source_interface(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
-int get_time_ntpserver1(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_ntpserver1(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return get_time_ntpserver(refparam, ctx, value, 1);
 }
 
-int get_time_ntpserver2(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_ntpserver2(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return get_time_ntpserver(refparam, ctx, value, 2);
 }
 
-int get_time_ntpserver3(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_ntpserver3(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return get_time_ntpserver(refparam, ctx, value, 3);
 }
 
-int get_time_ntpserver4(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_ntpserver4(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return get_time_ntpserver(refparam, ctx, value, 4);
 }
 
-int get_time_ntpserver5(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_time_ntpserver5(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return get_time_ntpserver(refparam, ctx, value, 5);
 }
 
-int set_time_source_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_time_source_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *iface= NULL;
 	switch (action) {
@@ -197,7 +180,7 @@ int set_time_source_interface(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
-int set_time_ntpserver(char *refparam, struct dmctx *ctx, int action, char *value, int index)
+static int set_time_ntpserver(char *refparam, struct dmctx *ctx, int action, char *value, int index)
 {
 	struct uci_list *v;
 	struct uci_element *e;
@@ -240,27 +223,44 @@ int set_time_ntpserver(char *refparam, struct dmctx *ctx, int action, char *valu
 	return 0;
 }
 
-int set_time_ntpserver1(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_time_ntpserver1(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	return set_time_ntpserver(refparam, ctx, action, value, 1);
 }
 
-int set_time_ntpserver2(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_time_ntpserver2(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	return set_time_ntpserver(refparam, ctx, action, value, 2);
 }
 
-int set_time_ntpserver3(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_time_ntpserver3(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	return set_time_ntpserver(refparam, ctx, action, value, 3);
 }
 
-int set_time_ntpserver4(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_time_ntpserver4(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	return set_time_ntpserver(refparam, ctx, action, value, 4);
 }
 
-int set_time_ntpserver5(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_time_ntpserver5(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	return set_time_ntpserver(refparam, ctx, action, value, 5);
 }
+
+/* *** Device.Time. *** */
+DMLEAF tTimeParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_time_enable, set_time_enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_time_status, NULL, NULL, NULL, BBFDM_BOTH},
+{"NTPServer1", &DMWRITE, DMT_STRING, get_time_ntpserver1, set_time_ntpserver1, NULL, NULL, BBFDM_BOTH},
+{"NTPServer2", &DMWRITE, DMT_STRING, get_time_ntpserver2, set_time_ntpserver2, NULL, NULL, BBFDM_BOTH},
+{"NTPServer3", &DMWRITE, DMT_STRING, get_time_ntpserver3, set_time_ntpserver3, NULL, NULL, BBFDM_BOTH},
+{"NTPServer4", &DMWRITE, DMT_STRING, get_time_ntpserver4, set_time_ntpserver4, NULL, NULL, BBFDM_BOTH},
+{"NTPServer5", &DMWRITE, DMT_STRING, get_time_ntpserver5, set_time_ntpserver5, NULL, NULL, BBFDM_BOTH},
+{"CurrentLocalTime", &DMREAD, DMT_TIME, get_time_CurrentLocalTime, NULL, NULL, NULL, BBFDM_BOTH},
+{"LocalTimeZone", &DMWRITE, DMT_STRING, get_time_LocalTimeZone, set_time_LocalTimeZone, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"LocalTimeZoneOlson", &DMREAD, DMT_STRING, get_local_time_zone_olson, NULL, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"SourceInterface", &DMWRITE, DMT_STRING, get_time_source_interface, set_time_source_interface, NULL, NULL, BBFDM_BOTH},
+{0}
+};

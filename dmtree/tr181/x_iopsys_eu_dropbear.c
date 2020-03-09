@@ -11,24 +11,6 @@
 
 #include "x_iopsys_eu_dropbear.h"
 
-/*** DMROOT.X_IOPSYS_EU_Dropbear.{i}. ****/
-DMLEAF X_IOPSYS_EU_DropbearParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Alias", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_alias, set_x_iopsys_eu_dropbear_alias, NULL, NULL, BBFDM_BOTH},
-{"PasswordAuth", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_password_auth, set_x_iopsys_eu_dropbear_password_auth, NULL, NULL, BBFDM_BOTH},
-{"RootPasswordAuth", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_root_password_auth, set_x_iopsys_eu_dropbear_root_password_auth, NULL, NULL, BBFDM_BOTH},
-{"Port", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_dropbear_port, set_x_iopsys_eu_dropbear_port, NULL, NULL, BBFDM_BOTH},
-{"RootLogin", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_root_login, set_x_iopsys_eu_dropbear_root_login, NULL, NULL, BBFDM_BOTH},
-{"GatewayPorts", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_gateway_ports, set_x_iopsys_eu_dropbear_gateway_ports, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_interface, set_x_iopsys_eu_dropbear_interface, NULL, NULL, BBFDM_BOTH},
-{"rsakeyfile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_rsakeyfile, set_x_iopsys_eu_dropbear_rsakeyfile, NULL, NULL, BBFDM_BOTH},
-{"dsskeyfile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_dsskeyfile, set_x_iopsys_eu_dropbear_dsskeyfile, NULL, NULL, BBFDM_BOTH},
-{"SSHKeepAlive", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_dropbear_ssh_keepalive, set_x_iopsys_eu_dropbear_ssh_keepalive, NULL, NULL, BBFDM_BOTH},
-{"IdleTimeout", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_dropbear_idle_timeout, set_x_iopsys_eu_dropbear_idle_timeout, NULL, NULL, BBFDM_BOTH},
-{"verbose", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_verbose, set_x_iopsys_eu_dropbear_verbose, NULL, NULL, BBFDM_BOTH},
-{"BannerFile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_banner_file, set_x_iopsys_eu_dropbear_banner_file, NULL, NULL, BBFDM_BOTH},
-{0}
-};
 
 int browseXIopsysEuDropbear(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
@@ -48,7 +30,7 @@ int browseXIopsysEuDropbear(struct dmctx *dmctx, DMNODE *parent_node, void *prev
 /************************************************************************************* 
 **** function ****
 **************************************************************************************/
-int get_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "PasswordAuth", value);
 	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1')
@@ -58,7 +40,7 @@ int get_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -75,7 +57,7 @@ int set_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "RootPasswordAuth", value);
 	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1')
@@ -85,7 +67,7 @@ int get_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ct
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -102,7 +84,7 @@ int set_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ct
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "Port", value);
 	if ((*value)[0] == '\0') {
@@ -111,7 +93,7 @@ int get_x_iopsys_eu_dropbear_port(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -127,7 +109,7 @@ int set_x_iopsys_eu_dropbear_port(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "RootLogin", value);
 	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1' )
@@ -137,7 +119,7 @@ int get_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -154,7 +136,7 @@ int set_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "verbose", value);
 	if ((*value)[0] == '\0' || (*value)[0] == '0' )
@@ -164,7 +146,7 @@ int get_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -181,7 +163,7 @@ int set_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "GatewayPorts", value);
 	if ((*value)[0] == '\0' || (*value)[0] == '0' )
@@ -191,7 +173,7 @@ int get_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -208,13 +190,13 @@ int set_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "Interface", value);
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -227,13 +209,13 @@ int set_x_iopsys_eu_dropbear_interface(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_rsakeyfile(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_rsakeyfile(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "rsakeyfile", value);
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_rsakeyfile(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_rsakeyfile(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -246,13 +228,13 @@ int set_x_iopsys_eu_dropbear_rsakeyfile(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_dsskeyfile(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_dsskeyfile(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "dsskeyfile", value);
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_dsskeyfile(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_dsskeyfile(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -265,7 +247,7 @@ int set_x_iopsys_eu_dropbear_dsskeyfile(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_ssh_keepalive(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_ssh_keepalive(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "SSHKeepAlive", value);
 	if ((*value)[0] == '\0') {
@@ -274,7 +256,7 @@ int get_x_iopsys_eu_dropbear_ssh_keepalive(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_ssh_keepalive(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_ssh_keepalive(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -290,7 +272,7 @@ int set_x_iopsys_eu_dropbear_ssh_keepalive(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_idle_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_idle_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "IdleTimeout", value);
 	if ((*value)[0] == '\0') {
@@ -299,7 +281,7 @@ int get_x_iopsys_eu_dropbear_idle_timeout(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_idle_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_idle_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -315,13 +297,13 @@ int set_x_iopsys_eu_dropbear_idle_timeout(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-int get_x_iopsys_eu_dropbear_banner_file(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_banner_file(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "BannerFile", value);
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_banner_file(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_banner_file(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -336,7 +318,7 @@ int set_x_iopsys_eu_dropbear_banner_file(char *refparam, struct dmctx *ctx, void
 
 ////////////////////////SET AND GET ALIAS/////////////////////////////////
 
-int get_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -346,7 +328,7 @@ int get_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-int set_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -425,3 +407,21 @@ int delete_dropbear_instance(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
+/*** DMROOT.X_IOPSYS_EU_Dropbear.{i}. ****/
+DMLEAF X_IOPSYS_EU_DropbearParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Alias", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_alias, set_x_iopsys_eu_dropbear_alias, NULL, NULL, BBFDM_BOTH},
+{"PasswordAuth", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_password_auth, set_x_iopsys_eu_dropbear_password_auth, NULL, NULL, BBFDM_BOTH},
+{"RootPasswordAuth", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_root_password_auth, set_x_iopsys_eu_dropbear_root_password_auth, NULL, NULL, BBFDM_BOTH},
+{"Port", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_dropbear_port, set_x_iopsys_eu_dropbear_port, NULL, NULL, BBFDM_BOTH},
+{"RootLogin", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_root_login, set_x_iopsys_eu_dropbear_root_login, NULL, NULL, BBFDM_BOTH},
+{"GatewayPorts", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_gateway_ports, set_x_iopsys_eu_dropbear_gateway_ports, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_interface, set_x_iopsys_eu_dropbear_interface, NULL, NULL, BBFDM_BOTH},
+{"rsakeyfile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_rsakeyfile, set_x_iopsys_eu_dropbear_rsakeyfile, NULL, NULL, BBFDM_BOTH},
+{"dsskeyfile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_dsskeyfile, set_x_iopsys_eu_dropbear_dsskeyfile, NULL, NULL, BBFDM_BOTH},
+{"SSHKeepAlive", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_dropbear_ssh_keepalive, set_x_iopsys_eu_dropbear_ssh_keepalive, NULL, NULL, BBFDM_BOTH},
+{"IdleTimeout", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_dropbear_idle_timeout, set_x_iopsys_eu_dropbear_idle_timeout, NULL, NULL, BBFDM_BOTH},
+{"verbose", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_verbose, set_x_iopsys_eu_dropbear_verbose, NULL, NULL, BBFDM_BOTH},
+{"BannerFile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_banner_file, set_x_iopsys_eu_dropbear_banner_file, NULL, NULL, BBFDM_BOTH},
+{0}
+};

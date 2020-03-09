@@ -10,33 +10,18 @@
 
 #include "security.h"
 
-/* *** Device.Security. *** */
-DMOBJ tSecurityObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Certificate", &DMREAD, NULL, NULL, NULL, browseSecurityCertificateInst, NULL, NULL, NULL, NULL, tSecurityCertificateParams, NULL, BBFDM_BOTH},
-{0}
+#define DATE_LEN 128
+
+struct certificate_profile {
+	char *path;
+#ifdef LOPENSSL
+	X509 *openssl_cert;
+#elif LMBEDTLS
+	mbedtls_x509_crt mbdtls_cert;
+#endif
+	struct uci_section *dmmap_sect;
 };
 
-DMLEAF tSecurityParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"CertificateNumberOfEntries", &DMREAD, DMT_UNINT, get_Security_CertificateNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.Security.Certificate.{i}. *** */
-DMLEAF tSecurityCertificateParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-//{"Enable", &DMWRITE, DMT_BOOL, get_SecurityCertificate_Enable, set_SecurityCertificate_Enable, NULL, NULL, BBFDM_BOTH},
-{"LastModif", &DMREAD, DMT_TIME, get_SecurityCertificate_LastModif, NULL, NULL, NULL, BBFDM_BOTH},
-{"SerialNumber", &DMREAD, DMT_STRING, get_SecurityCertificate_SerialNumber, NULL, NULL, NULL, BBFDM_BOTH},
-{"Issuer", &DMREAD, DMT_STRING, get_SecurityCertificate_Issuer, NULL, NULL, NULL, BBFDM_BOTH},
-{"NotBefore", &DMREAD, DMT_TIME, get_SecurityCertificate_NotBefore, NULL, NULL, NULL, BBFDM_BOTH},
-{"NotAfter", &DMREAD, DMT_TIME, get_SecurityCertificate_NotAfter, NULL, NULL, NULL, BBFDM_BOTH},
-{"Subject", &DMREAD, DMT_STRING, get_SecurityCertificate_Subject, NULL, NULL, NULL, BBFDM_BOTH},
-//{"SubjectAlt", &DMREAD, DMT_STRING, get_SecurityCertificate_SubjectAlt, NULL, NULL, NULL, BBFDM_BOTH},
-{"SignatureAlgorithm", &DMREAD, DMT_STRING, get_SecurityCertificate_SignatureAlgorithm, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
 /************************************************************
  * Init function
  *************************************************************/
@@ -58,7 +43,7 @@ struct uci_section *dmsect, struct certificate_profile *certprofile)
 }
 
 #ifdef LOPENSSL
-int convert_ASN1TIME(ASN1_TIME *t, char* buf, size_t len)
+static int convert_ASN1TIME(ASN1_TIME *t, char* buf, size_t len)
 {
 	int rc;
 	BIO *b = BIO_new(BIO_s_mem());
@@ -76,7 +61,7 @@ int convert_ASN1TIME(ASN1_TIME *t, char* buf, size_t len)
 	return EXIT_SUCCESS;
 }
 
-char *get_certificate_sig_alg(int sig_nid)
+static char *get_certificate_sig_alg(int sig_nid)
 {
 	switch(sig_nid) {
 	case NID_sha256WithRSAEncryption:
@@ -132,7 +117,7 @@ char *get_certificate_sig_alg(int sig_nid)
 	}
 }
 #elif LMBEDTLS
-char *get_certificate_md(mbedtls_md_type_t sig_md)
+static char *get_certificate_md(mbedtls_md_type_t sig_md)
 {
 	switch(sig_md) {
 	case MBEDTLS_MD_MD2:
@@ -159,7 +144,7 @@ char *get_certificate_md(mbedtls_md_type_t sig_md)
 	return "";
 }
 
-char *get_certificate_pk(mbedtls_pk_type_t sig_pk)
+static char *get_certificate_pk(mbedtls_pk_type_t sig_pk)
 {
 	switch(sig_pk) {
 	case MBEDTLS_PK_RSA:
@@ -185,7 +170,7 @@ char *get_certificate_pk(mbedtls_pk_type_t sig_pk)
 /*************************************************************
 * ENTRY METHOD
 **************************************************************/
-int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	int length, i;
 	char **certifcates_paths = NULL;
@@ -241,7 +226,7 @@ int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_node, void
 /*************************************************************
 * GET & SET PARAM
 **************************************************************/
-int get_Security_CertificateNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_Security_CertificateNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	int length, i;
 	char **certifcates_paths = NULL;
@@ -276,13 +261,13 @@ int get_Security_CertificateNumberOfEntries(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
-int get_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int set_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 	case VALUECHECK:
@@ -296,7 +281,7 @@ int set_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-int get_SecurityCertificate_LastModif(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SecurityCertificate_LastModif(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	struct stat b;
@@ -307,7 +292,7 @@ int get_SecurityCertificate_LastModif(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-int get_SecurityCertificate_SerialNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SecurityCertificate_SerialNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	*value = "";
@@ -320,7 +305,7 @@ int get_SecurityCertificate_SerialNumber(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-int get_SecurityCertificate_Issuer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SecurityCertificate_Issuer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	*value = "";
@@ -340,7 +325,7 @@ int get_SecurityCertificate_Issuer(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-int get_SecurityCertificate_NotBefore(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SecurityCertificate_NotBefore(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	*value = "";
@@ -355,7 +340,7 @@ int get_SecurityCertificate_NotBefore(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-int get_SecurityCertificate_NotAfter(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SecurityCertificate_NotAfter(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	*value = "";
@@ -370,7 +355,7 @@ int get_SecurityCertificate_NotAfter(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int get_SecurityCertificate_Subject(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SecurityCertificate_Subject(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	*value = "";
@@ -390,13 +375,13 @@ int get_SecurityCertificate_Subject(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int get_SecurityCertificate_SubjectAlt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SecurityCertificate_SubjectAlt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int get_SecurityCertificate_SignatureAlgorithm(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SecurityCertificate_SignatureAlgorithm(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	*value = "";
@@ -408,3 +393,30 @@ int get_SecurityCertificate_SignatureAlgorithm(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
+/* *** Device.Security. *** */
+DMOBJ tSecurityObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Certificate", &DMREAD, NULL, NULL, NULL, browseSecurityCertificateInst, NULL, NULL, NULL, NULL, tSecurityCertificateParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tSecurityParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"CertificateNumberOfEntries", &DMREAD, DMT_UNINT, get_Security_CertificateNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Security.Certificate.{i}. *** */
+DMLEAF tSecurityCertificateParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+//{"Enable", &DMWRITE, DMT_BOOL, get_SecurityCertificate_Enable, set_SecurityCertificate_Enable, NULL, NULL, BBFDM_BOTH},
+{"LastModif", &DMREAD, DMT_TIME, get_SecurityCertificate_LastModif, NULL, NULL, NULL, BBFDM_BOTH},
+{"SerialNumber", &DMREAD, DMT_STRING, get_SecurityCertificate_SerialNumber, NULL, NULL, NULL, BBFDM_BOTH},
+{"Issuer", &DMREAD, DMT_STRING, get_SecurityCertificate_Issuer, NULL, NULL, NULL, BBFDM_BOTH},
+{"NotBefore", &DMREAD, DMT_TIME, get_SecurityCertificate_NotBefore, NULL, NULL, NULL, BBFDM_BOTH},
+{"NotAfter", &DMREAD, DMT_TIME, get_SecurityCertificate_NotAfter, NULL, NULL, NULL, BBFDM_BOTH},
+{"Subject", &DMREAD, DMT_STRING, get_SecurityCertificate_Subject, NULL, NULL, NULL, BBFDM_BOTH},
+//{"SubjectAlt", &DMREAD, DMT_STRING, get_SecurityCertificate_SubjectAlt, NULL, NULL, NULL, BBFDM_BOTH},
+{"SignatureAlgorithm", &DMREAD, DMT_STRING, get_SecurityCertificate_SignatureAlgorithm, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};

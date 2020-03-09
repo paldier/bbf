@@ -13,29 +13,20 @@
 
 #include "x_iopsys_eu_power_mgmt.h"
 
-/*** DMROOT.X_IOPSYS_EU_PowerManagement. ***/
-DMLEAF tSe_PowerManagementParam[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"EthernetAutoPowerDownEnable", &DMWRITE, DMT_BOOL, get_pwr_mgmt_value_ethapd, set_power_mgmt_param_ethapd, NULL, NULL, BBFDM_BOTH},
-{"EnergyEfficientEthernetEnable", &DMWRITE, DMT_BOOL, get_pwr_mgmt_value_eee, set_power_mgmt_param_eee, NULL, NULL, BBFDM_BOTH},
-{"NumberOfEthernetInterfacesPoweredUp", &DMREAD, DMT_UNINT, get_pwr_nbr_interfaces_up, NULL, NULL, NULL, BBFDM_BOTH},
-{"NumberOfEthernetInterfacesPoweredDown", &DMREAD, DMT_UNINT, get_pwr_nbr_interfaces_down, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
 
-int get_pwr_mgmt_value_ethapd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_pwr_mgmt_value_ethapd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("power_mgmt", "power_mgmt", "ethapd", value);
 	return 0;
 }
 
-int get_pwr_mgmt_value_eee(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_pwr_mgmt_value_eee(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("power_mgmt", "power_mgmt", "eee", value);
 	return 0;
 }
 
-int get_pwr_nbr_interfaces_up(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_pwr_nbr_interfaces_up(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char buf[256];
 	int pp;
@@ -50,7 +41,7 @@ int get_pwr_nbr_interfaces_up(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
-int get_pwr_nbr_interfaces_down(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_pwr_nbr_interfaces_down(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char buf[256];
 	int pp;
@@ -65,7 +56,7 @@ int get_pwr_nbr_interfaces_down(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int set_power_mgmt_param_ethapd(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_power_mgmt_param_ethapd(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -82,7 +73,7 @@ int set_power_mgmt_param_ethapd(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int set_power_mgmt_param_eee(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_power_mgmt_param_eee(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -98,3 +89,13 @@ int set_power_mgmt_param_eee(char *refparam, struct dmctx *ctx, void *data, char
 	}
 	return 0;
 }
+
+/*** DMROOT.X_IOPSYS_EU_PowerManagement. ***/
+DMLEAF tSe_PowerManagementParam[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"EthernetAutoPowerDownEnable", &DMWRITE, DMT_BOOL, get_pwr_mgmt_value_ethapd, set_power_mgmt_param_ethapd, NULL, NULL, BBFDM_BOTH},
+{"EnergyEfficientEthernetEnable", &DMWRITE, DMT_BOOL, get_pwr_mgmt_value_eee, set_power_mgmt_param_eee, NULL, NULL, BBFDM_BOTH},
+{"NumberOfEthernetInterfacesPoweredUp", &DMREAD, DMT_UNINT, get_pwr_nbr_interfaces_up, NULL, NULL, NULL, BBFDM_BOTH},
+{"NumberOfEthernetInterfacesPoweredDown", &DMREAD, DMT_UNINT, get_pwr_nbr_interfaces_down, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};

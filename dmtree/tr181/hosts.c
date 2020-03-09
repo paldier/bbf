@@ -12,35 +12,10 @@
 #include "dmentry.h"
 #include "hosts.h"
 
-/* *** Device.Hosts. *** */
-DMOBJ tHostsObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Host", &DMREAD, NULL, NULL, NULL, browsehostInst, NULL, NULL, NULL, NULL, tHostsHostParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tHostsParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"HostNumberOfEntries", &DMREAD, DMT_UNINT, get_host_nbr_entries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.Hosts.Host.{i}. *** */
-DMLEAF tHostsHostParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"AssociatedDevice", &DMREAD, DMT_STRING, get_host_associateddevice, NULL, NULL, NULL, BBFDM_BOTH},
-{"Layer3Interface", &DMREAD, DMT_STRING, get_host_layer3interface, NULL, NULL, NULL, BBFDM_BOTH},
-{"IPAddress", &DMREAD, DMT_STRING, get_host_ipaddress, NULL, NULL, NULL, BBFDM_BOTH},
-{"HostName", &DMREAD, DMT_STRING, get_host_hostname, NULL, NULL, NULL, BBFDM_BOTH},
-{"Active", &DMREAD, DMT_BOOL, get_host_active, NULL, NULL, NULL, BBFDM_BOTH},
-{"PhysAddress", &DMREAD, DMT_STRING, get_host_phy_address, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"LinkType", &DMREAD, DMT_STRING, get_host_interfacetype, NULL, NULL, NULL, BBFDM_BOTH},
-{"AddressSource", &DMREAD, DMT_STRING, get_host_address_source, NULL, NULL, NULL, BBFDM_BOTH},
-{"LeaseTimeRemaining", &DMREAD, DMT_INT, get_host_leasetime_remaining, NULL, NULL, NULL, BBFDM_BOTH},
-{"DHCPClient", &DMREAD, DMT_STRING, get_host_dhcp_client, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"InterfaceType", &DMREAD, DMT_STRING, get_host_interface_type, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"ifname", &DMREAD, DMT_STRING, get_host_interfacename, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
+struct host_args
+{
+	json_object *client;
+	char *key;
 };
 
 
@@ -56,7 +31,7 @@ static inline int init_host_args(struct host_args *args, json_object *clients, c
 /*************************************************************
 * GET & SET PARAM
 **************************************************************/
-int get_host_associateddevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_associateddevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *ss;
 	char *accesspointInstance = NULL, *wifiAssociativeDeviecPath;
@@ -77,7 +52,7 @@ int get_host_associateddevice(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
-int get_host_layer3interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_layer3interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *ip_linker=dmjson_get_value(((struct host_args *)data)->client, 1, "network");
 	adm_entry_get_linker_param(ctx, "Device.IP.Interface.", ip_linker, value);
@@ -86,7 +61,7 @@ int get_host_layer3interface(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
-int get_host_interface_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_interface_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *type= NULL;
 	char *ifname = dmjson_get_value(((struct host_args *)data)->client, 1, "network");
@@ -104,7 +79,7 @@ int get_host_interface_type(char *refparam, struct dmctx *ctx, void *data, char 
 	return 0;
 }
 
-int get_host_interfacename(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_interfacename(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *frequency, *wireless;
 
@@ -123,31 +98,31 @@ int get_host_interfacename(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
-int get_host_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value(((struct host_args *)data)->client, 1, "ipaddr");
 	return 0;
 }
 
-int get_host_hostname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_hostname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value(((struct host_args *)data)->client, 1, "hostname");
 	return 0;
 }
 
-int get_host_active(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_active(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value(((struct host_args *)data)->client, 1, "connected");
 	return 0;
 }
 
-int get_host_phy_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_phy_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value(((struct host_args *)data)->client, 1, "macaddr");
 	return 0;
 }
 
-int get_host_address_source(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_address_source(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *dhcp;
 
@@ -159,7 +134,7 @@ int get_host_address_source(char *refparam, struct dmctx *ctx, void *data, char 
 	return 0;
 }
 
-int get_host_leasetime_remaining(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_leasetime_remaining(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *dhcp;
 	FILE *fp;
@@ -200,7 +175,7 @@ int get_host_leasetime_remaining(char *refparam, struct dmctx *ctx, void *data, 
 	return 0;
 }
 
-int  get_host_dhcp_client(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int  get_host_dhcp_client(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *linker;
 	dmasprintf(&linker, "%s", ((struct host_args *)data)->key);
@@ -247,7 +222,7 @@ static char *get_interface_type(char *mac, char *ndev)
 	return "Ethernet";
 }
 
-int get_host_interfacetype(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_interfacetype(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *mac, *network;
 	
@@ -257,7 +232,7 @@ int get_host_interfacetype(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
-int get_host_nbr_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_host_nbr_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	int entries = 0;
 	json_object *res;
@@ -276,7 +251,7 @@ int get_host_nbr_entries(char *refparam, struct dmctx *ctx, void *data, char *in
 /*************************************************************
 * ENTRY METHOD
 **************************************************************/
-int browsehostInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browsehostInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res;
 	char *idx, *idx_last = NULL, *connected;
@@ -298,3 +273,33 @@ int browsehostInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, ch
 	return 0;
 }
 
+/* *** Device.Hosts. *** */
+DMOBJ tHostsObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Host", &DMREAD, NULL, NULL, NULL, browsehostInst, NULL, NULL, NULL, NULL, tHostsHostParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tHostsParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"HostNumberOfEntries", &DMREAD, DMT_UNINT, get_host_nbr_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Hosts.Host.{i}. *** */
+DMLEAF tHostsHostParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"AssociatedDevice", &DMREAD, DMT_STRING, get_host_associateddevice, NULL, NULL, NULL, BBFDM_BOTH},
+{"Layer3Interface", &DMREAD, DMT_STRING, get_host_layer3interface, NULL, NULL, NULL, BBFDM_BOTH},
+{"IPAddress", &DMREAD, DMT_STRING, get_host_ipaddress, NULL, NULL, NULL, BBFDM_BOTH},
+{"HostName", &DMREAD, DMT_STRING, get_host_hostname, NULL, NULL, NULL, BBFDM_BOTH},
+{"Active", &DMREAD, DMT_BOOL, get_host_active, NULL, NULL, NULL, BBFDM_BOTH},
+{"PhysAddress", &DMREAD, DMT_STRING, get_host_phy_address, NULL, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"LinkType", &DMREAD, DMT_STRING, get_host_interfacetype, NULL, NULL, NULL, BBFDM_BOTH},
+{"AddressSource", &DMREAD, DMT_STRING, get_host_address_source, NULL, NULL, NULL, BBFDM_BOTH},
+{"LeaseTimeRemaining", &DMREAD, DMT_INT, get_host_leasetime_remaining, NULL, NULL, NULL, BBFDM_BOTH},
+{"DHCPClient", &DMREAD, DMT_STRING, get_host_dhcp_client, NULL, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"InterfaceType", &DMREAD, DMT_STRING, get_host_interface_type, NULL, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"ifname", &DMREAD, DMT_STRING, get_host_interfacename, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};

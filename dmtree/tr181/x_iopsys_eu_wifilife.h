@@ -17,13 +17,4 @@ extern DMOBJ X_IOPSYS_EU_WiFiLifeObj[];
 extern DMLEAF X_IOPSYS_EU_WiFiLifeParams[];
 extern DMLEAF WiFiLifeSteeringParams[];
 
-int browseWifiLifeSteeringObj(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance);
-
-int get_x_iopsys_eu_wifilife_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int set_x_iopsys_eu_wifilife_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);
-int get_wifilife_steering_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int set_wifilife_steering_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);
-int get_wifilife_steering_legacy_fallback(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int set_wifilife_steering_legacy_fallback(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);
-
 #endif // __WIFILIFE_H

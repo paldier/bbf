@@ -12,47 +12,16 @@
 #include "dmentry.h"
 #include "atm.h"
 
-/*** ATM. ***/
-DMOBJ tATMObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Link", &DMWRITE, add_atm_link, delete_atm_link, NULL, browseAtmLinkInst, NULL, NULL, NULL, tATMLinkObj, tATMLinkParams, get_atm_linker, BBFDM_BOTH},
-{0}
-};
-
-/*** ATM.Link. ***/
-DMOBJ tATMLinkObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tATMLinkStatsParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tATMLinkParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Alias", &DMWRITE, DMT_STRING,  get_atm_alias, set_atm_alias, NULL, NULL, BBFDM_BOTH},
-{"Enable", &DMREAD, DMT_BOOL, get_atm_enable, NULL, NULL, NULL, BBFDM_BOTH},
-{"Name", &DMREAD, DMT_STRING, get_atm_link_name, NULL, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_atm_enable, NULL, NULL, NULL, BBFDM_BOTH},
-{"LowerLayers", &DMREAD, DMT_STRING, get_atm_lower_layer, NULL, NULL, NULL, BBFDM_BOTH},
-{"LinkType", &DMWRITE, DMT_STRING, get_atm_link_type, set_atm_link_type, NULL, NULL, BBFDM_BOTH},
-{"DestinationAddress", &DMWRITE, DMT_STRING, get_atm_destination_address, set_atm_destination_address, NULL, NULL, BBFDM_BOTH},
-{"Encapsulation", &DMWRITE, DMT_STRING, get_atm_encapsulation, set_atm_encapsulation, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/*** ATM.Link.Stats. ***/
-DMLEAF tATMLinkStatsParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"BytesSent", &DMREAD, DMT_UNINT, get_atm_stats_bytes_sent, NULL, NULL, NULL, BBFDM_BOTH},
-{"BytesReceived", &DMREAD, DMT_UNINT, get_atm_stats_bytes_received, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsSent", &DMREAD, DMT_UNINT, get_atm_stats_pack_sent, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsReceived", &DMREAD, DMT_UNINT, get_atm_stats_pack_received, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
+struct atm_args
+{
+	struct uci_section *atm_sec;
+	char *ifname;
 };
 
 /**************************************************************************
 * LINKER
 ***************************************************************************/
-int get_atm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+static int get_atm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
 	if (data && ((struct atm_args *)data)->ifname) {
 		*linker =  ((struct atm_args *)data)->ifname;
@@ -76,7 +45,7 @@ static inline int init_atm_link(struct atm_args *args, struct uci_section *s, ch
 * SET & GET DSL LINK PARAMETERS
 ***************************************************************************/
 /*#Device.ATM.Link.{i}.DestinationAddress!UCI:dsl/atm-device,@i-1/vpi*/
-int get_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *vpi, *vci;
 
@@ -86,7 +55,7 @@ int get_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int set_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *vpi = NULL, *vci = NULL, *spch;
 
@@ -109,14 +78,14 @@ int set_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, c
 }
 
 /*#Device.ATM.Link.{i}.Name!UCI:dsl/atm-device,@i-1/name*/
-int get_atm_link_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_link_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct atm_args *)data)->atm_sec, "name", value);
 	return 0;
 }
 
 /*#Device.ATM.Link.{i}.Encapsulation!UCI:dsl/atm-device,@i-1/encapsulation*/
-int get_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *encapsulation;
 
@@ -130,7 +99,7 @@ int get_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
-int set_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -148,7 +117,7 @@ int set_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, char *i
 }
 
 /*#Device.ATM.Link.{i}.LinkType!UCI:dsl/atm-device,@i-1/link_type*/
-int get_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *link_type;
 
@@ -166,7 +135,7 @@ int get_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char *insta
 	return 0;
 }
 
-int set_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -189,7 +158,7 @@ int set_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char *insta
 	return 0;
 }
 
-int get_atm_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char linker[16];
 	snprintf(linker, sizeof(linker), "channel_%d", atoi(instance)-1);
@@ -209,34 +178,34 @@ static inline int ubus_atm_stats(char **value, char *stat_mod, void *data)
 }
 
 /*#Device.ATM.Link.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
-int get_atm_stats_bytes_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_stats_bytes_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	ubus_atm_stats(value, "rx_bytes", data);
 	return 0;
 }
 
 /*#Device.ATM.Link.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
-int get_atm_stats_bytes_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_stats_bytes_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	ubus_atm_stats(value, "tx_bytes", data);
 	return 0;
 }
 
 /*#Device.ATM.Link.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
-int get_atm_stats_pack_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_stats_pack_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	ubus_atm_stats(value, "rx_packets", data);
 	return 0;
 }
 
 /*#Device.ATM.Link.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
-int get_atm_stats_pack_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_stats_pack_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	ubus_atm_stats(value, "tx_packets", data);
 	return 0;
 }
 
-int get_atm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "true";
 	return 0;
@@ -245,7 +214,7 @@ int get_atm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance
 /*************************************************************
 * ADD OBJ
 *************************************************************/
-int add_atm_link(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
+static int add_atm_link(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
 	char *instance = NULL, *atm_device = NULL, *v = NULL, *instance_update = NULL;
 	struct uci_section *dmmap_atm = NULL;
@@ -268,7 +237,7 @@ int add_atm_link(char *refparam, struct dmctx *ctx, void *data, char **instancep
 	return 0;
 }
 
-int delete_atm_link(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int delete_atm_link(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *s = NULL, *ss = NULL, *ns = NULL, *nss = NULL, *dmmap_section= NULL;
 	char *ifname;
@@ -327,7 +296,7 @@ int delete_atm_link(char *refparam, struct dmctx *ctx, void *data, char *instanc
 /*************************************************************
 * SET AND GET ALIAS
 *************************************************************/
-int get_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -337,7 +306,7 @@ int get_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 	return 0;
 }
 
-int set_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -359,7 +328,7 @@ int set_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 * ENTRY METHOD
 *************************************************************/
 /*#Device.ATM.Link.{i}.!UCI:dsl/atm-device/dmmap_dsl*/
-int browseAtmLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseAtmLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *wnum = NULL, *channel_last = NULL, *ifname;
 	struct atm_args curr_atm_args = {0};
@@ -377,3 +346,40 @@ int browseAtmLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data,
 	free_dmmap_config_dup_list(&dup_list);
 	return 0;
 }
+
+/*** ATM. ***/
+DMOBJ tATMObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Link", &DMWRITE, add_atm_link, delete_atm_link, NULL, browseAtmLinkInst, NULL, NULL, NULL, tATMLinkObj, tATMLinkParams, get_atm_linker, BBFDM_BOTH},
+{0}
+};
+
+/*** ATM.Link. ***/
+DMOBJ tATMLinkObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tATMLinkStatsParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tATMLinkParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Alias", &DMWRITE, DMT_STRING,  get_atm_alias, set_atm_alias, NULL, NULL, BBFDM_BOTH},
+{"Enable", &DMREAD, DMT_BOOL, get_atm_enable, NULL, NULL, NULL, BBFDM_BOTH},
+{"Name", &DMREAD, DMT_STRING, get_atm_link_name, NULL, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_atm_enable, NULL, NULL, NULL, BBFDM_BOTH},
+{"LowerLayers", &DMREAD, DMT_STRING, get_atm_lower_layer, NULL, NULL, NULL, BBFDM_BOTH},
+{"LinkType", &DMWRITE, DMT_STRING, get_atm_link_type, set_atm_link_type, NULL, NULL, BBFDM_BOTH},
+{"DestinationAddress", &DMWRITE, DMT_STRING, get_atm_destination_address, set_atm_destination_address, NULL, NULL, BBFDM_BOTH},
+{"Encapsulation", &DMWRITE, DMT_STRING, get_atm_encapsulation, set_atm_encapsulation, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/*** ATM.Link.Stats. ***/
+DMLEAF tATMLinkStatsParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"BytesSent", &DMREAD, DMT_UNINT, get_atm_stats_bytes_sent, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesReceived", &DMREAD, DMT_UNINT, get_atm_stats_bytes_received, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsSent", &DMREAD, DMT_UNINT, get_atm_stats_pack_sent, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsReceived", &DMREAD, DMT_UNINT, get_atm_stats_pack_received, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};

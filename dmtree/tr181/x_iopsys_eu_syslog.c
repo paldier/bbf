@@ -11,22 +11,14 @@
 
 #include "x_iopsys_eu_syslog.h"
 
-/*** DMROOT.X_IOPSYS_EU_SyslogCfg. ***/
-DMLEAF tSe_SyslogCfgParam[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"ServerIPAddress", &DMWRITE, DMT_STRING, get_server_ip_address, set_server_ip_address, NULL, NULL, BBFDM_BOTH},
-{"ServerPortNumber", &DMWRITE, DMT_UNINT, get_server_port_number, set_server_port_number, NULL, NULL, BBFDM_BOTH},
-{"RemoteLogLevel", &DMWRITE, DMT_UNINT, get_remote_log_level, set_remote_log_level, NULL, NULL, BBFDM_BOTH},
-{0}
-};
 
-int get_server_ip_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_server_ip_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("system", "@system[0]", "log_ip", value);
 	return 0;
 }
 
-int set_server_ip_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_server_ip_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:			
@@ -38,7 +30,7 @@ int set_server_ip_address(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 	
-int get_server_port_number(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_server_port_number(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *tmp;
 	dmuci_get_option_value_string("system", "@system[0]", "log_port", &tmp);
@@ -49,7 +41,7 @@ int get_server_port_number(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
-int set_server_port_number(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_server_port_number(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:			
@@ -61,7 +53,7 @@ int set_server_port_number(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
-int get_remote_log_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_remote_log_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *tmp;
 	dmuci_get_option_value_string("system", "@system[0]", "conloglevel", &tmp);
@@ -72,7 +64,7 @@ int get_remote_log_level(char *refparam, struct dmctx *ctx, void *data, char *in
 	return 0;
 }
 
-int set_remote_log_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_remote_log_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:			
@@ -83,3 +75,12 @@ int set_remote_log_level(char *refparam, struct dmctx *ctx, void *data, char *in
 	}
 	return 0;
 }
+
+/*** DMROOT.X_IOPSYS_EU_SyslogCfg. ***/
+DMLEAF tSe_SyslogCfgParam[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"ServerIPAddress", &DMWRITE, DMT_STRING, get_server_ip_address, set_server_ip_address, NULL, NULL, BBFDM_BOTH},
+{"ServerPortNumber", &DMWRITE, DMT_UNINT, get_server_port_number, set_server_port_number, NULL, NULL, BBFDM_BOTH},
+{"RemoteLogLevel", &DMWRITE, DMT_UNINT, get_remote_log_level, set_remote_log_level, NULL, NULL, BBFDM_BOTH},
+{0}
+};

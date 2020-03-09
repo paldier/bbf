@@ -12,23 +12,6 @@
 
 #include "userinterface.h"
 
-/* *** Device.UserInterface. *** */
-DMOBJ tUserInterfaceObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"RemoteAccess", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUserInterfaceRemoteAccessParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.UserInterface.RemoteAccess. *** */
-DMLEAF tUserInterfaceRemoteAccessParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_userint_remoteaccesss_enable, set_userint_remoteaccesss_enable, NULL, NULL, BBFDM_BOTH},
-{"Port", &DMWRITE, DMT_UNINT, get_userint_remoteaccesss_port, set_userint_remoteaccesss_port, NULL, NULL, BBFDM_BOTH},
-{"SupportedProtocols", &DMREAD, DMT_STRING, get_userint_remoteaccesss_supportedprotocols, NULL, NULL, NULL, BBFDM_BOTH},
-{"Protocol", &DMWRITE, DMT_STRING, get_userint_remoteaccesss_protocol, set_userint_remoteaccesss_protocol, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
 /**************************************************************************
 * GET & SET PARAMETERS
 ***************************************************************************/
@@ -47,7 +30,7 @@ static void add_default_rule(char *port, char *enable, char *owsd)
 	dmuci_set_value_by_section(ss, "enabled", enable);
 }
 
-int get_userint_remoteaccesss_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_userint_remoteaccesss_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *ss;
 	char *rule_name, *rule_enabled;
@@ -64,7 +47,7 @@ int get_userint_remoteaccesss_enable(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int set_userint_remoteaccesss_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_userint_remoteaccesss_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *ss;
 	char *rule_name;
@@ -90,7 +73,7 @@ int set_userint_remoteaccesss_enable(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int get_userint_remoteaccesss_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_userint_remoteaccesss_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *ss;
 	char *rule_name, *dest_port;
@@ -107,7 +90,7 @@ int get_userint_remoteaccesss_port(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-int set_userint_remoteaccesss_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_userint_remoteaccesss_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *ss;
 	char *rule_name, *owsd;
@@ -148,7 +131,7 @@ static int get_supportedprotocols(void)
 	return found_https;
 }
 
-int get_userint_remoteaccesss_supportedprotocols(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_userint_remoteaccesss_supportedprotocols(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	int found = get_supportedprotocols();
 	if (found) {
@@ -159,7 +142,7 @@ int get_userint_remoteaccesss_supportedprotocols(char *refparam, struct dmctx *c
 	return 0;
 }
 
-int get_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *ss;
 	char *rule_name, *rule_owsd;
@@ -179,7 +162,7 @@ int get_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-int set_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *ss;
 	char *rule_name, *name_http;
@@ -220,3 +203,20 @@ int set_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx, void *
 	}
 	return 0;
 }
+
+/* *** Device.UserInterface. *** */
+DMOBJ tUserInterfaceObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"RemoteAccess", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tUserInterfaceRemoteAccessParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.UserInterface.RemoteAccess. *** */
+DMLEAF tUserInterfaceRemoteAccessParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_userint_remoteaccesss_enable, set_userint_remoteaccesss_enable, NULL, NULL, BBFDM_BOTH},
+{"Port", &DMWRITE, DMT_UNINT, get_userint_remoteaccesss_port, set_userint_remoteaccesss_port, NULL, NULL, BBFDM_BOTH},
+{"SupportedProtocols", &DMREAD, DMT_STRING, get_userint_remoteaccesss_supportedprotocols, NULL, NULL, NULL, BBFDM_BOTH},
+{"Protocol", &DMWRITE, DMT_STRING, get_userint_remoteaccesss_protocol, set_userint_remoteaccesss_protocol, NULL, NULL, BBFDM_BOTH},
+{0}
+};

@@ -11,21 +11,13 @@
 
 #include "x_iopsys_eu_ice.h"
 
-/*** DMROOT.X_IOPSYS_EU_ICE. ***/
-DMLEAF tSe_IceParam[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_ice_cloud_enable, set_ice_cloud_enable, NULL, NULL, BBFDM_BOTH},
-{"Server", &DMWRITE, DMT_STRING, get_ice_cloud_server, set_ice_cloud_server, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-int get_ice_cloud_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ice_cloud_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("ice", "cloud", "enabled", value);
 	return 0;
 }
 
-int set_ice_cloud_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_ice_cloud_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 	
@@ -42,13 +34,13 @@ int set_ice_cloud_enable(char *refparam, struct dmctx *ctx, void *data, char *in
 	return 0;
 }
 
-int get_ice_cloud_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ice_cloud_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("ice", "cloud", "server", value);
 	return 0;
 }
 
-int set_ice_cloud_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_ice_cloud_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -61,3 +53,11 @@ int set_ice_cloud_server(char *refparam, struct dmctx *ctx, void *data, char *in
 	}
 	return 0;
 }
+
+/*** DMROOT.X_IOPSYS_EU_ICE. ***/
+DMLEAF tSe_IceParam[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_ice_cloud_enable, set_ice_cloud_enable, NULL, NULL, BBFDM_BOTH},
+{"Server", &DMWRITE, DMT_STRING, get_ice_cloud_server, set_ice_cloud_server, NULL, NULL, BBFDM_BOTH},
+{0}
+};

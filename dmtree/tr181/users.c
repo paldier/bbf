@@ -11,34 +11,9 @@
 
 #include "users.h"
 
-/* *** Device.Users. *** */
-DMOBJ tUsersObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"User", &DMWRITE, add_users_user, delete_users_user, NULL, browseUserInst, NULL, NULL, NULL, NULL, tUsersUserParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tUsersParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"UserNumberOfEntries", &DMREAD, DMT_UNINT, get_users_user_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.Users.User.{i}. *** */
-DMLEAF tUsersUserParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Alias", &DMWRITE, DMT_STRING, get_user_alias, set_user_alias, NULL, NULL, BBFDM_BOTH},
-{"Enable", &DMWRITE, DMT_BOOL, get_user_enable, set_user_enable, NULL, NULL, BBFDM_BOTH},
-{"Username", &DMWRITE, DMT_STRING, get_user_username, set_user_username, NULL, NULL, BBFDM_BOTH},
-{"Password", &DMWRITE, DMT_STRING, get_user_password, set_user_password, NULL, NULL, BBFDM_BOTH},
-{"RemoteAccessCapable", &DMWRITE, DMT_BOOL, get_user_remote_accessable, set_user_remote_accessable, NULL, NULL, BBFDM_BOTH},
-{"Language", &DMWRITE, DMT_STRING, get_user_language, set_user_language, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
 /***************************** Browse Functions ***********************************/
 /*#Device.Users.User.{i}.!UCI:users/user/dmmap_users*/
-int browseUserInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseUserInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *instance, *instnbr = NULL;
 	struct dmmap_dup *p;
@@ -54,7 +29,7 @@ int browseUserInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, ch
 	return 0;
 }
 
-int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	struct uci_section *s, *dmmap_user;
 	char ib[8], *last_inst = NULL, *sect_name = NULL, *username, *v;
@@ -73,7 +48,7 @@ int add_users_user(char *refparam, struct dmctx *ctx, void *data, char **instanc
 	return 0;
 }
 
-int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *s = NULL, *ss = NULL, *dmmap_section = NULL;
 	int found = 0;
@@ -116,7 +91,7 @@ int delete_users_user(char *refparam, struct dmctx *ctx, void *data, char *insta
 
 /***************************************** Set/Get Parameter functions ***********************/
 /*#Device.Users.UserNumberOfEntries!UCI:users/user/*/
-int get_users_user_number_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_users_user_number_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
@@ -128,7 +103,7 @@ int get_users_user_number_of_entries(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int get_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -139,40 +114,40 @@ int get_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance
 }
 
 /*#Device.Users.User.{i}.Enable!UCI:users/user,@i-1/enabled*/
-int get_user_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_user_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enabled", value);
     return 0;
 }
 
-int get_user_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_user_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmstrdup(section_name((struct uci_section *)data));
     return 0;
 }
 
 /*#Device.Users.User.{i}.Password!UCI:users/user,@i-1/password*/
-int get_user_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_user_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "";
     return 0;
 }
 
 /*#Device.Users.User.{i}.RemoteAccessCapable!UCI:users/user,@i-1/remote_access*/
-int get_user_remote_accessable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_user_remote_accessable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "remote_access", value);
     return 0;
 }
 
 /*#Device.Users.User.{i}.Language!UCI:users/user,@i-1/language*/
-int get_user_language(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_user_language(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "language", value);
     return 0;
 }
 
-int set_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -190,7 +165,7 @@ int set_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance
 	return 0;
 }
 
-int set_user_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_user_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -204,7 +179,7 @@ int set_user_enable(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	return 0;
 }
 
-int set_user_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_user_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -218,7 +193,7 @@ int set_user_username(char *refparam, struct dmctx *ctx, void *data, char *insta
 	return 0;
 }
 
-int set_user_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_user_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -232,7 +207,7 @@ int set_user_password(char *refparam, struct dmctx *ctx, void *data, char *insta
 	return 0;
 }
 
-int set_user_remote_accessable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_user_remote_accessable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -246,7 +221,7 @@ int set_user_remote_accessable(char *refparam, struct dmctx *ctx, void *data, ch
 	return 0;
 }
 
-int set_user_language(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_user_language(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -259,3 +234,28 @@ int set_user_language(char *refparam, struct dmctx *ctx, void *data, char *insta
 	}
 	return 0;
 }
+
+/* *** Device.Users. *** */
+DMOBJ tUsersObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"User", &DMWRITE, add_users_user, delete_users_user, NULL, browseUserInst, NULL, NULL, NULL, NULL, tUsersUserParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tUsersParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"UserNumberOfEntries", &DMREAD, DMT_UNINT, get_users_user_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Users.User.{i}. *** */
+DMLEAF tUsersUserParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Alias", &DMWRITE, DMT_STRING, get_user_alias, set_user_alias, NULL, NULL, BBFDM_BOTH},
+{"Enable", &DMWRITE, DMT_BOOL, get_user_enable, set_user_enable, NULL, NULL, BBFDM_BOTH},
+{"Username", &DMWRITE, DMT_STRING, get_user_username, set_user_username, NULL, NULL, BBFDM_BOTH},
+{"Password", &DMWRITE, DMT_STRING, get_user_password, set_user_password, NULL, NULL, BBFDM_BOTH},
+{"RemoteAccessCapable", &DMWRITE, DMT_BOOL, get_user_remote_accessable, set_user_remote_accessable, NULL, NULL, BBFDM_BOTH},
+{"Language", &DMWRITE, DMT_STRING, get_user_language, set_user_language, NULL, NULL, BBFDM_BOTH},
+{0}
+};

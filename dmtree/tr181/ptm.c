@@ -12,44 +12,17 @@
 #include "dmentry.h"
 #include "ptm.h"
 
-/* *** Device.PTM. *** */
-DMOBJ tPTMObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Link", &DMWRITE, add_ptm_link, delete_ptm_link, NULL, browsePtmLinkInst, NULL, NULL, NULL, tPTMLinkObj, tPTMLinkParams, get_ptm_linker, BBFDM_BOTH},
-{0}
+struct ptm_args
+{
+	struct uci_section *ptm_sec;
+	char *ifname;
 };
 
-/* *** Device.PTM.Link.{i}. *** */
-DMOBJ tPTMLinkObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tPTMLinkStatsParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tPTMLinkParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Alias", &DMWRITE, DMT_STRING, get_ptm_alias, set_ptm_alias, NULL, NULL, BBFDM_BOTH},
-{"Enable", &DMREAD, DMT_BOOL, get_ptm_enable, NULL, NULL, NULL, BBFDM_BOTH},
-{"Name", &DMREAD, DMT_STRING, get_ptm_link_name, NULL, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_ptm_enable, NULL, NULL, NULL, BBFDM_BOTH},
-{"LowerLayers", &DMREAD, DMT_STRING, get_ptm_lower_layer, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.PTM.Link.{i}.Stats. *** */
-DMLEAF tPTMLinkStatsParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"BytesSent", &DMREAD, DMT_UNLONG, get_ptm_stats_bytes_sent, NULL, NULL, NULL, BBFDM_BOTH},
-{"BytesReceived", &DMREAD, DMT_UNLONG, get_ptm_stats_bytes_received, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsSent", &DMREAD, DMT_UNLONG, get_ptm_stats_pack_sent, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsReceived", &DMREAD, DMT_UNLONG, get_ptm_stats_pack_received, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
 
 /**************************************************************************
 * LINKER
 ***************************************************************************/
-int get_ptm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+static int get_ptm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
 	if (data && ((struct ptm_args *)data)->ifname) {
 		*linker = ((struct ptm_args *)data)->ifname;
@@ -73,13 +46,13 @@ static inline int init_ptm_link(struct ptm_args *args, struct uci_section *s, ch
 * SET & GET DSL LINK PARAMETERS
 ***************************************************************************/
 /*#Device.PTM.Link.{i}.Name!UCI:dsl/ptm-device,@i-1/name*/
-int get_ptm_link_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ptm_link_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct ptm_args *)data)->ptm_sec, "name", value);
 	return 0;
 }
 
-int get_ptm_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ptm_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char linker[16];
 	snprintf(linker, sizeof(linker), "channel_%d", atoi(instance)-1);
@@ -99,34 +72,34 @@ static inline int ubus_ptm_stats(char **value, char *stat_mod, void *data)
 }
 
 /*#Device.PTM.Link.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
-int get_ptm_stats_bytes_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ptm_stats_bytes_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	ubus_ptm_stats(value, "rx_bytes", data);
 	return 0;
 }
 
 /*#Device.PTM.Link.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
-int get_ptm_stats_bytes_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ptm_stats_bytes_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	ubus_ptm_stats(value, "tx_bytes", data);
 	return 0;
 }
 
 /*#Device.PTM.Link.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
-int get_ptm_stats_pack_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ptm_stats_pack_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	ubus_ptm_stats(value, "rx_packets", data);
 	return 0;
 }
 
 /*#Device.PTM.Link.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
-int get_ptm_stats_pack_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ptm_stats_pack_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	ubus_ptm_stats(value, "tx_packets", data);
 	return 0;
 }
 
-int get_ptm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ptm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "true";
 	return 0;
@@ -135,7 +108,7 @@ int get_ptm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance
 /*************************************************************
 * ADD OBJ
 *************************************************************/
-int add_ptm_link(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
+static int add_ptm_link(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
 	char *instance = NULL, *ptm_device = NULL, *v = NULL, *instance_update = NULL;
 	struct uci_section *dmmap_ptm = NULL;
@@ -155,7 +128,7 @@ int add_ptm_link(char *refparam, struct dmctx *ctx, void *data, char **instancep
 	return 0;
 }
 
-int delete_ptm_link(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int delete_ptm_link(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	char *ifname;
 	struct uci_section *s = NULL, *ss = NULL, *ns = NULL, *nss = NULL, *dmmap_section= NULL;
@@ -214,7 +187,7 @@ int delete_ptm_link(char *refparam, struct dmctx *ctx, void *data, char *instanc
 /*************************************************************
 * SET AND GET ALIAS
 *************************************************************/
-int get_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -224,7 +197,7 @@ int get_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 	return 0;
 }
 
-int set_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -246,7 +219,7 @@ int set_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance,
 * ENTRY METHOD
 *************************************************************/
 /*#Device.PTM.Link.{i}.!UCI:dsl/ptm-device/dmmap_dsl*/
-int browsePtmLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browsePtmLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *wnum = NULL, *channel_last = NULL, *ifname;
 	struct ptm_args curr_ptm_args = {0};
@@ -264,3 +237,37 @@ int browsePtmLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data,
 	free_dmmap_config_dup_list(&dup_list);
 	return 0;
 }
+
+/* *** Device.PTM. *** */
+DMOBJ tPTMObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Link", &DMWRITE, add_ptm_link, delete_ptm_link, NULL, browsePtmLinkInst, NULL, NULL, NULL, tPTMLinkObj, tPTMLinkParams, get_ptm_linker, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.PTM.Link.{i}. *** */
+DMOBJ tPTMLinkObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tPTMLinkStatsParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tPTMLinkParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Alias", &DMWRITE, DMT_STRING, get_ptm_alias, set_ptm_alias, NULL, NULL, BBFDM_BOTH},
+{"Enable", &DMREAD, DMT_BOOL, get_ptm_enable, NULL, NULL, NULL, BBFDM_BOTH},
+{"Name", &DMREAD, DMT_STRING, get_ptm_link_name, NULL, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_ptm_enable, NULL, NULL, NULL, BBFDM_BOTH},
+{"LowerLayers", &DMREAD, DMT_STRING, get_ptm_lower_layer, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.PTM.Link.{i}.Stats. *** */
+DMLEAF tPTMLinkStatsParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"BytesSent", &DMREAD, DMT_UNLONG, get_ptm_stats_bytes_sent, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesReceived", &DMREAD, DMT_UNLONG, get_ptm_stats_bytes_received, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsSent", &DMREAD, DMT_UNLONG, get_ptm_stats_pack_sent, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsReceived", &DMREAD, DMT_UNLONG, get_ptm_stats_pack_received, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};

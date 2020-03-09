@@ -11,17 +11,8 @@
 
 #include "x_iopsys_eu_logincfg.h"
 
-/*** DMROOT.X_IOPSYS_EU_LoginCfg. ***/
-DMLEAF tSe_LoginCfgParam[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"AdminPassword", &DMWRITE, DMT_STRING, get_empty, set_x_bcm_admin_password, NULL, NULL, BBFDM_BOTH},
-{"SupportPassword", &DMWRITE, DMT_STRING, get_empty, set_x_bcm_support_password, NULL, NULL, BBFDM_BOTH},
-{"UserPassword", &DMWRITE, DMT_STRING, get_empty, set_x_bcm_user_password, NULL, NULL, BBFDM_BOTH},
-{"RootPassword", &DMWRITE, DMT_STRING, get_empty, set_x_bcm_root_password, NULL, NULL, BBFDM_BOTH},
-{0}
-};
 
-int set_x_bcm_password(char *refparam, struct dmctx *ctx, int action, char *value, char *user_type)
+static int set_x_bcm_password(char *refparam, struct dmctx *ctx, int action, char *value, char *user_type)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -33,26 +24,36 @@ int set_x_bcm_password(char *refparam, struct dmctx *ctx, int action, char *valu
 	return 0;
 }
 
-int set_x_bcm_admin_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_bcm_admin_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	set_x_bcm_password(refparam, ctx, action, value, "admin");
 	return 0;
 }
 
-int set_x_bcm_support_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_bcm_support_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	set_x_bcm_password(refparam, ctx, action, value, "support");
 	return 0;
 }
 
-int set_x_bcm_user_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_bcm_user_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	set_x_bcm_password(refparam, ctx, action, value, "user");
 	return 0;
 }
 
-int set_x_bcm_root_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_bcm_root_password(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	set_x_bcm_password(refparam, ctx, action, value, "root");
 	return 0;
 }
+
+/*** DMROOT.X_IOPSYS_EU_LoginCfg. ***/
+DMLEAF tSe_LoginCfgParam[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"AdminPassword", &DMWRITE, DMT_STRING, get_empty, set_x_bcm_admin_password, NULL, NULL, BBFDM_BOTH},
+{"SupportPassword", &DMWRITE, DMT_STRING, get_empty, set_x_bcm_support_password, NULL, NULL, BBFDM_BOTH},
+{"UserPassword", &DMWRITE, DMT_STRING, get_empty, set_x_bcm_user_password, NULL, NULL, BBFDM_BOTH},
+{"RootPassword", &DMWRITE, DMT_STRING, get_empty, set_x_bcm_root_password, NULL, NULL, BBFDM_BOTH},
+{0}
+};

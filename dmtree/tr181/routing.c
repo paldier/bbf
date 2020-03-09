@@ -13,93 +13,12 @@
 #include "dmentry.h"
 #include "routing.h"
 
-/* *** Device.Routing. *** */
-DMOBJ tRoutingObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Router", &DMREAD, NULL, NULL, NULL, browseRouterInst, NULL, NULL, NULL, tRoutingRouterObj, tRoutingRouterParams, NULL, BBFDM_BOTH},
-{"RouteInformation", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tRoutingRouteInformationObj, tRoutingRouteInformationParams, NULL, BBFDM_BOTH},
-{0}
-};
+#define PROC_ROUTE6 "/proc/net/ipv6_route"
 
-DMLEAF tRoutingParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"RouterNumberOfEntries", &DMREAD, DMT_UNINT, get_router_nbr_entry, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.Routing.Router.{i}. *** */
-DMOBJ tRoutingRouterObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"IPv4Forwarding", &DMWRITE, add_ipv4forwarding, delete_ipv4forwarding, NULL, browseIPv4ForwardingInst, NULL, NULL, NULL, NULL, tRoutingRouterIPv4ForwardingParams, NULL, BBFDM_BOTH},
-{"IPv6Forwarding", &DMWRITE, add_ipv6Forwarding, delete_ipv6Forwarding, NULL, browseIPv6ForwardingInst, NULL, NULL, NULL, NULL, tRoutingRouterIPv6ForwardingParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tRoutingRouterParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_RoutingRouter_Enable, set_RoutingRouter_Enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_RoutingRouter_Status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_RoutingRouter_Alias, set_RoutingRouter_Alias, NULL, NULL, BBFDM_BOTH},
-{"IPv4ForwardingNumberOfEntries", &DMREAD, DMT_UNINT, get_RoutingRouter_IPv4ForwardingNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{"IPv6ForwardingNumberOfEntries", &DMREAD, DMT_UNINT, get_RoutingRouter_IPv6ForwardingNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.Routing.Router.{i}.IPv4Forwarding.{i}. *** */
-DMLEAF tRoutingRouterIPv4ForwardingParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMRouting, DMT_BOOL, get_router_ipv4forwarding_enable, set_router_ipv4forwarding_enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_router_ipv4forwarding_status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_router_ipv4forwarding_alias, set_router_ipv4forwarding_alias, NULL, NULL, BBFDM_BOTH},
-{"StaticRoute", &DMREAD, DMT_BOOL, get_router_ipv4forwarding_static_route, NULL, NULL, NULL, BBFDM_BOTH},
-{"DestIPAddress", &DMRouting, DMT_STRING, get_router_ipv4forwarding_destip, set_router_ipv4forwarding_destip, NULL, NULL, BBFDM_BOTH},
-{"DestSubnetMask", &DMRouting, DMT_STRING, get_router_ipv4forwarding_destmask, set_router_ipv4forwarding_destmask, NULL, NULL, BBFDM_BOTH},
-{"ForwardingPolicy", &DMREAD, DMT_INT, get_router_ipv4forwarding_forwarding_policy, NULL, NULL, NULL, BBFDM_BOTH},
-{"GatewayIPAddress", &DMRouting, DMT_STRING, get_router_ipv4forwarding_gatewayip, set_router_ipv4forwarding_gatewayip, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMRouting, DMT_STRING, get_router_ipv4forwarding_interface_linker_parameter, set_router_ipv4forwarding_interface_linker_parameter, NULL, NULL, BBFDM_BOTH},
-{"Origin", &DMREAD, DMT_STRING, get_router_ipv4forwarding_origin, NULL, NULL, NULL, BBFDM_BOTH},
-{"ForwardingMetric", &DMRouting, DMT_INT, get_router_ipv4forwarding_metric, set_router_ipv4forwarding_metric, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.Routing.Router.{i}.IPv4Forwarding.{i}. *** */
-DMLEAF tRoutingRouterIPv6ForwardingParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMRouting, DMT_BOOL, get_RoutingRouterIPv6Forwarding_Enable, set_RoutingRouterIPv6Forwarding_Enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_RoutingRouterIPv6Forwarding_Status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_RoutingRouterIPv6Forwarding_Alias, set_RoutingRouterIPv6Forwarding_Alias, NULL, NULL, BBFDM_BOTH},
-{"DestIPPrefix", &DMRouting, DMT_STRING, get_RoutingRouterIPv6Forwarding_DestIPPrefix, set_RoutingRouterIPv6Forwarding_DestIPPrefix, NULL, NULL, BBFDM_BOTH},
-{"ForwardingPolicy", &DMRouting, DMT_INT, get_RoutingRouterIPv6Forwarding_ForwardingPolicy, set_RoutingRouterIPv6Forwarding_ForwardingPolicy, NULL, NULL, BBFDM_BOTH},
-{"NextHop", &DMRouting, DMT_STRING, get_RoutingRouterIPv6Forwarding_NextHop, set_RoutingRouterIPv6Forwarding_NextHop, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMRouting, DMT_STRING, get_RoutingRouterIPv6Forwarding_Interface, set_RoutingRouterIPv6Forwarding_Interface, NULL, NULL, BBFDM_BOTH},
-{"Origin", &DMREAD, DMT_STRING, get_RoutingRouterIPv6Forwarding_Origin, NULL, NULL, NULL, BBFDM_BOTH},
-{"ForwardingMetric", &DMRouting, DMT_INT, get_RoutingRouterIPv6Forwarding_ForwardingMetric, set_RoutingRouterIPv6Forwarding_ForwardingMetric, NULL, NULL, BBFDM_BOTH},
-{"ExpirationTime", &DMREAD, DMT_TIME, get_RoutingRouterIPv6Forwarding_ExpirationTime, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.Routing.RouteInformation. *** */
-DMOBJ tRoutingRouteInformationObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"InterfaceSetting", &DMREAD, NULL, NULL, NULL, browseRoutingRouteInformationInterfaceSettingInst, NULL, NULL, NULL, NULL, tRoutingRouteInformationInterfaceSettingParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tRoutingRouteInformationParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_RoutingRouteInformation_Enable, set_RoutingRouteInformation_Enable, NULL, NULL, BBFDM_BOTH},
-{"InterfaceSettingNumberOfEntries", &DMREAD, DMT_UNINT, get_RoutingRouteInformation_InterfaceSettingNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.Routing.RouteInformation.InterfaceSetting.{i}. *** */
-DMLEAF tRoutingRouteInformationInterfaceSettingParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Status", &DMREAD, DMT_STRING, get_RoutingRouteInformationInterfaceSetting_Status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMREAD, DMT_STRING, get_RoutingRouteInformationInterfaceSetting_Interface, NULL, NULL, NULL, BBFDM_BOTH},
-{"SourceRouter", &DMREAD, DMT_STRING, get_RoutingRouteInformationInterfaceSetting_SourceRouter, NULL, NULL, NULL, BBFDM_BOTH},
-{"RouteLifetime", &DMREAD, DMT_TIME, get_RoutingRouteInformationInterfaceSetting_RouteLifetime, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
+enum enum_route_type {
+	ROUTE_STATIC,
+	ROUTE_DYNAMIC,
+	ROUTE_DISABLED
 };
 
 /********************************
@@ -505,19 +424,19 @@ static int dmmap_synchronizeRoutingRouterIPv6Forwarding(struct dmctx *dmctx, DMN
 /*************************************************************
 * GET & SET PARAM
 **************************************************************/
-int get_router_nbr_entry(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_nbr_entry(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "1";
 	return 0;
 }
 
-int get_RoutingRouter_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouter_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "1";
 	return 0;
 }
 
-int set_RoutingRouter_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouter_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -530,14 +449,14 @@ int set_RoutingRouter_Enable(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
-int get_RoutingRouter_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouter_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "Enabled";
 	return 0;
 }
 
 /*#Device.Routing.Router.{i}.IPv4ForwardingNumberOfEntries!UCI:network/route/*/
-int get_RoutingRouter_IPv4ForwardingNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouter_IPv4ForwardingNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s;
 	int cnt = 0;
@@ -557,7 +476,7 @@ int get_RoutingRouter_IPv4ForwardingNumberOfEntries(char *refparam, struct dmctx
 }
 
 /*#Device.Routing.Router.{i}.IPv6ForwardingNumberOfEntries!UCI:network/route6/*/
-int get_RoutingRouter_IPv6ForwardingNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouter_IPv6ForwardingNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s;
 	int cnt = 0;
@@ -573,7 +492,7 @@ int get_RoutingRouter_IPv6ForwardingNumberOfEntries(char *refparam, struct dmctx
 	return 0;
 }
 
-int get_router_ipv4forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if(((struct routingfwdargs *)data)->type == ROUTE_DISABLED)
 		*value = "0";
@@ -582,7 +501,7 @@ int get_router_ipv4forwarding_enable(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int set_router_ipv4forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_router_ipv4forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -608,7 +527,7 @@ int set_router_ipv4forwarding_enable(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int get_router_ipv4forwarding_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if(((struct routingfwdargs *)data)->type == ROUTE_DISABLED) {
 		*value = "Disabled";
@@ -622,7 +541,7 @@ int get_router_ipv4forwarding_status(char *refparam, struct dmctx *ctx, void *da
 }
 
 /*#Device.Routing.Router.{i}.IPv4Forwarding.{i}.DestIPAddress!UCI:network/route,@i-1/target*/
-int get_router_ipv4forwarding_destip(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_destip(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
 		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "target", value);
@@ -631,7 +550,7 @@ int get_router_ipv4forwarding_destip(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int set_router_ipv4forwarding_destip(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_router_ipv4forwarding_destip(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -646,7 +565,7 @@ int set_router_ipv4forwarding_destip(char *refparam, struct dmctx *ctx, void *da
 }
 
 /*#Device.Routing.Router.{i}.IPv4Forwarding.{i}.DestSubnetMask!UCI:network/route,@i-1/netmask*/
-int get_router_ipv4forwarding_destmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_destmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
 		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "netmask", value);
@@ -655,7 +574,7 @@ int get_router_ipv4forwarding_destmask(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-int set_router_ipv4forwarding_destmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_router_ipv4forwarding_destmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -669,7 +588,7 @@ int set_router_ipv4forwarding_destmask(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-int get_router_ipv4forwarding_static_route(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_static_route(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->type != ROUTE_DYNAMIC)
 		*value = "1";
@@ -679,13 +598,13 @@ int get_router_ipv4forwarding_static_route(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int get_router_ipv4forwarding_forwarding_policy(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_forwarding_policy(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "-1";
 	return 0;
 }
 
-int get_router_ipv4forwarding_origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->type != ROUTE_DYNAMIC)
 		*value = "Static";
@@ -693,7 +612,7 @@ int get_router_ipv4forwarding_origin(char *refparam, struct dmctx *ctx, void *da
 }
 
 /*#Device.Routing.Router.{i}.IPv4Forwarding.{i}.GatewayIPAddress!UCI:network/route,@i-1/gateway*/
-int get_router_ipv4forwarding_gatewayip(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_gatewayip(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
 		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "gateway", value);
@@ -702,7 +621,7 @@ int get_router_ipv4forwarding_gatewayip(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int set_router_ipv4forwarding_gatewayip(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_router_ipv4forwarding_gatewayip(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -716,7 +635,7 @@ int set_router_ipv4forwarding_gatewayip(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int get_router_ipv4forwarding_interface_linker_parameter(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_interface_linker_parameter(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *linker;
 
@@ -730,7 +649,7 @@ int get_router_ipv4forwarding_interface_linker_parameter(char *refparam, struct 
 	return 0;
 }
 
-int set_router_ipv4forwarding_interface_linker_parameter(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_router_ipv4forwarding_interface_linker_parameter(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker;
 
@@ -751,7 +670,7 @@ int set_router_ipv4forwarding_interface_linker_parameter(char *refparam, struct 
 }
 
 /*#Device.Routing.Router.{i}.IPv4Forwarding.{i}.ForwardingMetric!UCI:network/route,@i-1/metric*/
-int get_router_ipv4forwarding_metric(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_metric(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
 		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "metric", value);
@@ -760,7 +679,7 @@ int get_router_ipv4forwarding_metric(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int set_router_ipv4forwarding_metric(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_router_ipv4forwarding_metric(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -774,13 +693,13 @@ int set_router_ipv4forwarding_metric(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int get_RoutingRouterIPv6Forwarding_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "1";
 	return 0;
 }
 
-int set_RoutingRouterIPv6Forwarding_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouterIPv6Forwarding_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -793,14 +712,14 @@ int set_RoutingRouterIPv6Forwarding_Enable(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int get_RoutingRouterIPv6Forwarding_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "Enabled";
 	return 0;
 }
 
 /*#Device.Routing.Router.{i}.IPv6Forwarding.{i}.DestIPPrefix!UCI:network/route,@i-1/target*/
-int get_RoutingRouterIPv6Forwarding_DestIPPrefix(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_DestIPPrefix(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
 		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "target", value);
@@ -809,7 +728,7 @@ int get_RoutingRouterIPv6Forwarding_DestIPPrefix(char *refparam, struct dmctx *c
 	return 0;
 }
 
-int set_RoutingRouterIPv6Forwarding_DestIPPrefix(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouterIPv6Forwarding_DestIPPrefix(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -823,13 +742,13 @@ int set_RoutingRouterIPv6Forwarding_DestIPPrefix(char *refparam, struct dmctx *c
 	return 0;
 }
 
-int get_RoutingRouterIPv6Forwarding_ForwardingPolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_ForwardingPolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "-1";
 	return 0;
 }
 
-int set_RoutingRouterIPv6Forwarding_ForwardingPolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouterIPv6Forwarding_ForwardingPolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -843,7 +762,7 @@ int set_RoutingRouterIPv6Forwarding_ForwardingPolicy(char *refparam, struct dmct
 }
 
 /*#Device.Routing.Router.{i}.IPv6Forwarding.{i}.NextHop!UCI:network/route,@i-1/gateway*/
-int get_RoutingRouterIPv6Forwarding_NextHop(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_NextHop(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
 		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "gateway", value);
@@ -852,7 +771,7 @@ int get_RoutingRouterIPv6Forwarding_NextHop(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
-int set_RoutingRouterIPv6Forwarding_NextHop(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouterIPv6Forwarding_NextHop(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -866,7 +785,7 @@ int set_RoutingRouterIPv6Forwarding_NextHop(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
-int get_RoutingRouterIPv6Forwarding_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *linker;
 
@@ -880,7 +799,7 @@ int get_RoutingRouterIPv6Forwarding_Interface(char *refparam, struct dmctx *ctx,
 	return 0;
 }
 
-int set_RoutingRouterIPv6Forwarding_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouterIPv6Forwarding_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker;
 
@@ -900,7 +819,7 @@ int set_RoutingRouterIPv6Forwarding_Interface(char *refparam, struct dmctx *ctx,
 	return 0;
 }
 
-int get_RoutingRouterIPv6Forwarding_Origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_Origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->type != ROUTE_DYNAMIC)
 		*value = "Static";
@@ -908,7 +827,7 @@ int get_RoutingRouterIPv6Forwarding_Origin(char *refparam, struct dmctx *ctx, vo
 }
 
 /*#Device.Routing.Router.{i}.IPv6Forwarding.{i}.ForwardingMetric!UCI:network/route,@i-1/metric*/
-int get_RoutingRouterIPv6Forwarding_ForwardingMetric(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_ForwardingMetric(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
 		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "metric", value);
@@ -917,7 +836,7 @@ int get_RoutingRouterIPv6Forwarding_ForwardingMetric(char *refparam, struct dmct
 	return 0;
 }
 
-int set_RoutingRouterIPv6Forwarding_ForwardingMetric(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouterIPv6Forwarding_ForwardingMetric(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -931,19 +850,19 @@ int set_RoutingRouterIPv6Forwarding_ForwardingMetric(char *refparam, struct dmct
 	return 0;
 }
 
-int get_RoutingRouterIPv6Forwarding_ExpirationTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_ExpirationTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "9999-12-31T23:59:59Z";
 	return 0;
 }
 
-int get_RoutingRouteInformation_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouteInformation_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "1";
 	return 0;
 }
 
-int set_RoutingRouteInformation_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouteInformation_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -956,7 +875,7 @@ int set_RoutingRouteInformation_Enable(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-int get_RoutingRouteInformation_InterfaceSettingNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouteInformation_InterfaceSettingNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	json_object *res, *route_obj;
@@ -982,7 +901,7 @@ int get_RoutingRouteInformation_InterfaceSettingNumberOfEntries(char *refparam, 
 	return 0;
 }
 
-int get_RoutingRouteInformationInterfaceSetting_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouteInformationInterfaceSetting_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	char *target, *mask, *nexthop, *gateway, *ip_target, buf[64];
@@ -1003,7 +922,7 @@ int get_RoutingRouteInformationInterfaceSetting_Status(char *refparam, struct dm
 	return 0;
 }
 
-int get_RoutingRouteInformationInterfaceSetting_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouteInformationInterfaceSetting_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	char buf[512], dev[32], ipstr[INET6_ADDRSTRLEN + 8], gwstr[INET6_ADDRSTRLEN + 8];
@@ -1057,13 +976,13 @@ int get_RoutingRouteInformationInterfaceSetting_Interface(char *refparam, struct
 	return 0;
 }
 
-int get_RoutingRouteInformationInterfaceSetting_SourceRouter(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouteInformationInterfaceSetting_SourceRouter(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((struct json_object *)data, 1, "source");
 	return 0;
 }
 
-int get_RoutingRouteInformationInterfaceSetting_RouteLifetime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouteInformationInterfaceSetting_RouteLifetime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char local_time[32] = {0};
 	char *valid = dmjson_get_value((struct json_object *)data, 1, "valid");
@@ -1077,13 +996,13 @@ int get_RoutingRouteInformationInterfaceSetting_RouteLifetime(char *refparam, st
 /*************************************************************
 * SET AND GET ALIAS FOR ROUTER OBJ
 **************************************************************/
-int get_RoutingRouter_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouter_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "router_alias", value);
 	return 0;
 }
 
-int set_RoutingRouter_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouter_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -1097,7 +1016,7 @@ int set_RoutingRouter_Alias(char *refparam, struct dmctx *ctx, void *data, char 
 	return 0;
 }
 
-int get_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -1112,7 +1031,7 @@ int get_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int set_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -1135,7 +1054,7 @@ int set_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int get_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -1148,7 +1067,7 @@ int get_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-int set_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -1169,7 +1088,7 @@ int set_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-char *get_routing_perm(char *refparam, struct dmctx *dmctx, void *data, char *instance)
+static char *get_routing_perm(char *refparam, struct dmctx *dmctx, void *data, char *instance)
 {
 	return ((struct routingfwdargs *)data)->permission;
 }
@@ -1179,7 +1098,7 @@ struct dm_permession_s DMRouting = {"0", &get_routing_perm};
 /*************************************************************
 * ADD DEL OBJ
 **************************************************************/
-int add_ipv4forwarding(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
+static int add_ipv4forwarding(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
 	char *value, *v, instance[8];
 	struct uci_section *s = NULL;
@@ -1199,7 +1118,7 @@ int add_ipv4forwarding(char *refparam, struct dmctx *ctx, void *data, char **ins
 	return 0;
 }
 
-int delete_ipv4forwarding(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int delete_ipv4forwarding(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -1219,7 +1138,7 @@ int delete_ipv4forwarding(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
-int add_ipv6Forwarding(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
+static int add_ipv6Forwarding(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
 	char *value, *v, instance[8];
 	struct uci_section *s = NULL;
@@ -1239,7 +1158,7 @@ int add_ipv6Forwarding(char *refparam, struct dmctx *ctx, void *data, char **ins
 	return 0;
 }
 
-int delete_ipv6Forwarding(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int delete_ipv6Forwarding(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -1259,7 +1178,7 @@ int delete_ipv6Forwarding(char *refparam, struct dmctx *ctx, void *data, char *i
 /*************************************************************
 * SUB ENTRIES
 **************************************************************/
-int browseRouterInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseRouterInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *s = NULL;
 	char *r = NULL, *r_last = NULL;
@@ -1274,7 +1193,7 @@ int browseRouterInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, 
 }
 
 /*#Device.Routing.Router.{i}.IPv4Forwarding.{i}.!UCI:network/route/dmmap_route_forwarding*/
-int browseIPv4ForwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseIPv4ForwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *iroute = NULL, *iroute_last = NULL;
 	struct uci_section *ss = NULL;
@@ -1311,7 +1230,7 @@ end:
 }
 
 /*#Device.Routing.Router.{i}.IPv6Forwarding.{i}.!UCI:network/route6/dmmap_route_forwarding*/
-int browseIPv6ForwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseIPv6ForwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *iroute = NULL, *iroute_last = NULL;
 	struct uci_section *ss = NULL;
@@ -1339,7 +1258,7 @@ end:
 	return 0;
 }
 
-int browseRoutingRouteInformationInterfaceSettingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseRoutingRouteInformationInterfaceSettingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *s = NULL;
 	json_object *res, *route_obj;
@@ -1366,3 +1285,92 @@ int browseRoutingRouteInformationInterfaceSettingInst(struct dmctx *dmctx, DMNOD
 	}
 	return 0;
 }
+
+/* *** Device.Routing. *** */
+DMOBJ tRoutingObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Router", &DMREAD, NULL, NULL, NULL, browseRouterInst, NULL, NULL, NULL, tRoutingRouterObj, tRoutingRouterParams, NULL, BBFDM_BOTH},
+{"RouteInformation", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tRoutingRouteInformationObj, tRoutingRouteInformationParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tRoutingParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"RouterNumberOfEntries", &DMREAD, DMT_UNINT, get_router_nbr_entry, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Routing.Router.{i}. *** */
+DMOBJ tRoutingRouterObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"IPv4Forwarding", &DMWRITE, add_ipv4forwarding, delete_ipv4forwarding, NULL, browseIPv4ForwardingInst, NULL, NULL, NULL, NULL, tRoutingRouterIPv4ForwardingParams, NULL, BBFDM_BOTH},
+{"IPv6Forwarding", &DMWRITE, add_ipv6Forwarding, delete_ipv6Forwarding, NULL, browseIPv6ForwardingInst, NULL, NULL, NULL, NULL, tRoutingRouterIPv6ForwardingParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tRoutingRouterParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_RoutingRouter_Enable, set_RoutingRouter_Enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_RoutingRouter_Status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_RoutingRouter_Alias, set_RoutingRouter_Alias, NULL, NULL, BBFDM_BOTH},
+{"IPv4ForwardingNumberOfEntries", &DMREAD, DMT_UNINT, get_RoutingRouter_IPv4ForwardingNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{"IPv6ForwardingNumberOfEntries", &DMREAD, DMT_UNINT, get_RoutingRouter_IPv6ForwardingNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Routing.Router.{i}.IPv4Forwarding.{i}. *** */
+DMLEAF tRoutingRouterIPv4ForwardingParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMRouting, DMT_BOOL, get_router_ipv4forwarding_enable, set_router_ipv4forwarding_enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_router_ipv4forwarding_status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_router_ipv4forwarding_alias, set_router_ipv4forwarding_alias, NULL, NULL, BBFDM_BOTH},
+{"StaticRoute", &DMREAD, DMT_BOOL, get_router_ipv4forwarding_static_route, NULL, NULL, NULL, BBFDM_BOTH},
+{"DestIPAddress", &DMRouting, DMT_STRING, get_router_ipv4forwarding_destip, set_router_ipv4forwarding_destip, NULL, NULL, BBFDM_BOTH},
+{"DestSubnetMask", &DMRouting, DMT_STRING, get_router_ipv4forwarding_destmask, set_router_ipv4forwarding_destmask, NULL, NULL, BBFDM_BOTH},
+{"ForwardingPolicy", &DMREAD, DMT_INT, get_router_ipv4forwarding_forwarding_policy, NULL, NULL, NULL, BBFDM_BOTH},
+{"GatewayIPAddress", &DMRouting, DMT_STRING, get_router_ipv4forwarding_gatewayip, set_router_ipv4forwarding_gatewayip, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMRouting, DMT_STRING, get_router_ipv4forwarding_interface_linker_parameter, set_router_ipv4forwarding_interface_linker_parameter, NULL, NULL, BBFDM_BOTH},
+{"Origin", &DMREAD, DMT_STRING, get_router_ipv4forwarding_origin, NULL, NULL, NULL, BBFDM_BOTH},
+{"ForwardingMetric", &DMRouting, DMT_INT, get_router_ipv4forwarding_metric, set_router_ipv4forwarding_metric, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Routing.Router.{i}.IPv4Forwarding.{i}. *** */
+DMLEAF tRoutingRouterIPv6ForwardingParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMRouting, DMT_BOOL, get_RoutingRouterIPv6Forwarding_Enable, set_RoutingRouterIPv6Forwarding_Enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_RoutingRouterIPv6Forwarding_Status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_RoutingRouterIPv6Forwarding_Alias, set_RoutingRouterIPv6Forwarding_Alias, NULL, NULL, BBFDM_BOTH},
+{"DestIPPrefix", &DMRouting, DMT_STRING, get_RoutingRouterIPv6Forwarding_DestIPPrefix, set_RoutingRouterIPv6Forwarding_DestIPPrefix, NULL, NULL, BBFDM_BOTH},
+{"ForwardingPolicy", &DMRouting, DMT_INT, get_RoutingRouterIPv6Forwarding_ForwardingPolicy, set_RoutingRouterIPv6Forwarding_ForwardingPolicy, NULL, NULL, BBFDM_BOTH},
+{"NextHop", &DMRouting, DMT_STRING, get_RoutingRouterIPv6Forwarding_NextHop, set_RoutingRouterIPv6Forwarding_NextHop, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMRouting, DMT_STRING, get_RoutingRouterIPv6Forwarding_Interface, set_RoutingRouterIPv6Forwarding_Interface, NULL, NULL, BBFDM_BOTH},
+{"Origin", &DMREAD, DMT_STRING, get_RoutingRouterIPv6Forwarding_Origin, NULL, NULL, NULL, BBFDM_BOTH},
+{"ForwardingMetric", &DMRouting, DMT_INT, get_RoutingRouterIPv6Forwarding_ForwardingMetric, set_RoutingRouterIPv6Forwarding_ForwardingMetric, NULL, NULL, BBFDM_BOTH},
+{"ExpirationTime", &DMREAD, DMT_TIME, get_RoutingRouterIPv6Forwarding_ExpirationTime, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Routing.RouteInformation. *** */
+DMOBJ tRoutingRouteInformationObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"InterfaceSetting", &DMREAD, NULL, NULL, NULL, browseRoutingRouteInformationInterfaceSettingInst, NULL, NULL, NULL, NULL, tRoutingRouteInformationInterfaceSettingParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tRoutingRouteInformationParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_RoutingRouteInformation_Enable, set_RoutingRouteInformation_Enable, NULL, NULL, BBFDM_BOTH},
+{"InterfaceSettingNumberOfEntries", &DMREAD, DMT_UNINT, get_RoutingRouteInformation_InterfaceSettingNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Routing.RouteInformation.InterfaceSetting.{i}. *** */
+DMLEAF tRoutingRouteInformationInterfaceSettingParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Status", &DMREAD, DMT_STRING, get_RoutingRouteInformationInterfaceSetting_Status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMREAD, DMT_STRING, get_RoutingRouteInformationInterfaceSetting_Interface, NULL, NULL, NULL, BBFDM_BOTH},
+{"SourceRouter", &DMREAD, DMT_STRING, get_RoutingRouteInformationInterfaceSetting_SourceRouter, NULL, NULL, NULL, BBFDM_BOTH},
+{"RouteLifetime", &DMREAD, DMT_TIME, get_RoutingRouteInformationInterfaceSetting_RouteLifetime, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};

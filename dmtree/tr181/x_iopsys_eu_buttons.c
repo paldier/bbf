@@ -12,19 +12,6 @@
 
 #include "x_iopsys_eu_buttons.h"
 
-/*** DMROOT.X_IOPSYS_EU_Buttons.{i}. ****/
-DMLEAF X_IOPSYS_EU_ButtonParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Alias", &DMWRITE, DMT_STRING, get_x_iopsys_eu_button_alias, set_x_iopsys_eu_button_alias, NULL, NULL, BBFDM_BOTH},
-{"button", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_name, NULL, NULL, NULL, BBFDM_BOTH},
-{"hotplug", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_hotplug, NULL, NULL, NULL, BBFDM_BOTH},
-{"hotplug_long", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_hotplug_long, NULL, NULL, NULL, BBFDM_BOTH},
-{"minpress", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_button_minpress, set_x_iopsys_eu_button_minpress, NULL, NULL, BBFDM_BOTH},
-{"longpress", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_button_longpress, set_x_iopsys_eu_button_longpress, NULL, NULL, BBFDM_BOTH},
-{"enable", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_button_enable, set_x_iopsys_eu_button_enable, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
 int browseXIopsysEuButton(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *ibutton = NULL, *ibutton_last = NULL;
@@ -45,7 +32,7 @@ int browseXIopsysEuButton(struct dmctx *dmctx, DMNODE *parent_node, void *prev_d
 **** function related to button ****
 **************************************************************************************/
 
-int get_x_iopsys_eu_button_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_button_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_list *val;
 
@@ -57,25 +44,25 @@ int get_x_iopsys_eu_button_name(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-int get_x_iopsys_eu_button_hotplug(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_button_hotplug(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "hotplug", value);
 	return 0;
 }
 
-int get_x_iopsys_eu_button_hotplug_long(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_button_hotplug_long(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "hotplug_long", value);
 	return 0;
 }
 
-int get_x_iopsys_eu_button_minpress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_button_minpress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "minpress", value);
 	return 0;
 }
 
-int set_x_iopsys_eu_button_minpress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_button_minpress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -88,13 +75,13 @@ int set_x_iopsys_eu_button_minpress(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int get_x_iopsys_eu_button_longpress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_button_longpress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "longpress", value);
 	return 0;
 }
 
-int set_x_iopsys_eu_button_longpress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_button_longpress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -108,7 +95,7 @@ int set_x_iopsys_eu_button_longpress(char *refparam, struct dmctx *ctx, void *da
 }
 
 
-int get_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
 	if ((*value)[0] == '\0') {
@@ -117,7 +104,7 @@ int get_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-int set_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -134,7 +121,7 @@ int set_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 ////////////////////////SET AND GET ALIAS/////////////////////////////////
-int get_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -144,7 +131,7 @@ int get_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, 
 	return 0;
 }
 
-int set_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -161,3 +148,16 @@ int set_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void *data, 
 	}
 	return 0;
 }
+
+/*** DMROOT.X_IOPSYS_EU_Buttons.{i}. ****/
+DMLEAF X_IOPSYS_EU_ButtonParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Alias", &DMWRITE, DMT_STRING, get_x_iopsys_eu_button_alias, set_x_iopsys_eu_button_alias, NULL, NULL, BBFDM_BOTH},
+{"button", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_name, NULL, NULL, NULL, BBFDM_BOTH},
+{"hotplug", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_hotplug, NULL, NULL, NULL, BBFDM_BOTH},
+{"hotplug_long", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_hotplug_long, NULL, NULL, NULL, BBFDM_BOTH},
+{"minpress", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_button_minpress, set_x_iopsys_eu_button_minpress, NULL, NULL, BBFDM_BOTH},
+{"longpress", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_button_longpress, set_x_iopsys_eu_button_longpress, NULL, NULL, BBFDM_BOTH},
+{"enable", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_button_enable, set_x_iopsys_eu_button_enable, NULL, NULL, BBFDM_BOTH},
+{0}
+};

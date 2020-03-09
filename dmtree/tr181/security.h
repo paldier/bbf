@@ -22,34 +22,9 @@
 #include <mbedtls/x509_crt.h>
 #endif
 
-#define DATE_LEN 128
-
-struct certificate_profile {
-	char *path;
-#ifdef LOPENSSL
-	X509 *openssl_cert;
-#elif LMBEDTLS
-	mbedtls_x509_crt mbdtls_cert;
-#endif
-	struct uci_section *dmmap_sect;
-};
-
 extern DMOBJ tSecurityObj[];
 extern DMLEAF tSecurityParams[];
 extern DMLEAF tSecurityCertificateParams[];
 
-int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance);
-
-int get_Security_CertificateNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int get_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int set_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);
-int get_SecurityCertificate_LastModif(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int get_SecurityCertificate_SerialNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int get_SecurityCertificate_Issuer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int get_SecurityCertificate_NotBefore(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int get_SecurityCertificate_NotAfter(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int get_SecurityCertificate_Subject(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int get_SecurityCertificate_SubjectAlt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int get_SecurityCertificate_SignatureAlgorithm(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 #endif //__SECURITY_H
 

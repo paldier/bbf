@@ -11,15 +11,11 @@
 #include "dmentry.h"
 #include "interfacestack.h"
 
-/* *** Device.InterfaceStack.{i}. *** */
-DMLEAF tInterfaceStackParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Alias", &DMWRITE, DMT_STRING, get_InterfaceStack_Alias, set_InterfaceStack_Alias, NULL, NULL, BBFDM_BOTH},
-{"HigherLayer", &DMREAD, DMT_STRING, get_InterfaceStack_HigherLayer, NULL, NULL, NULL, BBFDM_BOTH},
-{"LowerLayer", &DMREAD, DMT_STRING, get_InterfaceStack_LowerLayer, NULL, NULL, NULL, BBFDM_BOTH},
-{"HigherAlias", &DMREAD, DMT_STRING, get_InterfaceStack_HigherAlias, NULL, NULL, NULL, BBFDM_BOTH},
-{"LowerAlias", &DMREAD, DMT_STRING, get_InterfaceStack_LowerAlias, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
+struct interfacestack_data {
+	char *lowerlayer;
+	char *higherlayer;
+	char *loweralias;
+	char *higheralias;
 };
 
 /*************************************************************
@@ -473,7 +469,7 @@ int get_Device_InterfaceStackNumberOfEntries(char *refparam, struct dmctx *ctx, 
 	return 0;
 }
 
-int get_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	uci_path_foreach_option_eq(bbfdm, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", instance, s) {
@@ -482,7 +478,7 @@ int get_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
-int set_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s = NULL;
 
@@ -500,26 +496,37 @@ int set_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
-int get_InterfaceStack_HigherLayer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_InterfaceStack_HigherLayer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmstrdup(((struct interfacestack_data *)data)->higherlayer);
 	return 0;
 }
 
-int get_InterfaceStack_LowerLayer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_InterfaceStack_LowerLayer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmstrdup(((struct interfacestack_data *)data)->lowerlayer);
 	return 0;
 }
 
-int get_InterfaceStack_HigherAlias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_InterfaceStack_HigherAlias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmstrdup(((struct interfacestack_data *)data)->higheralias);
 	return 0;
 }
 
-int get_InterfaceStack_LowerAlias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_InterfaceStack_LowerAlias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmstrdup(((struct interfacestack_data *)data)->loweralias);
 	return 0;
 }
+
+/* *** Device.InterfaceStack.{i}. *** */
+DMLEAF tInterfaceStackParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Alias", &DMWRITE, DMT_STRING, get_InterfaceStack_Alias, set_InterfaceStack_Alias, NULL, NULL, BBFDM_BOTH},
+{"HigherLayer", &DMREAD, DMT_STRING, get_InterfaceStack_HigherLayer, NULL, NULL, NULL, BBFDM_BOTH},
+{"LowerLayer", &DMREAD, DMT_STRING, get_InterfaceStack_LowerLayer, NULL, NULL, NULL, BBFDM_BOTH},
+{"HigherAlias", &DMREAD, DMT_STRING, get_InterfaceStack_HigherAlias, NULL, NULL, NULL, BBFDM_BOTH},
+{"LowerAlias", &DMREAD, DMT_STRING, get_InterfaceStack_LowerAlias, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};

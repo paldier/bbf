@@ -11,118 +11,22 @@
 #include "dmentry.h"
 #include "dns.h"
 
-/* *** Device.DNS. *** */
-DMOBJ tDNSObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Client", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDNSClientObj, tDNSClientParams, NULL, BBFDM_BOTH},
-{"Relay", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDNSRelayObj, tDNSRelayParams, NULL, BBFDM_BOTH},
-{"Diagnostics", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDNSDiagnosticsObj, NULL, NULL, BBFDM_BOTH},
-{0}
+
+struct NSLookupResult
+{
+	char *Status;
+	char *AnswerType;
+	char *HostNameReturned;
+	char *IPAddresses;
+	char *DNSServerIP;
+	char *ResponseTime;
 };
 
-DMLEAF tDNSParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"SupportedRecordTypes", &DMREAD, DMT_STRING, get_dns_supported_record_types, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DNS.Client. *** */
-DMOBJ tDNSClientObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Server", &DMWRITE, add_client_server, delete_client_server, NULL, browseServerInst, NULL, NULL, NULL, NULL, tDNSClientServerParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tDNSClientParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_client_enable, set_client_enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_client_status, NULL, NULL, NULL, BBFDM_BOTH},
-{"ServerNumberOfEntries", &DMREAD, DMT_UNINT, get_client_server_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DNS.Client.Server.{i}. *** */
-DMLEAF tDNSClientServerParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_server_enable, set_server_enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_server_status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_server_alias, set_server_alias, NULL, NULL, BBFDM_BOTH},
-{"DNSServer", &DMWRITE, DMT_STRING, get_server_dns_server, set_server_dns_server, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMWRITE, DMT_STRING, get_server_interface, set_server_interface, NULL, NULL, BBFDM_BOTH},
-{"Type", &DMREAD, DMT_STRING, get_server_type, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DNS.Relay. *** */
-DMOBJ tDNSRelayObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Forwarding", &DMWRITE, add_relay_forwarding, delete_relay_forwarding, NULL, browseRelayForwardingInst, NULL, NULL, NULL, NULL, tDNSRelayForwardingParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tDNSRelayParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_relay_enable, set_relay_enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_relay_status, NULL, NULL, NULL, BBFDM_BOTH},
-{"ForwardNumberOfEntries", &DMREAD, DMT_UNINT, get_relay_forward_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DNS.Relay.Forwarding.{i}. *** */
-DMLEAF tDNSRelayForwardingParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_forwarding_enable, set_forwarding_enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_forwarding_status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_forwarding_alias, set_forwarding_alias, NULL, NULL, BBFDM_BOTH},
-{"DNSServer", &DMWRITE, DMT_STRING, get_forwarding_dns_server, set_forwarding_dns_server, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMWRITE, DMT_STRING, get_forwarding_interface, set_forwarding_interface, NULL, NULL, BBFDM_BOTH},
-{"Type", &DMREAD, DMT_STRING, get_forwarding_type, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DNS.Diagnostics. *** */
-DMOBJ tDNSDiagnosticsObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"NSLookupDiagnostics", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDNSDiagnosticsNSLookupDiagnosticsObj, tDNSDiagnosticsNSLookupDiagnosticsParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DNS.Diagnostics.NSLookupDiagnostics. *** */
-DMOBJ tDNSDiagnosticsNSLookupDiagnosticsObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Result", &DMREAD, NULL, NULL, NULL, browseResultInst, NULL, NULL, NULL, NULL, tDNSDiagnosticsNSLookupDiagnosticsResultParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tDNSDiagnosticsNSLookupDiagnosticsParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"DiagnosticsState", &DMWRITE, DMT_STRING, get_nslookupdiagnostics_diagnostics_state, set_nslookupdiagnostics_diagnostics_state, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMWRITE, DMT_STRING, get_nslookupdiagnostics_interface, set_nslookupdiagnostics_interface, NULL, NULL, BBFDM_BOTH},
-{"HostName", &DMWRITE, DMT_STRING, get_nslookupdiagnostics_host_name, set_nslookupdiagnostics_host_name, NULL, NULL, BBFDM_BOTH},
-{"DNSServer", &DMWRITE, DMT_STRING, get_nslookupdiagnostics_d_n_s_server, set_nslookupdiagnostics_d_n_s_server, NULL, NULL, BBFDM_BOTH},
-{"Timeout", &DMWRITE, DMT_UNINT, get_nslookupdiagnostics_timeout, set_nslookupdiagnostics_timeout, NULL, NULL, BBFDM_BOTH},
-{"NumberOfRepetitions", &DMWRITE, DMT_UNINT, get_nslookupdiagnostics_number_of_repetitions, set_nslookupdiagnostics_number_of_repetitions, NULL, NULL, BBFDM_BOTH},
-{"SuccessCount", &DMREAD, DMT_UNINT, get_nslookupdiagnostics_success_count, NULL, NULL, NULL, BBFDM_BOTH},
-{"ResultNumberOfEntries", &DMREAD, DMT_UNINT, get_nslookupdiagnostics_result_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.DNS.Diagnostics.NSLookupDiagnostics.Result.{i}. *** */
-DMLEAF tDNSDiagnosticsNSLookupDiagnosticsResultParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Status", &DMREAD, DMT_STRING, get_result_status, NULL, NULL, NULL, BBFDM_BOTH},
-{"AnswerType", &DMREAD, DMT_STRING, get_result_answer_type, NULL, NULL, NULL, BBFDM_BOTH},
-{"HostNameReturned", &DMREAD, DMT_STRING, get_result_host_name_returned, NULL, NULL, NULL, BBFDM_BOTH},
-{"IPAddresses", &DMREAD, DMT_STRING, get_result_i_p_addresses, NULL, NULL, NULL, BBFDM_BOTH},
-{"DNSServerIP", &DMREAD, DMT_STRING, get_result_d_n_s_server_i_p, NULL, NULL, NULL, BBFDM_BOTH},
-{"ResponseTime", &DMREAD, DMT_UNINT, get_result_response_time, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
 
 /********************************
  * init function
  ********************************/
-inline int init_nslookup_results(struct NSLookupResult *args, char *Status, char *AnswerType, char *HostNameReturned, char *IPAddresses, char *DNSServerIP, char *ResponseTime)
+static inline int init_nslookup_results(struct NSLookupResult *args, char *Status, char *AnswerType, char *HostNameReturned, char *IPAddresses, char *DNSServerIP, char *ResponseTime)
 {
 	args->Status = Status;
 	args->AnswerType = AnswerType;
@@ -233,7 +137,7 @@ static int dmmap_synchronizeDNSClientRelayServer(struct dmctx *dmctx, DMNODE *pa
 }
 
 /******************************** Browse Functions ****************************************/
-int browseServerInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseServerInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *s = NULL;
 	char *instance, *instnbr = NULL;
@@ -247,7 +151,7 @@ int browseServerInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, 
 	return 0;
 }
 
-int browseRelayForwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseRelayForwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *s = NULL;
 	char *instance, *instnbr = NULL;
@@ -262,7 +166,7 @@ int browseRelayForwardingInst(struct dmctx *dmctx, DMNODE *parent_node, void *pr
 	return 0;
 }
 
-int browseResultInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseResultInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *s = NULL;
 	char *instance, *idx_last = NULL;
@@ -276,7 +180,7 @@ int browseResultInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, 
 }
 
 /*********************************** Add/Delet Object functions *************************/
-int add_client_server(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int add_client_server(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	struct uci_section *s = NULL;
 	char *v, *inst;
@@ -292,7 +196,7 @@ int add_client_server(char *refparam, struct dmctx *ctx, void *data, char **inst
 	return 0;
 }
 
-int add_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int add_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	struct uci_section *s = NULL;
 	char *v, *inst;
@@ -308,7 +212,7 @@ int add_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char **i
 	return 0;
 }
 
-int delete_client_server(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int delete_client_server(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *s = NULL, *ss = NULL, *stmp = NULL;
 	char *interface, *ip, *str;
@@ -345,7 +249,7 @@ int delete_client_server(char *refparam, struct dmctx *ctx, void *data, char *in
 	return 0;
 }
 
-int delete_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int delete_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *s = NULL, *ss = NULL, *stmp = NULL;
 	char *interface, *ip, *str;
@@ -383,25 +287,25 @@ int delete_relay_forwarding(char *refparam, struct dmctx *ctx, void *data, char 
 }
 
 /***************************************** Get/Set Parameter functions ***********************/
-int get_dns_supported_record_types(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_dns_supported_record_types(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "A,AAAA,PTR";
 	return 0;
 }
 
-int get_client_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_client_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "1";
 	return 0;
 }
 
-int get_client_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_client_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "Enabled";
 	return 0;
 }
 
-int get_client_server_number_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_client_server_number_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
@@ -414,13 +318,13 @@ int get_client_server_number_of_entries(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int get_server_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_server_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
     dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
     return 0;
 }
 
-int get_server_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_server_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *v;
 
@@ -429,19 +333,19 @@ int get_server_status(char *refparam, struct dmctx *ctx, void *data, char *insta
 	return 0;
 }
 
-int get_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "dns_server_alias", value);
 	return 0;
 }
 
-int get_server_dns_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_server_dns_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "ip", value);
 	return 0;
 }
 
-int get_server_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_server_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *linker;
 
@@ -452,7 +356,7 @@ int get_server_interface(char *refparam, struct dmctx *ctx, void *data, char *in
 	return 0;
 }
 
-int get_server_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_server_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *v;
 	*value = "Static";
@@ -467,7 +371,7 @@ int get_server_type(char *refparam, struct dmctx *ctx, void *data, char *instanc
 	return 0;
 }
 
-int get_relay_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_relay_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *path = "/etc/rc.d/*dnsmasq";
 	if (check_file(path))
@@ -477,7 +381,7 @@ int get_relay_enable(char *refparam, struct dmctx *ctx, void *data, char *instan
 	return 0;
 }
 
-int get_relay_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_relay_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *path = "/etc/rc.d/*dnsmasq";
 	if (check_file(path))
@@ -487,7 +391,7 @@ int get_relay_status(char *refparam, struct dmctx *ctx, void *data, char *instan
 	return 0;
 }
 
-int get_relay_forward_number_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_relay_forward_number_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
@@ -500,13 +404,13 @@ int get_relay_forward_number_of_entries(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int get_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
     dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
     return 0;
 }
 
-int get_forwarding_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_forwarding_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *v;
 
@@ -515,19 +419,19 @@ int get_forwarding_status(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
-int get_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "dns_server_alias", value);
 	return 0;
 }
 
-int get_forwarding_dns_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_forwarding_dns_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "ip", value);
 	return 0;
 }
 
-int get_forwarding_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_forwarding_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *linker;
 
@@ -538,7 +442,7 @@ int get_forwarding_interface(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
-int get_forwarding_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_forwarding_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *v;
 	*value = "Static";
@@ -553,49 +457,49 @@ int get_forwarding_type(char *refparam, struct dmctx *ctx, void *data, char *ins
 	return 0;
 }
 
-int get_nslookupdiagnostics_diagnostics_state(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_nslookupdiagnostics_diagnostics_state(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = nslookup_get("DiagnosticState", "None");
 	return 0;
 }
 
-int get_nslookupdiagnostics_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_nslookupdiagnostics_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_varstate_string("cwmp", "@nslookupdiagnostic[0]", "interface", value);
 	return 0;
 }
 
-int get_nslookupdiagnostics_host_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_nslookupdiagnostics_host_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_varstate_string("cwmp", "@nslookupdiagnostic[0]", "HostName", value);
 	return 0;
 }
 
-int get_nslookupdiagnostics_d_n_s_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_nslookupdiagnostics_d_n_s_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_varstate_string("cwmp", "@nslookupdiagnostic[0]", "DNSServer", value);
 	return 0;
 }
 
-int get_nslookupdiagnostics_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_nslookupdiagnostics_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = nslookup_get("Timeout", "5000");
 	return 0;
 }
 
-int get_nslookupdiagnostics_number_of_repetitions(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_nslookupdiagnostics_number_of_repetitions(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = nslookup_get("NumberOfRepetitions", "1");
 	return 0;
 }
 
-int get_nslookupdiagnostics_success_count(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_nslookupdiagnostics_success_count(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = nslookup_get("SuccessCount", "0");
 	return 0;
 }
 
-int get_nslookupdiagnostics_result_number_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_nslookupdiagnostics_result_number_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
@@ -607,43 +511,43 @@ int get_nslookupdiagnostics_result_number_of_entries(char *refparam, struct dmct
 	return 0;
 }
 
-int get_result_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_result_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "Status", value);
 	return 0;
 }
 
-int get_result_answer_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_result_answer_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "AnswerType", value);
 	return 0;
 }
 
-int get_result_host_name_returned(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_result_host_name_returned(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "HostNameReturned", value);
 	return 0;
 }
 
-int get_result_i_p_addresses(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_result_i_p_addresses(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "IPAddresses", value);
 	return 0;
 }
 
-int get_result_d_n_s_server_i_p(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_result_d_n_s_server_i_p(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "DNSServerIP", value);
 	return 0;
 }
 
-int get_result_response_time(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_result_response_time(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "ResponseTime", value);
 	return 0;
 }
 
-int set_client_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_client_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -656,7 +560,7 @@ int set_client_enable(char *refparam, struct dmctx *ctx, void *data, char *insta
 	return 0;
 }
 
-int set_server_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_server_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *str, *ip, *interface;
 	bool b, ob;
@@ -687,7 +591,7 @@ int set_server_enable(char *refparam, struct dmctx *ctx, void *data, char *insta
 	return 0;
 }
 
-int set_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -701,7 +605,7 @@ int set_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instan
 	return 0;
 }
 
-int set_server_dns_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_server_dns_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *str, *oip, *interface;
 	struct uci_list *v;
@@ -746,7 +650,7 @@ int set_server_dns_server(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
-int set_server_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_server_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *str, *ointerface, *ip, *interface;
 
@@ -774,7 +678,7 @@ int set_server_interface(char *refparam, struct dmctx *ctx, void *data, char *in
 	return 0;
 }
 
-int set_relay_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_relay_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -791,7 +695,7 @@ int set_relay_enable(char *refparam, struct dmctx *ctx, void *data, char *instan
 	return 0;
 }
 
-int set_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *str, *ip, *interface;
 	bool b, ob;
@@ -822,7 +726,7 @@ int set_forwarding_enable(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
-int set_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -836,7 +740,7 @@ int set_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *in
 	return 0;
 }
 
-int set_forwarding_dns_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_forwarding_dns_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *str, *oip, *interface;
 	struct uci_list *v;
@@ -881,7 +785,7 @@ int set_forwarding_dns_server(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
-int set_forwarding_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_forwarding_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *str, *ointerface, *ip, *interface;
 
@@ -909,7 +813,7 @@ int set_forwarding_interface(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
-int set_nslookupdiagnostics_diagnostics_state(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_nslookupdiagnostics_diagnostics_state(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
@@ -933,7 +837,7 @@ int set_nslookupdiagnostics_diagnostics_state(char *refparam, struct dmctx *ctx,
 	return 0;
 }
 
-int set_nslookupdiagnostics_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_nslookupdiagnostics_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
@@ -954,7 +858,7 @@ int set_nslookupdiagnostics_interface(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-int set_nslookupdiagnostics_host_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_nslookupdiagnostics_host_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
@@ -975,7 +879,7 @@ int set_nslookupdiagnostics_host_name(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-int set_nslookupdiagnostics_d_n_s_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_nslookupdiagnostics_d_n_s_server(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
@@ -996,7 +900,7 @@ int set_nslookupdiagnostics_d_n_s_server(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-int set_nslookupdiagnostics_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_nslookupdiagnostics_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
@@ -1017,7 +921,7 @@ int set_nslookupdiagnostics_timeout(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-int set_nslookupdiagnostics_number_of_repetitions(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_nslookupdiagnostics_number_of_repetitions(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *tmp;
 	struct uci_section *curr_section = NULL;
@@ -1038,4 +942,110 @@ int set_nslookupdiagnostics_number_of_repetitions(char *refparam, struct dmctx *
 	return 0;
 }
 
+/* *** Device.DNS. *** */
+DMOBJ tDNSObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Client", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDNSClientObj, tDNSClientParams, NULL, BBFDM_BOTH},
+{"Relay", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDNSRelayObj, tDNSRelayParams, NULL, BBFDM_BOTH},
+{"Diagnostics", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDNSDiagnosticsObj, NULL, NULL, BBFDM_BOTH},
+{0}
+};
 
+DMLEAF tDNSParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"SupportedRecordTypes", &DMREAD, DMT_STRING, get_dns_supported_record_types, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DNS.Client. *** */
+DMOBJ tDNSClientObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Server", &DMWRITE, add_client_server, delete_client_server, NULL, browseServerInst, NULL, NULL, NULL, NULL, tDNSClientServerParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tDNSClientParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_client_enable, set_client_enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_client_status, NULL, NULL, NULL, BBFDM_BOTH},
+{"ServerNumberOfEntries", &DMREAD, DMT_UNINT, get_client_server_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DNS.Client.Server.{i}. *** */
+DMLEAF tDNSClientServerParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_server_enable, set_server_enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_server_status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_server_alias, set_server_alias, NULL, NULL, BBFDM_BOTH},
+{"DNSServer", &DMWRITE, DMT_STRING, get_server_dns_server, set_server_dns_server, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMWRITE, DMT_STRING, get_server_interface, set_server_interface, NULL, NULL, BBFDM_BOTH},
+{"Type", &DMREAD, DMT_STRING, get_server_type, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DNS.Relay. *** */
+DMOBJ tDNSRelayObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Forwarding", &DMWRITE, add_relay_forwarding, delete_relay_forwarding, NULL, browseRelayForwardingInst, NULL, NULL, NULL, NULL, tDNSRelayForwardingParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tDNSRelayParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_relay_enable, set_relay_enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_relay_status, NULL, NULL, NULL, BBFDM_BOTH},
+{"ForwardNumberOfEntries", &DMREAD, DMT_UNINT, get_relay_forward_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DNS.Relay.Forwarding.{i}. *** */
+DMLEAF tDNSRelayForwardingParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_forwarding_enable, set_forwarding_enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_forwarding_status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_forwarding_alias, set_forwarding_alias, NULL, NULL, BBFDM_BOTH},
+{"DNSServer", &DMWRITE, DMT_STRING, get_forwarding_dns_server, set_forwarding_dns_server, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMWRITE, DMT_STRING, get_forwarding_interface, set_forwarding_interface, NULL, NULL, BBFDM_BOTH},
+{"Type", &DMREAD, DMT_STRING, get_forwarding_type, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DNS.Diagnostics. *** */
+DMOBJ tDNSDiagnosticsObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"NSLookupDiagnostics", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDNSDiagnosticsNSLookupDiagnosticsObj, tDNSDiagnosticsNSLookupDiagnosticsParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DNS.Diagnostics.NSLookupDiagnostics. *** */
+DMOBJ tDNSDiagnosticsNSLookupDiagnosticsObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"Result", &DMREAD, NULL, NULL, NULL, browseResultInst, NULL, NULL, NULL, NULL, tDNSDiagnosticsNSLookupDiagnosticsResultParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tDNSDiagnosticsNSLookupDiagnosticsParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"DiagnosticsState", &DMWRITE, DMT_STRING, get_nslookupdiagnostics_diagnostics_state, set_nslookupdiagnostics_diagnostics_state, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMWRITE, DMT_STRING, get_nslookupdiagnostics_interface, set_nslookupdiagnostics_interface, NULL, NULL, BBFDM_BOTH},
+{"HostName", &DMWRITE, DMT_STRING, get_nslookupdiagnostics_host_name, set_nslookupdiagnostics_host_name, NULL, NULL, BBFDM_BOTH},
+{"DNSServer", &DMWRITE, DMT_STRING, get_nslookupdiagnostics_d_n_s_server, set_nslookupdiagnostics_d_n_s_server, NULL, NULL, BBFDM_BOTH},
+{"Timeout", &DMWRITE, DMT_UNINT, get_nslookupdiagnostics_timeout, set_nslookupdiagnostics_timeout, NULL, NULL, BBFDM_BOTH},
+{"NumberOfRepetitions", &DMWRITE, DMT_UNINT, get_nslookupdiagnostics_number_of_repetitions, set_nslookupdiagnostics_number_of_repetitions, NULL, NULL, BBFDM_BOTH},
+{"SuccessCount", &DMREAD, DMT_UNINT, get_nslookupdiagnostics_success_count, NULL, NULL, NULL, BBFDM_BOTH},
+{"ResultNumberOfEntries", &DMREAD, DMT_UNINT, get_nslookupdiagnostics_result_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DNS.Diagnostics.NSLookupDiagnostics.Result.{i}. *** */
+DMLEAF tDNSDiagnosticsNSLookupDiagnosticsResultParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Status", &DMREAD, DMT_STRING, get_result_status, NULL, NULL, NULL, BBFDM_BOTH},
+{"AnswerType", &DMREAD, DMT_STRING, get_result_answer_type, NULL, NULL, NULL, BBFDM_BOTH},
+{"HostNameReturned", &DMREAD, DMT_STRING, get_result_host_name_returned, NULL, NULL, NULL, BBFDM_BOTH},
+{"IPAddresses", &DMREAD, DMT_STRING, get_result_i_p_addresses, NULL, NULL, NULL, BBFDM_BOTH},
+{"DNSServerIP", &DMREAD, DMT_STRING, get_result_d_n_s_server_i_p, NULL, NULL, NULL, BBFDM_BOTH},
+{"ResponseTime", &DMREAD, DMT_UNINT, get_result_response_time, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};

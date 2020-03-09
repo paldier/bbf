@@ -24,6 +24,9 @@ AM_CONDITIONAL([LOPENSSL],[test "x$enable_libopenssl" = "xyes"])
 AC_ARG_ENABLE(libmbedtls, [AS_HELP_STRING([--enable-libmbedtls], [enable libmbedtls upnp feature])], AC_DEFINE(LMBEDTLS),)
 AM_CONDITIONAL([LMBEDTLS],[test "x$enable_libmbedtls" = "xyes"])
 
+AC_ARG_ENABLE(generic_openwrt, [AS_HELP_STRING([--enable-generic-openwrt], [enable generic openwrt support])], AC_DEFINE(GENERIC_OPENWRT),)
+AM_CONDITIONAL([GENERIC_OPENWRT],[test "x$enable_generic_openwrt" = "xyes"])
+
 # checks for programs
 AC_PROG_CC
 AM_PROG_CC_C_O

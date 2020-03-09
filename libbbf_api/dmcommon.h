@@ -13,7 +13,6 @@
 #ifndef __DM_COMMON_H
 #define __DM_COMMON_H
 
-#define _XOPEN_SOURCE  /* for strptime */
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>

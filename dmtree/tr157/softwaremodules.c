@@ -11,105 +11,10 @@
 #include "dmentry.h"
 #include "softwaremodules.h"
 
-/* *** Device.SoftwareModules. *** */
-DMOBJ tSoftwareModulesObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"ExecEnv", &DMREAD, NULL, NULL, NULL, browseSoftwareModulesExecEnvInst, NULL, NULL, NULL, NULL, tSoftwareModulesExecEnvParams, get_exe_cenv_linker, BBFDM_BOTH},
-{"DeploymentUnit", &DMREAD, NULL, NULL, NULL, browseSoftwareModulesDeploymentUnitInst, NULL, NULL, NULL, NULL, tSoftwareModulesDeploymentUnitParams, get_du_linker, BBFDM_BOTH},
-{"ExecutionUnit", &DMREAD, NULL, NULL, NULL, browseSoftwareModulesExecutionUnitInst, NULL, NULL, NULL, tSoftwareModulesExecutionUnitObj, tSoftwareModulesExecutionUnitParams, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tSoftwareModulesParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"ExecEnvNumberOfEntries", &DMREAD, DMT_UNINT, get_SoftwareModules_ExecEnvNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{"DeploymentUnitNumberOfEntries", &DMREAD, DMT_UNINT, get_SoftwareModules_DeploymentUnitNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{"ExecutionUnitNumberOfEntries", &DMREAD, DMT_UNINT, get_SoftwareModules_ExecutionUnitNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.SoftwareModules.ExecEnv.{i}. *** */
-DMLEAF tSoftwareModulesExecEnvParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enable", &DMWRITE, DMT_BOOL, get_SoftwareModulesExecEnv_Enable, set_SoftwareModulesExecEnv_Enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Reset", &DMWRITE, DMT_BOOL, get_SoftwareModulesExecEnv_Reset, set_SoftwareModulesExecEnv_Reset, NULL, NULL, BBFDM_CWMP},
-{"Alias", &DMWRITE, DMT_STRING, get_SoftwareModulesExecEnv_Alias, set_SoftwareModulesExecEnv_Alias, NULL, NULL, BBFDM_BOTH},
-{"Name", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Name, NULL, NULL, NULL, BBFDM_BOTH},
-{"Type", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Type, NULL, NULL, NULL, BBFDM_BOTH},
-//{"InitialRunLevel", &DMWRITE, DMT_UNINT, get_SoftwareModulesExecEnv_InitialRunLevel, set_SoftwareModulesExecEnv_InitialRunLevel, NULL, NULL, BBFDM_BOTH},
-//{"RequestedRunLevel", &DMWRITE, DMT_INT, get_SoftwareModulesExecEnv_RequestedRunLevel, set_SoftwareModulesExecEnv_RequestedRunLevel, NULL, NULL, BBFDM_CWMP},
-//{"CurrentRunLevel", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_CurrentRunLevel, NULL, NULL, NULL, BBFDM_BOTH},
-//{"InitialExecutionUnitRunLevel", &DMWRITE, DMT_INT, get_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel, set_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel, NULL, NULL, BBFDM_BOTH},
-{"Vendor", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Vendor, NULL, NULL, NULL, BBFDM_BOTH},
-{"Version", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Version, NULL, NULL, NULL, BBFDM_BOTH},
-{"ParentExecEnv", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_ParentExecEnv, NULL, NULL, NULL, BBFDM_BOTH},
-{"AllocatedDiskSpace", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_AllocatedDiskSpace, NULL, NULL, NULL, BBFDM_BOTH},
-{"AvailableDiskSpace", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_AvailableDiskSpace, NULL, NULL, NULL, BBFDM_BOTH},
-{"AllocatedMemory", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_AllocatedMemory, NULL, NULL, NULL, BBFDM_BOTH},
-{"AvailableMemory", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_AvailableMemory, NULL, NULL, NULL, BBFDM_BOTH},
-{"ActiveExecutionUnits", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_ActiveExecutionUnits, NULL, NULL, NULL, BBFDM_BOTH},
-//{"ProcessorRefList", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_ProcessorRefList, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.SoftwareModules.DeploymentUnit.{i}. *** */
-DMLEAF tSoftwareModulesDeploymentUnitParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"UUID", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_UUID, NULL, NULL, NULL, BBFDM_BOTH},
-{"DUID", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_DUID, NULL, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_SoftwareModulesDeploymentUnit_Alias, set_SoftwareModulesDeploymentUnit_Alias, NULL, NULL, BBFDM_BOTH},
-{"Name", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Name, NULL, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Status, NULL, NULL, NULL, BBFDM_BOTH},
-{"Resolved", &DMREAD, DMT_BOOL, get_SoftwareModulesDeploymentUnit_Resolved, NULL, NULL, NULL, BBFDM_BOTH},
-{"URL", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_URL, NULL, NULL, NULL, BBFDM_BOTH},
-{"Description", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Description, NULL, NULL, NULL, BBFDM_BOTH},
-{"Vendor", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Vendor, NULL, NULL, NULL, BBFDM_BOTH},
-{"Version", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Version, NULL, NULL, NULL, BBFDM_BOTH},
-{"VendorLogList", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_VendorLogList, NULL, NULL, NULL, BBFDM_BOTH},
-{"VendorConfigList", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_VendorConfigList, NULL, NULL, NULL, BBFDM_BOTH},
-{"ExecutionUnitList", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_ExecutionUnitList, NULL, NULL, NULL, BBFDM_BOTH},
-{"ExecutionEnvRef", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_ExecutionEnvRef, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-/* *** Device.SoftwareModules.ExecutionUnit.{i}. *** */
-DMOBJ tSoftwareModulesExecutionUnitObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-//{"Extensions", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
-DMLEAF tSoftwareModulesExecutionUnitParams[] = {
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"EUID", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_EUID, NULL, NULL, NULL, BBFDM_BOTH},
-{"Alias", &DMWRITE, DMT_STRING, get_SoftwareModulesExecutionUnit_Alias, set_SoftwareModulesExecutionUnit_Alias, NULL, NULL, BBFDM_BOTH},
-{"Name", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Name, NULL, NULL, NULL, BBFDM_BOTH},
-{"ExecEnvLabel", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecEnvLabel, NULL, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Status, NULL, NULL, NULL, BBFDM_BOTH},
-//{"RequestedState", &DMWRITE, DMT_STRING, get_SoftwareModulesExecutionUnit_RequestedState, set_SoftwareModulesExecutionUnit_RequestedState, NULL, NULL, BBFDM_CWMP},
-//{"ExecutionFaultCode", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionFaultCode, NULL, NULL, NULL, BBFDM_BOTH},
-//{"ExecutionFaultMessage", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionFaultMessage, NULL, NULL, NULL, BBFDM_BOTH},
-//{"AutoStart", &DMWRITE, DMT_BOOL, get_SoftwareModulesExecutionUnit_AutoStart, set_SoftwareModulesExecutionUnit_AutoStart, NULL, NULL, BBFDM_BOTH},
-//{"RunLevel", &DMWRITE, DMT_UNINT, get_SoftwareModulesExecutionUnit_RunLevel, set_SoftwareModulesExecutionUnit_RunLevel, NULL, NULL, BBFDM_BOTH},
-{"Vendor", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Vendor, NULL, NULL, NULL, BBFDM_BOTH},
-{"Version", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Version, NULL, NULL, NULL, BBFDM_BOTH},
-{"Description", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Description, NULL, NULL, NULL, BBFDM_BOTH},
-{"DiskSpaceInUse", &DMREAD, DMT_INT, get_SoftwareModulesExecutionUnit_DiskSpaceInUse, NULL, NULL, NULL, BBFDM_BOTH},
-{"MemoryInUse", &DMREAD, DMT_INT, get_SoftwareModulesExecutionUnit_MemoryInUse, NULL, NULL, NULL, BBFDM_BOTH},
-{"References", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_References, NULL, NULL, NULL, BBFDM_BOTH},
-{"AssociatedProcessList", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_AssociatedProcessList, NULL, NULL, NULL, BBFDM_BOTH},
-{"VendorLogList", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_VendorLogList, NULL, NULL, NULL, BBFDM_BOTH},
-{"VendorConfigList", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_VendorConfigList, NULL, NULL, NULL, BBFDM_BOTH},
-//{"SupportedDataModelList", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_SupportedDataModelList, NULL, NULL, NULL, BBFDM_CWMP},
-{"ExecutionEnvRef", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionEnvRef, NULL, NULL, NULL, BBFDM_BOTH},
-{0}
-};
-
 /**************************************************************************
 * LINKER
 ***************************************************************************/
-int get_exe_cenv_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+static int get_exe_cenv_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
 	if (data) {
 		char *name = dmjson_get_value((json_object *)data, 1, "name");
@@ -120,7 +25,7 @@ int get_exe_cenv_linker(char *refparam, struct dmctx *dmctx, void *data, char *i
 	return 0;
 }
 
-int get_du_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+static int get_du_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
 	if (data) {
 		char *name = dmjson_get_value((json_object *)data, 1, "name");
@@ -135,7 +40,7 @@ int get_du_linker(char *refparam, struct dmctx *dmctx, void *data, char *instanc
 /*************************************************************
 * ENTRY METHOD
 *************************************************************/
-int browseSoftwareModulesExecEnvInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseSoftwareModulesExecEnvInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
 	char *idx, *idx_last = NULL;
@@ -152,7 +57,7 @@ int browseSoftwareModulesExecEnvInst(struct dmctx *dmctx, DMNODE *parent_node, v
 	return 0;
 }
 
-int browseSoftwareModulesDeploymentUnitInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseSoftwareModulesDeploymentUnitInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
 	char *idx, *idx_last = NULL, buf[5];
@@ -176,7 +81,7 @@ int browseSoftwareModulesDeploymentUnitInst(struct dmctx *dmctx, DMNODE *parent_
 	return 0;
 }
 
-int browseSoftwareModulesExecutionUnitInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseSoftwareModulesExecutionUnitInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
 	char *idx, *idx_last = NULL;
@@ -196,7 +101,7 @@ int browseSoftwareModulesExecutionUnitInst(struct dmctx *dmctx, DMNODE *parent_n
 /*************************************************************
 * GET & SET PARAM
 *************************************************************/
-int get_SoftwareModules_ExecEnvNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModules_ExecEnvNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *environment = NULL;
 	size_t nbre_env = 0;
@@ -209,7 +114,7 @@ int get_SoftwareModules_ExecEnvNumberOfEntries(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-int get_SoftwareModules_DeploymentUnitNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModules_DeploymentUnitNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *deployment_unit = NULL;
 	size_t nbre_du = 0, total_du = 0;
@@ -229,7 +134,7 @@ int get_SoftwareModules_DeploymentUnitNumberOfEntries(char *refparam, struct dmc
 	return 0;
 }
 
-int get_SoftwareModules_ExecutionUnitNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModules_ExecutionUnitNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *execution_unit = NULL;
 	size_t nbre_env = 0;
@@ -243,7 +148,7 @@ int get_SoftwareModules_ExecutionUnitNumberOfEntries(char *refparam, struct dmct
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.Enable!UBUS:softwaremanagement/environment//environment[i-1].status*/
-int get_SoftwareModulesExecEnv_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "status");
 	if (strcmp(*value, "Up") == 0)
@@ -253,7 +158,7 @@ int get_SoftwareModulesExecEnv_Enable(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-int set_SoftwareModulesExecEnv_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecEnv_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 	char *env_name;
@@ -278,19 +183,19 @@ int set_SoftwareModulesExecEnv_Enable(char *refparam, struct dmctx *ctx, void *d
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.Status!UBUS:softwaremanagement/environment//environment[i-1].status*/
-int get_SoftwareModulesExecEnv_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "status");
 	return 0;
 }
 
-int get_SoftwareModulesExecEnv_Reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_Reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
 	return 0;
 }
 
-int set_SoftwareModulesExecEnv_Reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecEnv_Reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 	char *env_name;
@@ -311,7 +216,7 @@ int set_SoftwareModulesExecEnv_Reset(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int get_SoftwareModulesExecEnv_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	char *env_name, *name;
@@ -327,7 +232,7 @@ int get_SoftwareModulesExecEnv_Alias(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-int set_SoftwareModulesExecEnv_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecEnv_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s = NULL, *dmmap = NULL;
 	char *name, *v;
@@ -355,26 +260,26 @@ int set_SoftwareModulesExecEnv_Alias(char *refparam, struct dmctx *ctx, void *da
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.Name!UBUS:softwaremanagement/environment//environment[i-1].name*/
-int get_SoftwareModulesExecEnv_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "name");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.Type!UBUS:softwaremanagement/environment//environment[i-1].type*/
-int get_SoftwareModulesExecEnv_Type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_Type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "type");
 	return 0;
 }
 
-int get_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int set_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -388,13 +293,13 @@ int set_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-int get_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int set_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -408,19 +313,19 @@ int set_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *c
 	return 0;
 }
 
-int get_SoftwareModulesExecEnv_CurrentRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_CurrentRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int get_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int set_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -435,20 +340,20 @@ int set_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel(char *refparam, stru
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.Vendor!UBUS:softwaremanagement/environment//environment[i-1].vendor*/
-int get_SoftwareModulesExecEnv_Vendor(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_Vendor(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "vendor");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.Version!UBUS:softwaremanagement/environment//environment[i-1].version*/
-int get_SoftwareModulesExecEnv_Version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_Version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "version");
 	return 0;
 }
 
-int get_SoftwareModulesExecEnv_ParentExecEnv(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_ParentExecEnv(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *env_name = dmjson_get_value((json_object *)data, 1, "name");
 	*value = "";
@@ -464,34 +369,34 @@ int get_SoftwareModulesExecEnv_ParentExecEnv(char *refparam, struct dmctx *ctx, 
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.AllocatedDiskSpace!UBUS:softwaremanagement/environment//environment[i-1].allocateddiskspace*/
-int get_SoftwareModulesExecEnv_AllocatedDiskSpace(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_AllocatedDiskSpace(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "allocateddiskspace");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.AvailableDiskSpace!UBUS:softwaremanagement/environment//environment[i-1].availablediskspace*/
-int get_SoftwareModulesExecEnv_AvailableDiskSpace(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_AvailableDiskSpace(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "availablediskspace");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.AllocatedMemory!UBUS:softwaremanagement/environment//environment[i-1].allocatedmemory*/
-int get_SoftwareModulesExecEnv_AllocatedMemory(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_AllocatedMemory(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "allocatedmemory");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.AvailableMemory!UBUS:softwaremanagement/environment//environment[i-1].availablememory*/
-int get_SoftwareModulesExecEnv_AvailableMemory(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_AvailableMemory(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "availablememory");
 	return 0;
 }
 
-int get_SoftwareModulesExecEnv_ActiveExecutionUnits(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_ActiveExecutionUnits(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
 	int j = 0, env = 0;
@@ -519,27 +424,27 @@ int get_SoftwareModulesExecEnv_ActiveExecutionUnits(char *refparam, struct dmctx
 	return 0;
 }
 
-int get_SoftwareModulesExecEnv_ProcessorRefList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecEnv_ProcessorRefList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
 /*#Device.SoftwareModules.DeploymentUnit.{i}.UUID!UBUS:softwaremanagement/du_list//deployment_unit[i-1].uuid*/
-int get_SoftwareModulesDeploymentUnit_UUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_UUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "uuid");
 	return 0;
 }
 
 /*#Device.SoftwareModules.DeploymentUnit.{i}.DUID!UBUS:softwaremanagement/du_list//deployment_unit[i-1].duid*/
-int get_SoftwareModulesDeploymentUnit_DUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_DUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "duid");
 	return 0;
 }
 
-int get_SoftwareModulesDeploymentUnit_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	char *du_name, *du_env, *environment, *name;
@@ -557,7 +462,7 @@ int get_SoftwareModulesDeploymentUnit_Alias(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
-int set_SoftwareModulesDeploymentUnit_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesDeploymentUnit_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s = NULL, *dmmap = NULL;
 	char *du_name, *du_env, *environment, *name, *v;
@@ -592,60 +497,60 @@ int set_SoftwareModulesDeploymentUnit_Alias(char *refparam, struct dmctx *ctx, v
 }
 
 /*#Device.SoftwareModules.DeploymentUnit.{i}.Name!UBUS:softwaremanagement/du_list//deployment_unit[i-1].name*/
-int get_SoftwareModulesDeploymentUnit_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "name");
 	return 0;
 }
 
-int get_SoftwareModulesDeploymentUnit_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "Installed";
 	return 0;
 }
 
-int get_SoftwareModulesDeploymentUnit_Resolved(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_Resolved(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "1";
 	return 0;
 }
 
 /*#Device.SoftwareModules.DeploymentUnit.{i}.URL!UBUS:softwaremanagement/du_list//deployment_unit[i-1].url*/
-int get_SoftwareModulesDeploymentUnit_URL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_URL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "url");
 	return 0;
 }
 
 /*#Device.SoftwareModules.DeploymentUnit.{i}.Description!UBUS:softwaremanagement/du_list//deployment_unit[i-1].description*/
-int get_SoftwareModulesDeploymentUnit_Description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_Description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "description");
 	return 0;
 }
 
 /*#Device.SoftwareModules.DeploymentUnit.{i}.Vendor!UBUS:softwaremanagement/du_list//deployment_unit[i-1].vendor*/
-int get_SoftwareModulesDeploymentUnit_Vendor(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_Vendor(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "vendor");
 	return 0;
 }
 
 /*#Device.SoftwareModules.DeploymentUnit.{i}.Version!UBUS:softwaremanagement/du_list//deployment_unit[i-1].version*/
-int get_SoftwareModulesDeploymentUnit_Version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_Version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "version");
 	return 0;
 }
 
-int get_SoftwareModulesDeploymentUnit_VendorLogList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_VendorLogList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "";
 	return 0;
 }
 
 /*#Device.SoftwareModules.DeploymentUnit.{i}.VendorConfigList!UBUS:softwaremanagement/du_list//deployment_unit[i-1].config*/
-int get_SoftwareModulesDeploymentUnit_VendorConfigList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_VendorConfigList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	char *name, *vcf_instance, *config;
@@ -666,7 +571,7 @@ int get_SoftwareModulesDeploymentUnit_VendorConfigList(char *refparam, struct dm
 	return 0;
 }
 
-int get_SoftwareModulesDeploymentUnit_ExecutionUnitList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_ExecutionUnitList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
 	char *environment, *name, *curr_environment, *curr_name;
@@ -690,7 +595,7 @@ int get_SoftwareModulesDeploymentUnit_ExecutionUnitList(char *refparam, struct d
 }
 
 /*#Device.SoftwareModules.DeploymentUnit.{i}.ExecutionEnvRef!UBUS:softwaremanagement/du_list//deployment_unit[i-1].environment*/
-int get_SoftwareModulesDeploymentUnit_ExecutionEnvRef(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesDeploymentUnit_ExecutionEnvRef(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *linker = dmjson_get_value((json_object *)data, 1, "environment");
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cSoftwareModules%cExecEnv%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
@@ -702,13 +607,13 @@ int get_SoftwareModulesDeploymentUnit_ExecutionEnvRef(char *refparam, struct dmc
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.EUID!UBUS:softwaremanagement/eu_list//execution_unit[i-1].euid*/
-int get_SoftwareModulesExecutionUnit_EUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_EUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "euid");
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	char *eu_euid, *eu_env, *environment, *euid;
@@ -726,7 +631,7 @@ int get_SoftwareModulesExecutionUnit_Alias(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int set_SoftwareModulesExecutionUnit_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecutionUnit_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s = NULL, *dmmap = NULL;
 	char *eu_euid, *eu_env, *environment, *euid, *v;
@@ -761,32 +666,32 @@ int set_SoftwareModulesExecutionUnit_Alias(char *refparam, struct dmctx *ctx, vo
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.Name!UBUS:softwaremanagement/eu_list//execution_unit[i-1].name*/
-int get_SoftwareModulesExecutionUnit_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "name");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.ExecEnvLabel!UBUS:softwaremanagement/eu_list//execution_unit[i-1].euid*/
-int get_SoftwareModulesExecutionUnit_ExecEnvLabel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_ExecEnvLabel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "euid");
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "Active";
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int set_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -800,25 +705,25 @@ int set_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_ExecutionFaultCode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_ExecutionFaultCode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_ExecutionFaultMessage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_ExecutionFaultMessage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int set_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -832,13 +737,13 @@ int set_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_RunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_RunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
-int set_SoftwareModulesExecutionUnit_RunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_SoftwareModulesExecutionUnit_RunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -853,41 +758,41 @@ int set_SoftwareModulesExecutionUnit_RunLevel(char *refparam, struct dmctx *ctx,
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.Vendor!UBUS:softwaremanagement/eu_list//execution_unit[i-1].vendor*/
-int get_SoftwareModulesExecutionUnit_Vendor(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_Vendor(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "vendor");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.Version!UBUS:softwaremanagement/eu_list//execution_unit[i-1].version*/
-int get_SoftwareModulesExecutionUnit_Version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_Version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "version");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.Description!UBUS:softwaremanagement/eu_list//execution_unit[i-1].description*/
-int get_SoftwareModulesExecutionUnit_Description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_Description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "description");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.DiskSpaceInUse!UBUS:softwaremanagement/eu_list//execution_unit[i-1].disk_space*/
-int get_SoftwareModulesExecutionUnit_DiskSpaceInUse(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_DiskSpaceInUse(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "disk_space");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.MemoryInUse!UBUS:softwaremanagement/eu_list//execution_unit[i-1].memory_space*/
-int get_SoftwareModulesExecutionUnit_MemoryInUse(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_MemoryInUse(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "memory_space");
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_References(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_References(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
 	char *environment, *name, *curr_environment, *curr_name, buf[5];
@@ -919,7 +824,7 @@ int get_SoftwareModulesExecutionUnit_References(char *refparam, struct dmctx *ct
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_AssociatedProcessList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_AssociatedProcessList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *processes_obj = NULL, *arrobj = NULL;
 	char *euid, *pid;
@@ -939,14 +844,14 @@ int get_SoftwareModulesExecutionUnit_AssociatedProcessList(char *refparam, struc
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_VendorLogList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_VendorLogList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "";
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.VendorConfigList!UBUS:softwaremanagement/eu_list//execution_unit[i-1].config*/
-int get_SoftwareModulesExecutionUnit_VendorConfigList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_VendorConfigList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	char *name, *vcf_instance, *config;
@@ -967,14 +872,14 @@ int get_SoftwareModulesExecutionUnit_VendorConfigList(char *refparam, struct dmc
 	return 0;
 }
 
-int get_SoftwareModulesExecutionUnit_SupportedDataModelList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_SupportedDataModelList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecutionUnit.{i}.ExecutionEnvRef!UBUS:softwaremanagement/eu_list//execution_unit[i-1].environment*/
-int get_SoftwareModulesExecutionUnit_ExecutionEnvRef(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_SoftwareModulesExecutionUnit_ExecutionEnvRef(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *linker = dmjson_get_value((json_object *)data, 1, "environment");
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cSoftwareModules%cExecEnv%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
@@ -1071,3 +976,98 @@ char *get_softwaremodules_url(char *uuid)
 	}
 	return url;
 }
+
+/* *** Device.SoftwareModules. *** */
+DMOBJ tSoftwareModulesObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+{"ExecEnv", &DMREAD, NULL, NULL, NULL, browseSoftwareModulesExecEnvInst, NULL, NULL, NULL, NULL, tSoftwareModulesExecEnvParams, get_exe_cenv_linker, BBFDM_BOTH},
+{"DeploymentUnit", &DMREAD, NULL, NULL, NULL, browseSoftwareModulesDeploymentUnitInst, NULL, NULL, NULL, NULL, tSoftwareModulesDeploymentUnitParams, get_du_linker, BBFDM_BOTH},
+{"ExecutionUnit", &DMREAD, NULL, NULL, NULL, browseSoftwareModulesExecutionUnitInst, NULL, NULL, NULL, tSoftwareModulesExecutionUnitObj, tSoftwareModulesExecutionUnitParams, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tSoftwareModulesParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"ExecEnvNumberOfEntries", &DMREAD, DMT_UNINT, get_SoftwareModules_ExecEnvNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{"DeploymentUnitNumberOfEntries", &DMREAD, DMT_UNINT, get_SoftwareModules_DeploymentUnitNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{"ExecutionUnitNumberOfEntries", &DMREAD, DMT_UNINT, get_SoftwareModules_ExecutionUnitNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.SoftwareModules.ExecEnv.{i}. *** */
+DMLEAF tSoftwareModulesExecEnvParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_SoftwareModulesExecEnv_Enable, set_SoftwareModulesExecEnv_Enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Reset", &DMWRITE, DMT_BOOL, get_SoftwareModulesExecEnv_Reset, set_SoftwareModulesExecEnv_Reset, NULL, NULL, BBFDM_CWMP},
+{"Alias", &DMWRITE, DMT_STRING, get_SoftwareModulesExecEnv_Alias, set_SoftwareModulesExecEnv_Alias, NULL, NULL, BBFDM_BOTH},
+{"Name", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Name, NULL, NULL, NULL, BBFDM_BOTH},
+{"Type", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Type, NULL, NULL, NULL, BBFDM_BOTH},
+//{"InitialRunLevel", &DMWRITE, DMT_UNINT, get_SoftwareModulesExecEnv_InitialRunLevel, set_SoftwareModulesExecEnv_InitialRunLevel, NULL, NULL, BBFDM_BOTH},
+//{"RequestedRunLevel", &DMWRITE, DMT_INT, get_SoftwareModulesExecEnv_RequestedRunLevel, set_SoftwareModulesExecEnv_RequestedRunLevel, NULL, NULL, BBFDM_CWMP},
+//{"CurrentRunLevel", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_CurrentRunLevel, NULL, NULL, NULL, BBFDM_BOTH},
+//{"InitialExecutionUnitRunLevel", &DMWRITE, DMT_INT, get_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel, set_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel, NULL, NULL, BBFDM_BOTH},
+{"Vendor", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Vendor, NULL, NULL, NULL, BBFDM_BOTH},
+{"Version", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_Version, NULL, NULL, NULL, BBFDM_BOTH},
+{"ParentExecEnv", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_ParentExecEnv, NULL, NULL, NULL, BBFDM_BOTH},
+{"AllocatedDiskSpace", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_AllocatedDiskSpace, NULL, NULL, NULL, BBFDM_BOTH},
+{"AvailableDiskSpace", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_AvailableDiskSpace, NULL, NULL, NULL, BBFDM_BOTH},
+{"AllocatedMemory", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_AllocatedMemory, NULL, NULL, NULL, BBFDM_BOTH},
+{"AvailableMemory", &DMREAD, DMT_INT, get_SoftwareModulesExecEnv_AvailableMemory, NULL, NULL, NULL, BBFDM_BOTH},
+{"ActiveExecutionUnits", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_ActiveExecutionUnits, NULL, NULL, NULL, BBFDM_BOTH},
+//{"ProcessorRefList", &DMREAD, DMT_STRING, get_SoftwareModulesExecEnv_ProcessorRefList, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.SoftwareModules.DeploymentUnit.{i}. *** */
+DMLEAF tSoftwareModulesDeploymentUnitParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"UUID", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_UUID, NULL, NULL, NULL, BBFDM_BOTH},
+{"DUID", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_DUID, NULL, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_SoftwareModulesDeploymentUnit_Alias, set_SoftwareModulesDeploymentUnit_Alias, NULL, NULL, BBFDM_BOTH},
+{"Name", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Name, NULL, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Resolved", &DMREAD, DMT_BOOL, get_SoftwareModulesDeploymentUnit_Resolved, NULL, NULL, NULL, BBFDM_BOTH},
+{"URL", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_URL, NULL, NULL, NULL, BBFDM_BOTH},
+{"Description", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Description, NULL, NULL, NULL, BBFDM_BOTH},
+{"Vendor", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Vendor, NULL, NULL, NULL, BBFDM_BOTH},
+{"Version", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_Version, NULL, NULL, NULL, BBFDM_BOTH},
+{"VendorLogList", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_VendorLogList, NULL, NULL, NULL, BBFDM_BOTH},
+{"VendorConfigList", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_VendorConfigList, NULL, NULL, NULL, BBFDM_BOTH},
+{"ExecutionUnitList", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_ExecutionUnitList, NULL, NULL, NULL, BBFDM_BOTH},
+{"ExecutionEnvRef", &DMREAD, DMT_STRING, get_SoftwareModulesDeploymentUnit_ExecutionEnvRef, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.SoftwareModules.ExecutionUnit.{i}. *** */
+DMOBJ tSoftwareModulesExecutionUnitObj[] = {
+/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+//{"Extensions", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+DMLEAF tSoftwareModulesExecutionUnitParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"EUID", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_EUID, NULL, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_SoftwareModulesExecutionUnit_Alias, set_SoftwareModulesExecutionUnit_Alias, NULL, NULL, BBFDM_BOTH},
+{"Name", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Name, NULL, NULL, NULL, BBFDM_BOTH},
+{"ExecEnvLabel", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecEnvLabel, NULL, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Status, NULL, NULL, NULL, BBFDM_BOTH},
+//{"RequestedState", &DMWRITE, DMT_STRING, get_SoftwareModulesExecutionUnit_RequestedState, set_SoftwareModulesExecutionUnit_RequestedState, NULL, NULL, BBFDM_CWMP},
+//{"ExecutionFaultCode", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionFaultCode, NULL, NULL, NULL, BBFDM_BOTH},
+//{"ExecutionFaultMessage", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionFaultMessage, NULL, NULL, NULL, BBFDM_BOTH},
+//{"AutoStart", &DMWRITE, DMT_BOOL, get_SoftwareModulesExecutionUnit_AutoStart, set_SoftwareModulesExecutionUnit_AutoStart, NULL, NULL, BBFDM_BOTH},
+//{"RunLevel", &DMWRITE, DMT_UNINT, get_SoftwareModulesExecutionUnit_RunLevel, set_SoftwareModulesExecutionUnit_RunLevel, NULL, NULL, BBFDM_BOTH},
+{"Vendor", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Vendor, NULL, NULL, NULL, BBFDM_BOTH},
+{"Version", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Version, NULL, NULL, NULL, BBFDM_BOTH},
+{"Description", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_Description, NULL, NULL, NULL, BBFDM_BOTH},
+{"DiskSpaceInUse", &DMREAD, DMT_INT, get_SoftwareModulesExecutionUnit_DiskSpaceInUse, NULL, NULL, NULL, BBFDM_BOTH},
+{"MemoryInUse", &DMREAD, DMT_INT, get_SoftwareModulesExecutionUnit_MemoryInUse, NULL, NULL, NULL, BBFDM_BOTH},
+{"References", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_References, NULL, NULL, NULL, BBFDM_BOTH},
+{"AssociatedProcessList", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_AssociatedProcessList, NULL, NULL, NULL, BBFDM_BOTH},
+{"VendorLogList", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_VendorLogList, NULL, NULL, NULL, BBFDM_BOTH},
+{"VendorConfigList", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_VendorConfigList, NULL, NULL, NULL, BBFDM_BOTH},
+//{"SupportedDataModelList", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_SupportedDataModelList, NULL, NULL, NULL, BBFDM_CWMP},
+{"ExecutionEnvRef", &DMREAD, DMT_STRING, get_SoftwareModulesExecutionUnit_ExecutionEnvRef, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};

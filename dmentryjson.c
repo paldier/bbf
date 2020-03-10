@@ -20,7 +20,7 @@ static int get_stats_json_folder(char *folder_path, int *file_count, unsigned lo
 	struct stat stats;
 	struct dirent *entry;
 	DIR *dirp = NULL;
-	char buf[256] = {0};
+	char buf[264] = {0};
 	int filecount = 0;
 	unsigned long filesize = 0, filedate = 0;
 
@@ -806,7 +806,7 @@ int load_json_dynamic_arrays(struct dmctx *ctx)
 			if (strstr(ent->d_name, ".json")) {
 				DMOBJ *dm_entryobj = NULL;
 				json_object *json;
-				char buf[32] = "";
+				char buf[280] = "";
 				snprintf(buf, sizeof(buf), "%s/%s", JSON_FOLDER_PATH, ent->d_name);
 				json = json_object_from_file(buf);
 				if (!json) continue;

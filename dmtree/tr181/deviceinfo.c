@@ -322,7 +322,7 @@ static int get_vcf_date(char *refparam, struct dmctx *ctx, void *data, char *ins
 	DIR *dir;
 	struct dirent *d_file;
 	struct stat attr;
-	char path[128];
+	char path[280];
 	char date[sizeof "AAAA-MM-JJTHH:MM:SS.000Z"];
 
 	*value = "";

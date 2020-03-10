@@ -329,6 +329,7 @@ static int dmmap_synchronizeRoutingRouterIPv6Forwarding(struct dmctx *dmctx, DMN
 {
 	struct uci_section *s = NULL, *stmp;
 	char buf[512], dev[32], ipstr[INET6_ADDRSTRLEN + 8], gwstr[INET6_ADDRSTRLEN + 8];
+	char ipbuf[INET6_ADDRSTRLEN];
 	unsigned int ip[4], gw[4];
 	unsigned int flags, refcnt, use, metric, prefix;
 	char *iface, *str, *target, *name, *instance;
@@ -356,8 +357,8 @@ static int dmmap_synchronizeRoutingRouterIPv6Forwarding(struct dmctx *dmctx, DMN
 			ip[1] = htonl(ip[1]);
 			ip[2] = htonl(ip[2]);
 			ip[3] = htonl(ip[3]);
-			inet_ntop(AF_INET6, ip, buf, INET6_ADDRSTRLEN);
-			snprintf(ipstr, sizeof(ipstr), "%s/%u", buf, prefix);
+			inet_ntop(AF_INET6, ip, ipbuf, INET6_ADDRSTRLEN);
+			snprintf(ipstr, sizeof(ipstr), "%s/%u", ipbuf, prefix);
 			if (strcmp(iface, dev) == 0 && strcmp(ipstr, target) == 0) {
 				found = 1;
 				break;
@@ -387,8 +388,8 @@ static int dmmap_synchronizeRoutingRouterIPv6Forwarding(struct dmctx *dmctx, DMN
 		gw[1] = htonl(gw[1]);
 		gw[2] = htonl(gw[2]);
 		gw[3] = htonl(gw[3]);
-		inet_ntop(AF_INET6, ip, buf, INET6_ADDRSTRLEN);
-		snprintf(ipstr, sizeof(ipstr), "%s/%u", buf, prefix);
+		inet_ntop(AF_INET6, ip, ipbuf, INET6_ADDRSTRLEN);
+		snprintf(ipstr, sizeof(ipstr), "%s/%u", ipbuf, prefix);
 		inet_ntop(AF_INET6, gw, gwstr, INET6_ADDRSTRLEN);
 		if (is_proc_route6_in_config(dev, ipstr, gwstr))
 			continue;
@@ -926,6 +927,7 @@ static int get_RoutingRouteInformationInterfaceSetting_Interface(char *refparam,
 {
 	struct uci_section *s = NULL;
 	char buf[512], dev[32], ipstr[INET6_ADDRSTRLEN + 8], gwstr[INET6_ADDRSTRLEN + 8];
+	char ipbuf[INET6_ADDRSTRLEN];
 	unsigned int ip[4], gw[4], flags, refcnt, use, metric, prefix;
 	char *source, *nexthop, *str, *iface = "";
 	json_object *jobj;
@@ -952,8 +954,8 @@ static int get_RoutingRouteInformationInterfaceSetting_Interface(char *refparam,
 		gw[1] = htonl(gw[1]);
 		gw[2] = htonl(gw[2]);
 		gw[3] = htonl(gw[3]);
-		inet_ntop(AF_INET6, ip, buf, INET6_ADDRSTRLEN);
-		snprintf(ipstr, sizeof(ipstr), "%s/%u", buf, prefix);
+		inet_ntop(AF_INET6, ip, ipbuf, INET6_ADDRSTRLEN);
+		snprintf(ipstr, sizeof(ipstr), "%s/%u", ipbuf, prefix);
 		inet_ntop(AF_INET6, gw, gwstr, INET6_ADDRSTRLEN);
 		if((strcmp(source, ipstr) == 0) && (strcmp(nexthop, gwstr) == 0))
 			break;

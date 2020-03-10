@@ -19,7 +19,7 @@ static int get_stats_library_folder(char *folder_path, int *file_count, unsigned
 	struct stat stats;
 	struct dirent *entry;
 	DIR *dirp = NULL;
-	char buf[256] = {0};
+	char buf[264] = {0};
 	int filecount = 0;
 	unsigned long filesize = 0, filedate = 0;
 
@@ -125,7 +125,7 @@ int load_library_dynamic_arrays(struct dmctx *ctx)
 				LIB_MAP_OBJ *root_dynamic_obj = NULL;
 				LIB_MAP_OPERATE *root_dynamic_operate = NULL;
 				DMOBJ *dm_entryobj = NULL;
-				char buf[32] = "";
+				char buf[280] = "";
 				int i;
 
 				snprintf(buf, sizeof(buf), "%s/%s", LIBRARY_FOLDER_PATH, ent->d_name);

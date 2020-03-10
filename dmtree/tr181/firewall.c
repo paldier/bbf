@@ -933,7 +933,7 @@ static int set_rule_dest_ip(char *refparam, struct dmctx *ctx, void *data, char 
 
 static int set_rule_dest_mask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char buf[64], new[64], *pch, *destip;
+	char buf[64], new[70], *pch, *destip;
 
 	switch (action) {
 		case VALUECHECK:
@@ -978,7 +978,7 @@ static int set_rule_source_ip(char *refparam, struct dmctx *ctx, void *data, cha
 
 static int set_rule_source_mask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char buf[64], new[64], *pch, *srcip;
+	char buf[64], new[70], *pch, *srcip;
 
 	switch (action) {
 		case VALUECHECK:

@@ -130,7 +130,7 @@ static int browseUSBInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void
 	list_for_each_entry(p, &dup_list, list) {
 		char netfolderpath[256];
 		char port_link[128];
-		char iface_name[64];
+		char iface_name[260];
 
 		port_link[0] = 0;
 		iface_name[0] = 0;
@@ -245,14 +245,14 @@ static int synchronize_usb_devices_with_dmmap_opt_recursively(char *sysfsrep, ch
 			continue;
 
 		if (regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) ==0) {
-			char deviceClassFile[256];
+			char deviceClassFile[270];
 			char deviceClass[16];
 
 			snprintf(deviceClassFile, sizeof(deviceClassFile), "%s/%s/bDeviceClass", sysfsrep, ent->d_name);
 			dm_read_sysfs_file(deviceClassFile, deviceClass, sizeof(deviceClass));
 
 			if(strncmp(deviceClass, "09", 2) == 0){
-				char hubpath[256];
+				char hubpath[270];
 
 				snprintf(hubpath, sizeof(hubpath), "%s/%s", sysfsrep, ent->d_name);
 				synchronize_usb_devices_with_dmmap_opt_recursively(hubpath, dmmap_package, dmmap_section, opt_name, inst_opt, 0, dup_list);
@@ -385,7 +385,7 @@ static int get_USB_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, v
 {
 	DIR *dir;
 	struct dirent *ent;
-	char filename[128];
+	char filename[276];
 	char buffer[64];
 	int nbre= 0;
 	ssize_t rc;
@@ -823,14 +823,14 @@ static int get_number_devices(char *folderpath, int *nbre)
 
 	sysfs_foreach_file(folderpath, dir, ent) {
 		if (regexec(&regex1, ent->d_name, 0, NULL, 0) == 0 || regexec(&regex2, ent->d_name, 0, NULL, 0) == 0) {
-			char deviceClassFile[256];
+			char deviceClassFile[270];
 			char deviceClass[16];
 
 			snprintf(deviceClassFile, sizeof(deviceClassFile), "%s/%s/bDeviceClass", folderpath, ent->d_name);
 			dm_read_sysfs_file(deviceClassFile, deviceClass, sizeof(deviceClass));
 
 			if(strncmp(deviceClass, "09", 2) == 0){
-				char hubpath[256];
+				char hubpath[260];
 
 				snprintf(hubpath, sizeof(hubpath), "%s/%s", folderpath, ent->d_name);
 				get_number_devices(hubpath, nbre);

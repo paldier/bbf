@@ -306,7 +306,7 @@ static int get_DynamicDNS_ServerNumberOfEntries(char *refparam, struct dmctx *ct
 static int get_DynamicDNS_SupportedServices(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	FILE *fp = NULL;
-	char line[256] = "", buf[1024] = "", buf_tmp[1024] = "", *pch = NULL, *spch = NULL;
+	char line[256] = "", buf[1028] = "", buf_tmp[1024] = "", *pch = NULL, *spch = NULL;
 
 	*value = "";
 	fp = fopen(DDNS_PROVIDERS_FILE, "r");

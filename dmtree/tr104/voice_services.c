@@ -440,41 +440,6 @@ static char *update_vp_line_instance(struct uci_section *tel_s, char *sipx)
 	return instance;
 }
 
-static char *update_vp_line_instance_alias(int action, char **last_inst, void *argv[])
-{
-	struct uci_section *s = NULL;
-	int last_instance = 0, i_instance;
-	char *instance, *alias, buf[64];
-
-	struct uci_section *tel_s = (struct uci_section *) argv[0];
-	char *sipx = (char *) argv[1];
-
-	dmuci_get_value_by_section_string(tel_s, "lineinstance", &instance);
-	if (instance[0] == '\0') {
-		uci_foreach_option_eq("voice_client", "tel_line", "sip_account", sipx, s) {
-			dmuci_get_value_by_section_string(s, "lineinstance", &instance);
-			if (instance[0] != '\0') {
-				i_instance = atoi(instance);
-				if ( i_instance > last_instance)
-					last_instance = i_instance;
-			}
-		}
-		snprintf(buf, sizeof(buf), "%d", last_instance + 1);
-		instance = dmuci_set_value_by_section(tel_s, "lineinstance", buf);
-	}
-	*last_inst = instance;
-	if (action == INSTANCE_MODE_ALIAS) {
-		dmuci_get_value_by_section_string(tel_s, "linealias", &alias);
-		if (alias[0] == '\0') {
-			snprintf(buf, sizeof(buf), "cpe-%s", instance);
-			alias = dmuci_set_value_by_section(tel_s, "linealias", buf);
-		}
-		snprintf(buf, sizeof(buf), "[%s]", alias);
-		instance = dmstrdup(buf);
-	}
-	return instance;
-}
-
 static int add_line(struct uci_section *s, char *s_name)
 {
 	dmuci_set_value_by_section(s, "sip_account", s_name);
@@ -578,12 +543,6 @@ static int get_max_profile_count(char *refparam, struct dmctx *ctx, void *data, 
 static int get_max_line_count(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "6";
-	return 0;
-}
-
-static int get_max_session_per_line(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = "1";
 	return 0;
 }
 
@@ -831,20 +790,6 @@ static int set_voice_profile_sip_proxyserver(char *refparam, struct dmctx *ctx, 
 			return 0;
 		case VALUESET:
 			dmuci_set_value("voice_client", "SIP", "sip_proxy", value);
-			return 0;
-	}
-	return 0;
-}
-
-static int set_sip_proxy_server_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action) {
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "65535"))
-				return FAULT_9007;
-			return 0;
-		case VALUESET:
-			//TODO
 			return 0;
 	}
 	return 0;
@@ -2054,16 +1999,6 @@ static int set_line_codec_list_priority(char *refparam, struct dmctx *ctx, void 
 			return 0;
 	}
 	return 0;
-}
-
-//////////////ENABLE SET////////////////
-static bool dm_service_enable_set(void)
-{
-	if( access("/etc/init.d/asterisk", F_OK ) != -1 ) {
-		return true;
-	} else {
-		return false;
-	}
 }
 
 static void codec_update_id()

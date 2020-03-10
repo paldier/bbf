@@ -273,72 +273,6 @@ static int get_SoftwareModulesExecEnv_Type(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-static int get_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_SoftwareModulesExecEnv_InitialRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, "65535"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_SoftwareModulesExecEnv_RequestedRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_int(value, "-1", "65535"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_SoftwareModulesExecEnv_CurrentRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_SoftwareModulesExecEnv_InitialExecutionUnitRunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_int(value, "-1", "65535"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 /*#Device.SoftwareModules.ExecEnv.{i}.Vendor!UBUS:softwaremanagement/environment//environment[i-1].vendor*/
 static int get_SoftwareModulesExecEnv_Vendor(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -421,12 +355,6 @@ static int get_SoftwareModulesExecEnv_ActiveExecutionUnits(char *refparam, struc
 	}
 	if(eu_list)
 		*value = eu_list;
-	return 0;
-}
-
-static int get_SoftwareModulesExecEnv_ProcessorRefList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -685,78 +613,6 @@ static int get_SoftwareModulesExecutionUnit_Status(char *refparam, struct dmctx 
 	return 0;
 }
 
-static int get_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_SoftwareModulesExecutionUnit_RequestedState(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, RequestedState, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_SoftwareModulesExecutionUnit_ExecutionFaultCode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_SoftwareModulesExecutionUnit_ExecutionFaultMessage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_SoftwareModulesExecutionUnit_AutoStart(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_SoftwareModulesExecutionUnit_RunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_SoftwareModulesExecutionUnit_RunLevel(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, "65535"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 /*#Device.SoftwareModules.ExecutionUnit.{i}.Vendor!UBUS:softwaremanagement/eu_list//execution_unit[i-1].vendor*/
 static int get_SoftwareModulesExecutionUnit_Vendor(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -869,12 +725,6 @@ static int get_SoftwareModulesExecutionUnit_VendorConfigList(char *refparam, str
 			break;
 		}
 	}
-	return 0;
-}
-
-static int get_SoftwareModulesExecutionUnit_SupportedDataModelList(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 

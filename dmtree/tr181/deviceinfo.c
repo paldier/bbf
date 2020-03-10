@@ -14,14 +14,14 @@
 /*
  *DeviceInfo. functions
  */
-static char *get_deviceid_manufacturer()
+char *get_deviceid_manufacturer()
 {
 	char *v;
 	dmuci_get_option_value_string("cwmp","cpe","manufacturer", &v);
 	return v;
 }
 
-static char *get_deviceid_manufactureroui()
+char *get_deviceid_manufactureroui()
 {
 	char *v, *mac = NULL, str[16], macreadfile[18] = {0};
 	json_object *res;
@@ -64,7 +64,7 @@ not_found:
 	return v;
 }
 
-static char *get_deviceid_productclass()
+char *get_deviceid_productclass()
 {
 	char *v;
 	dmuci_get_option_value_string("cwmp", "cpe", "override_productclass", &v);
@@ -75,18 +75,27 @@ static char *get_deviceid_productclass()
 	return v;
 }
 
-static char *get_deviceid_serialnumber()
+char *get_deviceid_serialnumber()
 {
 	char *v;
 	db_get_value_string("hw", "board", "serial_number", &v);
 	return v;
 }
 
-static char *get_softwareversion()
+char *get_softwareversion()
 {
 	char *v;
 	db_get_value_string("hw", "board", "iopVersion", &v);
 	return v;
+}
+
+int lookup_vcf_name(char *instance, char **value)
+{
+	struct uci_section *s = NULL;
+	uci_path_foreach_option_eq(bbfdm, DMMAP, "vcf", "vcf_instance", instance, s) {
+		dmuci_get_value_by_section_string(s, "name", value);
+	}
+	return 0;
 }
 
 /*#Device.DeviceInfo.Manufacturer!UCI:cwmp/cwmp,cpe/manufacturer*/

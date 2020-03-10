@@ -506,12 +506,6 @@ static int get_USBInterface_Name(char *refparam, struct dmctx *ctx, void *data, 
 	return 0;
 }
 
-static int get_USBInterface_LastChange(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_USBInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	const struct usb_interface *iface = data;
@@ -533,12 +527,6 @@ static int set_USBInterface_LowerLayers(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-static int get_USBInterface_Upstream(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_USBInterface_MACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return read_sysfs_usb_iface(data, "address", value);
@@ -547,12 +535,6 @@ static int get_USBInterface_MACAddress(char *refparam, struct dmctx *ctx, void *
 static int get_USBInterface_MaxBitRate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return read_sysfs_usb_iface(data, "queues/tx-0/tx_maxrate", value);
-}
-
-static int get_USBInterface_Port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
 }
 
 static int get_USBInterfaceStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -585,18 +567,6 @@ static int get_USBInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ct
 	return read_sysfs_usb_net_iface(data, "statistics/rx_errors", value);
 }
 
-static int get_USBInterfaceStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_USBInterfaceStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_USBInterfaceStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return read_sysfs_usb_net_iface(data, "statistics/tx_dropped", value);
@@ -607,33 +577,9 @@ static int get_USBInterfaceStats_DiscardPacketsReceived(char *refparam, struct d
 	return read_sysfs_usb_net_iface(data, "statistics/rx_dropped", value);
 }
 
-static int get_USBInterfaceStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_USBInterfaceStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return read_sysfs_usb_net_iface(data, "statistics/multicast", value);
-}
-
-static int get_USBInterfaceStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_USBInterfaceStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_USBInterfaceStats_UnknownProtoPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
 }
 
 static int get_USBPort_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -687,11 +633,6 @@ static int get_USBPort_Type(char *refparam, struct dmctx *ctx, void *data, char 
 		*value= "Hub";
 	else
 		*value= "Device";
-	return 0;
-}
-
-static int get_USBPort_Receptacle(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
 	return 0;
 }
 
@@ -821,26 +762,6 @@ static int get_USBUSBHostsHost_Type(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int get_USBUSBHostsHost_Reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_USBUSBHostsHost_Reset(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 static int get_USBUSBHostsHost_PowerManagementEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char power[64];
@@ -960,12 +881,6 @@ static int get_USBUSBHostsHostDevice_DeviceSubClass(char *refparam, struct dmctx
 	return read_sysfs_usb_port(data, "bDeviceSubClass", value);
 }
 
-static int get_USBUSBHostsHostDevice_DeviceVersion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_USBUSBHostsHostDevice_DeviceProtocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return read_sysfs_usb_port(data, "bDeviceProtocol", value);
@@ -1065,12 +980,6 @@ static int get_USBUSBHostsHostDevice_IsSuspended(char *refparam, struct dmctx *c
 		*value= "1";
 	else
 		*value = "0";
-	return 0;
-}
-
-static int get_USBUSBHostsHostDevice_IsSelfPowered(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 

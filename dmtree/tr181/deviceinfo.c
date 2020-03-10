@@ -373,15 +373,6 @@ static int set_vcf_alias(char *refparam, struct dmctx *ctx, void *data, char *in
 	return 0;
 }
 
-static int lookup_vcf_name(char *instance, char **value)
-{
-	struct uci_section *s = NULL;
-	uci_path_foreach_option_eq(bbfdm, DMMAP, "vcf", "vcf_instance", instance, s) {
-		dmuci_get_value_by_section_string(s, "name", value);
-	}
-	return 0;
-}
-
 static int check_file_dir(char *name)
 {
 	DIR *dir;

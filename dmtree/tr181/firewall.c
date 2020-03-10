@@ -289,12 +289,6 @@ static int get_rule_target(char *refparam, struct dmctx *ctx, void *data, char *
     return 0;
 }
 
-static int get_rule_target_chain(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_rule_source_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_list *v = NULL, *v1 = NULL;
@@ -835,19 +829,6 @@ static int set_rule_target(char *refparam, struct dmctx *ctx, void *data, char *
 			break;
 	}
         return 0;
-}
-
-static int set_rule_target_chain(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action) {
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			break;
-	}
-    return 0;
 }
 
 static int set_rule_source_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)

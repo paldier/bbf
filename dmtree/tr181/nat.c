@@ -383,48 +383,6 @@ static int set_nat_port_mapping_interface(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-static int get_nat_port_mapping_all_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_nat_port_mapping_all_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action) {
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			return 0;
-		case VALUESET:
-			//TODO
-			return 0;
-	}
-	return 0;
-}
-
-static int get_nat_port_mapping_lease_duration(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	// CPE only supports static port forwards
-	//TODO
-	return 0;
-}
-
-static int set_nat_port_mapping_lease_duration(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action) {
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
-				return FAULT_9007;
-			return 0;
-		case VALUESET:
-			// Nothing to set for static port forwards
-			//TODO
-			return 0;
-	}
-	return 0;
-}
-
 /*#Device.NAT.PortMapping.{i}.RemoteHost!UCI:firewall/redirect,@i-1/src_dip*/
 static int get_nat_port_mapping_remote_host(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {

@@ -11,6 +11,7 @@
 #include "dmentry.h"
 #include "qos.h"
 
+#if 0
 #define queuessts1 "^qdisc noqueue [0-9]*: dev [[:alnum:]]* [[:alnum:]]* refcnt [0-9]*"
 #define queuessts2 "^qdisc pfifo_fast [0-9]*: dev [[:alnum:]]* [[:alnum:]]* refcnt [0-9]*"
 
@@ -3759,6 +3760,7 @@ static int set_QoSShaper_ShapingBurstSize(char *refparam, struct dmctx *ctx, voi
 	}
 	return 0;
 }
+#endif
 
 /* *** Device.QoS. *** */
 DMOBJ tQoSObj[] = {

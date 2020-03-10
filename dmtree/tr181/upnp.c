@@ -426,86 +426,6 @@ static int set_UPnPDevice_UPnPMediaServer(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-static int get_UPnPDevice_UPnPMediaRenderer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_UPnPDevice_UPnPMediaRenderer(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_UPnPDevice_UPnPWLANAccessPoint(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_UPnPDevice_UPnPWLANAccessPoint(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_UPnPDevice_UPnPQoSDevice (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_UPnPDevice_UPnPQoSDevice (char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_UPnPDevice_UPnPQoSPolicyHolder(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_UPnPDevice_UPnPQoSPolicyHolder(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 static int get_UPnPDevice_UPnPIGD(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *path = "/etc/rc.d/*miniupnpd";
@@ -527,138 +447,6 @@ static int set_UPnPDevice_UPnPIGD(char *refparam, struct dmctx *ctx, void *data,
 			dmcmd("/etc/init.d/miniupnpd", 1, b ? "enable" : "disable");
 			break;
 	}
-	return 0;
-}
-
-static int get_UPnPDevice_UPnPDMBasicMgmt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_UPnPDevice_UPnPDMBasicMgmt(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_UPnPDevice_UPnPDMConfigurationMgmt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_UPnPDevice_UPnPDMConfigurationMgmt(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_UPnPDevice_UPnPDMSoftwareMgmt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_UPnPDevice_UPnPDMSoftwareMgmt(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPArchitecture(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPArchitectureMinorVer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPMediaServer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPMediaRenderer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPWLANAccessPoint(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPBasicDevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPQoSDevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPQoSPolicyHolder(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPIGD(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPDMBasicMgmt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPDMConfigurationMgmt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDeviceCapabilities_UPnPDMSoftwareMgmt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -727,12 +515,6 @@ static int get_UPnPDiscovery_ServiceNumberOfEntries(char *refparam, struct dmctx
 	return 0;
 }
 
-static int get_UPnPDiscoveryRootDevice_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.UPnP.Discovery.RootDevice.{i}.UUID!UBUS:upnpc/discovery//devices[i-1].st*/
 static int get_UPnPDiscoveryRootDevice_UUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -747,40 +529,10 @@ static int get_UPnPDiscoveryRootDevice_USN(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-static int get_UPnPDiscoveryRootDevice_LeaseTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.UPnP.Discovery.RootDevice.{i}.Location!UBUS:upnpc/discovery//devices[i-1].descurl*/
 static int get_UPnPDiscoveryRootDevice_Location(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = ((struct upnpdiscovery *)data)->descurl;
-	return 0;
-}
-
-static int get_UPnPDiscoveryRootDevice_Server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDiscoveryRootDevice_Host(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDiscoveryRootDevice_LastUpdate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDiscoveryDevice_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -798,40 +550,10 @@ static int get_UPnPDiscoveryDevice_USN(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-static int get_UPnPDiscoveryDevice_LeaseTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.UPnP.Discovery.Device.{i}.Location!UBUS:upnpc/discovery//devices[i-1].descurl*/
 static int get_UPnPDiscoveryDevice_Location(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = ((struct upnpdiscovery *)data)->descurl;
-	return 0;
-}
-
-static int get_UPnPDiscoveryDevice_Server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDiscoveryDevice_Host(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDiscoveryDevice_LastUpdate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDiscoveryService_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -842,34 +564,10 @@ static int get_UPnPDiscoveryService_USN(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-static int get_UPnPDiscoveryService_LeaseTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.UPnP.Discovery.Service.{i}.Location!UBUS:upnpc/discovery//services[i-1].descurl*/
 static int get_UPnPDiscoveryService_Location(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = ((struct upnpdiscovery *)data)->descurl;
-	return 0;
-}
-
-static int get_UPnPDiscoveryService_Server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDiscoveryService_Host(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDiscoveryService_LastUpdate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -952,18 +650,6 @@ static int get_UPnPDescriptionDeviceDescription_URLBase(char *refparam, struct d
 	return 0;
 }
 
-static int get_UPnPDescriptionDeviceDescription_SpecVersion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_UPnPDescriptionDeviceDescription_Host(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.UPnP.Description.DeviceInstance.{i}.UDN!UBUS:upnpc/description//devicesinstances[i-1].UDN*/
 static int get_UPnPDescriptionDeviceInstance_UDN(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -1017,22 +703,10 @@ static int get_UPnPDescriptionDeviceInstance_FriendlyName(char *refparam, struct
 	return 0;
 }
 
-static int get_UPnPDescriptionDeviceInstance_DeviceCategory(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.UPnP.Description.DeviceInstance.{i}.Manufacturer!UBUS:upnpc/description//devicesinstances[i-1].manufacturer*/
 static int get_UPnPDescriptionDeviceInstance_Manufacturer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = ((struct upnp_device_inst *)data)->manufacturer;
-	return 0;
-}
-
-static int get_UPnPDescriptionDeviceInstance_ManufacturerOUI(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 

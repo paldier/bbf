@@ -141,24 +141,6 @@ static int browseDHCPv6ClientInst(struct dmctx *dmctx, DMNODE *parent_node, void
 	return 0;
 }
 
-static int browseDHCPv6ClientServerInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	//TODO
-	return 0;
-}
-
-static int browseDHCPv6ClientSentOptionInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	//TODO
-	return 0;
-}
-
-static int browseDHCPv6ClientReceivedOptionInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.DHCPv6.Server.Pool.{i}.!UCI:dhcp/dhcp/dmmap_dhcpv6*/
 static int browseDHCPv6ServerPoolInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
@@ -306,13 +288,6 @@ static int browseDHCPv6ServerPoolClientIPv6PrefixInst(struct dmctx *dmctx, DMNOD
 	return 0;
 }
 
-static int browseDHCPv6ServerPoolClientOptionInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	//TODO
-	return 0;
-}
-
-
 static int addObjDHCPv6Client(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	struct uci_section *s, *dmmap_sect;
@@ -371,25 +346,6 @@ static int delObjDHCPv6Client(char *refparam, struct dmctx *ctx, void *data, cha
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 			}
-			break;
-	}
-	return 0;
-}
-
-static int addObjDHCPv6ClientSentOption(char *refparam, struct dmctx *ctx, void *data, char **instance)
-{
-	//TODO
-	return 0;
-}
-
-static int delObjDHCPv6ClientSentOption(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
-{
-	switch (del_action) {
-		case DEL_INST:
-			//TODO
-			break;
-		case DEL_ALL:
-			//TODO
 			break;
 	}
 	return 0;
@@ -724,26 +680,6 @@ static int set_DHCPv6Client_RequestPrefixes(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
-static int get_DHCPv6Client_RapidCommit(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6Client_RapidCommit(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 static int get_DHCPv6Client_Renew(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "false";
@@ -771,52 +707,6 @@ static int set_DHCPv6Client_Renew(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-static int get_DHCPv6Client_SuggestedT1(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6Client_SuggestedT1(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_int(value, "-1", NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6Client_SuggestedT2(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6Client_SuggestedT2(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_int(value, "-1", NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6Client_SupportedOptions(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.DHCPv6.Client.{i}.RequestedOptions!UCI:network/interface,@i-1/reqopts*/
 static int get_DHCPv6Client_RequestedOptions(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -839,140 +729,6 @@ static int set_DHCPv6Client_RequestedOptions(char *refparam, struct dmctx *ctx, 
 			dmuci_set_value_by_section(((struct dhcpv6_client_args *)data)->dhcp_client_conf, "reqopts", value);
 			break;
 	}
-	return 0;
-}
-
-static int get_DHCPv6Client_ServerNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6Client_SentOptionNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6Client_ReceivedOptionNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ClientServer_SourceAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ClientServer_DUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ClientServer_InformationRefreshTime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ClientSentOption_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ClientSentOption_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ClientSentOption_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ClientSentOption_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ClientSentOption_Tag(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ClientSentOption_Tag(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "65535"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ClientSentOption_Value(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ClientSentOption_Value(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_hexBinary(value, "0", "65535"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ClientReceivedOption_Tag(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ClientReceivedOption_Value(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ClientReceivedOption_Server(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -1158,46 +914,6 @@ static int set_DHCPv6ServerPool_Interface(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-static int get_DHCPv6ServerPool_DUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_DUID(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_hexBinary(value, NULL, "130"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ServerPool_DUIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_DUIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 /*#Device.DHCPv6.Server.Pool.{i}.VendorClassID!UCI:dhcp/dhcp,@i-1/vendorclass*/
 static int get_DHCPv6ServerPool_VendorClassID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -1225,26 +941,6 @@ static int set_DHCPv6ServerPool_VendorClassID(char *refparam, struct dmctx *ctx,
 	return 0;
 }
 
-static int get_DHCPv6ServerPool_VendorClassIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_VendorClassIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 /*#Device.DHCPv6.Server.Pool.{i}.UserClassID!UCI:dhcp/dhcp,@i-1/userclass*/
 static int get_DHCPv6ServerPool_UserClassID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -1267,26 +963,6 @@ static int set_DHCPv6ServerPool_UserClassID(char *refparam, struct dmctx *ctx, v
 			userclassidclassifier= get_dhcpv6_classifier("userclass", ((struct dhcpv6_args *)data)->interface);
 			if (userclassidclassifier)
 				dmuci_set_value_by_section(userclassidclassifier, "userclass", value);
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ServerPool_UserClassIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_UserClassIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
 			break;
 	}
 	return 0;
@@ -1383,138 +1059,6 @@ static int set_DHCPv6ServerPool_SourceAddressMask(char *refparam, struct dmctx *
 	return 0;
 }
 
-static int get_DHCPv6ServerPool_SourceAddressExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_SourceAddressExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ServerPool_IANAEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_IANAEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ServerPool_IANAManualPrefixes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_IANAManualPrefixes(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, "8", NULL, NULL, NULL, NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ServerPool_IANAPrefixes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ServerPool_IAPDEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_IAPDEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ServerPool_IAPDManualPrefixes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_IAPDManualPrefixes(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, "8", NULL, NULL, NULL, NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ServerPool_IAPDPrefixes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ServerPool_IAPDAddLength(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPool_IAPDAddLength(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, "64"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 static int get_DHCPv6ServerPool_ClientNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res, *res1, *jobj, *dev_obj = NULL, *next_obj = NULL;
@@ -1556,38 +1100,6 @@ static int get_DHCPv6ServerPool_OptionNumberOfEntries(char *refparam, struct dmc
 	return 0;
 }
 
-static int get_DHCPv6ServerPoolClient_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPoolClient_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			break;
-		case VALUESET:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
-				return FAULT_9007;
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ServerPoolClient_SourceAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ServerPoolClient_Active(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_DHCPv6ServerPoolClient_IPv6AddressNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *address_obj = NULL;
@@ -1615,12 +1127,6 @@ static int get_DHCPv6ServerPoolClient_IPv6PrefixNumberOfEntries(char *refparam, 
 		i++;
 	}
 	dmasprintf(value, "%d", i);
-	return 0;
-}
-
-static int get_DHCPv6ServerPoolClient_OptionNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -1657,18 +1163,6 @@ static int get_DHCPv6ServerPoolClientIPv6Prefix_PreferredLifetime(char *refparam
 static int get_DHCPv6ServerPoolClientIPv6Prefix_ValidLifetime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value(((struct clientv6_args *)data)->clientparam, 1, "valid-lifetime");
-	return 0;
-}
-
-static int get_DHCPv6ServerPoolClientOption_Tag(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv6ServerPoolClientOption_Value(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -1835,26 +1329,6 @@ static int set_DHCPv6ServerPoolOption_Value(char *refparam, struct dmctx *ctx, v
 			dmuci_del_list_value_by_section(((struct dhcpv6_client_option_args *)data)->client_sect, "dhcp_option", oldopttagvalue);
 			dmuci_add_list_value_by_section(((struct dhcpv6_client_option_args *)data)->client_sect, "dhcp_option", opttagvalue);
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, ((struct dhcpv6_client_option_args *)data)->opt_sect, "option_value", value);
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv6ServerPoolOption_PassthroughClient(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv6ServerPoolOption_PassthroughClient(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
 			break;
 	}
 	return 0;

@@ -1098,45 +1098,9 @@ static int get_ip_interface_statistics_rx_discardpackets(char *refparam, struct 
 	return get_ip_iface_sysfs(data, "statistics/rx_dropped", value);
 }
 
-static int get_ip_interface_statistics_tx_unicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_ip_interface_statistics_rx_unicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_ip_interface_statistics_tx_multicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_ip_interface_statistics_rx_multicastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return get_ip_iface_sysfs(data, "statistics/multicast", value);
-}
-
-static int get_ip_interface_statistics_tx_broadcastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_ip_interface_statistics_rx_broadcastpackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_ip_interface_statistics_rx_unknownprotopackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
 }
 
 /*

@@ -254,18 +254,6 @@ static int get_PPPInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ct
 	return ppp_read_sysfs(data, "statistics/rx_errors", value);
 }
 
-static int get_PPPInterfaceStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_PPPInterfaceStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.PPP.Interface.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
 static int get_PPPInterfaceStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -278,33 +266,9 @@ static int get_PPPInterfaceStats_DiscardPacketsReceived(char *refparam, struct d
 	return ppp_read_sysfs(data, "statistics/rx_dropped", value);
 }
 
-static int get_PPPInterfaceStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_PPPInterfaceStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/multicast", value);
-}
-
-static int get_PPPInterfaceStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_PPPInterfaceStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_PPPInterfaceStats_UnknownProtoPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
 }
 
 static int get_ppp_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -360,12 +324,6 @@ static int get_PPP_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, v
 		nbre++;
 	}
 	dmasprintf(value, "%d", nbre);
-	return 0;
-}
-
-static int get_PPPInterfacePPPoE_SessionID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 

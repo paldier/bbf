@@ -30,12 +30,6 @@ static int browseGRETunnelInst(struct dmctx *dmctx, DMNODE *parent_node, void *p
 	return 0;
 }
 
-static int browseGREFilterInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	//TODO
-	return 0;
-}
-
 struct uci_section *has_tunnel_interface_route(char *interface)
 {
 	struct uci_section *s;
@@ -122,25 +116,6 @@ static int delObjGRETunnel(char *refparam, struct dmctx *ctx, void *data, char *
 				}
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
-			break;
-	}
-	return 0;
-}
-
-static int addObjGREFilter(char *refparam, struct dmctx *ctx, void *data, char **instance)
-{
-	//TODO
-	return 0;
-}
-
-static int delObjGREFilter(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
-{
-	switch (del_action) {
-		case DEL_INST:
-			//TODO
-			break;
-		case DEL_ALL:
-			//TODO
 			break;
 	}
 	return 0;
@@ -250,38 +225,6 @@ static int get_GRE_TunnelNumberOfEntries(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-static int get_GRE_FilterNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_GRETunnel_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnel_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnel_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_GRETunnel_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -310,66 +253,6 @@ static int set_GRETunnel_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 	return 0;
 }
 
-static int get_GRETunnel_RemoteEndpoints(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnel_RemoteEndpoints(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, "4", NULL, NULL, "256", NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnel_KeepAlivePolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnel_KeepAlivePolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, KeepAlivePolicy, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnel_KeepAliveTimeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnel_KeepAliveTimeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 static int get_GRETunnel_KeepAliveThreshold(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dmmap_dup *)data)->config_section, "keepalive", value);
@@ -385,46 +268,6 @@ static int set_GRETunnel_KeepAliveThreshold(char *refparam, struct dmctx *ctx, v
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section(((struct dmmap_dup *)data)->config_section, "keepalive", value);
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnel_DeliveryHeaderProtocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnel_DeliveryHeaderProtocol(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, DeliveryHeaderProtocol, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnel_DefaultDSCPMark(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnel_DefaultDSCPMark(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
 			break;
 	}
 	return 0;
@@ -447,18 +290,6 @@ static int get_GRETunnel_InterfaceNumberOfEntries(char *refparam, struct dmctx *
 		i++;
 	}
 	dmasprintf(value, "%d", i);
-	return 0;
-}
-
-static int get_GRETunnelStats_KeepAliveSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_GRETunnelStats_KeepAliveReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -498,32 +329,6 @@ static int get_GRETunnelStats_ErrorsReceived(char *refparam, struct dmctx *ctx, 
 	return 0;
 }
 
-static int get_GRETunnelInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnelInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnelInterface_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_GRETunnelInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -555,132 +360,6 @@ static int set_GRETunnelInterface_Alias(char *refparam, struct dmctx *ctx, void 
 static int get_GRETunnelInterface_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmstrdup(section_name(((struct dmmap_dup *)data)->config_section));
-	return 0;
-}
-
-static int get_GRETunnelInterface_LastChange(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_GRETunnelInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnelInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnelInterface_ProtocolIdOverride(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnelInterface_ProtocolIdOverride(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnelInterface_UseChecksum(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnelInterface_UseChecksum(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnelInterface_KeyIdentifierGenerationPolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnelInterface_KeyIdentifierGenerationPolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, KeyIdentifierGenerationPolicy, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnelInterface_KeyIdentifier(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnelInterface_KeyIdentifier(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GRETunnelInterface_UseSequenceNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GRETunnelInterface_UseSequenceNumber(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
 	return 0;
 }
 
@@ -717,184 +396,6 @@ static int get_GRETunnelInterfaceStats_ErrorsSent(char *refparam, struct dmctx *
 static int get_GRETunnelInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = get_gre_tunnel_interface_statistics(section_name(((struct dmmap_dup *)data)->config_section), "rx_errors");
-	return 0;
-}
-
-static int get_GRETunnelInterfaceStats_DiscardChecksumReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_GRETunnelInterfaceStats_DiscardSequenceNumberReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_GREFilter_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GREFilter_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GREFilter_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_GREFilter_Order(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GREFilter_Order(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GREFilter_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GREFilter_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GREFilter_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GREFilter_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GREFilter_AllInterfaces(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GREFilter_AllInterfaces(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GREFilter_VLANIDCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GREFilter_VLANIDCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_int(value, "-1", NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GREFilter_VLANIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GREFilter_VLANIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_GREFilter_DSCPMarkPolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_GREFilter_DSCPMarkPolicy(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_int(value, "-2", "63"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
 	return 0;
 }
 

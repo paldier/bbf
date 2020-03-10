@@ -261,26 +261,6 @@ static int get_Security_CertificateNumberOfEntries(char *refparam, struct dmctx 
 	return 0;
 }
 
-static int get_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_SecurityCertificate_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-	case VALUECHECK:
-		if (dm_validate_boolean(value))
-			return FAULT_9007;
-		break;
-	case VALUESET:
-		//TODO
-		break;
-	}
-	return 0;
-}
-
 static int get_SecurityCertificate_LastModif(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
@@ -372,12 +352,6 @@ static int get_SecurityCertificate_Subject(char *refparam, struct dmctx *ctx, vo
 		return 0;
 	*value = decode64(issuer);
 #endif
-	return 0;
-}
-
-static int get_SecurityCertificate_SubjectAlt(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 

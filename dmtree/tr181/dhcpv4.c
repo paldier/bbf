@@ -1657,52 +1657,6 @@ static int get_DHCPv4Client_LeaseTimeRemaining(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-static int get_DHCPv4Client_DHCPServer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv4Client_PassthroughEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4Client_PassthroughEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv4Client_PassthroughDHCPPool(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4Client_PassthroughDHCPPool(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 /*#Device.DHCPv4.Client.{i}.SentOptionNumberOfEntries!UCI:network/interface,@i-1/sendopts*/
 static int get_DHCPv4Client_SentOptionNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -1917,26 +1871,6 @@ static int set_DHCPv4ClientReqOption_Enable(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
-static int get_DHCPv4ClientReqOption_Order(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4ClientReqOption_Order(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 static int get_DHCPv4ClientReqOption_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dhcp_client_option_args *)data)->opt_sect, "bbf_dhcpv4_reqtopt_alias", value);
@@ -1988,52 +1922,6 @@ static int set_DHCPv4ClientReqOption_Tag(char *refparam, struct dmctx *ctx, void
 			add_elt_to_str_list(&v, value);
 			dmuci_set_value_by_section(((struct dhcp_client_option_args *)data)->client_sect, "reqopts", v);
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, ((struct dhcp_client_option_args *)data)->opt_sect, "option_tag", value);
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv4ClientReqOption_Value(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_DHCPv4Server_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4Server_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv4RelayForwarding_DHCPServerIPAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4RelayForwarding_DHCPServerIPAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "15", NULL, IPv4Address))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
 			break;
 	}
 	return 0;
@@ -2266,26 +2154,6 @@ static int set_DHCPv4RelayForwarding_Alias(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-static int get_DHCPv4RelayForwarding_Order(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4RelayForwarding_Order(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
 static int get_DHCPv4RelayForwarding_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	if (((struct dhcp_client_args *)data)->dhcp_client_conf == NULL) {
@@ -2360,46 +2228,6 @@ static int set_DHCPv4RelayForwarding_VendorClassID(char *refparam, struct dmctx 
 		case VALUESET:
 			if(((struct dhcp_client_args *)data)->vendorclassidclassifier)
 				dmuci_set_value_by_section(((struct dhcp_client_args *)data)->vendorclassidclassifier, "vendorclass", value);
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv4RelayForwarding_VendorClassIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4RelayForwarding_VendorClassIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv4RelayForwarding_VendorClassIDMode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4RelayForwarding_VendorClassIDMode(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, VendorClassIDMode, NULL))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
 			break;
 	}
 	return 0;
@@ -2515,32 +2343,6 @@ static int set_DHCPv4RelayForwarding_ChaddrExclude(char *refparam, struct dmctx 
 	return 0;
 }
 
-static int get_DHCPv4RelayForwarding_LocallyServed(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4RelayForwarding_LocallyServed(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv4ServerPoolClientOption_Tag(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.DHCPv4.Relay.Forwarding.{i}.Status!UCI:network/interface,@i-1/disabled*/
 static int get_DHCPv4RelayForwarding_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -2556,46 +2358,6 @@ static int get_DHCPv4RelayForwarding_Status(char *refparam, struct dmctx *ctx, v
 	else
 		*value= "Disabled";
 
-	return 0;
-}
-
-static int get_DHCPv4RelayForwarding_ClientID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4RelayForwarding_ClientID(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_hexBinary(value, NULL, "255"))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv4RelayForwarding_ClientIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4RelayForwarding_ClientIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
 	return 0;
 }
 
@@ -2619,32 +2381,6 @@ static int set_DHCPv4RelayForwarding_UserClassID(char *refparam, struct dmctx *c
 				dmuci_set_value_by_section(((struct dhcp_client_args *)data)->userclassclassifier, "userclass", value);
 			break;
 	}
-	return 0;
-}
-
-static int get_DHCPv4RelayForwarding_UserClassIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int set_DHCPv4RelayForwarding_UserClassIDExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action)	{
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			break;
-		case VALUESET:
-			//TODO
-			break;
-	}
-	return 0;
-}
-
-static int get_DHCPv4ServerPoolClientOption_Value(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
 	return 0;
 }
 
@@ -3066,12 +2802,6 @@ static int browseDHCPv4ServerPoolOptionInst(struct dmctx *dmctx, DMNODE *parent_
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, &dhcp_client_opt_args, instance) == DM_STOP)
 			break;
 	}
-	return 0;
-}
-
-static int browseDHCPv4ServerPoolClientOptionInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	//TODO
 	return 0;
 }
 

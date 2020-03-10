@@ -769,18 +769,6 @@ static int get_br_port_stats_rx_errors(char *refparam, struct dmctx *ctx, void *
 	return br_get_sysfs(data, "statistics/rx_errors", value);
 }
 
-static int get_br_port_stats_tx_unicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_br_port_stats_rx_unicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 /*#Device.Bridging.Bridge.{i}.Port.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
 static int get_br_port_stats_tx_discard_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -793,33 +781,9 @@ static int get_br_port_stats_rx_discard_packets(char *refparam, struct dmctx *ct
 	return br_get_sysfs(data, "statistics/rx_dropped", value);
 }
 
-static int get_br_port_stats_tx_multicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
 static int get_br_port_stats_rx_multicast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return br_get_sysfs(data, "statistics/multicast", value);
-}
-
-static int get_br_port_stats_tx_broadcast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_br_port_stats_rx_broadcast_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
-}
-
-static int get_br_port_stats_rx_unknown_proto_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//TODO
-	return 0;
 }
 
 static int is_bridge_vlan_enabled(struct bridging_vlan_args *curr_arg)

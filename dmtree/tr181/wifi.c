@@ -1468,6 +1468,8 @@ static void get_value_security_mode(char **value, char *encryption, char *cipher
 		*value = "WPA-WPA2-Personal";
 	else if (strcmp(encryption, "wpa-mixed") == 0 || strcmp(encryption, "mixed-wpa") == 0)
 		*value = "WPA-WPA2-Enterprise";
+	else
+		*value = "unknown";
 }
 
 static int get_access_point_security_modes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)

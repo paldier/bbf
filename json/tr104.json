@@ -16,9 +16,11 @@
 				"usp"
 			], 
 			"datatype": "Alias", 
-			"range": {
-				"max": 64
-			}
+			"range": [
+				{
+					"max": 64
+				}
+			]
 		}, 
 		"VoiceProfileNumberOfEntries": {
 			"type": "unsignedInt", 
@@ -659,9 +661,11 @@
 						"usp"
 					], 
 					"datatype": "Alias", 
-					"range": {
-						"max": 64
-					}
+					"range": [
+						{
+							"max": 64
+						}
+					]
 				}, 
 				"EntryID": {
 					"type": "unsignedInt", 
@@ -672,9 +676,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}
+					"range": [
+						{
+							"min": 1
+						}
+					]
 				}, 
 				"Codec": {
 					"type": "string", 
@@ -685,9 +691,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 64
-					}, 
+					"range": [
+						{
+							"max": 64
+						}
+					], 
 					"enumerations": [
 						"G.711MuLaw", 
 						"G.711ALaw", 
@@ -727,9 +735,11 @@
 					], 
 					"list": {
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}
 				}, 
 				"SilenceSuppression": {
@@ -801,9 +811,11 @@
 					"usp"
 				], 
 				"datatype": "Alias", 
-				"range": {
-					"max": 64
-				}
+				"range": [
+					{
+						"max": 64
+					}
+				]
 			}, 
 			"Reset": {
 				"type": "boolean", 
@@ -845,9 +857,11 @@
 					"usp"
 				], 
 				"datatype": "string", 
-				"range": {
-					"max": 64
-				}, 
+				"range": [
+					{
+						"max": 64
+					}
+				], 
 				"mapping": [
 					{
 						"type": "uci", 
@@ -904,9 +918,11 @@
 					"usp"
 				], 
 				"datatype": "string", 
-				"range": {
-					"max": 64
-				}, 
+				"range": [
+					{
+						"max": 64
+					}
+				], 
 				"enumerations": [
 					"InBand", 
 					"RFC2833", 
@@ -937,9 +953,11 @@
 					"usp"
 				], 
 				"datatype": "string", 
-				"range": {
-					"max": 64
-				}, 
+				"range": [
+					{
+						"max": 64
+					}
+				], 
 				"enumerations": [
 					"InBand", 
 					"RFC2833", 
@@ -966,9 +984,11 @@
 					"usp"
 				], 
 				"datatype": "string", 
-				"range": {
-					"max": 256
-				}
+				"range": [
+					{
+						"max": 256
+					}
+				]
 			}, 
 			"DigitMapEnable": {
 				"type": "boolean", 
@@ -999,9 +1019,11 @@
 					"usp"
 				], 
 				"datatype": "string", 
-				"range": {
-					"max": 256
-				}
+				"range": [
+					{
+						"max": 256
+					}
+				]
 			}, 
 			"NonVoiceBandwidthReservedUpstream": {
 				"type": "unsignedInt", 
@@ -1082,9 +1104,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}
+					"range": [
+						{
+							"max": 256
+						}
+					]
 				}, 
 				"URL": {
 					"type": "string", 
@@ -1095,9 +1119,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}
+					"range": [
+						{
+							"max": 256
+						}
+					]
 				}, 
 				"ContactPhoneNumber": {
 					"type": "string", 
@@ -1108,9 +1134,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 32
-					}
+					"range": [
+						{
+							"max": 32
+						}
+					]
 				}, 
 				"EmailAddress": {
 					"type": "string", 
@@ -1121,9 +1149,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}
+					"range": [
+						{
+							"max": 256
+						}
+					]
 				}
 			}, 
 			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.": {
@@ -1143,9 +1173,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}, 
+					"range": [
+						{
+							"max": 256
+						}
+					], 
 					"mapping": [
 						{
 							"type": "uci", 
@@ -1171,10 +1203,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					]
 				}, 
 				"ProxyServerTransport": {
 					"type": "string", 
@@ -1210,9 +1244,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}, 
+					"range": [
+						{
+							"max": 256
+						}
+					], 
 					"mapping": [
 						{
 							"type": "uci", 
@@ -1238,10 +1274,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}, 
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					], 
 					"mapping": [
 						{
 							"type": "uci", 
@@ -1292,9 +1330,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}, 
+					"range": [
+						{
+							"max": 256
+						}
+					], 
 					"mapping": [
 						{
 							"type": "uci", 
@@ -1320,10 +1360,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}, 
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					], 
 					"mapping": [
 						{
 							"type": "uci", 
@@ -1374,9 +1416,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}, 
+					"range": [
+						{
+							"max": 256
+						}
+					], 
 					"mapping": [
 						{
 							"type": "uci", 
@@ -1402,10 +1446,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}, 
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					], 
 					"mapping": [
 						{
 							"type": "uci", 
@@ -1431,9 +1477,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}
+					"range": [
+						{
+							"max": 256
+						}
+					]
 				}, 
 				"RegistrationPeriod": {
 					"type": "unsignedInt", 
@@ -1444,9 +1492,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "seconds", 
 					"mapping": [
 						{
@@ -1473,9 +1523,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerT2": {
@@ -1487,9 +1539,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerT4": {
@@ -1501,9 +1555,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerA": {
@@ -1515,9 +1571,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerB": {
@@ -1529,9 +1587,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerC": {
@@ -1543,9 +1603,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerD": {
@@ -1557,9 +1619,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerE": {
@@ -1571,9 +1635,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerF": {
@@ -1585,9 +1651,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerG": {
@@ -1599,9 +1667,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerH": {
@@ -1613,9 +1683,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerI": {
@@ -1627,9 +1699,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerJ": {
@@ -1641,9 +1715,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"TimerK": {
@@ -1655,9 +1731,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"InviteExpires": {
@@ -1669,9 +1747,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "seconds"
 				}, 
 				"ReInviteExpires": {
@@ -1683,9 +1763,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "seconds", 
 					"mapping": [
 						{
@@ -1712,9 +1794,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "seconds"
 				}, 
 				"RegistersMinExpires": {
@@ -1726,9 +1810,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "seconds"
 				}, 
 				"RegisterRetryInterval": {
@@ -1740,9 +1826,11 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1
-					}, 
+					"range": [
+						{
+							"min": 1
+						}
+					], 
 					"unit": "seconds"
 				}, 
 				"InboundAuth": {
@@ -1768,9 +1856,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}
+					"range": [
+						{
+							"max": 256
+						}
+					]
 				}, 
 				"InboundAuthPassword": {
 					"type": "string", 
@@ -1781,9 +1871,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}
+					"range": [
+						{
+							"max": 256
+						}
+					]
 				}, 
 				"UseCodecPriorityInSDPResponse": {
 					"type": "boolean", 
@@ -1804,10 +1896,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 63
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 63
+						}
+					]
 				}, 
 				"VLANIDMark": {
 					"type": "int", 
@@ -1818,9 +1912,11 @@
 						"usp"
 					], 
 					"datatype": "int", 
-					"range": {
-						"min": -1
-					}
+					"range": [
+						{
+							"min": -1
+						}
+					]
 				}, 
 				"EthernetPriorityMark": {
 					"type": "int", 
@@ -1831,9 +1927,11 @@
 						"usp"
 					], 
 					"datatype": "int", 
-					"range": {
-						"min": -1
-					}
+					"range": [
+						{
+							"min": -1
+						}
+					]
 				}, 
 				"SIPEventSubscribeNumberOfElements": {
 					"type": "unsignedInt", 
@@ -1854,10 +1952,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 999
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 999
+						}
+					]
 				}, 
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.EventSubscribe.{i}.": {
 					"type": "object", 
@@ -1876,9 +1976,11 @@
 							"usp"
 						], 
 						"datatype": "Alias", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"Event": {
 						"type": "string", 
@@ -1889,9 +1991,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 32
-						}
+						"range": [
+							{
+								"max": 32
+							}
+						]
 					}, 
 					"Notifier": {
 						"type": "string", 
@@ -1902,9 +2006,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 256
-						}
+						"range": [
+							{
+								"max": 256
+							}
+						]
 					}, 
 					"NotifierPort": {
 						"type": "unsignedInt", 
@@ -1915,10 +2021,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 65535
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 65535
+							}
+						]
 					}, 
 					"NotifierTransport": {
 						"type": "string", 
@@ -1959,9 +2067,11 @@
 							"usp"
 						], 
 						"datatype": "Alias", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"SIPResponseNumber": {
 						"type": "unsignedInt", 
@@ -1972,10 +2082,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 100, 
-							"max": 999
-						}
+						"range": [
+							{
+								"min": 100, 
+								"max": 999
+							}
+						]
 					}, 
 					"TextMessage": {
 						"type": "string", 
@@ -1986,9 +2098,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"Tone": {
 						"type": "unsignedInt", 
@@ -2019,9 +2133,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}
+					"range": [
+						{
+							"max": 256
+						}
+					]
 				}, 
 				"CallAgentPort1": {
 					"type": "unsignedInt", 
@@ -2032,10 +2148,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					]
 				}, 
 				"CallAgent2": {
 					"type": "string", 
@@ -2046,9 +2164,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}
+					"range": [
+						{
+							"max": 256
+						}
+					]
 				}, 
 				"CallAgentPort2": {
 					"type": "unsignedInt", 
@@ -2059,10 +2179,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					]
 				}, 
 				"RetranIntervalTimer": {
 					"type": "unsignedInt", 
@@ -2073,10 +2195,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}, 
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					], 
 					"unit": "seconds"
 				}, 
 				"MaxRetranCount": {
@@ -2088,10 +2212,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					]
 				}, 
 				"RegisterMode": {
 					"type": "string", 
@@ -2116,10 +2242,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					]
 				}, 
 				"Domain": {
 					"type": "string", 
@@ -2130,9 +2258,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 256
-					}
+					"range": [
+						{
+							"max": 256
+						}
+					]
 				}, 
 				"User": {
 					"type": "string", 
@@ -2143,9 +2273,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 64
-					}
+					"range": [
+						{
+							"max": 64
+						}
+					]
 				}, 
 				"DSCPMark": {
 					"type": "unsignedInt", 
@@ -2156,10 +2288,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 63
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 63
+						}
+					]
 				}, 
 				"VLANIDMark": {
 					"type": "int", 
@@ -2170,9 +2304,11 @@
 						"usp"
 					], 
 					"datatype": "int", 
-					"range": {
-						"min": -1
-					}
+					"range": [
+						{
+							"min": -1
+						}
+					]
 				}, 
 				"EthernetPriorityMark": {
 					"type": "int", 
@@ -2183,9 +2319,11 @@
 						"usp"
 					], 
 					"datatype": "int", 
-					"range": {
-						"min": -1
-					}
+					"range": [
+						{
+							"min": -1
+						}
+					]
 				}, 
 				"AllowPiggybackEvents": {
 					"type": "boolean", 
@@ -2296,10 +2434,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 63
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 63
+						}
+					]
 				}, 
 				"VLANIDMark": {
 					"type": "int", 
@@ -2310,9 +2450,11 @@
 						"usp"
 					], 
 					"datatype": "int", 
-					"range": {
-						"min": -1
-					}
+					"range": [
+						{
+							"min": -1
+						}
+					]
 				}, 
 				"EthernetPriorityMark": {
 					"type": "int", 
@@ -2323,9 +2465,11 @@
 						"usp"
 					], 
 					"datatype": "int", 
-					"range": {
-						"min": -1
-					}
+					"range": [
+						{
+							"min": -1
+						}
+					]
 				}
 			}, 
 			"Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP.": {
@@ -2345,10 +2489,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					]
 				}, 
 				"LocalPortMax": {
 					"type": "unsignedInt", 
@@ -2359,10 +2505,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 65535
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 65535
+						}
+					]
 				}, 
 				"DSCPMark": {
 					"type": "unsignedInt", 
@@ -2373,10 +2521,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 63
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 63
+						}
+					]
 				}, 
 				"VLANIDMark": {
 					"type": "int", 
@@ -2387,9 +2537,11 @@
 						"usp"
 					], 
 					"datatype": "int", 
-					"range": {
-						"min": -1
-					}
+					"range": [
+						{
+							"min": -1
+						}
+					]
 				}, 
 				"EthernetPriorityMark": {
 					"type": "int", 
@@ -2400,9 +2552,11 @@
 						"usp"
 					], 
 					"datatype": "int", 
-					"range": {
-						"min": -1
-					}
+					"range": [
+						{
+							"min": -1
+						}
+					]
 				}, 
 				"TelephoneEventPayloadType": {
 					"type": "unsignedInt", 
@@ -2413,10 +2567,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 128
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 128
+						}
+					]
 				}, 
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP.RTCP.": {
 					"type": "object", 
@@ -2445,9 +2601,11 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 1
-						}, 
+						"range": [
+							{
+								"min": 1
+							}
+						], 
 						"unit": "milliseconds"
 					}, 
 					"LocalCName": {
@@ -2459,9 +2617,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}
 				}, 
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.RTP.SRTP.": {
@@ -2536,10 +2696,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 127
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 127
+							}
+						]
 					}, 
 					"BlockPayloadType": {
 						"type": "unsignedInt", 
@@ -2550,10 +2712,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 127
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 127
+							}
+						]
 					}, 
 					"FaxAndModemRedundancy": {
 						"type": "int", 
@@ -2564,10 +2728,12 @@
 							"usp"
 						], 
 						"datatype": "int", 
-						"range": {
-							"min": -1, 
-							"max": 5
-						}
+						"range": [
+							{
+								"min": -1, 
+								"max": 5
+							}
+						]
 					}, 
 					"ModemRedundancy": {
 						"type": "int", 
@@ -2578,10 +2744,12 @@
 							"usp"
 						], 
 						"datatype": "int", 
-						"range": {
-							"min": -1, 
-							"max": 5
-						}
+						"range": [
+							{
+								"min": -1, 
+								"max": 5
+							}
+						]
 					}, 
 					"DTMFRedundancy": {
 						"type": "int", 
@@ -2592,10 +2760,12 @@
 							"usp"
 						], 
 						"datatype": "int", 
-						"range": {
-							"min": -1, 
-							"max": 5
-						}
+						"range": [
+							{
+								"min": -1, 
+								"max": 5
+							}
+						]
 					}, 
 					"VoiceRedundancy": {
 						"type": "int", 
@@ -2606,10 +2776,12 @@
 							"usp"
 						], 
 						"datatype": "int", 
-						"range": {
-							"min": -1, 
-							"max": 5
-						}
+						"range": [
+							{
+								"min": -1, 
+								"max": 5
+							}
+						]
 					}, 
 					"MaxSessionsUsingRedundancy": {
 						"type": "unsignedInt", 
@@ -2640,10 +2812,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1, 
-						"max": 40
-					}
+					"range": [
+						{
+							"min": 1, 
+							"max": 40
+						}
+					]
 				}, 
 				"MaximumNumberOfDigits": {
 					"type": "unsignedInt", 
@@ -2654,10 +2828,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1, 
-						"max": 40
-					}
+					"range": [
+						{
+							"min": 1, 
+							"max": 40
+						}
+					]
 				}, 
 				"InterDigitTimerStd": {
 					"type": "unsignedInt", 
@@ -2668,10 +2844,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1, 
-						"max": 50000
-					}, 
+					"range": [
+						{
+							"min": 1, 
+							"max": 50000
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"InterDigitTimerOpen": {
@@ -2683,10 +2861,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 1, 
-						"max": 50000
-					}, 
+					"range": [
+						{
+							"min": 1, 
+							"max": 50000
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"InvalidNumberTone": {
@@ -2736,9 +2916,11 @@
 							"usp"
 						], 
 						"datatype": "Alias", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"PrefixRange": {
 						"type": "string", 
@@ -2749,9 +2931,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 42
-						}
+						"range": [
+							{
+								"max": 42
+							}
+						]
 					}, 
 					"PrefixMinNumberOfDigits": {
 						"type": "unsignedInt", 
@@ -2762,10 +2946,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 1, 
-							"max": 40
-						}
+						"range": [
+							{
+								"min": 1, 
+								"max": 40
+							}
+						]
 					}, 
 					"PrefixMaxNumberOfDigits": {
 						"type": "unsignedInt", 
@@ -2776,10 +2962,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 1, 
-							"max": 40
-						}
+						"range": [
+							{
+								"min": 1, 
+								"max": 40
+							}
+						]
 					}, 
 					"NumberOfDigitsToRemove": {
 						"type": "unsignedInt", 
@@ -2790,10 +2978,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 40
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 40
+							}
+						]
 					}, 
 					"PosOfDigitsToRemove": {
 						"type": "unsignedInt", 
@@ -2804,10 +2994,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 40
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 40
+							}
+						]
 					}, 
 					"DialTone": {
 						"type": "unsignedInt", 
@@ -2828,9 +3020,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"FacilityActionArgument": {
 						"type": "string", 
@@ -2841,9 +3035,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 256
-						}
+						"range": [
+							{
+								"max": 256
+							}
+						]
 					}
 				}
 			}, 
@@ -2902,9 +3098,11 @@
 							"usp"
 						], 
 						"datatype": "Alias", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"Function": {
 						"type": "string", 
@@ -2915,9 +3113,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}, 
+						"range": [
+							{
+								"max": 64
+							}
+						], 
 						"enumerations": [
 							"Busy", 
 							"Confirmation", 
@@ -2970,9 +3170,11 @@
 							"usp"
 						], 
 						"datatype": "Alias", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"EntryID": {
 						"type": "unsignedInt", 
@@ -2983,9 +3185,11 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 1
-						}
+						"range": [
+							{
+								"min": 1
+							}
+						]
 					}, 
 					"ToneEnable": {
 						"type": "boolean", 
@@ -3006,9 +3210,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"TonePattern": {
 						"type": "unsignedInt", 
@@ -3029,9 +3235,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 256
-						}
+						"range": [
+							{
+								"max": 256
+							}
+						]
 					}, 
 					"ToneRepetitions": {
 						"type": "unsignedInt", 
@@ -3042,10 +3250,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 255
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 255
+							}
+						]
 					}, 
 					"ToneText": {
 						"type": "string", 
@@ -3056,9 +3266,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}
 				}, 
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Tone.Pattern.{i}.": {
@@ -3078,9 +3290,11 @@
 							"usp"
 						], 
 						"datatype": "Alias", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"EntryID": {
 						"type": "unsignedInt", 
@@ -3091,9 +3305,11 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 1
-						}
+						"range": [
+							{
+								"min": 1
+							}
+						]
 					}, 
 					"ToneOn": {
 						"type": "boolean", 
@@ -3114,10 +3330,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 4095
-						}, 
+						"range": [
+							{
+								"min": 0, 
+								"max": 4095
+							}
+						], 
 						"unit": "hertz"
 					}, 
 					"Power1": {
@@ -3140,10 +3358,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 4095
-						}, 
+						"range": [
+							{
+								"min": 0, 
+								"max": 4095
+							}
+						], 
 						"unit": "hertz"
 					}, 
 					"Power2": {
@@ -3166,10 +3386,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 4095
-						}, 
+						"range": [
+							{
+								"min": 0, 
+								"max": 4095
+							}
+						], 
 						"unit": "hertz"
 					}, 
 					"Power3": {
@@ -3192,10 +3414,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 4095
-						}, 
+						"range": [
+							{
+								"min": 0, 
+								"max": 4095
+							}
+						], 
 						"unit": "herts"
 					}, 
 					"Power4": {
@@ -3218,10 +3442,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 4095
-						}, 
+						"range": [
+							{
+								"min": 0, 
+								"max": 4095
+							}
+						], 
 						"unit": "hertz"
 					}, 
 					"ModulationPower": {
@@ -3293,9 +3519,11 @@
 							"usp"
 						], 
 						"datatype": "Alias", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"ButtonName": {
 						"type": "string", 
@@ -3306,9 +3534,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 16
-						}
+						"range": [
+							{
+								"max": 16
+							}
+						]
 					}, 
 					"FacilityAction": {
 						"type": "string", 
@@ -3319,9 +3549,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"FacilityActionArgument": {
 						"type": "string", 
@@ -3332,9 +3564,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 256
-						}
+						"range": [
+							{
+								"max": 256
+							}
+						]
 					}, 
 					"QuickDialNumber": {
 						"type": "string", 
@@ -3345,9 +3579,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 40
-						}
+						"range": [
+							{
+								"max": 40
+							}
+						]
 					}, 
 					"ButtonMessage": {
 						"type": "string", 
@@ -3358,9 +3594,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}
+						"range": [
+							{
+								"max": 64
+							}
+						]
 					}, 
 					"UserAccess": {
 						"type": "boolean", 
@@ -3401,10 +3639,36 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 33600, 
-						"max": 33600
-					}
+					"range": [
+						{
+							"min": 2400, 
+							"max": 2400
+						}, 
+						{
+							"min": 4800, 
+							"max": 4800
+						}, 
+						{
+							"min": 7200, 
+							"max": 7200
+						}, 
+						{
+							"min": 9600, 
+							"max": 9600
+						}, 
+						{
+							"min": 12000, 
+							"max": 12000
+						}, 
+						{
+							"min": 14400, 
+							"max": 14400
+						}, 
+						{
+							"min": 33600, 
+							"max": 33600
+						}
+					]
 				}, 
 				"HighSpeedPacketRate": {
 					"type": "unsignedInt", 
@@ -3415,10 +3679,24 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 40, 
-						"max": 40
-					}, 
+					"range": [
+						{
+							"min": 10, 
+							"max": 10
+						}, 
+						{
+							"min": 20, 
+							"max": 20
+						}, 
+						{
+							"min": 30, 
+							"max": 30
+						}, 
+						{
+							"min": 40, 
+							"max": 40
+						}
+					], 
 					"unit": "milliseconds"
 				}, 
 				"HighSpeedRedundancy": {
@@ -3430,10 +3708,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 3
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 3
+						}
+					]
 				}, 
 				"LowSpeedRedundancy": {
 					"type": "unsignedInt", 
@@ -3444,10 +3724,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 5
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 5
+						}
+					]
 				}, 
 				"TCFMethod": {
 					"type": "string", 
@@ -3506,9 +3788,11 @@
 						"usp"
 					], 
 					"datatype": "Alias", 
-					"range": {
-						"max": 64
-					}
+					"range": [
+						{
+							"max": 64
+						}
+					]
 				}, 
 				"DirectoryNumber": {
 					"type": "string", 
@@ -3519,9 +3803,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 32
-					}
+					"range": [
+						{
+							"max": 32
+						}
+					]
 				}, 
 				"Status": {
 					"type": "string", 
@@ -3594,10 +3880,12 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"range": {
-						"min": 0, 
-						"max": 100
-					}
+					"range": [
+						{
+							"min": 0, 
+							"max": 100
+						}
+					]
 				}, 
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.SIP.": {
 					"type": "object", 
@@ -3616,9 +3904,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 128
-						}
+						"range": [
+							{
+								"max": 128
+							}
+						]
 					}, 
 					"AuthPassword": {
 						"type": "string", 
@@ -3629,9 +3919,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 128
-						}
+						"range": [
+							{
+								"max": 128
+							}
+						]
 					}, 
 					"URI": {
 						"type": "string", 
@@ -3642,9 +3934,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 389
-						}
+						"range": [
+							{
+								"max": 389
+							}
+						]
 					}, 
 					"SIPEventSubscribeNumberOfElements": {
 						"type": "unsignedInt", 
@@ -3673,9 +3967,11 @@
 								"usp"
 							], 
 							"datatype": "Alias", 
-							"range": {
-								"max": 64
-							}
+							"range": [
+								{
+									"max": 64
+								}
+							]
 						}, 
 						"Event": {
 							"type": "string", 
@@ -3686,9 +3982,11 @@
 								"usp"
 							], 
 							"datatype": "string", 
-							"range": {
-								"max": 32
-							}
+							"range": [
+								{
+									"max": 32
+								}
+							]
 						}, 
 						"AuthUserName": {
 							"type": "string", 
@@ -3699,9 +3997,11 @@
 								"usp"
 							], 
 							"datatype": "string", 
-							"range": {
-								"max": 128
-							}
+							"range": [
+								{
+									"max": 128
+								}
+							]
 						}, 
 						"AuthPassword": {
 							"type": "string", 
@@ -3712,9 +4012,11 @@
 								"usp"
 							], 
 							"datatype": "string", 
-							"range": {
-								"max": 128
-							}
+							"range": [
+								{
+									"max": 128
+								}
+							]
 						}
 					}
 				}, 
@@ -3735,9 +4037,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 32
-						}
+						"range": [
+							{
+								"max": 32
+							}
+						]
 					}
 				}, 
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.H323.": {
@@ -3757,9 +4061,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 32
-						}
+						"range": [
+							{
+								"max": 32
+							}
+						]
 					}
 				}, 
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Ringer.": {
@@ -3817,9 +4123,11 @@
 								"usp"
 							], 
 							"datatype": "Alias", 
-							"range": {
-								"max": 64
-							}
+							"range": [
+								{
+									"max": 64
+								}
+							]
 						}, 
 						"Function": {
 							"type": "string", 
@@ -3830,9 +4138,11 @@
 								"usp"
 							], 
 							"datatype": "string", 
-							"range": {
-								"max": 64
-							}, 
+							"range": [
+								{
+									"max": 64
+								}
+							], 
 							"enumerations": [
 								"Default", 
 								"RingSplash"
@@ -3866,9 +4176,11 @@
 								"usp"
 							], 
 							"datatype": "Alias", 
-							"range": {
-								"max": 64
-							}
+							"range": [
+								{
+									"max": 64
+								}
+							]
 						}, 
 						"EntryID": {
 							"type": "unsignedInt", 
@@ -3879,9 +4191,11 @@
 								"usp"
 							], 
 							"datatype": "unsignedInt", 
-							"range": {
-								"min": 1
-							}
+							"range": [
+								{
+									"min": 1
+								}
+							]
 						}, 
 						"RingEnable": {
 							"type": "boolean", 
@@ -3902,9 +4216,11 @@
 								"usp"
 							], 
 							"datatype": "string", 
-							"range": {
-								"max": 64
-							}
+							"range": [
+								{
+									"max": 64
+								}
+							]
 						}, 
 						"RingPattern": {
 							"type": "unsignedInt", 
@@ -3925,9 +4241,11 @@
 								"usp"
 							], 
 							"datatype": "string", 
-							"range": {
-								"max": 256
-							}
+							"range": [
+								{
+									"max": 256
+								}
+							]
 						}
 					}, 
 					"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Ringer.Pattern.{i}.": {
@@ -3947,9 +4265,11 @@
 								"usp"
 							], 
 							"datatype": "Alias", 
-							"range": {
-								"max": 64
-							}
+							"range": [
+								{
+									"max": 64
+								}
+							]
 						}, 
 						"EntryID": {
 							"type": "unsignedInt", 
@@ -3960,9 +4280,11 @@
 								"usp"
 							], 
 							"datatype": "unsignedInt", 
-							"range": {
-								"min": 1
-							}
+							"range": [
+								{
+									"min": 1
+								}
+							]
 						}, 
 						"RingerOn": {
 							"type": "boolean", 
@@ -4034,9 +4356,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 256
-						}
+						"range": [
+							{
+								"max": 256
+							}
+						]
 					}, 
 					"CallWaitingEnable": {
 						"type": "boolean", 
@@ -4102,9 +4426,19 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 1
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 0
+							}, 
+							{
+								"min": 1, 
+								"max": 1
+							}, 
+							{
+								"min": 1
+							}
+						]
 					}, 
 					"CallForwardUnconditionalEnable": {
 						"type": "boolean", 
@@ -4125,9 +4459,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 32
-						}
+						"range": [
+							{
+								"max": 32
+							}
+						]
 					}, 
 					"CallForwardOnBusyEnable": {
 						"type": "boolean", 
@@ -4148,9 +4484,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 32
-						}
+						"range": [
+							{
+								"max": 32
+							}
+						]
 					}, 
 					"CallForwardOnNoAnswerEnable": {
 						"type": "boolean", 
@@ -4171,9 +4509,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 32
-						}
+						"range": [
+							{
+								"max": 32
+							}
+						]
 					}, 
 					"CallForwardOnNoAnswerRingCount": {
 						"type": "unsignedInt", 
@@ -4345,9 +4685,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}, 
+						"range": [
+							{
+								"max": 64
+							}
+						], 
 						"enumerations": [
 							"G.711MuLaw", 
 							"G.711ALaw", 
@@ -4375,9 +4717,11 @@
 							"usp"
 						], 
 						"datatype": "string", 
-						"range": {
-							"max": 64
-						}, 
+						"range": [
+							{
+								"max": 64
+							}
+						], 
 						"enumerations": [
 							"G.711MuLaw", 
 							"G.711ALaw", 
@@ -4466,9 +4810,11 @@
 								"usp"
 							], 
 							"datatype": "Alias", 
-							"range": {
-								"max": 64
-							}
+							"range": [
+								{
+									"max": 64
+								}
+							]
 						}, 
 						"EntryID": {
 							"type": "unsignedInt", 
@@ -4479,9 +4825,11 @@
 								"usp"
 							], 
 							"datatype": "unsignedInt", 
-							"range": {
-								"min": 1
-							}
+							"range": [
+								{
+									"min": 1
+								}
+							]
 						}, 
 						"Codec": {
 							"type": "string", 
@@ -4492,9 +4840,11 @@
 								"usp"
 							], 
 							"datatype": "string", 
-							"range": {
-								"max": 64
-							}
+							"range": [
+								{
+									"max": 64
+								}
+							]
 						}, 
 						"BitRate": {
 							"type": "unsignedInt", 
@@ -4517,9 +4867,11 @@
 							], 
 							"list": {
 								"datatype": "string", 
-								"range": {
-									"max": 64
-								}
+								"range": [
+									{
+										"max": 64
+									}
+								]
 							}
 						}, 
 						"SilenceSuppression": {
@@ -4551,9 +4903,11 @@
 								"usp"
 							], 
 							"datatype": "unsignedInt", 
-							"range": {
-								"min": 1
-							}
+							"range": [
+								{
+									"min": 1
+								}
+							]
 						}
 					}
 				}, 
@@ -4594,9 +4948,11 @@
 							"usp"
 						], 
 						"datatype": "IPAddress", 
-						"range": {
-							"max": 45
-						}
+						"range": [
+							{
+								"max": 45
+							}
+						]
 					}, 
 					"FarEndUDPPort": {
 						"type": "unsignedInt", 
@@ -4607,10 +4963,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 65535
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 65535
+							}
+						]
 					}, 
 					"LocalUDPPort": {
 						"type": "unsignedInt", 
@@ -4621,10 +4979,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 65535
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 65535
+							}
+						]
 					}
 				}, 
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Stats.": {
@@ -4834,10 +5194,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 100
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 100
+							}
+						]
 					}, 
 					"FarEndPacketLossRate": {
 						"type": "unsignedInt", 
@@ -4848,10 +5210,12 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"range": {
-							"min": 0, 
-							"max": 100
-						}
+						"range": [
+							{
+								"min": 0, 
+								"max": 100
+							}
+						]
 					}, 
 					"ReceiveInterarrivalJitter": {
 						"type": "unsignedInt", 
@@ -4939,9 +5303,11 @@
 					"usp"
 				], 
 				"datatype": "Alias", 
-				"range": {
-					"max": 64
-				}
+				"range": [
+					{
+						"max": 64
+					}
+				]
 			}, 
 			"PhyPort": {
 				"type": "string", 
@@ -4952,9 +5318,11 @@
 					"usp"
 				], 
 				"datatype": "string", 
-				"range": {
-					"max": 2
-				}
+				"range": [
+					{
+						"max": 2
+					}
+				]
 			}, 
 			"InterfaceID": {
 				"type": "unsignedInt", 
@@ -4965,9 +5333,11 @@
 					"usp"
 				], 
 				"datatype": "unsignedInt", 
-				"range": {
-					"min": 1
-				}
+				"range": [
+					{
+						"min": 1
+					}
+				]
 			}, 
 			"Description": {
 				"type": "string", 
@@ -4978,9 +5348,11 @@
 					"usp"
 				], 
 				"datatype": "string", 
-				"range": {
-					"max": 32
-				}
+				"range": [
+					{
+						"max": 32
+					}
+				]
 			}, 
 			"Device.Services.VoiceService.{i}.PhyInterface.{i}.Tests.": {
 				"type": "object", 
@@ -5015,9 +5387,11 @@
 						"usp"
 					], 
 					"datatype": "string", 
-					"range": {
-						"max": 64
-					}, 
+					"range": [
+						{
+							"max": 64
+						}
+					], 
 					"enumerations": [
 						"PhoneConnectivityTest"
 					]

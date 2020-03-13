@@ -623,7 +623,7 @@ static int set_firewall_config(char *refparam, struct dmctx *ctx, void *data, ch
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, Config, NULL))
+			if (dm_validate_string(value, -1, -1, Config, 4, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -638,7 +638,7 @@ static int set_firewall_advanced_level(char *refparam, struct dmctx *ctx, void *
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+			if (dm_validate_string(value, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -653,7 +653,7 @@ static int set_level_name(char *refparam, struct dmctx *ctx, void *data, char *i
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -667,7 +667,7 @@ static int set_level_description(char *refparam, struct dmctx *ctx, void *data, 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -752,7 +752,7 @@ static int set_chain_name(char *refparam, struct dmctx *ctx, void *data, char *i
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -783,7 +783,7 @@ static int set_rule_order(char *refparam, struct dmctx *ctx, void *data, char *i
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -798,7 +798,7 @@ static int set_rule_description(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -814,7 +814,7 @@ static int set_rule_target(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, Target, NULL))
+			if (dm_validate_string(value, -1, -1, Target, 5, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -838,7 +838,7 @@ static int set_rule_source_interface(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 
 			adm_entry_get_linker_value(ctx, value, &iface);
@@ -869,7 +869,7 @@ static int set_rule_dest_interface(char *refparam, struct dmctx *ctx, void *data
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -893,7 +893,7 @@ static int set_rule_i_p_version(char *refparam, struct dmctx *ctx, void *data, c
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_int(value, "-1", "15"))
+			if (dm_validate_int(value, RANGE_ARGS{{"-1","15"}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -914,7 +914,7 @@ static int set_rule_dest_ip(char *refparam, struct dmctx *ctx, void *data, char 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "45", NULL, IPAddress))
+			if (dm_validate_string(value, -1, 45, NULL, 0, IPAddress, 2))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -937,7 +937,7 @@ static int set_rule_dest_mask(char *refparam, struct dmctx *ctx, void *data, cha
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "49", NULL, NULL))
+			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 2))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -959,7 +959,7 @@ static int set_rule_source_ip(char *refparam, struct dmctx *ctx, void *data, cha
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "45", NULL, IPAddress))
+			if (dm_validate_string(value, -1, 45, NULL, 0, IPAddress, 2))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -982,7 +982,7 @@ static int set_rule_source_mask(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "49", NULL, NULL))
+			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 2))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1002,7 +1002,7 @@ static int set_rule_protocol(char *refparam, struct dmctx *ctx, void *data, char
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_int(value, "-1", "255"))
+			if (dm_validate_int(value, RANGE_ARGS{{"-1","255"}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1018,7 +1018,7 @@ static int set_rule_dest_port(char *refparam, struct dmctx *ctx, void *data, cha
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_int(value, "-1", "65535"))
+			if (dm_validate_int(value, RANGE_ARGS{{"-1","65535"}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1044,7 +1044,7 @@ static int set_rule_dest_port_range_max(char *refparam, struct dmctx *ctx, void 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_int(value, "-1", "65535"))
+			if (dm_validate_int(value, RANGE_ARGS{{"-1","65535"}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1073,7 +1073,7 @@ static int set_rule_source_port(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_int(value, "-1", "65535"))
+			if (dm_validate_int(value, RANGE_ARGS{{"-1","65535"}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1099,7 +1099,7 @@ static int set_rule_source_port_range_max(char *refparam, struct dmctx *ctx, voi
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_int(value, "-1", "65535"))
+			if (dm_validate_int(value, RANGE_ARGS{{"-1","65535"}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:

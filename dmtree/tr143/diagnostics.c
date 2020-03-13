@@ -45,7 +45,7 @@ static int set_ip_ping_diagnostics_state(char *refparam, struct dmctx *ctx, void
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+			if (dm_validate_string(value, -1, -1, DiagnosticsState, 5, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -75,7 +75,7 @@ static int set_ip_ping_interface(char *refparam, struct dmctx *ctx, void *data, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -102,7 +102,7 @@ static int set_ip_ping_protocolversion(char *refparam, struct dmctx *ctx, void *
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -129,7 +129,7 @@ static int set_ip_ping_host(char *refparam, struct dmctx *ctx, void *data, char 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -156,7 +156,7 @@ static int set_ip_ping_repetition_number(char *refparam, struct dmctx *ctx, void
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -183,7 +183,7 @@ static int set_ip_ping_timeout(char *refparam, struct dmctx *ctx, void *data, ch
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -211,7 +211,7 @@ static int set_ip_ping_block_size(char *refparam, struct dmctx *ctx, void *data,
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -237,7 +237,7 @@ static int set_ip_ping_DSCP(char *refparam, struct dmctx *ctx, void *data, char 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "63"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","63"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -326,7 +326,7 @@ static int set_IPDiagnosticsTraceRoute_DiagnosticsState(char *refparam, struct d
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+			if (dm_validate_string(value, -1, -1, DiagnosticsState, 5, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -356,7 +356,7 @@ static int set_IPDiagnosticsTraceRoute_Interface(char *refparam, struct dmctx *c
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -383,7 +383,7 @@ static int set_IPDiagnosticsTraceRoute_ProtocolVersion(char *refparam, struct dm
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -410,7 +410,7 @@ static int set_IPDiagnosticsTraceRoute_Host(char *refparam, struct dmctx *ctx, v
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -437,7 +437,7 @@ static int set_IPDiagnosticsTraceRoute_NumberOfTries(char *refparam, struct dmct
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "3"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","3"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -464,7 +464,7 @@ static int set_IPDiagnosticsTraceRoute_Timeout(char *refparam, struct dmctx *ctx
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -491,7 +491,7 @@ static int set_IPDiagnosticsTraceRoute_DataBlockSize(char *refparam, struct dmct
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -518,7 +518,7 @@ static int set_IPDiagnosticsTraceRoute_DSCP(char *refparam, struct dmctx *ctx, v
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "63"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","63"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -545,7 +545,7 @@ static int set_IPDiagnosticsTraceRoute_MaxHopCount(char *refparam, struct dmctx 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "64"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","64"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -622,7 +622,7 @@ static int set_IPDiagnosticsDownloadDiagnostics_DiagnosticsState(char *refparam,
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+			if (dm_validate_string(value, -1, -1, DiagnosticsState, 5, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -657,7 +657,7 @@ static int set_IPDiagnosticsDownloadDiagnostics_Interface(char *refparam, struct
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -693,7 +693,7 @@ static int set_IPDiagnosticsDownloadDiagnostics_DownloadURL(char *refparam, stru
 	struct uci_section *curr_section = NULL;
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -732,7 +732,7 @@ static int set_IPDiagnosticsDownloadDiagnostics_DSCP(char *refparam, struct dmct
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "63"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","63"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -759,7 +759,7 @@ static int set_IPDiagnosticsDownloadDiagnostics_EthernetPriority(char *refparam,
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "7"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","7"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -786,7 +786,7 @@ static int set_IPDiagnosticsDownloadDiagnostics_ProtocolVersion(char *refparam, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -813,7 +813,7 @@ static int set_IPDiagnosticsDownloadDiagnostics_NumberOfConnections(char *refpar
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1011,7 +1011,7 @@ static int set_IPDiagnosticsUploadDiagnostics_DiagnosticsState(char *refparam, s
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+			if (dm_validate_string(value, -1, -1, DiagnosticsState, 5, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1046,7 +1046,7 @@ static int set_IPDiagnosticsUploadDiagnostics_Interface(char *refparam, struct d
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1083,7 +1083,7 @@ static int set_IPDiagnosticsUploadDiagnostics_UploadURL(char *refparam, struct d
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1116,7 +1116,7 @@ static int set_IPDiagnosticsUploadDiagnostics_DSCP(char *refparam, struct dmctx 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "63"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","63"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1143,7 +1143,7 @@ static int set_IPDiagnosticsUploadDiagnostics_EthernetPriority(char *refparam, s
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "7"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","7"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1169,7 +1169,7 @@ static int set_IPDiagnosticsUploadDiagnostics_TestFileLength(char *refparam, str
 	struct uci_section *curr_section = NULL;
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1196,7 +1196,7 @@ static int set_IPDiagnosticsUploadDiagnostics_ProtocolVersion(char *refparam, st
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1222,7 +1222,7 @@ static int set_IPDiagnosticsUploadDiagnostics_NumberOfConnections(char *refparam
 	struct uci_section *curr_section = NULL;
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1437,7 +1437,7 @@ static int set_IPDiagnosticsUDPEchoConfig_Interface(char *refparam, struct dmctx
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1457,7 +1457,7 @@ static int set_IPDiagnosticsUDPEchoConfig_SourceIPAddress(char *refparam, struct
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "45", NULL, IPAddress))
+			if (dm_validate_string(value, -1, 45, NULL, 0, IPAddress, 2))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1477,7 +1477,7 @@ static int set_IPDiagnosticsUDPEchoConfig_UDPPort(char *refparam, struct dmctx *
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1589,7 +1589,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_DiagnosticsState(char *refparam, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+			if (dm_validate_string(value, -1, -1, DiagnosticsState, 5, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1619,7 +1619,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_Interface(char *refparam, struct 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1646,7 +1646,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_Host(char *refparam, struct dmctx
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1673,7 +1673,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_Port(char *refparam, struct dmctx
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1700,7 +1700,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_NumberOfRepetitions(char *refpara
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1727,7 +1727,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_Timeout(char *refparam, struct dm
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1754,7 +1754,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_DataBlockSize(char *refparam, str
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1781,7 +1781,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_DSCP(char *refparam, struct dmctx
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "63"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","63"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1808,7 +1808,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_InterTransmissionTime(char *refpa
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1835,7 +1835,7 @@ static int set_IPDiagnosticsUDPEchoDiagnostics_ProtocolVersion(char *refparam, s
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1906,7 +1906,7 @@ static int set_IPDiagnosticsServerSelectionDiagnostics_DiagnosticsState(char *re
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, DiagnosticsState, NULL))
+			if (dm_validate_string(value, -1, -1, DiagnosticsState, 5, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1936,7 +1936,7 @@ static int set_IPDiagnosticsServerSelectionDiagnostics_Interface(char *refparam,
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1963,7 +1963,7 @@ static int set_IPDiagnosticsServerSelectionDiagnostics_ProtocolVersion(char *ref
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, ProtocolVersion, NULL))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1990,7 +1990,7 @@ static int set_IPDiagnosticsServerSelectionDiagnostics_Protocol(char *refparam, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, ServerSelectionProtocol, NULL))
+			if (dm_validate_string(value, -1, -1, ServerSelectionProtocol, 2, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -2017,7 +2017,7 @@ static int set_IPDiagnosticsServerSelectionDiagnostics_Port(char *refparam, stru
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -2044,7 +2044,7 @@ static int set_IPDiagnosticsServerSelectionDiagnostics_HostList(char *refparam, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, "10", NULL, NULL, "256", NULL, NULL))
+			if (dm_validate_string_list(value, -1, 10, -1, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -2071,7 +2071,7 @@ static int set_IPDiagnosticsServerSelectionDiagnostics_NumberOfRepetitions(char 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -2098,7 +2098,7 @@ static int set_IPDiagnosticsServerSelectionDiagnostics_Timeout(char *refparam, s
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:

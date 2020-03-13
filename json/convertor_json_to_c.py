@@ -159,9 +159,9 @@ def get_mapping_obj( mappingobj ):
 
 def generate_validate_value(dmparam, value):
 	validate_value = ""
-	maxsizeparam = "NULL"
-	itemminparam = "NULL"
-	itemmaxparam = "NULL"
+	maxsizeparam = "-1"
+	itemminparam = "-1"
+	itemmaxparam = "-1"
 	rangeminparam = "NULL"
 	rangemaxparam = "NULL"
 
@@ -169,106 +169,158 @@ def generate_validate_value(dmparam, value):
 	if listparam != None:
 		datatypeparam = getoptionparam(listparam, "datatype")
 		maxsizeparam = getoptionparam(listparam, "maxsize")
-		if maxsizeparam == None: maxsizeparam = "NULL"
+		if maxsizeparam == None: maxsizeparam = "-1"
 		itemparam = getoptionparam(listparam, "item")
 		if itemparam != None:
 			itemminparam = getoptionparam(itemparam, "min")
-			if itemminparam == None: itemminparam = "NULL"
+			if itemminparam == None: itemminparam = "-1"
 			itemmaxparam = getoptionparam(itemparam, "max")
-			if itemmaxparam == None: itemmaxparam = "NULL"
-		rangeparam = getoptionparam(listparam, "range")
+			if itemmaxparam == None: itemmaxparam = "-1"
+
+		rangeparam = getarrayoptionparam(listparam, "range")
 		if rangeparam != None:
-			rangeminparam = getoptionparam(rangeparam, "min")
+			range_length = len(rangeparam)
+			rangeargs = "RANGE_ARGS{"
+			for i in range(range_length - 1):
+				rangeminparam = getoptionparam(rangeparam[i], "min")
+				if rangeminparam == None: rangeminparam = "NULL"
+				rangemaxparam = getoptionparam(rangeparam[i], "max")
+				if rangemaxparam == None: rangemaxparam = "NULL"
+				rangeargs += "{\"%s\",\"%s\"}," % (rangeminparam, rangemaxparam)
+			rangeminparam = getoptionparam(rangeparam[range_length - 1], "min")
 			if rangeminparam == None: rangeminparam = "NULL"
-			rangemaxparam = getoptionparam(rangeparam, "max")
+			rangemaxparam = getoptionparam(rangeparam[range_length - 1], "max")
 			if rangemaxparam == None: rangemaxparam = "NULL"
+			rangeargs += "{\"%s\",\"%s\"}}, %s" % (rangeminparam, rangemaxparam, range_length)
+		else:
+			rangeargs = "RANGE_ARGS{{NULL,NULL}}, 1"
+
 		enumarationsparam = getarrayoptionparam(listparam, "enumerations")
 		if enumarationsparam != None:
 			list_enumarationsparam = enumarationsparam
 			enum_length = len(list_enumarationsparam)
 			enumarationsparam = dmparam if datatypeparam == "string" else datatypeparam
 			str_enum = "char *%s[] = {" % enumarationsparam
-			for i in range(enum_length):
+			for i in range(enum_length - 1):
 				str_enum += "\"%s\", " % list_enumarationsparam[i]
-			str_enum += "NULL};"
+			str_enum += "\"%s\"};" % list_enumarationsparam[enum_length - 1]
 			printGlobalstrCommon(str_enum)
 		else:
 			enumarationsparam = "NULL"
+			enum_length = "0"
+
 		patternparam = getarrayoptionparam(listparam, "pattern")
 		if patternparam != None:
 			list_patternparam = patternparam
 			pattern_length = len(list_patternparam)
 			patternparam = dmparam if datatypeparam == "string" else datatypeparam
 			str_pattern = "char *%s[] = {" % patternparam
-			for i in range(pattern_length):
+			for i in range(pattern_length - 1):
 				str_pattern += "\"^%s$\", " % list_patternparam[i]
-			str_pattern += "NULL};"
+			str_pattern += "\"^%s$\"};" % list_patternparam[pattern_length - 1]
 			printGlobalstrCommon(str_pattern)
 		elif datatypeparam == "IPAddress":
 			patternparam = "IPAddress"
+			pattern_length = "2"
 		elif datatypeparam == "IPv6Address":
 			patternparam = "IPv6Address"
+			pattern_length = "1"
+		elif datatypeparam == "IPPrefix":
+			patternparam = "IPPrefix"
+			pattern_length = "3"
+		elif datatypeparam == "IPv6Prefix":
+			patternparam = "IPv6Prefix"
+			pattern_length = "1"
 		else:
 			patternparam = "NULL"
+			pattern_length = "0"
+
 		if datatypeparam == "unsignedInt":
-			validate_value += "			if (dm_validate_unsignedInt_list(value, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"))\n" % (itemminparam, itemmaxparam, maxsizeparam, rangeminparam, rangemaxparam)
-		elif datatypeparam == "int":
-			validate_value += "			if (dm_validate_int_list(value, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\"))\n" % (itemminparam, itemmaxparam, maxsizeparam, rangeminparam, rangemaxparam)
+			validate_value += "			if (dm_validate_unsignedInt_list(value, %s, %s, %s, %s))\n" % (itemminparam, itemmaxparam, maxsizeparam, rangeargs)
 		else:
-			validate_value += "			if (dm_validate_string_list(value, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", %s, %s))\n" % (itemminparam, itemmaxparam, maxsizeparam, rangeminparam, rangemaxparam, enumarationsparam, patternparam)
+			if rangeminparam == "NULL": rangeminparam = "-1"
+			if rangemaxparam == "NULL": rangemaxparam = "-1"
+			validate_value += "			if (dm_validate_string_list(value, %s, %s, %s, %s, %s, %s, %s, %s, %s))\n" % (itemminparam, itemmaxparam, maxsizeparam, rangeminparam, rangemaxparam, enumarationsparam, enum_length, patternparam, pattern_length)
 	else:
 		datatypeparam = getoptionparam(value, "datatype")
-		rangeparam = getoptionparam(value, "range")
+		rangeparam = getarrayoptionparam(value, "range")
 		if rangeparam != None:
-			rangeminparam = getoptionparam(rangeparam, "min")
+			range_length = len(rangeparam)
+			rangeargs = "RANGE_ARGS{"
+			for i in range(range_length - 1):
+				rangeminparam = getoptionparam(rangeparam[i], "min")
+				if rangeminparam == None: rangeminparam = "NULL"
+				rangemaxparam = getoptionparam(rangeparam[i], "max")
+				if rangemaxparam == None: rangemaxparam = "NULL"
+				rangeargs += "{\"%s\",\"%s\"}," % (rangeminparam, rangemaxparam)
+			rangeminparam = getoptionparam(rangeparam[range_length - 1], "min")
 			if rangeminparam == None: rangeminparam = "NULL"
-			rangemaxparam = getoptionparam(rangeparam, "max")
+			rangemaxparam = getoptionparam(rangeparam[range_length - 1], "max")
 			if rangemaxparam == None: rangemaxparam = "NULL"
+			rangeargs += "{\"%s\",\"%s\"}}, %s" % (rangeminparam, rangemaxparam, range_length)
+		else:
+			rangeargs = "RANGE_ARGS{{NULL,NULL}}, 1"
+
 		enumarationsparam = getarrayoptionparam(value, "enumerations")
 		if enumarationsparam != None:
 			list_enumarationsparam = enumarationsparam
 			enum_length = len(list_enumarationsparam)
 			enumarationsparam = dmparam if datatypeparam == "string" else datatypeparam
 			str_enum = "char *%s[] = {" % enumarationsparam
-			for i in range(enum_length):
+			for i in range(enum_length - 1):
 				str_enum += "\"%s\", " % list_enumarationsparam[i]
-
-			str_enum += "NULL};"
+			str_enum += "\"%s\"};" % list_enumarationsparam[enum_length - 1]
 			printGlobalstrCommon(str_enum)
 		else:
 			enumarationsparam = "NULL"
+			enum_length = "0"
+
 		patternparam = getarrayoptionparam(value, "pattern")
 		if patternparam != None:
 			list_patternparam = patternparam
 			pattern_length = len(list_patternparam)
 			patternparam = dmparam if datatypeparam == "string" else datatypeparam
 			str_pattern = "char *%s[] = {" % patternparam
-			for i in range(pattern_length):
+			for i in range(pattern_length - 1):
 				str_pattern += "\"^%s$\", " % list_patternparam[i]
-			str_pattern += "NULL};"
+			str_pattern += "\"^%s$\"};" % list_patternparam[pattern_length - 1]
 			printGlobalstrCommon(str_pattern)
 		elif datatypeparam == "IPAddress":
 			patternparam = "IPAddress"
+			pattern_length = "2"
 		elif datatypeparam == "IPv6Address":
 			patternparam = "IPv6Address"
+			pattern_length = "1"
+		elif datatypeparam == "IPPrefix":
+			patternparam = "IPPrefix"
+			pattern_length = "3"
+		elif datatypeparam == "IPv6Prefix":
+			patternparam = "IPv6Prefix"
+			pattern_length = "1"
 		else:
 			patternparam = "NULL"
+			pattern_length = "0"
+
 		if datatypeparam == "boolean":
 			validate_value += "			if (dm_validate_boolean(value))\n"
 		elif datatypeparam == "unsignedInt":
-			validate_value += "			if (dm_validate_unsignedInt(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)
+			validate_value += "			if (dm_validate_unsignedInt(value, %s))\n" % rangeargs
 		elif datatypeparam == "int":
-			validate_value += "			if (dm_validate_int(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)
+			validate_value += "			if (dm_validate_int(value, %s))\n" % rangeargs
 		elif datatypeparam == "unsignedLong":
-			validate_value += "			if (dm_validate_unsignedLong(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)
+			validate_value += "			if (dm_validate_unsignedLong(value, %s))\n" % rangeargs
 		elif datatypeparam == "long":
-			validate_value += "			if (dm_validate_long(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)
+			validate_value += "			if (dm_validate_long(value, %s))\n" % rangeargs
 		elif datatypeparam == "dateTime":
 			validate_value += "			if (dm_validate_dateTime(value))\n"
 		elif datatypeparam == "hexBinary":
-			validate_value += "			if (dm_validate_hexBinary(value, \"%s\", \"%s\"))\n" % (rangeminparam, rangemaxparam)			
+			if rangeminparam == "NULL": rangeminparam = "-1"
+			if rangemaxparam == "NULL": rangemaxparam = "-1"
+			validate_value += "			if (dm_validate_hexBinary(value, %s))\n" % rangeargs		
 		else:
-			validate_value += "			if (dm_validate_string(value, \"%s\", \"%s\", %s, %s))\n" % (rangeminparam, rangemaxparam, enumarationsparam, patternparam)
+			if rangeminparam == "NULL": rangeminparam = "-1"
+			if rangemaxparam == "NULL": rangemaxparam = "-1"
+			validate_value += "			if (dm_validate_string(value, %s, %s, %s, %s, %s, %s))\n" % (rangeminparam, rangemaxparam, enumarationsparam, enum_length, patternparam, pattern_length)
 	validate_value += "				return FAULT_9007;"
 	validate_value = validate_value.replace("\"NULL\"", "NULL")
 	return validate_value

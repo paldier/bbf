@@ -408,7 +408,7 @@ static int set_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *d
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -473,7 +473,7 @@ static int set_DynamicDNSClient_Server(char *refparam, struct dmctx *ctx, void *
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -504,7 +504,7 @@ static int set_DynamicDNSClient_Interface(char *refparam, struct dmctx *ctx, voi
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -529,7 +529,7 @@ static int set_DynamicDNSClient_Username(char *refparam, struct dmctx *ctx, void
 {
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -550,7 +550,7 @@ static int set_DynamicDNSClient_Password(char *refparam, struct dmctx *ctx, void
 {
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -636,7 +636,7 @@ static int set_DynamicDNSClientHostname_Name(char *refparam, struct dmctx *ctx, 
 {
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -702,7 +702,7 @@ static int set_DynamicDNSServer_Enable(char *refparam, struct dmctx *ctx, void *
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -729,7 +729,7 @@ static int set_DynamicDNSServer_Name(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -754,7 +754,7 @@ static int set_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -778,7 +778,7 @@ static int set_DynamicDNSServer_ServiceName(char *refparam, struct dmctx *ctx, v
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -816,7 +816,7 @@ static int set_DynamicDNSServer_ServerAddress(char *refparam, struct dmctx *ctx,
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -873,7 +873,7 @@ static int set_DynamicDNSServer_ServerPort(char *refparam, struct dmctx *ctx, vo
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","65535"}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -935,7 +935,7 @@ static int set_DynamicDNSServer_Protocol(char *refparam, struct dmctx *ctx, void
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, SupportedProtocols, NULL))
+			if (dm_validate_string(value, -1, -1, SupportedProtocols, 2, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -972,7 +972,7 @@ static int set_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx,
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1012,7 +1012,7 @@ static int set_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx,
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -1050,7 +1050,7 @@ static int set_DynamicDNSServer_MaxRetries(char *refparam, struct dmctx *ctx, vo
 
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
 				return FAULT_9007;
 			break;
 		case VALUESET:

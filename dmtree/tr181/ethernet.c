@@ -441,7 +441,7 @@ static int set_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -492,7 +492,7 @@ static int set_EthernetInterface_LowerLayers(char *refparam, struct dmctx *ctx, 
 {
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+			if (dm_validate_string_list(value, -1, -1, 1024, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -543,7 +543,7 @@ static int set_EthernetInterface_MaxBitRate(char *refparam, struct dmctx *ctx, v
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_int(value, "-1", NULL))
+			if (dm_validate_int(value, RANGE_ARGS{{"-1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -608,7 +608,7 @@ static int set_EthernetInterface_DuplexMode(char *refparam, struct dmctx *ctx, v
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, DuplexMode, NULL))
+			if (dm_validate_string(value, -1, -1, DuplexMode, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -734,7 +734,7 @@ static int set_EthernetLink_Alias(char *refparam, struct dmctx *ctx, void *data,
 {
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -817,7 +817,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+			if (dm_validate_string_list(value, -1, -1, 1024, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -925,7 +925,7 @@ static int set_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -997,7 +997,7 @@ static int set_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+			if (dm_validate_string_list(value, -1, -1, 1024, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1040,7 +1040,7 @@ static int set_EthernetVLANTermination_VLANID(char *refparam, struct dmctx *ctx,
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "4094"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","4094"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET: {
@@ -1079,7 +1079,7 @@ static int set_EthernetVLANTermination_TPID(char *refparam, struct dmctx *ctx, v
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:

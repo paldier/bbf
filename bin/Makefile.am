@@ -2,7 +2,6 @@ LIB_BBFDM_VERSION = 3:0:0
 
 lib_LTLIBRARIES = libbbf_api.la
 
-
 libbbf_api_la_SOURCES =				\
 	../libbbf_api/dmbbf.c			\
 	../libbbf_api/dmubus.c			\
@@ -31,7 +30,6 @@ libbbf_api_la_LIBADD =		\
 	$(LIBUBUS_LIBS)			\
 	$(LIBJSON_LIBS)			\
 	$(LBLOBMSG_LIBS)
-
 
 lib_LTLIBRARIES += libbbfdm.la
 
@@ -120,17 +118,17 @@ libbbfdm_la_CFLAGS =		\
 	$(LIBUCI_CFLAGS)		\
 	$(LIBUBOX_CFLAGS)		\
 	$(LIBUBUS_CFLAGS) 		\
-	-Wall
+	-Wall -Werror
 
 libbbfdm_la_LDFLAGS = 		\
 	$(AM_LDFLAGS)			\
 	$(LIBUCI_LDFLAGS)		\
 	$(LIBUBOX_LDFLAGS)		\
 	$(LIBUBUS_LDFLAGS)		\
+	$(LIBOPENSSL_LIBS)		\
+	$(LIBMBETLS_LIBS)		\
 	-share					\
-	-version-info $(LIB_BBFDM_VERSION) \
-	-lssl	\
-	-lmbedtls				
+	-version-info $(LIB_BBFDM_VERSION)			
 
 libbbfdm_la_LIBADD =		\
 	$(AM_LIBS)				\

@@ -61,7 +61,7 @@ static int set_atm_destination_address(char *refparam, struct dmctx *ctx, void *
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, DestinationAddress))
+			if (dm_validate_string(value, -1, 256, NULL, 0, DestinationAddress, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -103,7 +103,7 @@ static int set_atm_encapsulation(char *refparam, struct dmctx *ctx, void *data, 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, Encapsulation, NULL))
+			if (dm_validate_string(value, -1, -1, Encapsulation, 2, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -139,7 +139,7 @@ static int set_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, LinkType, NULL))
+			if (dm_validate_string(value, -1, -1, LinkType, 5, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -312,7 +312,7 @@ static int set_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *in
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:

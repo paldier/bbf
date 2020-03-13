@@ -23,47 +23,50 @@ char *array_notifcation_char[__MAX_notification] = {
 	[notification_passive_active_lw] = "6",
 };
 
-char *Encapsulation[] = {"LLC", "VCMUX", NULL};
-char *LinkType[] = {"EoA", "IPoA", "PPPoA", "CIP", "Unconfigured", NULL};
-char *BridgeStandard[] = {"802.1D-2004", "802.1Q-2005", "802.1Q-2011", NULL};
-char *BridgeType[] = {"ProviderNetworkPort", "CustomerNetworkPort", "CustomerEdgePort", "CustomerVLANPort", "VLANUnawarePort", NULL};
-char *VendorClassIDMode[] = {"Exact", "Prefix", "Suffix", "Substring", NULL};
-char *DiagnosticsState[] = {"None", "Requested", "Canceled", "Complete", "Error", NULL};
-char *SupportedProtocols[] = {"HTTP", "HTTPS", NULL};
-char *InstanceMode[] = {"InstanceNumber", "InstanceAlias", NULL};
-char *NATProtocol[] = {"TCP", "UDP", "TCP/UDP", NULL};
-char *Config[] = {"High", "Low", "Off", "Advanced", NULL};
-char *Target[] = {"Drop", "Accept", "Reject", "Return", "TargetChain", NULL};
-char *ServerConnectAlgorithm[] = {"DNS-SRV", "DNS", "ServerTable", "WebSocket", NULL};
-char *KeepAlivePolicy[] = {"ICMP", "None", NULL};
-char *DeliveryHeaderProtocol[] = {"IPv4", "IPv6", NULL};
-char *KeyIdentifierGenerationPolicy[] = {"Disabled", "Provisioned", "CPE_Generated", NULL};
-char *PreambleType[] = {"short", "long", "auto", NULL};
-char *MFPConfig[] = {"Disabled", "Optional", "Required", NULL};
-char *DuplexMode[] = {"Half", "Full", "Auto", NULL};
-char *RequestedState[] = {"Idle", "Active", NULL};
-char *BulkDataProtocols[] = {"Streaming", "File", "HTTP", NULL};
-char *EncodingTypes[] = {"XML", "XDR", "CSV", "JSON", NULL};
-char *CSVReportFormat[] = {"ParameterPerRow", "ParameterPerColumn", NULL};
-char *RowTimestamp[] = {"Unix-Epoch", "ISO-8601", "None", NULL};
-char *JSONReportFormat[] = {"ObjectHierarchy", "NameValuePair", NULL};
-char *StaticType[] = {"Static", "Inapplicable", "PrefixDelegation", "Child", NULL};
-char *ProtocolVersion[] = {"Any", "IPv4", "IPv6", NULL};
-char *ServerSelectionProtocol[] = {"ICMP", "UDP Echo", NULL};
-char *DHCPType[] = {"DHCPv4", "DHCPv6", NULL};
-char *DropAlgorithm[] = {"RED", "DT", "WRED", "BLUE", NULL};
-char *SchedulerAlgorithm[] = {"WFQ", "WRR", "SP", NULL};
-char *DTMFMethod[] = {"InBand", "RFC2833", "SIPInfo", NULL};
-char *ProfileEnable[] = {"Disabled", "Quiescent", "Enabled", NULL};
+char *Encapsulation[] = {"LLC", "VCMUX"};
+char *LinkType[] = {"EoA", "IPoA", "PPPoA", "CIP", "Unconfigured"};
+char *BridgeStandard[] = {"802.1D-2004", "802.1Q-2005", "802.1Q-2011"};
+char *BridgeType[] = {"ProviderNetworkPort", "CustomerNetworkPort", "CustomerEdgePort", "CustomerVLANPort", "VLANUnawarePort"};
+char *VendorClassIDMode[] = {"Exact", "Prefix", "Suffix", "Substring"};
+char *DiagnosticsState[] = {"None", "Requested", "Canceled", "Complete", "Error"};
+char *SupportedProtocols[] = {"HTTP", "HTTPS"};
+char *InstanceMode[] = {"InstanceNumber", "InstanceAlias"};
+char *NATProtocol[] = {"TCP", "UDP", "TCP/UDP"};
+char *Config[] = {"High", "Low", "Off", "Advanced"};
+char *Target[] = {"Drop", "Accept", "Reject", "Return", "TargetChain"};
+char *ServerConnectAlgorithm[] = {"DNS-SRV", "DNS", "ServerTable", "WebSocket"};
+char *KeepAlivePolicy[] = {"ICMP", "None"};
+char *DeliveryHeaderProtocol[] = {"IPv4", "IPv6"};
+char *KeyIdentifierGenerationPolicy[] = {"Disabled", "Provisioned", "CPE_Generated"};
+char *PreambleType[] = {"short", "long", "auto"};
+char *MFPConfig[] = {"Disabled", "Optional", "Required"};
+char *DuplexMode[] = {"Half", "Full", "Auto"};
+char *RequestedState[] = {"Idle", "Active"};
+char *BulkDataProtocols[] = {"Streaming", "File", "HTTP"};
+char *EncodingTypes[] = {"XML", "XDR", "CSV", "JSON"};
+char *CSVReportFormat[] = {"ParameterPerRow", "ParameterPerColumn"};
+char *RowTimestamp[] = {"Unix-Epoch", "ISO-8601", "None"};
+char *JSONReportFormat[] = {"ObjectHierarchy", "NameValuePair"};
+char *StaticType[] = {"Static", "Inapplicable", "PrefixDelegation", "Child"};
+char *ProtocolVersion[] = {"Any", "IPv4", "IPv6"};
+char *ServerSelectionProtocol[] = {"ICMP", "UDP Echo"};
+char *DHCPType[] = {"DHCPv4", "DHCPv6"};
+char *DropAlgorithm[] = {"RED", "DT", "WRED", "BLUE"};
+char *SchedulerAlgorithm[] = {"WFQ", "WRR", "SP"};
+char *DTMFMethod[] = {"InBand", "RFC2833", "SIPInfo"};
+char *ProfileEnable[] = {"Disabled", "Quiescent", "Enabled"};
 
-char *PIN[] = {"^\\d{4}|\\d{8}$", NULL};
-char *DestinationAddress[] = {"^\\d+/\\d+$", NULL};
-char *RegulatoryDomain[] = {"^[A-Z][A-Z][ OI]$", NULL};
-char *ConformingAction[] = {"^Null$", "^Drop$", "^[0-9]|[1-5][0-9]|6[0-3]$", "^:[0-7]$", "^([0-9]|[1-5][0-9]|6[0-3]):[0-7]$", NULL};
-char *IPv4Address[] = {"^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$", NULL};
-char *IPv6Address[] = {"^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$", NULL};
-char *IPAddress[] = {"^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$", "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$", NULL};
-char *MACAddress[] = {"^([0-9A-Fa-f][0-9A-Fa-f]:){5}([0-9A-Fa-f][0-9A-Fa-f])$", NULL};
+char *PIN[] = {"^\\d{4}|\\d{8}$"};
+char *DestinationAddress[] = {"^\\d+/\\d+$"};
+char *RegulatoryDomain[] = {"^[A-Z][A-Z][ OI]$"};
+char *ConformingAction[] = {"^Null$", "^Drop$", "^[0-9]|[1-5][0-9]|6[0-3]$", "^:[0-7]$", "^([0-9]|[1-5][0-9]|6[0-3]):[0-7]$"};
+char *IPv4Address[] = {"^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$"};
+char *IPv6Address[] = {"^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$"};
+char *IPAddress[] = {"^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$", "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$"};
+char *MACAddress[] = {"^([0-9A-Fa-f][0-9A-Fa-f]:){5}([0-9A-Fa-f][0-9A-Fa-f])$"};
+char *IPPrefix[] = {"^/(3[0-2]|[012]?[0-9])$", "^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])/(3[0-2]|[012]?[0-9])$"};
+char *IPv4Prefix[] = {"^/(3[0-2]|[012]?[0-9])$", "^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])/(3[0-2]|[012]?[0-9])$"};
+char *IPv6Prefix[] = {}; //TODO
 
 void compress_spaces(char *str)
 {
@@ -1727,55 +1730,46 @@ bool match(const char *string, const char *pattern)
 	return true;
 }
 
-int dm_validate_string_length(char *value, char *min, char *max)
+static int dm_validate_string_length(char *value, int min_length, int max_length)
 {
-	if (min != NULL && max != NULL) {
-		if ((strlen(value) > atoi(max)) || (strlen(value) < atoi(min))) return -1;
-	} else if (min != NULL && max == NULL) {
-		if (strlen(value) < atoi(min)) return -1;
-	} else if (min == NULL && max != NULL) {
-		if (strlen(value) > atoi(max)) return -1;
-	}
+	if (((min_length > 0) && (strlen(value) < min_length)) || ((max_length > 0) && (strlen(value) > max_length)))
+		return -1;
 	return 0;
 }
 
-int dm_validate_string_enumeration(char *value, char *enumeration[])
+static int dm_validate_string_enumeration(char *value, char *enumeration[], int enumeration_size)
 {
-	for (; *enumeration; enumeration++) {
-		if (strcmp(*enumeration, value) == 0)
+	int i;
+	for (i = 0; i < enumeration_size; i++) {
+		if (strcmp(enumeration[i], value) == 0)
 			return 0;
 	}
 	return -1;
 }
 
-int dm_validate_string_pattern(char *value, char *pattern[])
+static int dm_validate_string_pattern(char *value, char *pattern[], int pattern_size)
 {
-	for (; *pattern; pattern++) {
-		if (match(value, *pattern))
+	int i;
+	for (i = 0; i < pattern_size; i++) {
+		if (match(value, pattern[i]))
 			return 0;
 	}
 	return -1;
 }
 
-int dm_validate_string(char *value, char *min, char *max, char *enumeration[], char *pattern[])
+int dm_validate_string(char *value, int min_length, int max_length, char *enumeration[], int enumeration_size, char *pattern[], int pattern_size)
 {
 	/* check size */
-	if (min != NULL || max != NULL) {
-		if (dm_validate_string_length(value, min, max))
-			return -1;
-	}
+	if (dm_validate_string_length(value, min_length, max_length))
+		return -1;
 
 	/* check enumeration */
-	if (enumeration != NULL) {
-		if (dm_validate_string_enumeration(value, enumeration))
-			return -1;
-	}
+	if (enumeration && dm_validate_string_enumeration(value, enumeration, enumeration_size))
+		return -1;
 
 	/* check pattern */
-	if (pattern != NULL) {
-		if (dm_validate_string_pattern(value, pattern))
-			return -1;
-	}
+	if (pattern && dm_validate_string_pattern(value, pattern, pattern_size))
+		return -1;
 
 	return 0;
 }
@@ -1784,121 +1778,115 @@ int dm_validate_boolean(char *value)
 {
 	/* check format */
 	if ((value[0] == '1' && value[1] == '\0') || (value[0] == '0' && value[1] == '\0')
-		|| (strcasecmp(value, "true") == 0) || (strcasecmp(value, "false") == 0)) {
+		|| (strcmp(value, "true") == 0) || (strcmp(value, "false") == 0)) {
 		return 0;
 	}
 	return -1;
 }
 
-int dm_validate_unsignedInt(char *value, char *min, char *max)
+int dm_validate_unsignedInt(char *value, struct range_args r_args[], int r_args_size)
 {
-	unsigned long val = 0, minval = 0, maxval = 0;
-	char *endval = NULL, *endmin = NULL, *endmax = NULL;
+	int i;
 
-	if (min) minval = strtoul(min, &endmin, 10);
-	if (max) maxval = strtoul(max, &endmax, 10);
+	/* check size for each range */
+	for (i = 0; i < r_args_size; i++) {
+		unsigned long val = 0, minval = 0, maxval = 0;
+		char *endval = NULL, *endmin = NULL, *endmax = NULL;
 
-	/* reset errno to 0 before call */
-	errno = 0;
+		if (r_args[i].min) minval = strtoul(r_args[i].min, &endmin, 10);
+		if (r_args[i].max) maxval = strtoul(r_args[i].max, &endmax, 10);
 
-	val = strtoul(value, &endval, 10);
+		/* reset errno to 0 before call */
+		errno = 0;
 
-	if ((*endval != 0) || (errno != 0)) return -1;
+		val = strtoul(value, &endval, 10);
 
-	/* check size */
-	if (min != NULL && max != NULL) {
-		if ((val > maxval) || (val < minval)) return -1;
-	} else if (min != NULL && max == NULL) {
-		if (val < minval) return -1;
-	} else if (min == NULL && max != NULL) {
-		if (val > maxval) return -1;
-	} else {
-		if ((val > (unsigned int)UINT_MAX) || (val < 0)) return -1;
+		if ((*endval != 0) || (errno != 0)) return -1;
+
+		/* check size */
+		if ((r_args[i].min && val < minval) || (r_args[i].max && val > maxval) || (val < 0) || (val > (unsigned int)UINT_MAX))
+			return -1;
 	}
 
 	return 0;
 }
 
-int dm_validate_int(char *value, char *min, char *max)
+int dm_validate_int(char *value, struct range_args r_args[], int r_args_size)
 {
-	long val = 0, minval = 0, maxval = 0;
-	char *endval = NULL, *endmin = NULL, *endmax = NULL;
+	int i;
 
-	if (min) minval = strtol(min, &endmin, 10);
-	if (max) maxval = strtol(max, &endmax, 10);
+	/* check size for each range */
+	for (i = 0; i < r_args_size; i++) {
+		long val = 0, minval = 0, maxval = 0;
+		char *endval = NULL, *endmin = NULL, *endmax = NULL;
 
-	/* reset errno to 0 before call */
-	errno = 0;
+		if (r_args[i].min) minval = strtol(r_args[i].min, &endmin, 10);
+		if (r_args[i].max) maxval = strtol(r_args[i].max, &endmax, 10);
 
-	val = strtol(value, &endval, 10);
+		/* reset errno to 0 before call */
+		errno = 0;
 
-	if ((*endval != 0) || (errno != 0)) return -1;
+		val = strtol(value, &endval, 10);
 
-	/* check size */
-	if (min != NULL && max != NULL) {
-		if ((val > maxval) || (val < minval)) return -1;
-	} else if (min != NULL && max == NULL) {
-		if (val < minval) return -1;
-	} else if (min == NULL && max != NULL) {
-		if (val > maxval) return -1;
-	} else {
-		if ((val > INT_MAX) || (val < INT_MIN)) return -1;
+		if ((*endval != 0) || (errno != 0)) return -1;
+
+		/* check size */
+		if ((r_args[i].min && val < minval) || (r_args[i].max && val > maxval) || (val < INT_MIN) || (val > INT_MAX))
+			return -1;
 	}
 
 	return 0;
 }
 
-int dm_validate_unsignedLong(char *value, char *min, char *max)
+int dm_validate_unsignedLong(char *value, struct range_args r_args[], int r_args_size)
 {
-	unsigned long val = 0, minval = 0, maxval = 0;
-	char *endval = NULL, *endmin = NULL, *endmax = NULL;
+	int i;
 
-	if (min) minval = strtoul(min, &endmin, 10);
-	if (max) maxval = strtoul(max, &endmax, 10);
+	/* check size for each range */
+	for (i = 0; i < r_args_size; i++) {
+		unsigned long val = 0, minval = 0, maxval = 0;
+		char *endval = NULL, *endmin = NULL, *endmax = NULL;
 
-	/* reset errno to 0 before call */
-	errno = 0;
+		if (r_args[i].min) minval = strtoul(r_args[i].min, &endmin, 10);
+		if (r_args[i].max) maxval = strtoul(r_args[i].max, &endmax, 10);
 
-	val = strtoul(value, &endval, 10);
+		/* reset errno to 0 before call */
+		errno = 0;
 
-	if ((*endval != 0) || (errno != 0)) return -1;
+		val = strtoul(value, &endval, 10);
 
-	/* check size */
-	if (min != NULL && max != NULL) {
-		if ((val > maxval) || (val < minval)) return -1;
-	} else if (min != NULL && max == NULL) {
-		if (val < minval) return -1;
-	} else if (min == NULL && max != NULL) {
-		if (val > maxval) return -1;
-	} else {
-		if ((val > (unsigned long)ULONG_MAX) || (val < 0)) return -1;
+		if ((*endval != 0) || (errno != 0)) return -1;
+
+		/* check size */
+		if ((r_args[i].min && val < minval) || (r_args[i].max && val > maxval) || (val < 0) || (val > (unsigned long)ULONG_MAX))
+			return -1;
 	}
 
 	return 0;
 }
 
-int dm_validate_long(char *value, char *min, char *max)
+int dm_validate_long(char *value, struct range_args r_args[], int r_args_size)
 {
-	long val = 0, minval = 0, maxval = 0;
-	char *endval = NULL, *endmin = NULL, *endmax = NULL;
+	int i;
 
-	if (min) minval = strtol(min, &endmin, 10);
-	if (max) maxval = strtol(max, &endmax, 10);
+	/* check size for each range */
+	for (i = 0; i < r_args_size; i++) {
+		long val = 0, minval = 0, maxval = 0;
+		char *endval = NULL, *endmin = NULL, *endmax = NULL;
 
-	/* reset errno to 0 before call */
-	errno = 0;
+		if (r_args[i].min) minval = strtol(r_args[i].min, &endmin, 10);
+		if (r_args[i].max) maxval = strtol(r_args[i].max, &endmax, 10);
 
-	val = strtol(value, &endval, 10);
+		/* reset errno to 0 before call */
+		errno = 0;
 
-	if ((*endval != 0) || (errno != 0)) return -1;
+		val = strtol(value, &endval, 10);
 
-	/* check size */
-	if (min != NULL && max != NULL) {
-		if ((val > maxval) || (val < minval)) return -1;
-	} else if (min != NULL && max == NULL) {
-		if (val < minval) return -1;
-	} else if (min == NULL && max != NULL) {
-		if (val > maxval) return -1;
+		if ((*endval != 0) || (errno != 0)) return -1;
+
+		/* check size */
+		if ((r_args[i].min && val < minval) || (r_args[i].max && val > maxval))
+			return -1;
 	}
 
 	return 0;
@@ -1908,63 +1896,51 @@ int dm_validate_dateTime(char *value)
 {
 	/* check format */
 	struct tm tm;
-	if (!(strptime(value, "%Y-%m-%dT%H:%M:%S", &tm)))
+	if (!(strptime(value, "%Y-%m-%dT%H:%M:%SZ", &tm)))
 		return -1;
 	return 0;
 }
 
-int dm_validate_hexBinary(char *value, char *min, char *max)
+int dm_validate_hexBinary(char *value, struct range_args r_args[], int r_args_size)
 {
-	/* check format */
 	int i;
+
+	/* check format */
 	for (i = 0; i < strlen(value); i++) {
 		if (!isxdigit(value[i]))
 			return -1;
 	}
 
 	/* check size */
-	if (min != NULL && max != NULL) {
-		if (strcmp(min, max) == 0) {
-			if (strlen(value) != (2 * atoi(max))) return -1;
-		} else {
-			if ((strlen(value) > atoi(max)) || (strlen(value) < atoi(min))) return -1;
+	for (i = 0; i < r_args_size; i++) {
+		if ((r_args[i].min && r_args[i].max && (atoi(r_args[i].min) == atoi(r_args[i].max)) && (strlen(value) != 2 * atoi(r_args[i].max))) ||
+			(r_args[i].min && !r_args[i].max && (strlen(value) < atoi(r_args[i].min))) ||
+			(!r_args[i].min && r_args[i].max && (strlen(value) > atoi(r_args[i].max)))) {
+			return -1;
 		}
-	} else if (min != NULL && max == NULL) {
-		if (strlen(value) < atoi(min)) return -1;
-	} else if (min == NULL && max != NULL) {
-		if (strlen(value) > atoi(max)) return -1;
 	}
 
 	return 0;
 }
 
-int dm_validate_size_list(char *min_item, char *max_item, int nbr_item)
+static int dm_validate_size_list(int min_item, int max_item, int nbr_item)
 {
-	if (min_item != NULL && max_item != NULL) {
-		if (strcmp(min_item, max_item) == 0) {
-			if (nbr_item != (2 * atoi(max_item))) return -1;
-		} else {
-			if ((nbr_item > atoi(max_item)) || (nbr_item < atoi(min_item))) return -1;
-		}
-	} else if (min_item != NULL && max_item == NULL) {
-		if (nbr_item < atoi(min_item)) return -1;
-	} else if (min_item == NULL && max_item != NULL) {
-		if (nbr_item > atoi(max_item)) return -1;
+	if (((min_item > 0) && (max_item > 0) && (min_item == max_item) && (nbr_item != 2 * max_item)) ||
+		((min_item > 0) && (nbr_item < min_item)) ||
+		((max_item > 0) && (nbr_item > max_item))) {
+		return -1;
 	}
-
 	return 0;
 }
 
-int dm_validate_string_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max, char *enumeration[], char *pattern[])
+int dm_validate_string_list(char *value, int min_item, int max_item, int max_size, int min, int max, char *enumeration[], int enumeration_size, char *pattern[], int pattern_size)
 {
 	char *pch, *pchr;
 	int nbr_item = 0;
 
 	/* check length of list */
-	if (max_size != NULL) {
-		if (strlen(value) > atoi(max_size))
+	if ((max_size > 0) && (strlen(value) > max_size))
 			return -1;
-	}
 
 	/* copy data in buffer */
 	char buf[strlen(value)+1];
@@ -1973,30 +1949,26 @@ int dm_validate_string_list(char *value, char *min_item, char *max_item, char *m
 
 	/* for each value, validate string */
 	for (pch = strtok_r(buf, ",", &pchr); pch != NULL; pch = strtok_r(NULL, ",", &pchr)) {
-		if (dm_validate_string(pch, min, max, enumeration, pattern))
+		if (dm_validate_string(pch, min, max, enumeration, enumeration_size, pattern, pattern_size))
 			return -1;
 		nbr_item ++;
 	}
 
 	/* check size of list */
-	if (min_item != NULL || max_item != NULL) {
-		if (dm_validate_size_list(min_item, max_item, nbr_item))
-			return -1;
-	}
+	if (dm_validate_size_list(min_item, max_item, nbr_item))
+		return -1;
 
 	return 0;
 }
 
-int dm_validate_unsignedInt_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max)
+int dm_validate_unsignedInt_list(char *value, int min_item, int max_item, int max_size, struct range_args r_args[], int r_args_size)
 {
 	char *pch, *pchr;
 	int nbr_item = 0;
 
 	/* check length of list */
-	if (max_size != NULL) {
-		if (strlen(value) > atoi(max_size))
+	if ((max_size > 0) && (strlen(value) > max_size))
 			return -1;
-	}
 
 	/* copy data in buffer */
 	char buf[strlen(value)+1];
@@ -2005,48 +1977,14 @@ int dm_validate_unsignedInt_list(char *value, char *min_item, char *max_item, ch
 
 	/* for each value, validate string */
 	for (pch = strtok_r(buf, ",", &pchr); pch != NULL; pch = strtok_r(NULL, ",", &pchr)) {
-		if (dm_validate_unsignedInt(pch, min, max))
+		if (dm_validate_unsignedInt(pch, r_args, r_args_size))
 			return -1;
 		nbr_item ++;
 	}
 
 	/* check size of list */
-	if (min_item != NULL || max_item != NULL) {
-		if (dm_validate_size_list(min_item, max_item, nbr_item))
-			return -1;
-	}
-
-	return 0;
-}
-
-int dm_validate_int_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max)
-{
-	char *pch, *pchr;
-	int nbr_item = 0;
-
-	/* check length of list */
-	if (max_size != NULL) {
-		if (strlen(value) > atoi(max_size))
-			return -1;
-	}
-
-	/* copy data in buffer */
-	char buf[strlen(value)+1];
-	strncpy(buf, value, sizeof(buf));
-	buf[strlen(value)] = '\0';
-
-	/* for each value, validate string */
-	for (pch = strtok_r(buf, ",", &pchr); pch != NULL; pch = strtok_r(NULL, ",", &pchr)) {
-		if (dm_validate_int(pch, min, max))
-			return -1;
-		nbr_item ++;
-	}
-
-	/* check size of list */
-	if (min_item != NULL || max_item != NULL) {
-		if (dm_validate_size_list(min_item, max_item, nbr_item))
-			return -1;
-	}
+	if (dm_validate_size_list(min_item, max_item, nbr_item))
+		return -1;
 
 	return 0;
 }
@@ -2055,19 +1993,19 @@ int get_base64char_value(char b64)
 {
 	char *base64C = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	int i;
-	for (i = 0; i<64; i++)
-		if ( base64C[i] == b64 )
+	for (i = 0; i < 64; i++)
+		if (base64C[i] == b64)
 			return i;
 	return -1;
 }
 
-char *decode64 (char *enc)
+char *decode64(char *enc)
 {
-	int i, j=0;
+	int i, j = 0;
 	size_t decsize = strlen(enc)*6/8;
 	char *dec = (char *)dmmalloc((decsize +1) * sizeof(char));
 
-	for (i=0; i<strlen(enc)-1; i++) {
+	for (i = 0; i < strlen(enc)-1; i++) {
 		dec[j] = (get_base64char_value(enc[i]) << (j%3==0?2:(j%3==1?4:6))) + (get_base64char_value(enc[i+1]) >> (j%3==0?4:(j%3==1? 2:0)));
 		if (j%3 == 2)
 			i++;
@@ -2081,7 +2019,7 @@ int is_string_exist_in_str_array(char **cert_paths, int length, char *dirpath, c
 {
 	int i;
 
-	for (i=0; i<length; i++) {
+	for (i = 0; i < length; i++) {
 		if (strncmp(cert_paths[i], dirpath, strlen(dirpath)) == 0 && strstr(cert_paths[i], filename))
 			return 1;
 	}
@@ -2117,19 +2055,18 @@ char *get_cert_directory_path_from_uci(char *ucipath)
 	return pth;
 }
 
-char **get_all_iop_certificates(int* length)
+char **get_all_iop_certificates(int *length)
 {
-	char * certs_uci[] = {"openvpn.sample_server.cert", "openvpn.sample_client.cert", "owsd.ubusproxy.peer_cert", "owsd.wan_https.cert"};
-	int i, j=0;
-	char *dirpath = NULL;
-	int number_certs_dirs = sizeof(certs_uci)/sizeof(certs_uci[0]);
+	char *certs_uci[] = {"openvpn.sample_server.cert", "openvpn.sample_client.cert", "owsd.ubusproxy.peer_cert", "owsd.wan_https.cert"};
+	int i, j = 0;
+	char *dirpath = NULL, **certificates_paths = NULL;
+	int number_certs_dirs = ARRAY_SIZE(certs_uci);
 
-	char **certificates_paths = NULL;
-	certificates_paths = (char**)dmmalloc(1024 * sizeof(char*));
+	certificates_paths = (char **)dmmalloc(1024 * sizeof(char *));
 
-	for (i=0; i<number_certs_dirs; i++) {
+	for (i = 0; i < number_certs_dirs; i++) {
 		dirpath = get_cert_directory_path_from_uci(certs_uci[i]);
-		if (dirpath && strlen(dirpath)>0) {
+		if (dirpath && strlen(dirpath) > 0) {
 			DIR *dir;
 			struct dirent *ent;
 			if ((dir = opendir(dirpath)) == NULL)
@@ -2140,6 +2077,7 @@ char **get_all_iop_certificates(int* length)
 				dmasprintf(&certificates_paths[j],"%s%s", dirpath, ent->d_name);
 				j++;
 			}
+			closedir(dir);
 			dmfree(dirpath);
 			dirpath = NULL;
 		}
@@ -2148,26 +2086,26 @@ char **get_all_iop_certificates(int* length)
 	return certificates_paths;
 }
 
-char* stringToHex(char *text, int length)
+char *stringToHex(char *text, int length)
 {
   char *hex = NULL;
   int i, j;
   hex = (char *)dmcalloc(100, sizeof(char));
 
-  for (i = 0, j = 0; i < length; ++i, j += 3){
+  for (i = 0, j = 0; i < length; ++i, j += 3) {
     sprintf(hex + j, "%02x", text[i] & 0xff);
-    if (i<length-1)
-    	sprintf(hex + j+2, "%c", ':');
+    if (i < length-1)
+    	sprintf(hex + j + 2, "%c", ':');
   }
   return hex;
 }
 
-char* replace_char(char* str, char find, char replace)
+char *replace_char(char *str, char find, char replace)
 {
-    char *current_pos = strchr(str,find);
-    while (current_pos){
+    char *current_pos = strchr(str, find);
+    while (current_pos) {
         *current_pos = replace;
-        current_pos = strchr(current_pos,find);
+        current_pos = strchr(current_pos, find);
     }
     return str;
 }

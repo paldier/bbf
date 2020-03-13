@@ -97,7 +97,7 @@ static int set_userint_remoteaccesss_port(char *refparam, struct dmctx *ctx, voi
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,"65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -170,7 +170,7 @@ static int set_userint_remoteaccesss_protocol(char *refparam, struct dmctx *ctx,
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, SupportedProtocols, NULL))
+			if (dm_validate_string(value, -1, -1, SupportedProtocols, 2, NULL, 0))
 				return FAULT_9007;
 
 			found = get_supportedprotocols();

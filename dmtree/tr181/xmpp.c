@@ -128,7 +128,7 @@ static int set_xmpp_connection_alias(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -149,7 +149,7 @@ static int set_xmpp_connection_username(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -170,7 +170,7 @@ static int set_xmpp_connection_password(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -191,7 +191,7 @@ static int set_xmpp_connection_domain(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -212,7 +212,7 @@ static int set_xmpp_connection_resource(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -233,7 +233,7 @@ static int set_xmpp_connection_server_connect_algorithm(char *refparam, struct d
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, NULL, ServerConnectAlgorithm))
+			if (dm_validate_string(value, -1, -1, ServerConnectAlgorithm, 4, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -254,7 +254,7 @@ static int set_xmpp_connection_keepalive_interval(char *refparam, struct dmctx *
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_long(value, "-1", NULL))
+			if (dm_validate_long(value, RANGE_ARGS{{"-1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -275,7 +275,7 @@ static int set_xmpp_connection_server_attempts(char *refparam, struct dmctx *ctx
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -296,7 +296,7 @@ static int set_xmpp_connection_retry_initial_interval(char *refparam, struct dmc
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -317,7 +317,7 @@ static int set_xmpp_connection_retry_interval_multiplier(char *refparam, struct 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1000", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1000","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -338,7 +338,7 @@ static int set_xmpp_connection_retry_max_interval(char *refparam, struct dmctx *
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -440,7 +440,7 @@ static int set_xmpp_connection_server_alias(char *refparam, struct dmctx *ctx, v
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -461,7 +461,7 @@ static int set_xmpp_connection_server_server_address(char *refparam, struct dmct
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -482,7 +482,7 @@ static int set_xmpp_connection_server_port(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:

@@ -93,6 +93,9 @@ extern char *IPv4Address[];
 extern char *IPv6Address[];
 extern char *IPAddress[];
 extern char *MACAddress[];
+extern char *IPPrefix[];
+extern char *IPv4Prefix[];
+extern char *IPv6Prefix[];
 
 #define NVRAM_FILE "/proc/nvram/WpaKey"
 #define MAX_DHCP_LEASES 256
@@ -102,6 +105,7 @@ extern char *MACAddress[];
 #define DHCP_LEASES_FILE "/tmp/dhcp.leases"
 #define DMMAP "dmmap"
 #define DHCPSTATICADDRESS_DISABLED_CHADDR "00:00:00:00:00:01"
+#define RANGE_ARGS (struct range_args[])
 
 #define DM_ASSERT(X, Y) \
 do { \
@@ -173,6 +177,11 @@ enum strstructered_enum {
 	STRUCTERED_SAME,
 	STRUCTERED_PART,
 	STRUCTERED_NULL
+};
+
+struct range_args {
+	const char *min;
+	const char *max;
 };
 
 struct proc_routing {
@@ -303,19 +312,18 @@ int get_net_device_sysfs(const char *uci_iface, const char *name, char **value);
 char *get_device_from_wifi_iface(const char *wifi_iface, const char *wifi_section);
 int dm_time_format(time_t ts, char **dst);
 bool match(const char *string, const char *pattern);
-int dm_validate_string(char *value, char *min, char *max, char *enumeration[], char *pattern[]);
+int dm_validate_string(char *value, int min_length, int max_length, char *enumeration[], int enumeration_size, char *pattern[], int pattern_size);
 int dm_validate_boolean(char *value);
-int dm_validate_unsignedInt(char *value, char *min, char *max);
-int dm_validate_int(char *value, char *min, char *max);
-int dm_validate_unsignedLong(char *value, char *min, char *max);
-int dm_validate_long(char *value, char *min, char *max);
+int dm_validate_unsignedInt(char *value, struct range_args r_args[], int r_args_size);
+int dm_validate_int(char *value, struct range_args r_args[], int r_args_size);
+int dm_validate_unsignedLong(char *value, struct range_args r_args[], int r_args_size);
+int dm_validate_long(char *value, struct range_args r_args[], int r_args_size);
 int dm_validate_dateTime(char *value);
-int dm_validate_hexBinary(char *value, char *min, char *max);
-int dm_validate_string_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max, char *enumeration[], char *pattern[]);
-int dm_validate_unsignedInt_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max);
-int dm_validate_int_list(char *value, char *min_item, char *max_item, char *max_size, char *min, char *max);
-char **get_all_iop_certificates(int* length);
+int dm_validate_hexBinary(char *value, struct range_args r_args[], int r_args_size);
+int dm_validate_string_list(char *value, int min_item, int max_item, int max_size, int min, int max, char *enumeration[], int enumeration_size, char *pattern[], int pattern_size);
+int dm_validate_unsignedInt_list(char *value, int min_item, int max_item, int max_size, struct range_args r_args[], int r_args_size);
+char **get_all_iop_certificates(int *length);
 char *decode64 (char *enc);
-char* stringToHex(char *text, int length);
-char* replace_char(char* str, char find, char replace);
+char *stringToHex(char *text, int length);
+char *replace_char(char *str, char find, char replace);
 #endif

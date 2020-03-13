@@ -681,7 +681,7 @@ static int set_voice_profile_enable(char *refparam, struct dmctx *ctx, void *dat
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, ProfileEnable, NULL))
+			if (dm_validate_string(value, -1, -1, ProfileEnable, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -732,7 +732,7 @@ static int set_voice_profile_signaling_protocol(char *refparam, struct dmctx *ct
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+			if (dm_validate_string(value, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -785,7 +785,7 @@ static int set_voice_profile_sip_proxyserver(char *refparam, struct dmctx *ctx, 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -810,7 +810,7 @@ static int set_sip_proxy_server_transport(char *refparam, struct dmctx *ctx, voi
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+			if (dm_validate_string(value, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -835,7 +835,7 @@ static int set_voice_profile_sip_registerserver(char *refparam, struct dmctx *ct
 	
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -860,7 +860,7 @@ static int set_voice_profile_sip_registerserverport(char *refparam, struct dmctx
 	
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -885,7 +885,7 @@ static int set_sip_registrar_server_transport(char *refparam, struct dmctx *ctx,
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+			if (dm_validate_string(value, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -910,7 +910,7 @@ static int set_sip_user_agent_domain(char *refparam, struct dmctx *ctx, void *da
 	
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -931,7 +931,7 @@ static int set_sip_user_agent_port(char *refparam, struct dmctx *ctx, void *data
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -960,7 +960,7 @@ static int set_sip_user_agent_transport(char *refparam, struct dmctx *ctx, void 
 	struct sip_args *sipargs = (struct sip_args *)data;
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+			if (dm_validate_string(value, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -986,7 +986,7 @@ static int set_sip_outbound_proxy(char *refparam, struct dmctx *ctx, void *data,
 	
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1010,7 +1010,7 @@ static int set_sip_outbound_proxy_port(char *refparam, struct dmctx *ctx, void *
 	struct sip_args *sipargs = (struct sip_args *)data;
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1031,7 +1031,7 @@ static int set_sip_registration_period(char *refparam, struct dmctx *ctx, void *
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1052,7 +1052,7 @@ static int set_sip_re_invite_expires(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1107,7 +1107,7 @@ static int set_voice_profile_sip_dtmfmethod(char *refparam, struct dmctx *ctx, v
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", DTMFMethod, NULL))
+			if (dm_validate_string(value, -1, 64, DTMFMethod, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1142,7 +1142,7 @@ static int set_sip_profile_region(char *refparam, struct dmctx *ctx, void *data,
 	
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, NULL, NULL))
+			if (dm_validate_string(value, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1174,7 +1174,7 @@ static int set_voice_service_serviceproviderinfo_name(char *refparam, struct dmc
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1224,7 +1224,7 @@ static int set_voice_service_vp_rtp_portmin(char *refparam, struct dmctx *ctx, v
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1251,7 +1251,7 @@ static int set_voice_profile_rtp_localportmax(char *refparam, struct dmctx *ctx,
 	
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "65535"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","65535"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1283,7 +1283,7 @@ static int set_voice_service_vp_rtp_dscp(char *refparam, struct dmctx *ctx, void
 	
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "63"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","63"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1321,7 +1321,7 @@ static int set_voice_service_vp_rtp_rtcp_txrepeatinterval(char *refparam, struct
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1382,7 +1382,7 @@ static int set_voice_profile_line_enable(char *refparam, struct dmctx *ctx, void
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_boolean(value))
+			if (dm_validate_string(value, -1, -1, ProfileEnable, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1409,7 +1409,7 @@ static int set_line_directory_number(char *refparam, struct dmctx *ctx, void *da
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "32", NULL, NULL))
+			if (dm_validate_string(value, -1, 32, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1636,7 +1636,7 @@ static int set_line_calling_features_caller_id_name(char *refparam, struct dmctx
 	
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1688,7 +1688,7 @@ static int set_line_sip_auth_username(char *refparam, struct dmctx *ctx, void *d
 	
   switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "128", NULL, NULL))
+			if (dm_validate_string(value, -1, 128, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1704,7 +1704,7 @@ static int set_line_sip_auth_password(char *refparam, struct dmctx *ctx, void *d
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "128", NULL, NULL))
+			if (dm_validate_string(value, -1, 128, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1735,7 +1735,7 @@ static int set_line_sip_uri(char *refparam, struct dmctx *ctx, void *data, char 
 	
   switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "389", NULL, NULL))
+			if (dm_validate_string(value, -1, 389, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1926,7 +1926,7 @@ static int set_line_codec_list_packetization(char *refparam, struct dmctx *ctx, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, NULL, NULL, NULL, "64", NULL, NULL))
+			if (dm_validate_string_list(value, -1, -1, -1, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1981,7 +1981,7 @@ static int set_line_codec_list_priority(char *refparam, struct dmctx *ctx, void 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "1", NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -2038,7 +2038,7 @@ static int set_service_alias(char *refparam, struct dmctx *ctx, void *data, char
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -2061,7 +2061,7 @@ static int set_cap_codec_alias(char *refparam, struct dmctx *ctx, void *data, ch
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -2089,7 +2089,7 @@ static int set_voice_profile_alias(char *refparam, struct dmctx *ctx, void *data
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -2119,7 +2119,7 @@ static int set_line_alias(char *refparam, struct dmctx *ctx, void *data, char *i
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -2141,7 +2141,7 @@ static int set_line_codec_list_alias(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:

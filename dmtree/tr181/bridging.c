@@ -380,7 +380,7 @@ static int set_br_standard(char *refparam, struct dmctx *ctx, void *data, char *
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, BridgeStandard, NULL))
+			if (dm_validate_string(value, -1, -1, BridgeStandard, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -435,7 +435,7 @@ static int set_br_associated_interfaces(char *refparam, struct dmctx *ctx, void 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -562,7 +562,7 @@ static int set_br_port_type(char *refparam, struct dmctx *ctx, void *data, char 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, NULL, BridgeType, NULL))
+			if (dm_validate_string(value, -1, -1, BridgeType, 5, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -594,7 +594,7 @@ static int set_br_port_default_user_priority(char *refparam, struct dmctx *ctx, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, "0", "7"))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","7"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -620,7 +620,7 @@ static int set_br_port_priority_regeneration(char *refparam, struct dmctx *ctx, 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt_list(value, "8", "8", NULL, "0", "7"))
+			if (dm_validate_unsignedInt_list(value, 8, 8, -1, RANGE_ARGS{{"0","7"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -665,7 +665,7 @@ static int set_br_port_pvid(char *refparam, struct dmctx *ctx, void *data, char 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_int(value, "1", "4094"))
+			if (dm_validate_int(value, RANGE_ARGS{{"1","4094"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -709,7 +709,7 @@ static int set_br_port_tpid(char *refparam, struct dmctx *ctx, void *data, char 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_unsignedInt(value, NULL, NULL))
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -874,7 +874,7 @@ static int set_br_vlan_name(char *refparam, struct dmctx *ctx, void *data, char 
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -897,7 +897,7 @@ static int set_br_vlan_vid(char *refparam, struct dmctx *ctx, void *data, char *
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_int(value, "1", "4094"))
+			if (dm_validate_int(value, RANGE_ARGS{{"1","4094"}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -953,7 +953,7 @@ static int set_br_alias(char *refparam, struct dmctx *ctx, void *data, char *ins
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -982,7 +982,7 @@ static int set_br_port_alias(char *refparam, struct dmctx *ctx, void *data, char
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1011,7 +1011,7 @@ static int set_br_vlan_alias(char *refparam, struct dmctx *ctx, void *data, char
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "64", NULL, NULL))
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1339,7 +1339,7 @@ static int set_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string_list(value, NULL, NULL, "1024", NULL, NULL, NULL, NULL))
+			if (dm_validate_string_list(value, -1, -1, 1024, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
 			dmuci_get_value_by_section_string(dmmap_section, "mg_port", &mg_port);
@@ -1423,7 +1423,7 @@ static int set_vlan_port_vlan_ref(char *refparam, struct dmctx *ctx, void *data,
 {
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1449,7 +1449,7 @@ static int set_vlan_port_port_ref(char *refparam, struct dmctx *ctx, void *data,
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, NULL, "256", NULL, NULL))
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:

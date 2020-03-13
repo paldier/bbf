@@ -283,7 +283,7 @@ static int get_SecurityCertificate_SerialNumber(char *refparam, struct dmctx *ct
 #ifdef LOPENSSL
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	ASN1_INTEGER *serial = X509_get_serialNumber(cert_profile->openssl_cert);
-	*value = stringToHex(serial->data, serial->length);
+	*value = stringToHex((char *)serial->data, serial->length);
 #elif LMBEDTLS
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	*value = stringToHex(cert_profile->mbdtls_cert.serial.p, cert_profile->mbdtls_cert.serial.len);

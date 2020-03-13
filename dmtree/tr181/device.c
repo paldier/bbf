@@ -49,6 +49,7 @@
 #include "datamodelversion.h"
 #include "gre.h"
 #include "dynamicdns.h"
+#include "security.h"
 #ifdef BBF_TR104
 #include "voice_services.h"
 #endif
@@ -56,7 +57,6 @@
 #include "bulkdata.h"
 #include "softwaremodules.h"
 #endif
-#include "security.h"
 
 /* *** BBFDM *** */
 DMOBJ tEntry181Obj[] = {

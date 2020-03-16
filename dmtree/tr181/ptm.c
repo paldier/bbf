@@ -68,6 +68,8 @@ static inline int ubus_ptm_stats(char **value, char *stat_mod, void *data)
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct ptm_args *)data)->ifname, String}}, 1, &res);
 	DM_ASSERT(res, *value = "0");
 	*value = dmjson_get_value(res, 2, "statistics", stat_mod);
+	if ((*value)[0] == '\0')
+		*value = "0";
 	return 0;
 }
 
@@ -102,6 +104,26 @@ static int get_ptm_stats_pack_sent(char *refparam, struct dmctx *ctx, void *data
 static int get_ptm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "true";
+	return 0;
+}
+
+static int set_ptm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	switch (action) {
+		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
+			return 0;
+		case VALUESET:
+			//TODO
+			return 0;
+	}
+	return 0;
+}
+
+static int get_ptm_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = "Up";
 	return 0;
 }
 
@@ -255,9 +277,9 @@ DMOBJ tPTMLinkObj[] = {
 DMLEAF tPTMLinkParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_ptm_alias, set_ptm_alias, NULL, NULL, BBFDM_BOTH},
-{"Enable", &DMREAD, DMT_BOOL, get_ptm_enable, NULL, NULL, NULL, BBFDM_BOTH},
+{"Enable", &DMWRITE, DMT_BOOL, get_ptm_enable, set_ptm_enable, NULL, NULL, BBFDM_BOTH},
 {"Name", &DMREAD, DMT_STRING, get_ptm_link_name, NULL, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_ptm_enable, NULL, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_ptm_status, NULL, NULL, NULL, BBFDM_BOTH},
 {"LowerLayers", &DMREAD, DMT_STRING, get_ptm_lower_layer, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };

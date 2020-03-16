@@ -586,13 +586,13 @@ static int get_sip_role (char *refparam, struct dmctx *ctx, void *data, char *in
 
 static int get_sip_extension(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY, INFO, PUBLISH";
+	*value = "INVITE,ACK,CANCEL,OPTIONS,BYE,REFER,SUBSCRIBE,NOTIFY,INFO,PUBLISH";
 	return 0;
 }
 
 static int get_sip_transport(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "UDP, TCP, TLS";
+	*value = "UDP,TCP,TLS";
 	return 0;
 }
 
@@ -604,13 +604,13 @@ static int get_sip_tls_auth_protocols(char *refparam, struct dmctx *ctx, void *d
 
 static int get_sip_tls_enc_protocols(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "RC4, RC2, DES, 3DES";
+	*value = "RC4,RC2,DES,3DES";
 	return 0;
 }
 
 static int get_sip_tls_key_protocols(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "RSA, DSS";
+	*value = "RSA,DSS";
 	return 0;
 }
 /*******************Capabilities.Codecs.***********************************/
@@ -719,6 +719,20 @@ static int get_voice_profile_name(char *refparam, struct dmctx *ctx, void *data,
 {
 	struct sip_args *sipargs = (struct sip_args *)data;
 	dmuci_get_value_by_section_string(sipargs->sip_section, "name", value);
+	return 0;
+}
+
+static int set_voice_profile_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	switch (action) {
+		case VALUECHECK:
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
+				return FAULT_9007;
+			return 0;
+		case VALUESET:
+			dmuci_set_value_by_section(((struct sip_args *)data)->sip_section, "name", value);
+			return 0;
+	}
 	return 0;
 }
 
@@ -848,9 +862,9 @@ static int set_voice_profile_sip_registerserver(char *refparam, struct dmctx *ct
 /*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.RegistrarServerPort!UCI:voice_client/sip_service_provider,@i-1/port*/
 static int get_voice_profile_sip_registerserverport(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct sip_args *sipargs = (struct sip_args *)data;
-	
-	dmuci_get_value_by_section_string(sipargs->sip_section, "port", value);
+	dmuci_get_value_by_section_string(((struct sip_args *)data)->sip_section, "port", value);
+	if ((*value)[0] == '\0')
+		*value = "0";
 	return 0;
 }
 
@@ -924,6 +938,8 @@ static int set_sip_user_agent_domain(char *refparam, struct dmctx *ctx, void *da
 static int get_sip_user_agent_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("voice_client", "SIP", "bindport", value);
+	if ((*value)[0] == '\0')
+		*value = "0";
 	return 0;
 }
 
@@ -999,9 +1015,9 @@ static int set_sip_outbound_proxy(char *refparam, struct dmctx *ctx, void *data,
 /*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.OutboundProxyPort!UCI:voice_client/sip_service_provider,@i-1/outboundproxyport*/
 static int get_sip_outbound_proxy_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct sip_args *sipargs = (struct sip_args *)data;
-	
-	dmuci_get_value_by_section_string(sipargs->sip_section, "outboundproxyport", value);
+	dmuci_get_value_by_section_string(((struct sip_args *)data)->sip_section, "outboundproxyport", value);
+	if ((*value)[0] == '\0')
+		*value = "0";
 	return 0;
 }
 
@@ -1045,6 +1061,8 @@ static int set_sip_registration_period(char *refparam, struct dmctx *ctx, void *
 static int get_sip_re_invite_expires(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("voice_client", "SIP", "registertimeout", value);
+	if ((*value)[0] == '\0')
+		*value = "1";
 	return 0;
 }
 
@@ -1288,7 +1306,7 @@ static int set_voice_service_vp_rtp_dscp(char *refparam, struct dmctx *ctx, void
 			return 0;
 		case VALUESET:
 			for (i = 0; i < ARRAY_SIZE(list_rtp_tos); i++) {
-				if(strcmp(value, list_rtp_tos[i].val) == 0){
+				if (strcmp(value, list_rtp_tos[i].val) == 0) {
 					dmuci_set_value("voice_client", "SIP", "tos_audio", list_rtp_tos[i].key);
 					break;
 				}
@@ -2365,7 +2383,7 @@ DMLEAF tServicesVoiceServiceVoiceProfileParams[] = {
 {"Alias", &DMWRITE, DMT_STRING, get_voice_profile_alias, set_voice_profile_alias, NULL, NULL, BBFDM_BOTH},
 {"Enable", &DMWRITE, DMT_STRING, get_voice_profile_enable, set_voice_profile_enable, NULL, NULL, BBFDM_BOTH},
 {"Reset", &DMWRITE, DMT_BOOL, get_false_value, set_voice_profile_reset, NULL, NULL, BBFDM_BOTH},
-{"Name", &DMREAD, DMT_STRING, get_voice_profile_name, NULL, NULL, NULL, BBFDM_BOTH},
+{"Name", &DMWRITE, DMT_STRING, get_voice_profile_name, set_voice_profile_name, NULL, NULL, BBFDM_BOTH},
 {"SignalingProtocol", &DMWRITE, DMT_STRING, get_voice_profile_signalprotocol, set_voice_profile_signaling_protocol, NULL, NULL, BBFDM_BOTH},
 {"MaxSessions", &DMREAD, DMT_UNINT, get_voice_profile_max_sessions, NULL, NULL, NULL, BBFDM_BOTH},
 {"NumberOfLines", &DMREAD, DMT_UNINT, get_voice_profile_number_of_lines, NULL, NULL, NULL, BBFDM_BOTH},

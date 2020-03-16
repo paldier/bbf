@@ -129,17 +129,28 @@ const char *file, const char *func, int line,
 char **s, const char *format, ...
 )
 {
-	char buf[2048];
-	va_list arg;
+	int size;
+	char *str = NULL;
+	va_list arg, argcopy;
+
 	va_start(arg,format);
-	vsprintf(buf, format, arg);
+	va_copy(argcopy, arg);
+	size = vsnprintf(NULL, 0, format, argcopy);
+	va_end(argcopy);
+#ifdef WITH_MEMTRACK
+	str = (char *)__dmcalloc(file, func, line, sizeof(char), size+1);
+#else
+	str = (char *)__dmcalloc(sizeof(char), size+1);
+#endif
+	vsnprintf(str, size+1, format, arg);
 	va_end(arg);
 #ifdef WITH_MEMTRACK
-	*s = __dmstrdup(file, func, line, buf);
+	*s = __dmstrdup(file, func, line, str);
 #else
-	*s = __dmstrdup(buf);
+	*s = __dmstrdup(str);
 #endif /*WITH_MEMTRACK*/
-	if (*s == NULL) return -1;
+	if (*s == NULL)
+		return -1;
 	return 0;	
 }
 

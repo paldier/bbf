@@ -44,4 +44,41 @@ extern DMOBJ tWiFiEndPointProfileObj[];
 extern DMLEAF tWiFiEndPointProfileParams[];
 extern DMLEAF tWiFiEndPointProfileSecurityParams[];
 
+struct wifi_radio_args
+{
+	struct uci_section *wifi_radio_sec;
+};
+
+struct wifi_ssid_args
+{
+	struct uci_section *wifi_ssid_sec;
+	char *ifname;
+	char *linker;
+};
+
+struct wifi_enp_args
+{
+	struct uci_section *wifi_enp_sec;
+	char *ifname;
+};
+
+struct wifi_acp_args
+{
+	struct uci_section *wifi_acp_sec;
+	char *ifname;
+};
+
+struct wifi_associative_device_args
+{
+	int active;
+	int lastdatadownloadlinkrate;
+	int lastdatauplinkrate;
+	int signalstrength;
+	char *macaddress;
+	char *wdev;
+	int noise;
+	int retransmissions;
+	int assoctime;
+};
+
 #endif

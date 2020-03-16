@@ -88,6 +88,18 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/security.c
 endif
 
+if GENERIC_OPENWRT
+libbbfdm_la_SOURCES += \
+	../dmtree/tr181/deviceinfo-openwrt.c \
+	../dmtree/tr181/wifi-openwrt.c \
+	../dmtree/tr181/hosts-openwrt.c
+else
+libbbfdm_la_SOURCES += \
+	../dmtree/tr181/deviceinfo-iopsyswrt.c \
+	../dmtree/tr181/wifi-iopsyswrt.c \
+	../dmtree/tr181/hosts-iopsyswrt.c
+endif
+
 if BBF_TR104
 libbbfdm_la_SOURCES +=							\
 	../dmtree/tr104/voice_services.c

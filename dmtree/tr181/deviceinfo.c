@@ -10,6 +10,7 @@
  */
 
 #include "deviceinfo.h"
+#include "os.h"
 
 /*
  *DeviceInfo. functions
@@ -23,44 +24,12 @@ char *get_deviceid_manufacturer()
 
 char *get_deviceid_manufactureroui()
 {
-	char *v, *mac = NULL, str[16], macreadfile[18] = {0};
-	json_object *res;
-	FILE *nvrammac = NULL;
-	
-	dmuci_get_option_value_string("cwmp", "cpe", "override_oui", &v);
-	if (v[0] == '\0') {
-		dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
-		if (!(res)) {
-			db_get_value_string("hw", "board", "basemac", &mac);
-			if (!mac || strlen(mac) == 0) {
-				if ((nvrammac = fopen("/proc/nvram/BaseMacAddr", "r")) == NULL) {
-					mac = NULL;
-				} else {
-					fscanf(nvrammac,"%17[^\n]", macreadfile);
-					macreadfile[17] = '\0';
-					sscanf(macreadfile,"%2c %2c %2c", str, str+2, str+4);
-					str[6] = '\0';
-					v = dmstrdup(str); // MEM WILL BE FREED IN DMMEMCLEAN
-					fclose(nvrammac);
-					return v;
-				}
-			}
-		} else
-			mac = dmjson_get_value(res, 2, "system", "basemac");
+	char *v;
 
-		if(mac) {
-			size_t ln = strlen(mac);
-			if (ln < 17) goto not_found;
-			sscanf (mac,"%2c:%2c:%2c",str,str+2,str+4);
-			str[6] = '\0';
-			v = dmstrdup(str); // MEM WILL BE FREED IN DMMEMCLEAN
-			return v;
-		} else
-			goto not_found;
-	}
-	return v;
-not_found:
-	v = "";
+	dmuci_get_option_value_string("cwmp", "cpe", "override_oui", &v);
+	if (v[0] == '\0')
+		v = os__get_deviceid_manufactureroui();
+
 	return v;
 }
 
@@ -220,100 +189,6 @@ static int set_device_provisioningcode(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-static int get_base_mac_addr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{	
-	json_object *res;
-	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "basemac");
-	return 0;
-}
-
-static int get_device_memory_bank(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	json_object *res;
-	dmubus_call("router.system", "memory_bank", UBUS_ARGS{{}}, 0, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "code");
-	return 0;
-}
-
-static int set_device_memory_bank(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	switch (action) {
-		case VALUECHECK:
-			//TODO
-			return 0;
-		case VALUESET:
-			dmubus_call_set("router.system", "memory_bank", UBUS_ARGS{{"bank", value, Integer}}, 1);
-			return 0;
-	}
-	return 0;
-}
-
-static int get_catv_enabled(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *catv;
-	dmuci_get_option_value_string("catv", "catv", "enable", &catv);
-	if (strcmp(catv, "on") == 0)
-		*value = "1";
-	else 
-		*value = "0";
-	return 0;	
-}
-
-static int set_device_catvenabled(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	bool b;
-	switch (action) {
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			return 0;
-		case VALUESET:
-			string_to_bool(value, &b);
-			dmuci_set_value("catv", "catv", "enable", b ? "on" : "off");
-			return 0;
-	}
-	return 0;
-}
-
-static int get_catv_optical_input_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	json_object *res;
-	dmubus_call("catv", "vpd", UBUS_ARGS{}, 0, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "VPD");
-	return 0;
-}
-
-static int get_catv_rf_output_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	json_object *res;
-	dmubus_call("catv", "rf", UBUS_ARGS{}, 0, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "RF");
-	return 0;
-}
-
-static int get_catv_temperature(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	json_object *res;
-	dmubus_call("catv", "temp", UBUS_ARGS{}, 0, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "Temperature");
-	return 0;
-}
-
-static int get_catv_voltage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	json_object *res;
-	dmubus_call("catv", "vcc", UBUS_ARGS{}, 0, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "VCC");
-	return 0;
-}
-
 static int get_vcf_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "name", value);
@@ -437,104 +312,6 @@ static int get_vlf_persistent(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
-/*#Device.DeviceInfo.MemoryStatus.Total!UBUS:router.system/memory//total*/
-static int get_memory_status_total(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	json_object *res;
-	dmubus_call("router.system", "memory", UBUS_ARGS{{}}, 0, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 1, "total");
-	return 0;
-}
-
-/*#Device.DeviceInfo.MemoryStatus.Free!UBUS:router.system/memory//free*/
-static int get_memory_status_free(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	json_object *res;
-	dmubus_call("router.system", "memory", UBUS_ARGS{{}}, 0, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 1, "free");
-	return 0;
-}
-
-/*#Device.DeviceInfo.ProcessStatus.CPUUsage!UBUS:router.system/process//cpu_usage*/
-static int get_process_cpu_usage(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	json_object *res;
-	dmubus_call("router.system", "process", UBUS_ARGS{{}}, 0, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 1, "cpu_usage");
-	return 0;
-}
-
-static int get_process_number_of_entries(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	json_object *res = NULL, *processes = NULL;
-	int nbre_process = 0;
-
-	dmubus_call("router.system", "processes", UBUS_ARGS{}, 0, &res);
-	if (res) {
-		json_object_object_get_ex(res, "processes", &processes);
-		if (processes)
-			nbre_process = json_object_array_length(processes);
-	}
-	dmasprintf(value, "%d", nbre_process);
-	return 0;
-}
-
-static int get_process_pid(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value((json_object *)data, 1, "pid");
-	return 0;
-}
-
-static int get_process_command(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value((json_object *)data, 1, "command");
-	return 0;
-}
-
-static int get_process_size(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value((json_object *)data, 1, "vsz");
-	return 0;
-}
-
-static int get_process_priority(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value((json_object *)data, 1, "priority");
-	return 0;
-}
-
-static int get_process_cpu_time(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value((json_object *)data, 1, "cputime");
-	return 0;
-}
-
-static int get_process_state(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value((json_object *)data, 1, "state");
-	return 0;
-}
-
-static int browsePocessEntriesInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	json_object *res = NULL, *processes = NULL, *arrobj = NULL;
-	char *idx, *idx_last = NULL;
-	int id = 0, i = 0;
-
-	dmubus_call("router.system", "processes", UBUS_ARGS{}, 0, &res);
-	if (res) {
-		dmjson_foreach_obj_in_array(res, arrobj, processes, i, 1, "processes") {
-			idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, ++id);
-			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)processes, idx) == DM_STOP)
-				break;
-		}
-	}
-	return 0;
-}
-
 static int browseVcfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *vcf = NULL, *vcf_last = NULL, *name;
@@ -627,9 +404,11 @@ DMLEAF tDeviceInfoParams[] = {
 {"DeviceLog", &DMREAD, DMT_STRING, get_device_devicelog, NULL, NULL, NULL, BBFDM_BOTH},
 {"SpecVersion", &DMREAD, DMT_STRING, get_device_specversion, NULL,  &DMFINFRM, NULL, BBFDM_BOTH},
 {"ProvisioningCode", &DMWRITE, DMT_STRING, get_device_provisioningcode, set_device_provisioningcode, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
-{CUSTOM_PREFIX"BaseMacAddr", &DMREAD, DMT_STRING, get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"CATVEnabled", &DMWRITE, DMT_BOOL, get_catv_enabled, set_device_catvenabled, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"MemoryBank", &DMWRITE, DMT_INT, get_device_memory_bank, set_device_memory_bank, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"BaseMacAddr", &DMREAD, DMT_STRING, os__get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
+#ifndef GENERIC_OPENWRT
+{CUSTOM_PREFIX"CATVEnabled", &DMWRITE, DMT_BOOL, os_iopsys_get_catv_enabled, os_iopsys_set_device_catvenabled, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"MemoryBank", &DMWRITE, DMT_INT, os_iopsys_get_device_memory_bank, os_iopsys_set_device_memory_bank, NULL, NULL, BBFDM_BOTH},
+#endif
 {0}
 };
 
@@ -648,45 +427,47 @@ DMLEAF tDeviceInfoVendorConfigFileParams[] = {
 /* *** Device.DeviceInfo.MemoryStatus. *** */
 DMLEAF tDeviceInfoMemoryStatusParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Total", &DMREAD, DMT_UNINT, get_memory_status_total, NULL, NULL, NULL, BBFDM_BOTH},
-{"Free", &DMREAD, DMT_UNINT, get_memory_status_free, NULL, NULL, NULL, BBFDM_BOTH},
+{"Total", &DMREAD, DMT_UNINT, os__get_memory_status_total, NULL, NULL, NULL, BBFDM_BOTH},
+{"Free", &DMREAD, DMT_UNINT, os__get_memory_status_free, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
 /* *** Device.DeviceInfo.ProcessStatus. *** */
 DMOBJ tDeviceInfoProcessStatusObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Process", &DMREAD, NULL, NULL, NULL, browsePocessEntriesInst, NULL, NULL, NULL, NULL, tDeviceInfoProcessStatusProcessParams, NULL, BBFDM_BOTH},
+{"Process", &DMREAD, NULL, NULL, NULL, os__browseProcessEntriesInst, NULL, NULL, NULL, NULL, tDeviceInfoProcessStatusProcessParams, NULL, BBFDM_BOTH},
 {0}
 };
 
 DMLEAF tDeviceInfoProcessStatusParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"CPUUsage", &DMREAD, DMT_UNINT, get_process_cpu_usage, NULL, NULL, NULL, BBFDM_BOTH},
-{"ProcessNumberOfEntries", &DMREAD, DMT_UNINT, get_process_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{"CPUUsage", &DMREAD, DMT_UNINT, os__get_process_cpu_usage, NULL, NULL, NULL, BBFDM_BOTH},
+{"ProcessNumberOfEntries", &DMREAD, DMT_UNINT, os__get_process_number_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
 /* *** Device.DeviceInfo.ProcessStatus.Process.{i}. *** */
 DMLEAF tDeviceInfoProcessStatusProcessParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"PID", &DMREAD, DMT_UNINT, get_process_pid, NULL, NULL, NULL, BBFDM_BOTH},
-{"Command", &DMREAD, DMT_STRING, get_process_command, NULL, NULL, NULL, BBFDM_BOTH},
-{"Size", &DMREAD, DMT_UNINT, get_process_size, NULL, NULL, NULL, BBFDM_BOTH},
-{"Priority", &DMREAD, DMT_UNINT, get_process_priority, NULL, NULL, NULL, BBFDM_BOTH},
-{"CPUTime", &DMREAD, DMT_UNINT, get_process_cpu_time, NULL, NULL, NULL, BBFDM_BOTH},
-{"State", &DMREAD, DMT_STRING, get_process_state, NULL, NULL, NULL, BBFDM_BOTH},
+{"PID", &DMREAD, DMT_UNINT, os__get_process_pid, NULL, NULL, NULL, BBFDM_BOTH},
+{"Command", &DMREAD, DMT_STRING, os__get_process_command, NULL, NULL, NULL, BBFDM_BOTH},
+{"Size", &DMREAD, DMT_UNINT, os__get_process_size, NULL, NULL, NULL, BBFDM_BOTH},
+{"Priority", &DMREAD, DMT_UNINT, os__get_process_priority, NULL, NULL, NULL, BBFDM_BOTH},
+{"CPUTime", &DMREAD, DMT_UNINT, os__get_process_cpu_time, NULL, NULL, NULL, BBFDM_BOTH},
+{"State", &DMREAD, DMT_STRING, os__get_process_state, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
 /*** DeviceInfo.X_IOPSYS_EU_CATV. ***/
 DMLEAF tCatTvParams[] = {
+#ifndef GENERIC_OPENWRT
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enabled", &DMWRITE, DMT_STRING, get_catv_enabled, set_device_catvenabled, NULL, NULL, BBFDM_BOTH},
-{"OpticalInputLevel", &DMREAD, DMT_STRING, get_catv_optical_input_level, NULL, NULL, NULL, BBFDM_BOTH},
-{"RFOutputLevel", &DMREAD, DMT_STRING, get_catv_rf_output_level, NULL, NULL, NULL, BBFDM_BOTH},
-{"Temperature", &DMREAD, DMT_STRING, get_catv_temperature, NULL, NULL, NULL, BBFDM_BOTH},
-{"Voltage", &DMREAD, DMT_STRING, get_catv_voltage, NULL, NULL, NULL, BBFDM_BOTH},
+{"Enabled", &DMWRITE, DMT_STRING, os_iopsys_get_catv_enabled, os_iopsys_set_device_catvenabled, NULL, NULL, BBFDM_BOTH},
+{"OpticalInputLevel", &DMREAD, DMT_STRING, os_iopsys_get_catv_optical_input_level, NULL, NULL, NULL, BBFDM_BOTH},
+{"RFOutputLevel", &DMREAD, DMT_STRING, os_iopsys_get_catv_rf_output_level, NULL, NULL, NULL, BBFDM_BOTH},
+{"Temperature", &DMREAD, DMT_STRING, os_iopsys_get_catv_temperature, NULL, NULL, NULL, BBFDM_BOTH},
+{"Voltage", &DMREAD, DMT_STRING, os_iopsys_get_catv_voltage, NULL, NULL, NULL, BBFDM_BOTH},
+#endif
 {0}
 };
 

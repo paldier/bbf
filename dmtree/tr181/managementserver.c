@@ -146,8 +146,8 @@ static int get_management_server_periodic_inform_time(char *refparam, struct dmc
 	dmuci_get_option_value_string("cwmp", "acs", "periodic_inform_time", value);
 	if ((*value)[0] != '0' && (*value)[0] != '\0') {
 		time_value = atoi(*value);
-		char s_now[sizeof "AAAA-MM-JJTHH:MM:SS.000Z"];
-		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S.000Z", localtime(&time_value));
+		char s_now[sizeof "AAAA-MM-JJTHH:MM:SSZ"];
+		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%SZ", localtime(&time_value));
 		*value = dmstrdup(s_now); // MEM WILL BE FREED IN DMMEMCLEAN
 	} else {
 		*value = "0001-01-01T00:00:00Z";
@@ -166,7 +166,7 @@ static int set_management_server_periodic_inform_time(char *refparam, struct dmc
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			strptime(value, "%Y-%m-%dT%H:%M:%S", &tm);
+			strptime(value, "%Y-%m-%dT%H:%M:%SZ", &tm);
 			snprintf(buf, sizeof(buf), "%ld", mktime(&tm));
 			dmuci_set_value("cwmp", "acs", "periodic_inform_time", buf);
 			cwmp_set_end_session(END_SESSION_RELOAD);

@@ -139,7 +139,7 @@ static int get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *d
 
 static int get_device_routermodel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	db_get_value_string("hw", "board", "routerModel", value);
+	db_get_value_string("hw", "board", "model_name", value);
 	return 0;
 }
 
@@ -225,7 +225,7 @@ static int get_base_mac_addr(char *refparam, struct dmctx *ctx, void *data, char
 	json_object *res;
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 2, "system", "basemac");
+	*value = dmjson_get_value(res, 1, "basemac");
 	return 0;
 }
 
@@ -332,7 +332,7 @@ static int get_vcf_date(char *refparam, struct dmctx *ctx, void *data, char *ins
 	struct dirent *d_file;
 	struct stat attr;
 	char path[280];
-	char date[sizeof "AAAA-MM-JJTHH:MM:SS.000Z"];
+	char date[sizeof "AAAA-MM-JJTHH:MM:SSZ"];
 
 	*value = "";
 	dmuci_get_value_by_section_string((struct uci_section *)data, "name", value);
@@ -341,7 +341,7 @@ static int get_vcf_date(char *refparam, struct dmctx *ctx, void *data, char *ins
 			if(strcmp(*value, d_file->d_name) == 0) {
 				snprintf(path, sizeof(path), DEFAULT_CONFIG_DIR"%s", d_file->d_name);
 				stat(path, &attr);
-				strftime(date, sizeof(date), "%Y-%m-%dT%H:%M:%S.000Z", localtime(&attr.st_mtime));
+				strftime(date, sizeof(date), "%Y-%m-%dT%H:%M:%SZ", localtime(&attr.st_mtime));
 				*value = dmstrdup(date);
 			}
 		}
@@ -437,33 +437,33 @@ static int get_vlf_persistent(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
-/*#Device.DeviceInfo.MemoryStatus.Total!UBUS:router.system/info//memoryKB.total*/
+/*#Device.DeviceInfo.MemoryStatus.Total!UBUS:router.system/memory//total*/
 static int get_memory_status_total(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
+	dmubus_call("router.system", "memory", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "memoryKB", "total");
+	*value = dmjson_get_value(res, 1, "total");
 	return 0;
 }
 
-/*#Device.DeviceInfo.MemoryStatus.Free!UBUS:router.system/info//memoryKB.free*/
+/*#Device.DeviceInfo.MemoryStatus.Free!UBUS:router.system/memory//free*/
 static int get_memory_status_free(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
+	dmubus_call("router.system", "memory", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "memoryKB", "free");
+	*value = dmjson_get_value(res, 1, "free");
 	return 0;
 }
 
-/*#Device.DeviceInfo.ProcessStatus.CPUUsage!UBUS:router.system/info//system.cpu_per*/
+/*#Device.DeviceInfo.ProcessStatus.CPUUsage!UBUS:router.system/process//cpu_usage*/
 static int get_process_cpu_usage(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
+	dmubus_call("router.system", "process", UBUS_ARGS{{}}, 0, &res);
 	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 2, "system", "cpu_per");
+	*value = dmjson_get_value(res, 1, "cpu_usage");
 	return 0;
 }
 

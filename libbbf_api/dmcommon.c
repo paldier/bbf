@@ -1708,13 +1708,8 @@ int dm_time_format(time_t ts, char **dst)
 	if (t_tm == NULL)
 		return -1;
 
-	if(strftime(time_buf, sizeof(time_buf), "%FT%T%z", t_tm) == 0)
+	if(strftime(time_buf, sizeof(time_buf), "%Y-%m-%dT%H:%M:%SZ", t_tm) == 0)
 		return -1;
-
-	time_buf[25] = time_buf[24];
-	time_buf[24] = time_buf[23];
-	time_buf[22] = ':';
-	time_buf[26] = '\0';
 
 	*dst = dmstrdup(time_buf);
 	return 0;

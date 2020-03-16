@@ -135,7 +135,7 @@ static int get_userint_remoteaccesss_supportedprotocols(char *refparam, struct d
 {
 	int found = get_supportedprotocols();
 	if (found) {
-		*value = "HTTP, HTTPS";
+		*value = "HTTP,HTTPS";
 		return 0;
 	}
 	*value = "HTTP";

@@ -172,8 +172,10 @@ static inline int ubus_atm_stats(char **value, char *stat_mod, void *data)
 {
 	json_object *res = NULL;
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct atm_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "");
+	DM_ASSERT(res, *value = "0");
 	*value = dmjson_get_value(res, 2, "statistics", stat_mod);
+	if ((*value)[0] == '\0')
+		*value = "0";
 	return 0;
 }
 
@@ -208,6 +210,26 @@ static int get_atm_stats_pack_sent(char *refparam, struct dmctx *ctx, void *data
 static int get_atm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "true";
+	return 0;
+}
+
+static int set_atm_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	switch (action) {
+		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
+			return 0;
+		case VALUESET:
+			//TODO
+			return 0;
+	}
+	return 0;
+}
+
+static int get_atm_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = "Up";
 	return 0;
 }
 
@@ -364,9 +386,9 @@ DMOBJ tATMLinkObj[] = {
 DMLEAF tATMLinkParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING,  get_atm_alias, set_atm_alias, NULL, NULL, BBFDM_BOTH},
-{"Enable", &DMREAD, DMT_BOOL, get_atm_enable, NULL, NULL, NULL, BBFDM_BOTH},
+{"Enable", &DMWRITE, DMT_BOOL, get_atm_enable, set_atm_enable, NULL, NULL, BBFDM_BOTH},
 {"Name", &DMREAD, DMT_STRING, get_atm_link_name, NULL, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_atm_enable, NULL, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_atm_status, NULL, NULL, NULL, BBFDM_BOTH},
 {"LowerLayers", &DMREAD, DMT_STRING, get_atm_lower_layer, NULL, NULL, NULL, BBFDM_BOTH},
 {"LinkType", &DMWRITE, DMT_STRING, get_atm_link_type, set_atm_link_type, NULL, NULL, BBFDM_BOTH},
 {"DestinationAddress", &DMWRITE, DMT_STRING, get_atm_destination_address, set_atm_destination_address, NULL, NULL, BBFDM_BOTH},
@@ -377,9 +399,9 @@ DMLEAF tATMLinkParams[] = {
 /*** ATM.Link.Stats. ***/
 DMLEAF tATMLinkStatsParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"BytesSent", &DMREAD, DMT_UNINT, get_atm_stats_bytes_sent, NULL, NULL, NULL, BBFDM_BOTH},
-{"BytesReceived", &DMREAD, DMT_UNINT, get_atm_stats_bytes_received, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsSent", &DMREAD, DMT_UNINT, get_atm_stats_pack_sent, NULL, NULL, NULL, BBFDM_BOTH},
-{"PacketsReceived", &DMREAD, DMT_UNINT, get_atm_stats_pack_received, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesSent", &DMREAD, DMT_UNLONG, get_atm_stats_bytes_sent, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesReceived", &DMREAD, DMT_UNLONG, get_atm_stats_bytes_received, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsSent", &DMREAD, DMT_UNLONG, get_atm_stats_pack_sent, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsReceived", &DMREAD, DMT_UNLONG, get_atm_stats_pack_received, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };

@@ -102,7 +102,7 @@ static int set_ip_ping_protocolversion(char *refparam, struct dmctx *ctx, void *
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, -1, ProtocolVersion, 0, NULL, 0))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -383,7 +383,7 @@ static int set_IPDiagnosticsTraceRoute_ProtocolVersion(char *refparam, struct dm
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, -1, ProtocolVersion, 0, NULL, 0))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -786,7 +786,7 @@ static int set_IPDiagnosticsDownloadDiagnostics_ProtocolVersion(char *refparam, 
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, -1, ProtocolVersion, 0, NULL, 0))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
@@ -1196,7 +1196,7 @@ static int set_IPDiagnosticsUploadDiagnostics_ProtocolVersion(char *refparam, st
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, -1, ProtocolVersion, 0, NULL, 0))
+			if (dm_validate_string(value, -1, -1, ProtocolVersion, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:

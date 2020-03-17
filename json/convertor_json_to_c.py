@@ -379,7 +379,7 @@ def hprintfootfile (fp, filename):
 
 def cprintAddDelObj( faddobj, fdelobj, name, mappingobj, dmobject ):
 	fp = open('./.objadddel.c', 'a')
-	print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char **instance)" % faddobj
+	print >> fp, "static int %s(char *refparam, struct dmctx *ctx, void *data, char **instance)" % faddobj
 	print >> fp, "{"
 	if mappingobj != None:
 		type, file, sectiontype, dmmapfile = get_mapping_obj(mappingobj)
@@ -400,7 +400,7 @@ def cprintAddDelObj( faddobj, fdelobj, name, mappingobj, dmobject ):
 	print >> fp, "	return 0;"
 	print >> fp, "}"
 	print >> fp, ""
-	print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)" % fdelobj
+	print >> fp, "static int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)" % fdelobj
 	print >> fp, "{"
 	if mappingobj != None:
 		if type == "uci":
@@ -447,12 +447,6 @@ def cprintAddDelObj( faddobj, fdelobj, name, mappingobj, dmobject ):
 	print >> fp, ""
 	fp.close()
 
-def hprintAddDelObj( faddobj, fdelobj ):
-	fp = open('./.objadddel.h', 'a')
-	print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char **instance);" % faddobj
-	print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action);" % fdelobj
-	fp.close()
-
 def cprintBrowseObj( fbrowse, name, mappingobj, dmobject ):
 	# Open file
 	fp = open('./.objbrowse.c', 'a')
@@ -462,7 +456,7 @@ def cprintBrowseObj( fbrowse, name, mappingobj, dmobject ):
 		type, file, sectiontype, dmmapfile = get_mapping_obj(mappingobj)
 		print >> fp, "/*#%s!%s:%s/%s/%s*/" % (dmobject, type.upper(), file, sectiontype, dmmapfile)
 
-	print >> fp, "int %s(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)" % fbrowse
+	print >> fp, "static int %s(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)" % fbrowse
 	print >> fp, "{"
 
 	# Mapping exist
@@ -496,11 +490,6 @@ def cprintBrowseObj( fbrowse, name, mappingobj, dmobject ):
 	print >> fp, ""
 
 	# Close file
-	fp.close()
-
-def hprintBrowseObj( fbrowse ):
-	fp = open('./.objbrowse.h', 'a')
-	print >> fp, "int %s(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance);" % fbrowse
 	fp.close()
 
 def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, parentname, dmparam, value):
@@ -623,7 +612,7 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 				tmpsetvalue = set_value
 			elif count == 2 and i == 2:
 				print >> fp, "/*#%s!%s&%s*/" % (parentname+dmparam, tmpmapping, mapping)
-				print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)" % getvalue
+				print >> fp, "static int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)" % getvalue
 				print >> fp, "{"
 				print >> fp, "%s" % tmpgetvalue
 				print >> fp, "%s" % get_value
@@ -641,7 +630,7 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 					print >> fp, ""
 			else:
 				print >> fp, "/*#%s!%s*/" % (parentname+dmparam, mapping)
-				print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)" % getvalue
+				print >> fp, "static int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)" % getvalue
 				print >> fp, "{"
 				print >> fp, "%s" % get_value
 				print >> fp, "	return 0;"
@@ -660,7 +649,7 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 
 	# Mapping doesn't exist
 	else:
-		print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)" % getvalue
+		print >> fp, "static int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)" % getvalue
 		print >> fp, "{"
 		print >> fp, "	//TODO"
 		print >> fp, "	return 0;"
@@ -683,14 +672,6 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 
 	# Close file
 	fp.close()
-
-def hprintGetSetValue(getvalue, setvalue):
-	fp = open('./.getstevalue.h', 'a')
-	print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);" % getvalue
-	if setvalue != "NULL":
-		print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);" % setvalue
-	fp.close()
-
 
 def cprintheaderPARAMS( objname ):
 	fp = open('./.objparamarray.c', 'a')
@@ -725,7 +706,6 @@ def printPARAMline( parentname, dmparam, value ):
 		instance = "FALSE"
 
 	cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, parentname, dmparam, value)
-	hprintGetSetValue(getvalue, setvalue)
 
 	fp = open('./.objparamarray.c', 'a')
 	print >> fp,  "{\"%s\", %s, %s, %s, %s, NULL, NULL, %s}," % (dmparam, access, ptype, getvalue, setvalue, bbfdm)
@@ -751,7 +731,6 @@ def printOBJline( dmobject, value ):
 		faddobj = "addObj" + commonname
 		fdelobj = "delObj" + commonname
 		cprintAddDelObj(faddobj, fdelobj, (getlastname(dmobject)).lower(), mappingobj, dmobject)
-		hprintAddDelObj(faddobj, fdelobj)
 	else:
 		access = "&DMREAD"
 		faddobj = "NULL"
@@ -760,7 +739,6 @@ def printOBJline( dmobject, value ):
 	if dmobject.endswith(".{i}."):
 		fbrowse = "browse" + commonname + "Inst"
 		cprintBrowseObj(fbrowse, (getlastname(dmobject)).lower(), mappingobj, dmobject)
-		hprintBrowseObj(fbrowse)
 	else:
 		fbrowse = "NULL"
 
@@ -843,29 +821,7 @@ def generatecfromobj( pobj, pvalue, pdir, nextlevel ):
 	dmfph = open(pdir + "/" +  getname(pobj).lower() + ".h", "w")
 	cprinttopfile(dmfpc, getname(pobj).lower())
 	hprinttopfile(dmfph, getname(pobj).lower())
-	try:
-		tmpf = open("./.rootinclude.c", "r")
-		tmpd = tmpf.read()
-		tmpf.close()
-		dmfpc.write(tmpd)
-		print >> dmfpc,  ""
-	except:
-		pass
-	try:
-		tmpf = open("./.objparamarray.c", "r")
-		tmpd = tmpf.read()
-		tmpf.close()
-		dmfpc.write(tmpd)
-	except:
-		pass
-	try:
-		tmpf = open("./.objparamarray.h", "r")
-		tmpd = tmpf.read()
-		tmpf.close()
-		dmfph.write(tmpd)
-		print >> dmfph,  ""
-	except:
-		pass
+
 	try:
 		exists = os.path.isfile("./.objbrowse.c")
 		if exists:
@@ -876,14 +832,6 @@ def generatecfromobj( pobj, pvalue, pdir, nextlevel ):
 		tmpd = tmpf.read()
 		tmpf.close()
 		dmfpc.write(tmpd)
-	except:
-		pass
-	try:
-		tmpf = open("./.objbrowse.h", "r")
-		tmpd = tmpf.read()
-		tmpf.close()
-		dmfph.write(tmpd)
-		print >> dmfph,  ""
 	except:
 		pass
 	try:
@@ -899,14 +847,6 @@ def generatecfromobj( pobj, pvalue, pdir, nextlevel ):
 	except:
 		pass
 	try:
-		tmpf = open("./.objadddel.h", "r")
-		tmpd = tmpf.read()
-		tmpf.close()
-		dmfph.write(tmpd)
-		print >> dmfph,  ""
-	except:
-		pass
-	try:
 		exists = os.path.isfile("./.getstevalue.c")
 		if exists:
 			print >> dmfpc,  "/*************************************************************"
@@ -919,10 +859,21 @@ def generatecfromobj( pobj, pvalue, pdir, nextlevel ):
 	except:
 		pass
 	try:
-		tmpf = open("./.getstevalue.h", "r")
+		print >> dmfpc,  "/**********************************************************************************************************************************"
+		print >> dmfpc,  "*                                            OBJ & PARAM DEFINITION"
+		print >> dmfpc,  "***********************************************************************************************************************************/"
+		tmpf = open("./.objparamarray.c", "r")
+		tmpd = tmpf.read()
+		tmpf.close()
+		dmfpc.write(tmpd)
+	except:
+		pass
+	try:
+		tmpf = open("./.objparamarray.h", "r")
 		tmpd = tmpf.read()
 		tmpf.close()
 		dmfph.write(tmpd)
+		print >> dmfph,  ""
 	except:
 		pass
 
@@ -934,12 +885,8 @@ def removetmpfiles():
 	removefile("./.objparamarray.c")
 	removefile("./.objparamarray.h")
 	removefile("./.objadddel.c")
-	removefile("./.objadddel.h")
 	removefile("./.objbrowse.c")
-	removefile("./.objbrowse.h")
 	removefile("./.getstevalue.c")
-	removefile("./.getstevalue.h")
-	removefile("./.rootinclude.c")
 
 ### main ###
 if len(sys.argv) < 2:

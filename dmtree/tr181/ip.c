@@ -283,6 +283,18 @@ static int get_IPInterface_Status(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
+/*#Device.IP.Interface.{i}.IPv4Address.{i}.Status!UCI:network/interface,@i-1/disabled*/
+static int get_IPInterfaceIPv4Address_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	json_object *res;
+	char *val = NULL;
+	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", section_name(((struct ip_args *)data)->ip_sec), String}}, 1, &res);
+	DM_ASSERT(res, *value = "Disabled");
+	val = dmjson_get_value(res, 1, "up");
+	*value = !strcmp(val, "true") ? "Enabled" : "Disabled";
+	return 0;
+}
+
 static int get_IPInterface_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmstrdup(section_name(((struct ip_args *)data)->ip_sec));
@@ -1965,7 +1977,7 @@ DMLEAF tIPInterfaceParams[] = {
 DMLEAF tIPInterfaceIPv4AddressParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Enable", &DMWRITE, DMT_BOOL, get_IPInterface_Enable, set_IPInterface_Enable, &IPv4INFRM, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_IPInterface_Status, NULL, &IPv4INFRM, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_IPInterfaceIPv4Address_Status, NULL, &IPv4INFRM, NULL, BBFDM_BOTH},
 {"Alias", &DMWRITE, DMT_STRING, get_ipv4_alias, set_ipv4_alias, &IPv4INFRM, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"FirewallEnabled", &DMWRITE, DMT_BOOL, get_firewall_enabled, set_firewall_enabled, &IPv4INFRM, NULL, BBFDM_BOTH},
 {"IPAddress", &DMWRITE, DMT_STRING, get_ipv4_address, set_ipv4_address, &IPv4INFRM, NULL, BBFDM_BOTH},

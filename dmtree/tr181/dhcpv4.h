@@ -19,7 +19,7 @@ extern DMOBJ tDHCPv4ServerObj[];
 extern DMOBJ tDHCPv4ServerPoolObj[];
 extern DMOBJ tDHCPv4ServerPoolClientObj[];
 extern DMLEAF tDHCPv4ServerPoolParams[];
-extern DMLEAF tDHCPv4ServerPoolAddressParams[];
+extern DMLEAF tDHCPv4ServerPoolStaticAddressParams[];
 extern DMLEAF tDHCPv4ServerPoolClientParams[];
 extern DMLEAF tDHCPv4ServerPoolClientIPv4AddressParams[];
 

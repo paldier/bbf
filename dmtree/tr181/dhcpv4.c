@@ -2996,7 +2996,7 @@ DMOBJ tDHCPv4ServerObj[] = {
 /*** DHCPv4.Server.Pool.{i}. ***/
 DMOBJ tDHCPv4ServerPoolObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"StaticAddress", &DMWRITE, add_dhcp_staticaddress, delete_dhcp_staticaddress, NULL, browseDhcpStaticInst, NULL, NULL, NULL, NULL, tDHCPv4ServerPoolAddressParams, NULL, BBFDM_BOTH},
+{"StaticAddress", &DMWRITE, add_dhcp_staticaddress, delete_dhcp_staticaddress, NULL, browseDhcpStaticInst, NULL, NULL, NULL, NULL, tDHCPv4ServerPoolStaticAddressParams, NULL, BBFDM_BOTH},
 {"Option", &DMWRITE, addObjDHCPv4ServerPoolOption, delObjDHCPv4ServerPoolOption, NULL, browseDHCPv4ServerPoolOptionInst, NULL, NULL, NULL, NULL, tDHCPv4ServerPoolOptionParams, NULL, BBFDM_BOTH},
 {"Client", &DMREAD, NULL, NULL, NULL, browseDhcpClientInst, NULL, NULL, NULL, tDHCPv4ServerPoolClientObj, tDHCPv4ServerPoolClientParams, get_dhcp_client_linker},
 {0}
@@ -3033,7 +3033,7 @@ DMLEAF tDHCPv4ServerPoolParams[] = {
 };
 
 /*** DHCPv4.Server.Pool.{i}.StaticAddress.{i}. ***/
-DMLEAF tDHCPv4ServerPoolAddressParams[] = {
+DMLEAF tDHCPv4ServerPoolStaticAddressParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_dhcp_static_alias, set_dhcp_static_alias, NULL, NULL, BBFDM_BOTH},
 {"Chaddr", &DMWRITE, DMT_STRING,  get_dhcp_staticaddress_chaddr, set_dhcp_staticaddress_chaddr, NULL, NULL, BBFDM_BOTH},

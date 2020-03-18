@@ -316,8 +316,8 @@ static int get_DynamicDNS_SupportedServices(char *refparam, struct dmctx *ctx, v
 				continue;
 
 			pch = strtok_r(line, "\t", &spch);
-			remove_substring(pch, "\"");
-			remove_substring(pch, " ");
+			pch= strstr(pch, "\"")+1;
+			pch[strchr(pch, '\"')-pch]=0;
 			if (strcmp(buf, "") == 0) {
 				snprintf(buf, sizeof(buf), "%s", pch);
 			} else {

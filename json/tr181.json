@@ -937,9 +937,9 @@
 							"type": "ubus", 
 							"ubus": {
 								"object": "router.system", 
-								"method": "info", 
+								"method": "memory", 
 								"args": {}, 
-								"key": "memoryKB.total"
+								"key": "total"
 							}
 						}
 					]
@@ -959,9 +959,9 @@
 							"type": "ubus", 
 							"ubus": {
 								"object": "router.system", 
-								"method": "info", 
+								"method": "memory", 
 								"args": {}, 
-								"key": "memoryKB.free"
+								"key": "free"
 							}
 						}
 					]
@@ -995,9 +995,9 @@
 							"type": "ubus", 
 							"ubus": {
 								"object": "router.system", 
-								"method": "info", 
+								"method": "process", 
 								"args": {}, 
-								"key": "system.cpu_per"
+								"key": "cpu_usage"
 							}
 						}
 					]
@@ -29079,15 +29079,6 @@
 									"name": "bandwidth"
 								}
 							}
-						}, 
-						{
-							"type": "ubus", 
-							"ubus": {
-								"object": "wifi.radio.@Name", 
-								"method": "status", 
-								"args": {}, 
-								"key": "bandwidth"
-							}
 						}
 					]
 				}, 
@@ -31603,6 +31594,17 @@
 						], 
 						"pattern": [
 							"([0-9A-Fa-f][0-9A-Fa-f]:){5}([0-9A-Fa-f][0-9A-Fa-f])"
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stations", 
+									"args": {}, 
+									"key": "stations[i-1].macaddr"
+								}
+							}
 						]
 					}, 
 					"OperatingStandard": {
@@ -31647,7 +31649,18 @@
 								"min": 1000
 							}
 						], 
-						"unit": "kbps"
+						"unit": "kbps", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stations", 
+									"args": {}, 
+									"key": "stations[i-1].stats.rate_of_last_rx_pkt"
+								}
+							}
+						]
 					}, 
 					"LastDataUplinkRate": {
 						"type": "unsignedInt", 
@@ -31663,7 +31676,18 @@
 								"min": 1000
 							}
 						], 
-						"unit": "kbps"
+						"unit": "kbps", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stations", 
+									"args": {}, 
+									"key": "stations[i-1].stats.rate_of_last_tx_pkt"
+								}
+							}
+						]
 					}, 
 					"AssociationTime": {
 						"type": "dateTime", 
@@ -31673,7 +31697,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "dateTime"
+						"datatype": "dateTime", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stations", 
+									"args": {}, 
+									"key": "stations[i-1].in_network"
+								}
+							}
+						]
 					}, 
 					"SignalStrength": {
 						"type": "int", 
@@ -31690,7 +31725,18 @@
 								"max": 0
 							}
 						], 
-						"unit": "dBm"
+						"unit": "dBm", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stations", 
+									"args": {}, 
+									"key": "stations[i-1].rssi"
+								}
+							}
+						]
 					}, 
 					"Noise": {
 						"type": "int", 
@@ -31707,7 +31753,18 @@
 								"max": 0
 							}
 						], 
-						"unit": "dBm"
+						"unit": "dBm", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stations", 
+									"args": {}, 
+									"key": "stations[i-1].tx_failures"
+								}
+							}
+						]
 					}, 
 					"Retransmissions": {
 						"type": "unsignedInt", 
@@ -31724,7 +31781,18 @@
 								"max": 100
 							}
 						], 
-						"unit": "packets"
+						"unit": "packets", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.ap.@Name", 
+									"method": "stations", 
+									"args": {}, 
+									"key": "stations[i-1].stats.tx_pkts_retries"
+								}
+							}
+						]
 					}, 
 					"Active": {
 						"type": "boolean", 
@@ -31752,7 +31820,18 @@
 								"cwmp", 
 								"usp"
 							], 
-							"datatype": "StatsCounter64"
+							"datatype": "StatsCounter64", 
+							"mapping": [
+								{
+									"type": "ubus", 
+									"ubus": {
+										"object": "wifi.ap.@Name", 
+										"method": "stations", 
+										"args": {}, 
+										"key": "stations[i-1].stats.tx_total_bytes"
+									}
+								}
+							]
 						}, 
 						"BytesReceived": {
 							"type": "unsignedInt", 
@@ -31762,7 +31841,18 @@
 								"cwmp", 
 								"usp"
 							], 
-							"datatype": "StatsCounter64"
+							"datatype": "StatsCounter64", 
+							"mapping": [
+								{
+									"type": "ubus", 
+									"ubus": {
+										"object": "wifi.ap.@Name", 
+										"method": "stations", 
+										"args": {}, 
+										"key": "stations[i-1].stats.rx_data_bytes"
+									}
+								}
+							]
 						}, 
 						"PacketsSent": {
 							"type": "unsignedInt", 
@@ -31772,7 +31862,18 @@
 								"cwmp", 
 								"usp"
 							], 
-							"datatype": "StatsCounter64"
+							"datatype": "StatsCounter64", 
+							"mapping": [
+								{
+									"type": "ubus", 
+									"ubus": {
+										"object": "wifi.ap.@Name", 
+										"method": "stations", 
+										"args": {}, 
+										"key": "stations[i-1].stats.tx_total_pkts"
+									}
+								}
+							]
 						}, 
 						"PacketsReceived": {
 							"type": "unsignedInt", 
@@ -31782,7 +31883,18 @@
 								"cwmp", 
 								"usp"
 							], 
-							"datatype": "StatsCounter64"
+							"datatype": "StatsCounter64", 
+							"mapping": [
+								{
+									"type": "ubus", 
+									"ubus": {
+										"object": "wifi.ap.@Name", 
+										"method": "stations", 
+										"args": {}, 
+										"key": "stations[i-1].stats.rx_data_pkts"
+									}
+								}
+							]
 						}, 
 						"ErrorsSent": {
 							"type": "unsignedInt", 
@@ -31792,7 +31904,18 @@
 								"cwmp", 
 								"usp"
 							], 
-							"datatype": "StatsCounter32"
+							"datatype": "StatsCounter32", 
+							"mapping": [
+								{
+									"type": "ubus", 
+									"ubus": {
+										"object": "wifi.ap.@Name", 
+										"method": "stations", 
+										"args": {}, 
+										"key": "stations[i-1].stats.tx_failures"
+									}
+								}
+							]
 						}, 
 						"RetransCount": {
 							"type": "unsignedInt", 
@@ -31802,7 +31925,18 @@
 								"cwmp", 
 								"usp"
 							], 
-							"datatype": "StatsCounter32"
+							"datatype": "StatsCounter32", 
+							"mapping": [
+								{
+									"type": "ubus", 
+									"ubus": {
+										"object": "wifi.ap.@Name", 
+										"method": "stations", 
+										"args": {}, 
+										"key": "stations[i-1].stats.tx_pkts_retries"
+									}
+								}
+							]
 						}, 
 						"FailedRetransCount": {
 							"type": "unsignedInt", 
@@ -37892,6 +38026,21 @@
 							"Enabled", 
 							"Error_Misconfigured", 
 							"Error"
+						], 
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "network", 
+									"section": {
+										"type": "interface", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "disabled"
+									}
+								}
+							}
 						]
 					}, 
 					"Alias": {

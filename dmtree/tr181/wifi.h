@@ -68,17 +68,4 @@ struct wifi_acp_args
 	char *ifname;
 };
 
-struct wifi_associative_device_args
-{
-	int active;
-	int lastdatadownloadlinkrate;
-	int lastdatauplinkrate;
-	int signalstrength;
-	char *macaddress;
-	char *wdev;
-	int noise;
-	int retransmissions;
-	int assoctime;
-};
-
 #endif

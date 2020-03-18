@@ -217,18 +217,24 @@ def generatelistfromfile(dmobject):
 	obj = dmobject.get('name').split(".")
 	if "tr-104" in sys.argv[1]:
 		pathfilename = "../dmtree/tr104/voice_services.c"
+		pathiopsyswrtfilename = "../dmtree/tr104/voice_services-iopsyswrt.c"
 	elif obj[1] == "SoftwareModules" or obj[1] == "BulkData" :
 		pathfilename = "../dmtree/tr157/" + obj[1].lower() + ".c"
+		pathiopsyswrtfilename = "../dmtree/tr157/" + obj[1].lower() + "-iopsyswrt.c"
 	else:
 		pathfilename = "../dmtree/tr181/" + obj[1].lower() + ".c"
-	exists = os.path.isfile(pathfilename)
-	if exists:
-		filec = open(pathfilename, "r")
-		for linec in filec:
-			if "/*#" in linec:
-				listmapping.append(linec)
-	else:
-	    pass
+		pathiopsyswrtfilename = "../dmtree/tr181/" + obj[1].lower() + "-iopsyswrt.c"
+
+	for x in range(0, 2):
+		pathfile = pathfilename if x == 0 else pathiopsyswrtfilename
+		exists = os.path.isfile(pathfile)
+		if exists:
+			filec = open(pathfile, "r")
+			for linec in filec:
+				if "/*#" in linec:
+					listmapping.append(linec)
+		else:
+		    pass
 
 def getparammapping(dmobject, dmparam):
 	hasmapping = 0

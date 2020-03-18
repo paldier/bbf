@@ -192,73 +192,61 @@ int os__get_WiFiSSIDStats_UnknownProtoPacketsReceived(char *refparam, struct dmc
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.AccessPoint.{i}.Stats.BytesSent!UBUS:wifix/stations/vif,@Name/stats.tx_total_bytes*/
 int os__get_access_point_associative_device_statistics_tx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.AccessPoint.{i}.Stats.BytesReceived!UBUS:wifix/stations/vif,@Name/stats.rx_data_bytes*/
 int os__get_access_point_associative_device_statistics_rx_bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.AccessPoint.{i}.Stats.PacketsSent!UBUS:wifix/stations/vif,@Name/stats.tx_total_pkts*/
 int os__get_access_point_associative_device_statistics_tx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.AccessPoint.{i}.Stats.PacketsReceived!UBUS:wifix/stations/vif,@Name/stats.rx_data_pkts*/
 int os__get_access_point_associative_device_statistics_rx_packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.AccessPoint.{i}.Stats.ErrorsSent!UBUS:wifix/stations/vif,@Name/stats.tx_failures*/
 int os__get_access_point_associative_device_statistics_tx_errors(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.AccessPoint.{i}.Stats.RetransCount!UBUS:wifix/stations/vif,@Name/stats.tx_pkts_retries*/
 int os__get_access_point_associative_device_statistics_retrans_count(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.AccessPoint.{i}.Stats.FailedRetransCount!UBUS:wifix/stations/vif,@Name/stats.tx_pkts_retry_exhausted*/
 int os__get_access_point_associative_device_statistics_failed_retrans_count(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.AccessPoint.{i}.Stats.RetryCount!UBUS:wifix/stations/vif,@Name/stats.tx_pkts_retries*/
 int os__get_access_point_associative_device_statistics_retry_count(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.AccessPoint.{i}.Stats.MultipleRetryCount!UBUS:wifix/stations/vif,@Name/stats.tx_data_pkts_retried*/
 int os__get_access_point_associative_device_statistics_multiple_retry_count(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.Radio.{i}.MaxBitRate!UBUS:wifi.radio.@Name/status//maxrate*/
 int os__get_radio_max_bit_rate (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.Radio.{i}.OperatingFrequencyBand!UBUS:wifi.radio.@Name/status//band*/
 int os__get_radio_frequency(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.Radio.{i}.ChannelsInUse!UCI:wireless/wifi-device,@i-1/channel*/
 int os__get_radio_channel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
@@ -314,19 +302,16 @@ int os__get_neighboring_wifi_diagnostics_result_noise(char *refparam, struct dmc
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.Radio.{i}.PossibleChannels!UBUS:wifi.radio.@Name/status//supp_channels[0].channels*/
 int os__get_radio_possible_channels(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.Radio.{i}.SupportedOperatingChannelBandwidths!UBUS:wifi.radio.@Name/status//supp_channels[0].bandwidth*/
 int os__get_WiFiRadio_SupportedOperatingChannelBandwidths(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
-/*#Device.WiFi.Radio.{i}.CurrentOperatingChannelBandwidth!UBUS:wifi.radio.@Name/status//bandwidth*/
 int os__get_WiFiRadio_CurrentOperatingChannelBandwidth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
@@ -341,7 +326,6 @@ int os__browseWifiNeighboringWiFiDiagnosticResultInst(struct dmctx *dmctx, DMNOD
 	return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.SupportedStandards!UBUS:wifi/status//radio[i-1].standard*/
 int os__get_radio_supported_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);

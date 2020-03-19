@@ -5,6 +5,7 @@
  * it under the terms of the GNU Lesser General Public License version 2.1
  * as published by the Free Software Foundation
  *
+ *	Author: Omar Kallel <omar.kallel@pivasoftware.com>
  *	Author: Anis Ellouze <anis.ellouze@pivasoftware.com>
  *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  *
@@ -357,9 +358,19 @@ static int set_radio_dfsenable(char *refparam, struct dmctx *ctx, void *data, ch
 /*#Device.WiFi.Radio.{i}.OperatingStandards!UCI:wireless/wifi-device,@i-1/hwmode*/
 static int get_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "hwmode", value);
-	if (strcmp(*value, "auto") == 0)
+	char *supst = NULL;
+	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "hwmode", &supst);
+	if(strcmp(supst, "11n") == 0 || strcmp(supst, "auto") == 0) {
 		*value = "n";
+	} else if (strcmp(supst, "11g") == 0) {
+		*value = "g";
+	} else if (strcmp(supst, "11ac") == 0) {
+		*value = "ac";
+	} else if (strcmp(supst, "11b") == 0) {
+		*value = "b";
+	} else if (strcmp(supst, "11ax") == 0) {
+		*value = "ax";
+	}
 	return 0;
 }
 
@@ -369,7 +380,7 @@ static int set_radio_operating_standard(char *refparam, struct dmctx *ctx, void 
 
 	switch (action) {
 			case VALUECHECK:
-				if (dm_validate_string_list(value, -1, -1, -1, -1, -1, NULL, 0, NULL, 0))
+				if (dm_validate_string_list(value, -1, -1, -1, -1, -1, SupportedStandards, 6, NULL, 0))
 					return FAULT_9007;
 				return 0;
 			case VALUESET:
@@ -382,7 +393,7 @@ static int set_radio_operating_standard(char *refparam, struct dmctx *ctx, void 
 				} else {
 					if (strcmp(value, "b") == 0)
 						value = "11b";
-					else if (strcmp(value, "b,g") == 0 || strcmp(value, "g,b") == 0)
+					else if (strcmp(value, "b,g") == 0 || strcmp(value, "g,b") == 0) //TODO: Not supported in TR181 (to check)
 						value = "11bg";
 					else if (strcmp(value, "g") == 0)
 						value = "11g";
@@ -527,13 +538,15 @@ static int get_WiFiRadio_OperatingChannelBandwidth(char *refparam, struct dmctx 
 
 static int set_WiFiRadio_OperatingChannelBandwidth(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	char buf[6];
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, -1, NULL, 0, NULL, 0))
+			if (dm_validate_string(value, -1, -1, SupportedOperatingChannelBandwidth, 6, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
-			dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "bandwidth", value);
+			sscanf(value,"%[^M]", buf);
+			dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "bandwidth", buf);
 			break;
 	}
 	return 0;
@@ -628,7 +641,7 @@ static int get_WiFiRadio_RegulatoryDomain(char *refparam, struct dmctx *ctx, voi
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "country", &country);
 	arr = strsplit(country, "/", &length);
 	if(arr && arr[0])
-		dmasprintf(value, "%s", arr[0]);
+		dmasprintf(value, "%s ", arr[0]);
 	else
 		*value= "";
 

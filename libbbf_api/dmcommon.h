@@ -96,6 +96,8 @@ extern char *MACAddress[];
 extern char *IPPrefix[];
 extern char *IPv4Prefix[];
 extern char *IPv6Prefix[];
+extern char *SupportedOperatingChannelBandwidth[];
+extern char *SupportedStandards[];
 
 #define NVRAM_FILE "/proc/nvram/WpaKey"
 #define MAX_DHCP_LEASES 256

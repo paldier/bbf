@@ -205,6 +205,18 @@ static int get_wifi_status (char *refparam, struct dmctx *ctx, void *data, char 
 	return 0;
 }
 
+/*#Device.WiFi.SSID.{i}.Status!UCI:wireless/wifi-iface,@i-1/disabled*/
+static int get_wifi_access_point_status (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "disabled", value);
+	if (*value[0] == '\0' || *value[0] == '0')
+		*value = "Enabled";
+	else
+		*value = "Disabled";
+	return 0;
+}
+
+
 /*#Device.WiFi.SSID.{i}.SSID!UCI:wireless/wifi-iface,@i-1/ssid*/
 static int get_wlan_ssid(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -821,7 +833,7 @@ static int get_access_point_control_enable(char *refparam, struct dmctx *ctx, vo
 	char *macfilter;
 
 	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "macfilter", &macfilter);
-	if (strcmp(macfilter, "deny") == 0 || strcmp(macfilter, "disable") == 0)
+	if (!*value || *value[0] == 0 || strcmp(macfilter, "deny") == 0 || strcmp(macfilter, "disable") == 0)
 		*value = "false";
 	else
 		*value = "true";
@@ -865,6 +877,8 @@ static int set_WiFiAccessPoint_MaxAllowedAssociations(char *refparam, struct dmc
 static int get_WiFiAccessPoint_IsolationEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "isolate", value);
+	if(!*value || *value[0] == 0)
+		*value = "0";
 	return 0;
 }
 
@@ -944,6 +958,8 @@ static int set_access_point_control_enable(char *refparam, struct dmctx *ctx, vo
 static int get_WiFiAccessPoint_UAPSDEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "wmm_apsd", value);
+	if (!*value || *value[0] == 0)
+		*value = "0";
 	return 0;
 }
 
@@ -966,7 +982,7 @@ static int set_WiFiAccessPoint_UAPSDEnable(char *refparam, struct dmctx *ctx, vo
 
 static int get_access_point_security_supported_modes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "None, WEP-64, WEP-128, WPA-Personal, WPA2-Personal, WPA-WPA2-Personal, WPA-Enterprise, WPA2-Enterprise, WPA-WPA2-Enterprise";
+	*value = "None,WEP-64,WEP-128,WPA-Personal,WPA2-Personal,WPA-WPA2-Personal,WPA-Enterprise,WPA2-Enterprise,WPA-WPA2-Enterprise";
 	return 0;
 }
 
@@ -1188,6 +1204,8 @@ static int set_access_point_security_passphrase(char *refparam, struct dmctx *ct
 static int get_access_point_security_rekey_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "gtk_rekey", value);
+	if (!*value || *value[0] == 0)
+		*value = "0";
 	return 0;
 }
 
@@ -1284,18 +1302,34 @@ static int set_access_point_security_radius_secret(char *refparam, struct dmctx 
 static int get_WiFiAccessPointSecurity_MFPConfig(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "ieee80211w", value);
+
+	if(!*value || *value[0] == 0 || *value[0] == '0')
+		*value = "Disabled";
+	else if (*value[0] == '1')
+		*value = "Optional";
+	else if (*value[0] == '2')
+		*value = "Required";
 	return 0;
 }
 
 static int set_WiFiAccessPointSecurity_MFPConfig(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	char buf[2];
+
 	switch (action)	{
 		case VALUECHECK:
 			if (dm_validate_string(value, -1, -1, MFPConfig, 3, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
-			dmuci_set_value_by_section(((struct wifi_acp_args *)data)->wifi_acp_sec, "ieee80211w", value);
+			if (strcmp(value, "Disabled") == 0)
+				buf[0] = '0';
+			else if (strcmp(value, "Optional") == 0)
+				buf[0] = '1';
+			else if (strcmp(value, "Required") == 0)
+				buf[0] = '2';
+			buf[1] = 0;
+			dmuci_set_value_by_section(((struct wifi_acp_args *)data)->wifi_acp_sec, "ieee80211w", buf);
 			break;
 	}
 	return 0;
@@ -1386,7 +1420,7 @@ static int get_WiFiAccessPointWPS_Status(char *refparam, struct dmctx *ctx, void
 {
 	char *wps_status;
 	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "wps", &wps_status);
-	if (strcmp(wps_status, "0") == 0)
+	if (!wps_status || wps_status[0] == 0 || strcmp(wps_status, "0") == 0)
 		*value = "Disabled";
 	else
 		*value = "Configured";
@@ -2567,7 +2601,7 @@ DMLEAF tWiFiAccessPointParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_access_point_alias, set_access_point_alias, NULL, NULL, BBFDM_BOTH},
 {"Enable", &DMWRITE, DMT_BOOL,  get_wifi_enable, set_wifi_enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_wifi_status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_wifi_access_point_status, NULL, NULL, NULL, BBFDM_BOTH},
 {"SSIDReference", &DMREAD, DMT_STRING, get_ap_ssid_ref, NULL, NULL, NULL, BBFDM_BOTH},
 {"SSIDAdvertisementEnabled", &DMWRITE, DMT_BOOL, get_wlan_ssid_advertisement_enable, set_wlan_ssid_advertisement_enable, NULL, NULL, BBFDM_BOTH},
 {"WMMEnable", &DMWRITE, DMT_BOOL, get_wmm_enabled, set_wmm_enabled, NULL, NULL, BBFDM_BOTH},

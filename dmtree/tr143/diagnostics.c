@@ -2006,7 +2006,7 @@ static int set_IPDiagnosticsServerSelectionDiagnostics_Protocol(char *refparam, 
 
 static int get_IPDiagnosticsServerSelectionDiagnostics_Port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_varstate_string("cwmp", "@serverselectiondiagnostic[0]", "port", value);
+	*value = serverselection_get("port", "1");
 	return 0;
 }
 

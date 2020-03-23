@@ -205,17 +205,6 @@ static int get_wifi_status (char *refparam, struct dmctx *ctx, void *data, char 
 	return 0;
 }
 
-/*#Device.WiFi.SSID.{i}.Status!UCI:wireless/wifi-iface,@i-1/disabled*/
-static int get_wifi_access_point_status (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "disabled", value);
-	if (*value[0] == '\0' || *value[0] == '0')
-		*value = "Enabled";
-	else
-		*value = "Disabled";
-	return 0;
-}
-
 
 /*#Device.WiFi.SSID.{i}.SSID!UCI:wireless/wifi-iface,@i-1/ssid*/
 static int get_wlan_ssid(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -243,6 +232,7 @@ static int get_WiFiSSID_MACAddress(char *refparam, struct dmctx *ctx, void *data
 {
 	json_object *res;
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
+
 	DM_ASSERT(res, *value = "");
 	*value = dmjson_get_value(res, 1, "macaddr");
 	return 0;
@@ -363,25 +353,6 @@ static int set_radio_dfsenable(char *refparam, struct dmctx *ctx, void *data, ch
 				dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "dfsc", b ? "1" : "0");
 			}
 			return 0;
-	}
-	return 0;
-}
-
-/*#Device.WiFi.Radio.{i}.OperatingStandards!UCI:wireless/wifi-device,@i-1/hwmode*/
-static int get_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *supst = NULL;
-	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "hwmode", &supst);
-	if(strcmp(supst, "11n") == 0 || strcmp(supst, "auto") == 0) {
-		*value = "n";
-	} else if (strcmp(supst, "11g") == 0) {
-		*value = "g";
-	} else if (strcmp(supst, "11ac") == 0) {
-		*value = "ac";
-	} else if (strcmp(supst, "11b") == 0) {
-		*value = "b";
-	} else if (strcmp(supst, "11ax") == 0) {
-		*value = "ax";
 	}
 	return 0;
 }
@@ -833,7 +804,7 @@ static int get_access_point_control_enable(char *refparam, struct dmctx *ctx, vo
 	char *macfilter;
 
 	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "macfilter", &macfilter);
-	if (!*value || *value[0] == 0 || strcmp(macfilter, "deny") == 0 || strcmp(macfilter, "disable") == 0)
+	if (macfilter[0] == 0 || strcmp(macfilter, "deny") == 0 || strcmp(macfilter, "disable") == 0)
 		*value = "false";
 	else
 		*value = "true";
@@ -2475,7 +2446,7 @@ DMLEAF tWiFiRadioParams[] = {
 {CUSTOM_PREFIX"MaxAssociations", &DMWRITE, DMT_STRING, get_radio_maxassoc, set_radio_maxassoc, NULL, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"DFSEnable", &DMWRITE, DMT_BOOL, get_radio_dfsenable, set_radio_dfsenable, NULL, NULL, BBFDM_BOTH},
 {"SupportedStandards", &DMREAD, DMT_STRING, os__get_radio_supported_standard, NULL, NULL, NULL, BBFDM_BOTH},
-{"OperatingStandards", &DMWRITE, DMT_STRING, get_radio_operating_standard, set_radio_operating_standard, NULL, NULL, BBFDM_BOTH},
+{"OperatingStandards", &DMWRITE, DMT_STRING, os_get_radio_operating_standard, set_radio_operating_standard, NULL, NULL, BBFDM_BOTH},
 {"ChannelsInUse", &DMREAD, DMT_STRING, os__get_radio_channel, NULL, NULL, NULL, BBFDM_BOTH},
 {"Channel", &DMWRITE, DMT_UNINT, os__get_radio_channel, set_radio_channel, NULL, NULL, BBFDM_BOTH},
 {"AutoChannelEnable", &DMWRITE, DMT_BOOL, get_radio_auto_channel_enable, set_radio_auto_channel_enable, NULL, NULL, BBFDM_BOTH},
@@ -2601,7 +2572,7 @@ DMLEAF tWiFiAccessPointParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_access_point_alias, set_access_point_alias, NULL, NULL, BBFDM_BOTH},
 {"Enable", &DMWRITE, DMT_BOOL,  get_wifi_enable, set_wifi_enable, NULL, NULL, BBFDM_BOTH},
-{"Status", &DMREAD, DMT_STRING, get_wifi_access_point_status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, os_get_wifi_access_point_status, NULL, NULL, NULL, BBFDM_BOTH},
 {"SSIDReference", &DMREAD, DMT_STRING, get_ap_ssid_ref, NULL, NULL, NULL, BBFDM_BOTH},
 {"SSIDAdvertisementEnabled", &DMWRITE, DMT_BOOL, get_wlan_ssid_advertisement_enable, set_wlan_ssid_advertisement_enable, NULL, NULL, BBFDM_BOTH},
 {"WMMEnable", &DMWRITE, DMT_BOOL, get_wmm_enabled, set_wmm_enabled, NULL, NULL, BBFDM_BOTH},

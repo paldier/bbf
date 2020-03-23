@@ -265,6 +265,28 @@ int os__get_access_point_associative_device_statistics_retrans_count(char *refpa
 	return 0;
 }
 
+
+/*#Device.WiFi.AccessPoint.{i}.Status!UBUS:wifi.ap.@Name/status//status*/
+int os_get_wifi_access_point_status (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	json_object *res;
+	char object[32], *status = NULL, *iface;
+
+	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "device", &iface);
+	snprintf(object, sizeof(object), "wifi.ap.%s", iface);
+	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
+
+	DM_ASSERT(res, status = "");
+	status = dmjson_get_value(res, 1, "status");
+
+
+	if (strcmp(status, "running") == 0 || strcmp(status, "up") == 0)
+		*value = "Enabled";
+	else
+		*value = "Disabled";
+	return 0;
+}
+
 /*#Device.WiFi.Radio.{i}.MaxBitRate!UBUS:wifi.radio.@Name/status//maxrate*/
 int os__get_radio_max_bit_rate (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -507,6 +529,37 @@ int os__get_radio_supported_standard(char *refparam, struct dmctx *ctx, void *da
 		}
 	}
 	return 0;
+}
+
+/*#Device.WiFi.Radio.{i}.OperatingStandards!UBUS:wifi.radio.@Name/status//standard*/
+int os_get_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	json_object *res;
+	char object[32], *standard = NULL, *iface = NULL;
+	char  **standards = NULL;
+	int i;
+	size_t length;
+
+	*value = "";
+	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "device", &iface);
+	snprintf(object, sizeof(object), "wifi.radio.%s", iface);
+	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
+
+	DM_ASSERT(res, standard = "");
+	standard = dmjson_get_value(res, 1, "standard");
+	standards = strsplit(standard, "/", &length);
+
+	for (i=0; i<length;i++) {
+		if (strcmp(standards[i], "802.11") == 0)
+			continue;
+		if (strlen(*value) == 0){
+			dmasprintf(value, "%s", standards[i]);
+			continue;
+		}
+		dmasprintf(value, "%s,%s", *value, standards[i]);
+	}
+	return 0;
+
 }
 
 int os__get_access_point_total_associations(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)

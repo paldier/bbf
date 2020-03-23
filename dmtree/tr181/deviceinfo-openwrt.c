@@ -4,12 +4,37 @@
 
 #define BASE_IFACE "br-lan"
 
-char * os__get_deviceid_manufactureroui()
+static char * get_uci_deviceinfo(char *opt)
 {
 	char *v;
 
-	get_net_device_sysfs(BASE_IFACE, "address", &v);
+	dmuci_get_option_value_string("cwmp", "@deviceinfo[0]", opt, &v);
 	return v;
+}
+
+char * os__get_deviceid_manufacturer()
+{
+	return get_uci_deviceinfo("Manufacturer");
+}
+
+char * os__get_deviceid_productclass()
+{
+	return get_uci_deviceinfo("ProductClass");
+}
+
+char * os__get_deviceid_serialnumber()
+{
+	return get_uci_deviceinfo("SerialNumber");
+}
+
+char * os__get_softwareversion()
+{
+	return get_uci_deviceinfo("SoftwareVersion");
+}
+
+char * os__get_deviceid_manufactureroui()
+{
+	return get_uci_deviceinfo("ManufacturerOUI");
 }
 
 int os__get_base_mac_addr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)

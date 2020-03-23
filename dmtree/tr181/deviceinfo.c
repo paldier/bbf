@@ -17,45 +17,27 @@
  */
 char *get_deviceid_manufacturer()
 {
-	char *v;
-	dmuci_get_option_value_string("cwmp","cpe","manufacturer", &v);
-	return v;
+	return os__get_deviceid_manufacturer();
 }
 
 char *get_deviceid_manufactureroui()
 {
-	char *v;
-
-	dmuci_get_option_value_string("cwmp", "cpe", "override_oui", &v);
-	if (v[0] == '\0')
-		v = os__get_deviceid_manufactureroui();
-
-	return v;
+	return os__get_deviceid_manufactureroui();
 }
 
 char *get_deviceid_productclass()
 {
-	char *v;
-	dmuci_get_option_value_string("cwmp", "cpe", "override_productclass", &v);
-	if (v[0] == '\0') {
-		db_get_value_string("hw", "board", "iopVerBoard", &v);
-		return v;
-	}
-	return v;
+	return os__get_deviceid_productclass();
 }
 
 char *get_deviceid_serialnumber()
 {
-	char *v;
-	db_get_value_string("hw", "board", "serial_number", &v);
-	return v;
+	return os__get_deviceid_serialnumber();
 }
 
 char *get_softwareversion()
 {
-	char *v;
-	db_get_value_string("hw", "board", "iopVersion", &v);
-	return v;
+	return os__get_softwareversion();
 }
 
 int lookup_vcf_name(char *instance, char **value)

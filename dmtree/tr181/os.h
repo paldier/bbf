@@ -5,7 +5,12 @@
 
 /* IOPSYS-WRT and OpenWrt
  */
+char * os__get_deviceid_manufacturer();
+char * os__get_deviceid_productclass();
+char * os__get_deviceid_serialnumber();
+char * os__get_softwareversion();
 char * os__get_deviceid_manufactureroui();
+
 int os__get_base_mac_addr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 
 int os__get_memory_status_total(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value);

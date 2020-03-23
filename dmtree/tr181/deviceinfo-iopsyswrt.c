@@ -2,11 +2,47 @@
 
 #include <libbbf_api/dmcommon.h>
 
+char * os__get_deviceid_manufacturer()
+{
+	char *v;
+	dmuci_get_option_value_string("cwmp","cpe","manufacturer", &v);
+	return v;
+}
+
+char * os__get_deviceid_productclass()
+{
+	char *v;
+	dmuci_get_option_value_string("cwmp", "cpe", "override_productclass", &v);
+	if (v[0] == '\0') {
+		db_get_value_string("hw", "board", "iopVerBoard", &v);
+		return v;
+	}
+	return v;
+}
+
+char * os__get_deviceid_serialnumber()
+{
+	char *v;
+	db_get_value_string("hw", "board", "serial_number", &v);
+	return v;
+}
+
+char * os__get_softwareversion()
+{
+	char *v;
+	db_get_value_string("hw", "board", "iopVersion", &v);
+	return v;
+}
+
 char * os__get_deviceid_manufactureroui()
 {
 	char *v, *mac = NULL, str[16], macreadfile[18] = {0};
 	json_object *res;
 	FILE *nvrammac = NULL;
+
+	dmuci_get_option_value_string("cwmp", "cpe", "override_oui", &v);
+	if (v[0])
+		return v;
 
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
 	if (!(res)) {

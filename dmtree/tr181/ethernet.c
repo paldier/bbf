@@ -49,20 +49,19 @@ static int eth_port_sysfs(const struct eth_port_args *args, const char *name, ch
 
 static int is_device_exist(char *device)
 {
-        struct uci_section *s = NULL;
-        char *dev;
+	struct uci_section *s = NULL;
+	char *dev;
 
-        uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
-                dmuci_get_value_by_section_string(s, "device", &dev);
-
-                char *p = strtok(dev, ".");
-                if (p != NULL) {
-                        if (strcmp(p, device) == 0) {
-                                return 1;
-                        }
-                }
-        }
-        return 0;
+	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
+		dmuci_get_value_by_section_string(s, "device", &dev);
+		char *p = strtok(dev, ".");
+		if (p != NULL) {
+			if (strcmp(p, device) == 0) {
+				return 1;
+			}
+		}
+	}
+	return 0;
 }
 
 static int is_mac_exist(char *macaddr)
@@ -96,37 +95,35 @@ static void create_link(char *ifname)
 		return;
 	}
 
-       /* Fix: For all the Ethernet link objects pointing to same Ethernet Interface,
-         * we can omit creating multiple Ethernet link entries.*/
-        char intf[250] = {0};
-        strncpy(intf, device, sizeof(intf));
-        char *p = strtok(intf, ".");
-        if (p != NULL) {
-                if (is_device_exist(p)) {
-                        return;
-                }
-        }
+	/* Fix: For all the Ethernet link objects pointing to same Ethernet Interface,
+	 * we can omit creating multiple Ethernet link entries.*/
+	char intf[250] = {0};
+	strncpy(intf, device, sizeof(intf));
+	char *p = strtok(intf, ".");
+	if (p != NULL) {
+		if (is_device_exist(p)) {
+			return;
+		}
+	}
 
 	/* Check if section_name exists or not, if yes then do not add section just update
 	 * the params else add section and update the params. */
-	
-        struct uci_section *s = NULL;
-        char *sec_name;
+	struct uci_section *s = NULL;
+	char *sec_name;
 	int ret = 1;
-
-        uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
-                dmuci_get_value_by_section_string(s, "section_name", &sec_name);
+	
+	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
+		dmuci_get_value_by_section_string(s, "section_name", &sec_name);
 		if (strcmp(ifname, sec_name) == 0) {
 			dmuci_set_value_by_section(s, "mac", macaddr);
 			dmuci_set_value_by_section(s, "device", device);
 			dmuci_set_value_by_section(s, "section_name", ifname);
 			ret = 0;
 			break;
-
 		} else {
 			ret = 1;
 		}
-        }
+	}
 
 	if (ret == 1 ) {
 		dmuci_add_section_bbfdm(DMMAP, "link", &dmmap, &v);
@@ -237,28 +234,26 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 
 		char *if_name = strtok(intf, " ");
 		if (NULL != if_name) {
-
 			char name[250] = {0};
 			strncpy(name, if_name, sizeof(name));
-
 			/* Support for both vlans and macvlans. */
-                        int macvlan = 0;
-                        char *p = strstr(name, ".");
-                        if (!p) {
-                                char *t = strstr(name, "_");
-                                if (t) {
-                                        macvlan = 1;
-                                } else {
-                                        continue;
-                                }
-                        }
+			int macvlan = 0;
+			char *p = strstr(name, ".");
+			if (!p) {
+				char *t = strstr(name, "_");
+				if (t) {
+					macvlan = 1;
+				} else {
+					continue;
+				}
+			}
 
 			char *tok, *end;
-                        if (macvlan == 1) {
-                                tok = strtok_r(name, "_", &end);
-                        } else {
-                                tok = strtok_r(name, ".", &end);
-                        }
+			if (macvlan == 1) {
+				tok = strtok_r(name, "_", &end);
+			} else {
+				tok = strtok_r(name, ".", &end);
+			}
 
 			if (end == NULL) {
 				continue;
@@ -267,8 +262,6 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 			if (macvlan == 0) {
 				char tag[20] = {0};
 				strncpy(tag, end, sizeof(tag));
-
-			
 				if (strncmp(tag, "1", sizeof(tag)) == 0) {
 					continue;
 				}
@@ -305,7 +298,7 @@ static int get_linker_interface(char *refparam, struct dmctx *dmctx, void *data,
 static int get_linker_link(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
 	/* Fix: for get linker link */
-        dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "mac", linker);
+	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "mac", linker);
 	return 0;
 }
 
@@ -330,7 +323,6 @@ static int addObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, cha
 	struct uci_section *dmmap_network= NULL;
 
 	inst = get_last_instance_bbfdm(DMMAP, "link", "link_instance");
-
 	dmuci_add_section_bbfdm(DMMAP, "link", &dmmap_network, &v);
 	*instance = update_instance_bbfdm(dmmap_network, inst, "link_instance");
 	return 0;
@@ -340,6 +332,7 @@ static int delObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, cha
 {
 	char *sect_name= NULL;
 	struct uci_section *s = NULL;
+
 	switch (del_action) {
 		case DEL_INST:
 			/* Fix : Deletion of EthernetLink to support L2 VLAN deployments. */
@@ -357,7 +350,6 @@ static int delObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, cha
 						dmuci_get_value_by_section_string(intf_s, "proto", &proto);
 						dmuci_delete_by_section(intf_s, "proto", proto);
 						break;
-
 					}
 				}
 				/* Remove the Link section from dmmap. */
@@ -439,7 +431,7 @@ static int delObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void
 		break;
 	case DEL_ALL:
 		return FAULT_9005;
-                break;
+		break;
 	}
 	return 0;
 }
@@ -521,7 +513,6 @@ static int get_Ethernet_VLANTerminationNumberOfEntries(char *refparam, struct dm
 				}
 			}
 
-
 			char *tok, *end;
 			if (macvlan == 1) {
 				tok = strtok_r(name, "_", &end);
@@ -536,13 +527,11 @@ static int get_Ethernet_VLANTerminationNumberOfEntries(char *refparam, struct dm
 			if (macvlan == 0) {
 				char tag[20] = {0};
 				strncpy(tag, end, sizeof(tag));
-
 				if (strncmp(tag, "1", sizeof(tag)) == 0) {
 					continue;
 				}
 			}
 		}
-
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -1067,7 +1056,6 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 
 							/* Set the value of proto to the section. */		
 							dmuci_set_value_by_section(intf_s, "proto", "dhcp");
-
 						}
 					}
 				}

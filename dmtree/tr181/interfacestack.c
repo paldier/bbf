@@ -73,7 +73,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 	struct interfacestack_data ifdata = {0};
 	struct uci_section *s = NULL, *sd = NULL, *port, *port_s, *ss, *dmmap_s = NULL;
 	char *proto, *type, *pch, *spch, *layer_inst, *v, *vb, *higheralias, *loweralias, *ifname, *br_inst, *mg, *value, *device, *name;
-	char *interface_stack_int = NULL, *interface_stack_int_last = NULL, *wanifname, *wanlinker, *mac, *vlan_method, *sectionname, *package, *section;
+	char *interface_stack_int = NULL, *interface_stack_int_last = NULL, *wanifname, *wanlinker, *mac, *sectionname, *package, *section;
 	char buf_lowerlayer[128] = "";
 	char buf_higherlayer[128] = "";
 	char buf_higheralias[64] = "";
@@ -107,11 +107,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			device = get_device(section_name(s));
 			if (device[0] != '\0') {
 				adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cVLANTermination%c", dmroot, dm_delim, dm_delim, dm_delim), device, &v);
-				dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-				if(strcmp(vlan_method, "2") == 0)
-					loweralias = get_alias_by_section("dmmap_network", "device", s, "all_vlan_term_alias");
-				else
-					loweralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
+				loweralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
 				if (v != NULL)
 					found = 1;
 			}
@@ -151,11 +147,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		device = get_device(section_name(s));
 		if (device[0] != '\0') {
 			adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cVLANTermination%c", dmroot, dm_delim, dm_delim, dm_delim), device, &v);
-			dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-			if(strcmp(vlan_method, "2") == 0)
-				loweralias = get_alias_by_section("dmmap_network", "device", s, "all_vlan_term_alias");
-			else
-				loweralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
+			loweralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
 			if (v != NULL)
 				found = 1;
 		}
@@ -180,22 +172,47 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 	}
 
 	/* Higher layers are Device.Ethernet.VLANTermination.{i}. */
-	uci_foreach_sections("network", "device", s) {
-		dmuci_get_value_by_section_string(s, "type", &type);
-		dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-		if ((strcmp(vlan_method, "2") != 0 && strcmp(vlan_method, "1") != 0) || (strcmp(vlan_method, "1") == 0 && strcmp(type, "untagged") == 0) )
+	uci_foreach_sections("network", "interface", s) {
+		dmuci_get_value_by_section_string(s, "proto", &proto);
+		if (*proto == '\0')
 			continue;
-		if(strcmp(vlan_method, "2") == 0)
-			layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "device", s, "all_vlan_term_instance", "all_vlan_term_alias");
-		else
-			layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "device", s, "only_tagged_vlan_term_instance", "vlan_term_alias");
+		dmuci_get_value_by_section_string(s, "ifname", &ifname);
+		if (*ifname == '\0')
+			continue;
+		char intf[250] = {0};
+		strncpy(intf, ifname, sizeof(intf));
+		char *if_name = strtok(intf, " ");
+		if (NULL != if_name) {
+			char name[250] = {0};
+			strncpy(name, if_name, sizeof(name));
+			int macvlan = 0;
+			char *p = strstr(name, ".");
+			if (!p) {
+				char *t = strstr(name, "_");
+				if (t)
+					macvlan = 1;
+				else
+					continue;
+			}
+			char *tok, *end;
+			if (macvlan == 1)
+				tok = strtok_r(name, "_", &end);
+			else
+				tok = strtok_r(name, ".", &end);
+			if (end == NULL)
+				continue;
+			if (macvlan == 0) {
+				char tag[20] = {0};
+				strncpy(tag, end, sizeof(tag));
+				if (strncmp(tag, "1", sizeof(tag)) == 0)
+					continue;
+			}
+		}
+		layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "vlan_term_instance", "vlan_term_alias");
 		if (*layer_inst == '\0')
 			continue;
 		snprintf(buf_higherlayer, sizeof(buf_higherlayer), "Device.Ethernet.VLANTermination.%s.", layer_inst);
-		if(strcmp(vlan_method, "2") == 0)
-			higheralias = get_alias_by_section("dmmap_network", "device", s, "all_vlan_term_alias");
-		else
-			higheralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
+		higheralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
 		snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
 
 		dmuci_get_value_by_section_string(s, "name", &value);
@@ -230,7 +247,8 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 	/* Higher layers are Device.Ethernet.Link.{i}. */
 	uci_foreach_sections("network", "interface", s) {
 		dmuci_get_value_by_section_string(s, "type", &type);
-		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback")==0)
+		dmuci_get_value_by_section_string(s, "proto", &proto);
+		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback") == 0 || *proto == '\0')
 			continue;
 		dmuci_get_value_by_section_string(s, "ifname", &ifname);
 		if (*ifname == '\0' || *ifname == '@')

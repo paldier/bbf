@@ -141,9 +141,8 @@ static int dmmap_synchronizeEthernetLink(struct dmctx *dmctx, DMNODE *parent_nod
 	uci_foreach_sections("network", "interface", s) {
 		dmuci_get_value_by_section_string(s, "type", &type);
 		/* Fix: The creating of multiple ethernet links.*/
-                dmuci_get_value_by_section_string(s, "proto", &proto);
-		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback") == 0 ||
-				*proto == '\0') {
+		dmuci_get_value_by_section_string(s, "proto", &proto);
+		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback") == 0 || *proto == '\0') {
 			continue;
 		}
 
@@ -154,6 +153,59 @@ static int dmmap_synchronizeEthernetLink(struct dmctx *dmctx, DMNODE *parent_nod
 		create_link(section_name(s));
 	}
 	return 0;
+}
+
+static char *get_vlan_last_instance_bbfdm(char *package, char *section, char *opt_inst)
+{
+	struct uci_section *s, *confsect;
+	char *inst = NULL, *last_inst = NULL, *sect_name;
+
+	uci_path_foreach_sections(bbfdm, package, section, s) {
+		dmuci_get_value_by_section_string(s, "section_name", &sect_name);
+		get_config_section_of_dmmap_section("network", "interface", sect_name, &confsect);
+
+		char *proto;
+		dmuci_get_value_by_section_string(confsect, "proto", &proto);
+		if (*proto == '\0')
+			continue;
+
+		char *ifname;
+		dmuci_get_value_by_section_string(confsect, "ifname", &ifname);
+		if (*ifname == '\0')
+			continue;
+
+		char interface[250] = {0};
+		strncpy(interface, ifname, sizeof(interface));
+		/* Only tagged interfaces should be considered. */
+		int ret = 0;
+		char *tok, *end;
+		tok = strtok_r(ifname, " ", &end);
+		if (tok == NULL) {
+			char *intf, *tag;
+			intf = strtok_r(tok, ".", &tag);
+			if (tag != NULL) {
+				char tag_if[10] = {0};
+				strncpy(tag_if, tag, sizeof(tag_if));
+				if (strncmp(tag_if, "1", sizeof(tag_if)) != 0)
+					ret = 1;
+				else
+					ret = 0;
+			} else
+				ret = 0;
+		} else {
+			char *p = strstr(interface, ".");
+			if (p)
+				ret = 1;
+		}
+
+		if (ret == 1) {
+			inst = update_instance_bbfdm(s, last_inst, opt_inst);
+			if(last_inst)
+				dmfree(last_inst);
+			last_inst = dmstrdup(inst);
+		}
+	}
+	return inst;
 }
 
 /*************************************************************
@@ -201,10 +253,10 @@ static int browseEthernetLinkInst(struct dmctx *dmctx, DMNODE *parent_node, void
 	return 0;
 }
 
-/*#Device.Ethernet.VLANTermination.{i}.!UCI:network/device/dmmap_network*/
+/*#Device.Ethernet.VLANTermination.{i}.!UCI:network/interface/dmmap_network*/
 static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	char *vlan_term = NULL, *vlan_term_last = NULL, *type= NULL, *vlan_method= NULL;
+	char *vlan_term = NULL, *vlan_term_last = NULL;
 	struct dm_args curr_vlan_term_args = {0};
 	struct dmmap_dup *p = NULL;
 	LIST_HEAD(dup_list);
@@ -212,26 +264,18 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 	/* Fix : Creating of vlan instance for only upstream interface with proto defined. */
 	synchronize_specific_config_sections_with_dmmap("network", "interface", "dmmap_network", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
-		dmuci_get_value_by_section_string(p->config_section, "type", &type);
-		dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-		if ((strcmp(vlan_method, "2") != 0 && strcmp(vlan_method, "1") != 0) || (strcmp(vlan_method, "1") == 0 && strcmp(type, "untagged") == 0) )
-			continue;
-
 		char *proto;
 		dmuci_get_value_by_section_string(p->config_section, "proto", &proto);
-		if (*proto == '\0') {
+		if (*proto == '\0')
 			continue;
-		}
 
 		char *ifname;
 		dmuci_get_value_by_section_string(p->config_section, "ifname", &ifname);
-		if (*ifname == '\0') {
+		if (*ifname == '\0')
 			continue;
-		}
 
 		char intf[250] = {0};
 		strncpy(intf, ifname, sizeof(intf));
-
 		char *if_name = strtok(intf, " ");
 		if (NULL != if_name) {
 			char name[250] = {0};
@@ -241,38 +285,31 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 			char *p = strstr(name, ".");
 			if (!p) {
 				char *t = strstr(name, "_");
-				if (t) {
+				if (t)
 					macvlan = 1;
-				} else {
+				else
 					continue;
-				}
 			}
 
 			char *tok, *end;
-			if (macvlan == 1) {
+			if (macvlan == 1)
 				tok = strtok_r(name, "_", &end);
-			} else {
+			else
 				tok = strtok_r(name, ".", &end);
-			}
 
-			if (end == NULL) {
+			if (end == NULL)
 				continue;
-			}
 
 			if (macvlan == 0) {
 				char tag[20] = {0};
 				strncpy(tag, end, sizeof(tag));
-				if (strncmp(tag, "1", sizeof(tag)) == 0) {
+				if (strncmp(tag, "1", sizeof(tag)) == 0)
 					continue;
-				}
 			}
 		}
 
 		curr_vlan_term_args.section = p->config_section;
-		if(strcmp(vlan_method, "2") == 0)
-			vlan_term = handle_update_instance(1, dmctx, &vlan_term_last, update_instance_alias, 3, p->dmmap_section, "all_vlan_term_instance", "all_vlan_term_alias");
-		else
-			vlan_term = handle_update_instance(1, dmctx, &vlan_term_last, update_instance_alias, 3, p->dmmap_section, "only_tagged_vlan_term_instance", "vlan_term_alias");
+		vlan_term = handle_update_instance(1, dmctx, &vlan_term_last, update_instance_alias, 3, p->dmmap_section, "vlan_term_instance", "vlan_term_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_vlan_term_args, vlan_term) == DM_STOP)
 			break;
 	}
@@ -370,15 +407,11 @@ static int delObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, cha
 
 static int addObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
-	char *inst, *v, *eth_wan, *vid, *name, *vlan_name, *val, *vlan_method = NULL;
+	char *inst, *v, *eth_wan, *vid, *name, *vlan_name, *val;
 	struct uci_section *dmmap_network= NULL, *s;
 
 	check_create_dmmap_package("dmmap_network");
-	dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-	if(strcmp(vlan_method, "2") == 0)
-		inst = get_vlan_last_instance_bbfdm("dmmap_network", "interface", "all_vlan_term_instance", vlan_method);
-	else
-		inst = get_vlan_last_instance_bbfdm("dmmap_network", "interface", "only_tagged_vlan_term_instance", vlan_method);
+	inst = get_vlan_last_instance_bbfdm("dmmap_network", "interface", "vlan_term_instance");
 
 	dmuci_get_option_value_string("ports", "WAN", "ifname", &eth_wan);
 	dmasprintf(&vid, "%d", inst?atoi(inst)+5:4);
@@ -388,39 +421,24 @@ static int addObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void
 	dmuci_set_value_by_section(s, "section_name", vlan_name);
 	dmasprintf(&name, "%s.%s", eth_wan, vid);
 	dmuci_set_value_by_section(s, "ifname", name);
-	char mac[100] = "02:10:18:01:CC:05";
-	dmuci_set_value_by_section(s, "macaddr", mac);
+	dmuci_set_value_by_section(s, "macaddr", "02:10:18:01:CC:05");
 
 	dmuci_add_section_bbfdm("dmmap_network", "interface", &dmmap_network, &v);
 	dmuci_set_value_by_section(dmmap_network, "section_name", vlan_name);
-	if(strcmp(vlan_method, "2") == 0)
-		*instance = update_instance_bbfdm(dmmap_network, inst, "all_vlan_term_instance");
-	else
-		*instance = update_instance_bbfdm(dmmap_network, inst, "only_tagged_vlan_term_instance");
-
+	*instance = update_instance_bbfdm(dmmap_network, inst, "vlan_term_instance");
 	return 0;
 }
 
 static int delObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *dmmap_section = NULL;
-	char *vlan_method = NULL;
 
 	switch (del_action) {
 	case DEL_INST:
-		dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-
 		if(is_section_unnamed(section_name(((struct dm_args *)data)->section))) {
-
 			LIST_HEAD(dup_list);
-			if(strcmp(vlan_method, "2") == 0) {
-				delete_sections_save_next_sections("dmmap_network", "interface", "all_vlan_term_instance", section_name(((struct dm_args *)data)->section), atoi(instance), &dup_list);
-				update_dmmap_sections(&dup_list, "all_vlan_term_instance", "dmmap_network", "interface");
-			}
-			else {
-				delete_sections_save_next_sections("dmmap_network", "interface", "only_tagged_vlan_term_instance", section_name(((struct dm_args *)data)->section), atoi(instance), &dup_list);
-				update_dmmap_sections(&dup_list, "only_tagged_vlan_term_instance", "dmmap_network", "interface");
-			}
+			delete_sections_save_next_sections("dmmap_network", "interface", "vlan_term_instance", section_name(((struct dm_args *)data)->section), atoi(instance), &dup_list);
+			update_dmmap_sections(&dup_list, "vlan_term_instance", "dmmap_network", "interface");
 			dmuci_delete_by_section_unnamed(((struct dm_args *)data)->section, NULL, NULL);
 		} else {
 			get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name(((struct dm_args *)data)->section), &dmmap_section);
@@ -431,7 +449,6 @@ static int delObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void
 		break;
 	case DEL_ALL:
 		return FAULT_9005;
-		break;
 	}
 	return 0;
 }
@@ -469,67 +486,51 @@ static int get_Ethernet_LinkNumberOfEntries(char *refparam, struct dmctx *ctx, v
 static int get_Ethernet_VLANTerminationNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
-	char *type, *vlan_method;
 	int cnt = 0;
 
 	/* Fix: Browse interface to find the no of vlan termination  entries. */
-	uci_foreach_sections("network", "interface", s)
-	{
-		dmuci_get_value_by_section_string(s, "type", &type);
-		dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-		if ((strcmp(vlan_method, "2") != 0 && strcmp(vlan_method, "1") != 0) || (strcmp(vlan_method, "1") == 0 && strcmp(type, "untagged") == 0))
-			continue;
-
+	uci_foreach_sections("network", "interface", s) {
 		char *proto;
 		dmuci_get_value_by_section_string(s, "proto", &proto);
-		if (*proto == '\0') {
+		if (*proto == '\0')
 			continue;
-		}
 
 		char *ifname;
 		dmuci_get_value_by_section_string(s, "ifname", &ifname);
-		if (*ifname == '\0') {
+		if (*ifname == '\0')
 			continue;
-		}
 
 		char intf[250] = {0};
 		strncpy(intf, ifname, sizeof(intf));
-
 		char *if_name = strtok(intf, " ");
 		if (NULL != if_name) {
-
 			char name[250] = {0};
 			strncpy(name, if_name, sizeof(name));
-
 			/* Support for both vlans and macvlans. */
 			int macvlan = 0;
 			char *p = strstr(name, ".");
 			if (!p) {
 				char *t = strstr(name, "_");
-				if (t) {
+				if (t)
 					macvlan = 1;
-				} else {
+				else
 					continue;
-				}
 			}
 
 			char *tok, *end;
-			if (macvlan == 1) {
+			if (macvlan == 1)
 				tok = strtok_r(name, "_", &end);
-			} else {
+			else
 				tok = strtok_r(name, ".", &end);
-			}
 
-			if (end == NULL) {
+			if (end == NULL)
 				continue;
-			}
 
 			if (macvlan == 0) {
 				char tag[20] = {0};
 				strncpy(tag, end, sizeof(tag));
-				if (strncmp(tag, "1", sizeof(tag)) == 0) {
+				if (strncmp(tag, "1", sizeof(tag)) == 0)
 					continue;
-				}
 			}
 		}
 		cnt++;
@@ -1210,25 +1211,16 @@ static int get_EthernetVLANTermination_Status(char *refparam, struct dmctx *ctx,
 static int get_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
-	char *vlan_method = NULL;
 
 	/* Fix: Browse interface in dmmap_network to fetch the value. */
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct dm_args *)data)->section), &dmmap_section);
-	if (dmmap_section) {
-		dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-		if(strcmp(vlan_method, "2") == 0)
-			dmuci_get_value_by_section_string(dmmap_section, "all_vlan_term_alias", value);
-		else
-			dmuci_get_value_by_section_string(dmmap_section, "vlan_term_alias", value);
-	}
-
+	dmuci_get_value_by_section_string(dmmap_section, "vlan_term_alias", value);
 	return 0;
 }
 
 static int set_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
-	char *vlan_method = NULL;
 
 	switch (action) {
 		case VALUECHECK:
@@ -1238,13 +1230,9 @@ static int set_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, 
 		case VALUESET:
 			/* Fix: Browse interface in dmmap_network to fetch the value. */
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct dm_args *)data)->section), &dmmap_section);
-			if(dmmap_section) {
-				dmuci_get_option_value_string("cwmp", "cpe", "vlan_method", &vlan_method);
-				if(strcmp(vlan_method, "2") == 0)
-					dmuci_set_value_by_section(dmmap_section, "all_vlan_term_alias", value);
-				else
-					dmuci_set_value_by_section(dmmap_section, "vlan_term_alias", value);
-			}
+			if(dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "vlan_term_alias", value);
+			return 0;
 	}
 	return 0;
 }

@@ -578,7 +578,6 @@ void dm_update_enabled_notify_byname(char *name, char *new_value);
 char *get_last_instance(char *package, char *section, char *opt_inst);
 char *get_last_instance_bbfdm_without_update(char *package, char *section, char *opt_inst);
 char *get_last_instance_bbfdm(char *package, char *section, char *opt_inst);
-char *get_vlan_last_instance_bbfdm(char *package, char *section, char *opt_inst, char *vlan_method);
 char *get_last_instance_lev2(char *package, char *section, char *opt_inst, char *opt_check, char *value_check);
 char *get_last_instance_lev2_bbfdm_dmmap_opt(char* dmmap_package, char *section,  char *opt_inst, char *opt_check, char *value_check);
 char *get_last_instance_lev2_bbfdm(char *package, char *section, char* dmmap_package, char *opt_inst, char *opt_check, char *value_check);

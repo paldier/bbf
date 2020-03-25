@@ -968,12 +968,11 @@ static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 			}
 		} else {
 			/* for upstream interface, set the lowerlayer to wan port of Ethernet.Interface */
-			p = strchr(ifname, '.');
+			p = get_device(section_name(s));
 			if (p) {
-				/*linker of wan port of interface is eth0.1*/
-				*(p+1) = '1';
-				*(p+2) = '\0';
-				adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+				adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), p, value);
+				if (*value == NULL)
+					*value = "";
 			}
 		}
 		break;
@@ -984,17 +983,17 @@ static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char lower_layer[250] = {0};
+
 	switch (action)	{
 		case VALUECHECK:
 			if (dm_validate_string_list(value, -1, -1, 1024, -1, -1, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
-			if (value[strlen(value)-1]!='.') {
-                                	snprintf(lower_layer, sizeof(lower_layer), "%s.", value);
-			} else {
+			if (value[strlen(value)-1] != '.')
+				snprintf(lower_layer, sizeof(lower_layer), "%s.", value);
+			else
 				strncpy(lower_layer, value, sizeof(lower_layer));
-			}
 
 			/* Check if the value is valid or not. */
 			if (strncmp(lower_layer, "Device.Bridging.Bridge.", 23) == 0) {
@@ -1032,14 +1031,12 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 						if (strncmp(sec, sec_name, sizeof(sec)) == 0) {
 							char *type, *ifname;
 							dmuci_get_value_by_section_string(intf_s, "type", &type);
-							if (*type == '\0' || strcmp(type, "bridge") != 0) {
-					       			return -1;
-							}	       
+							if (*type == '\0' || strcmp(type, "bridge") != 0)
+								return -1;
 
 							dmuci_get_value_by_section_string(intf_s, "ifname", &ifname);
-							if (*ifname == '\0') {
-					     			  return -1;
-							}
+							if (*ifname == '\0')
+								return -1;
 
 							/* Add ethernet link params to dmmap link section. */
 							uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
@@ -1063,16 +1060,15 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 			} else if (strncmp(lower_layer, "Device.Ethernet.Interface.", 26) == 0) {
 				/* Find the linker of the lowerlayer value to be set. */
 				char *linker;
-                                adm_entry_get_linker_value(ctx, lower_layer, &linker);
+				adm_entry_get_linker_value(ctx, lower_layer, &linker);
 
 				/* Check if linker is present in network UCI, if yes the update
 				 * the proto, else create a interface and device section. */
 				char intf[20] = {0};
-				if (strcmp(linker, "eth5.1") == 0) {
+				if (strcmp(linker, "eth5.1") == 0)
 					strncpy(intf, linker, sizeof(intf));
-				} else {
+				else
 					snprintf(intf, sizeof(intf), "%s.%s", linker, "1");
-				}
 
 				struct uci_section *s = NULL, *link_s = NULL;
 				char *val;
@@ -1119,10 +1115,10 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 					/* Add config device section. */
 					struct uci_section *dev_s;
 					dmuci_add_section_and_rename("network", "device", &dev_s, &val);
-                                        dmuci_set_value_by_section(dev_s, "type", "untagged");
+					dmuci_set_value_by_section(dev_s, "type", "untagged");
 					char *tok = strtok(linker, ".");
 					dmuci_set_value_by_section(dev_s, "ifname", tok);
-                                        dmuci_set_value_by_section(dev_s, "name", intf);
+					dmuci_set_value_by_section(dev_s, "name", intf);
 				}
 			} else {
 				return -1;

@@ -908,8 +908,8 @@ static int get_br_vlan_vid(char *refparam, struct dmctx *ctx, void *data, char *
 	while (tok != NULL) {
 		char intf[250] = {0};
 		strncpy(intf, tok, sizeof(intf));
-		char *p, *end;
-		p = strtok_r(intf, ".", &end);
+		char *end;
+		strtok_r(intf, ".", &end);
 		if (end != NULL) {
 			strncpy(tag, end, sizeof(tag));
 			*value = dmstrdup(tag);
@@ -1981,8 +1981,8 @@ static int set_vlan_port_port_ref(char *refparam, struct dmctx *ctx, void *data,
 						char if_tag[10] = {0};
 						strncpy(if_tag, tok, sizeof(if_tag));
 
-						char *token, *tag;
-						token = strtok_r(if_tag, ".", &tag);
+						char *tag;
+						strtok_r(if_tag, ".", &tag);
 						if (tag != NULL) {
 							char vid[10] = {0};
 							strncpy(vid, tag, sizeof(vid));

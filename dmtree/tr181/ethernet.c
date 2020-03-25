@@ -181,8 +181,8 @@ static char *get_vlan_last_instance_bbfdm(char *package, char *section, char *op
 		char *tok, *end;
 		tok = strtok_r(ifname, " ", &end);
 		if (tok == NULL) {
-			char *intf, *tag;
-			intf = strtok_r(tok, ".", &tag);
+			char *tag;
+			strtok_r(tok, ".", &tag);
 			if (tag != NULL) {
 				char tag_if[10] = {0};
 				strncpy(tag_if, tag, sizeof(tag_if));
@@ -291,11 +291,11 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 					continue;
 			}
 
-			char *tok, *end;
+			char *end;
 			if (macvlan == 1)
-				tok = strtok_r(name, "_", &end);
+				strtok_r(name, "_", &end);
 			else
-				tok = strtok_r(name, ".", &end);
+				strtok_r(name, ".", &end);
 
 			if (end == NULL)
 				continue;
@@ -517,11 +517,11 @@ static int get_Ethernet_VLANTerminationNumberOfEntries(char *refparam, struct dm
 					continue;
 			}
 
-			char *tok, *end;
+			char *end;
 			if (macvlan == 1)
-				tok = strtok_r(name, "_", &end);
+				strtok_r(name, "_", &end);
 			else
-				tok = strtok_r(name, ".", &end);
+				strtok_r(name, ".", &end);
 
 			if (end == NULL)
 				continue;
@@ -1328,9 +1328,9 @@ static int set_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx 
 static int get_EthernetVLANTermination_VLANID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "0";
-	char *ifname, *tag, *tok;
+	char *ifname, *tag;
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &ifname);
-	tok = strtok_r(ifname, ".", &tag);
+	strtok_r(ifname, ".", &tag);
 	if (tag != NULL) {
 		*value = tag;
 	}

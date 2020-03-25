@@ -180,11 +180,11 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		if (*ifname == '\0')
 			continue;
 		char intf[250] = {0};
-		strncpy(intf, ifname, sizeof(intf));
+		strncpy(intf, ifname, sizeof(intf) - 1);
 		char *if_name = strtok(intf, " ");
 		if (NULL != if_name) {
 			char name[250] = {0};
-			strncpy(name, if_name, sizeof(name));
+			strncpy(name, if_name, sizeof(name) - 1);
 			int macvlan = 0;
 			char *p = strstr(name, ".");
 			if (!p) {
@@ -194,16 +194,16 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 				else
 					continue;
 			}
-			char *tok, *end;
+			char *end;
 			if (macvlan == 1)
-				tok = strtok_r(name, "_", &end);
+				strtok_r(name, "_", &end);
 			else
-				tok = strtok_r(name, ".", &end);
+				strtok_r(name, ".", &end);
 			if (end == NULL)
 				continue;
 			if (macvlan == 0) {
 				char tag[20] = {0};
-				strncpy(tag, end, sizeof(tag));
+				strncpy(tag, end, sizeof(tag) - 1);
 				if (strncmp(tag, "1", sizeof(tag)) == 0)
 					continue;
 			}

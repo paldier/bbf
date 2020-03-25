@@ -1957,7 +1957,7 @@ static int set_vlan_port_port_ref(char *refparam, struct dmctx *ctx, void *data,
                         }
 
 			/* Combine vid wd linker. */
-			char new_if[50] = {0};
+			char new_if[64] = {0};
 			snprintf(new_if, sizeof(new_if), "%s.%s", intf, vlan_id);
 
 			/* Check if the new name is present in UCI. If yes do nothing, if no

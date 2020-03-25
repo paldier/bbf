@@ -888,6 +888,80 @@ struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* secti
 	return NULL;
 }
 
+void synchronize_specific_config_sections_with_dmmap_vlan(char *package, char *section_type, char *dmmap_package, char *ifname, struct list_head *dup_list, int *count, char *id)
+{
+        struct uci_section *s, *stmp, *dmmap_sect;
+        FILE *fp;
+        char *v, *dmmap_file_path;
+
+        dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
+        if (access(dmmap_file_path, F_OK)) {
+                /*
+                 *File does not exist
+                 **/
+                fp = fopen(dmmap_file_path, "w"); // new empty file
+                fclose(fp);
+        }
+        uci_foreach_sections(package, section_type, s) {
+                /*
+                 * create/update corresponding dmmap section that have same config_section link and using param_value_array
+                 */
+                if ((dmmap_sect = get_dup_section_in_dmmap(dmmap_package, section_type, section_name(s))) == NULL) {
+                        dmuci_add_section_bbfdm(dmmap_package, section_type, &dmmap_sect, &v);
+                        DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
+                }
+
+                /* Fix : Entry for only VLANS. */
+                if (strcmp(package, "network") == 0  &&
+                        strcmp(section_type, "interface") == 0 &&
+                        strcmp(dmmap_package, "dmmap_network") == 0) {
+                        char *type, *intf;
+                        dmuci_get_value_by_section_string(s, "type", &type);
+                        dmuci_get_value_by_section_string(s, "ifname", &intf);
+                        if (strcmp(type,"bridge") != 0 || strcmp(intf, ifname) != 0){
+                                continue;
+                        }
+                }
+
+                /* Fix: Vlan object should not be created for transparent bridges. */
+                int tag = 0;
+                char name[250] = {0};
+                strncpy(name, ifname, sizeof(name));
+                char *p = strtok(name, " ");
+                while (p != NULL) {
+                        char intf[250] = {0};
+                        strncpy(intf, p, sizeof(intf));
+                        char *find = strstr(intf, ".");
+                        if (find) {
+                                tag = 1;
+				*id = find[strlen(find) - 1];
+                                break;
+                        }
+                        p = strtok(NULL, " ");
+                }
+
+                if (tag == 0) {
+                        continue;
+                }
+
+                /*
+                 * Add system and dmmap sections to the list
+                 */
+                add_sectons_list_paramameter(dup_list, s, dmmap_sect, NULL);
+		*count = *count + 1;
+        }
+
+        /*
+         * Delete unused dmmap sections
+         */
+        uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
+                dmuci_get_value_by_section_string(s, "section_name", &v);
+                if(get_origin_section_from_config(package, section_type, v) == NULL){
+                        dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
+                }
+        }
+}
+
 void synchronize_specific_config_sections_with_dmmap(char *package, char *section_type, char *dmmap_package, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
@@ -903,6 +977,17 @@ void synchronize_specific_config_sections_with_dmmap(char *package, char *sectio
 			dmuci_add_section_bbfdm(dmmap_package, section_type, &dmmap_sect, &v);
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
 		}
+
+               /* Fix : Change to fix multiple IP interface creation. */
+                if (strcmp(package, "network") == 0  &&
+                        strcmp(section_type, "interface") == 0 &&
+                        strcmp(dmmap_package, "dmmap_network") == 0) {
+                        char *value;
+                        dmuci_get_value_by_section_string(s, "proto", &value);
+                        if (*value == '\0') {
+                                continue;
+                        }
+                }
 
 		/*
 		 * Add system and dmmap sections to the list
@@ -1014,6 +1099,42 @@ void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *s
 	}
 }
 
+void synchronize_multi_config_sections_with_dmmap_set(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char *instance, char *br_key)
+{
+	/* Fix : Dmmap set for configuring the lower layer of Bridge.Port object. */
+	struct uci_section *s;
+	FILE *fp;
+	char *dmmap_file_path, *key;
+
+	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
+	if (access(dmmap_file_path, F_OK)) {
+		/*
+		 *File does not exist
+		 **/
+		fp = fopen(dmmap_file_path, "w"); // new empty file
+		fclose(fp);
+	}
+
+	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
+
+		/* Check if bridge_port_instance is present in dmmap_bridge_port.*/
+		struct uci_section *sec;
+		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_port_instance", instance, sec) {
+
+			dmuci_get_value_by_section_string(sec, "bridge_key", &key);
+			char bridge_key[10] = {0};
+			strncpy(bridge_key, br_key, sizeof(bridge_key));
+
+			char bridge_key_1[10] = {0};
+			strncpy(bridge_key_1, key, sizeof(bridge_key_1));
+
+			if (strncmp(bridge_key, bridge_key_1, sizeof(bridge_key)) == 0) {
+				DMUCI_SET_VALUE_BY_SECTION(bbfdm, sec, "section_name", section_name(s));
+			}
+		}
+	}
+}
+
 bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
@@ -1032,6 +1153,11 @@ bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *sectio
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
+		} else {
+			/* Fix : Dmmap set for configuring the lower layer of Bridge.Port object. */
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
 		}
 
 		/*
@@ -1040,175 +1166,175 @@ bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *sectio
 		add_sectons_list_paramameter(dup_list, s, dmmap_sect, additional_attribute);
 	}
 
-	/*
-	 * Delete unused dmmap sections
-	 */
-	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
-		dmuci_get_value_by_section_string(s, "section_name", &v);
-		dmuci_get_value_by_section_string(s, "package", &pack);
-		dmuci_get_value_by_section_string(s, "section", &sect);
-		if (v!=NULL && strlen(v)>0 && strcmp(package, pack)==0 && strcmp(section_type, sect)== 0) {
-			if(get_origin_section_from_config(package, section_type, v) == NULL){
-				dmuci_delete_by_section(s, NULL, NULL);
-			}
-		}
-	}
+	       /*
+         * Delete unused dmmap sections
+         */
+        uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
+                dmuci_get_value_by_section_string(s, "section_name", &v);
+                dmuci_get_value_by_section_string(s, "package", &pack);
+                dmuci_get_value_by_section_string(s, "section", &sect);
+                if (v!=NULL && strlen(v)>0 && strcmp(package, pack)==0 && strcmp(section_type, sect)== 0) {
+                        if(get_origin_section_from_config(package, section_type, v) == NULL){
+                                dmuci_delete_by_section(s, NULL, NULL);
+                        }
+                }
+        }
 
-	return found;
+        return found;
 }
 
 bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char* opt_diff_name, char* opt_diff_value, void* additional_attribute, struct list_head *dup_list)
 {
-	struct uci_section *s, *stmp, *dmmap_sect;
-	char *v, *pack, *sect, *optval;
-	bool found= false;
+        struct uci_section *s, *stmp, *dmmap_sect;
+        char *v, *pack, *sect, *optval;
+        bool found= false;
 
-	dmmap_file_path_get(dmmap_package);
+        dmmap_file_path_get(dmmap_package);
 
-	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
-		found = true;
-		dmuci_get_value_by_section_string(s, opt_diff_name, &optval);
-		if (strcmp(optval, opt_diff_value) != 0) {
-			/*
-			 * create/update corresponding dmmap section that have same config_section link and using param_value_array
-			 */
-			if ((dmmap_sect = get_dup_section_in_dmmap(dmmap_package, dmmap_section, section_name(s))) == NULL) {
-				dmuci_add_section_bbfdm(dmmap_package, dmmap_section, &dmmap_sect, &v);
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
-			}
+        uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
+                found = true;
+                dmuci_get_value_by_section_string(s, opt_diff_name, &optval);
+                if (strcmp(optval, opt_diff_value) != 0) {
+                        /*
+                         * create/update corresponding dmmap section that have same config_section link and using param_value_array
+                         */
+                        if ((dmmap_sect = get_dup_section_in_dmmap(dmmap_package, dmmap_section, section_name(s))) == NULL) {
+                                dmuci_add_section_bbfdm(dmmap_package, dmmap_section, &dmmap_sect, &v);
+                                DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
+                                DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
+                                DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
+                        }
 
-			/*
-			 * Add system and dmmap sections to the list
-			 */
-			add_sectons_list_paramameter(dup_list, s, dmmap_sect, additional_attribute);
-		}
-	}
+                        /*
+                         * Add system and dmmap sections to the list
+                         */
+                        add_sectons_list_paramameter(dup_list, s, dmmap_sect, additional_attribute);
+                }
+        }
 
-	/*
-	 * Delete unused dmmap sections
-	 */
-	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
-		dmuci_get_value_by_section_string(s, "section_name", &v);
-		dmuci_get_value_by_section_string(s, "package", &pack);
-		dmuci_get_value_by_section_string(s, "section", &sect);
-		if(v!=NULL && strlen(v)>0 && strcmp(package, pack)==0 && strcmp(section_type, sect)== 0){
-			if(get_origin_section_from_config(package, section_type, v) == NULL){
-				dmuci_delete_by_section(s, NULL, NULL);
-			}
-		}
-	}
+        /*
+         * Delete unused dmmap sections
+         */
+        uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
+                dmuci_get_value_by_section_string(s, "section_name", &v);
+                dmuci_get_value_by_section_string(s, "package", &pack);
+                dmuci_get_value_by_section_string(s, "section", &sect);
+                if(v!=NULL && strlen(v)>0 && strcmp(package, pack)==0 && strcmp(section_type, sect)== 0){
+                        if(get_origin_section_from_config(package, section_type, v) == NULL){
+                                dmuci_delete_by_section(s, NULL, NULL);
+                        }
+                }
+        }
 
-	return found;
+        return found;
 }
 
 void add_sysfs_sectons_list_paramameter(struct list_head *dup_list, struct uci_section *dmmap_section, char *file_name, char* filepath)
 {
-	struct sysfs_dmsection *dmmap_sysfs;
+        struct sysfs_dmsection *dmmap_sysfs;
 
-	dmmap_sysfs = dmcalloc(1, sizeof(struct sysfs_dmsection));
-	list_add_tail(&dmmap_sysfs->list, dup_list);
-	dmmap_sysfs->dm = dmmap_section;
-	dmmap_sysfs->sysfs_folder_name= dmstrdup(file_name);
-	dmmap_sysfs->sysfs_folder_path= dmstrdup(filepath);
+        dmmap_sysfs = dmcalloc(1, sizeof(struct sysfs_dmsection));
+        list_add_tail(&dmmap_sysfs->list, dup_list);
+        dmmap_sysfs->dm = dmmap_section;
+        dmmap_sysfs->sysfs_folder_name= dmstrdup(file_name);
+        dmmap_sysfs->sysfs_folder_path= dmstrdup(filepath);
 }
 
 int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, struct list_head *dup_list)
 {
-	struct uci_section *s, *stmp, *dmmap_sect;
-	DIR *dir;
-	struct dirent *ent;
-	char *v, *sysfs_rep_path, *instance= NULL;
-	struct sysfs_dmsection *p, *tmp;
-	LIST_HEAD(dup_list_no_inst);
+        struct uci_section *s, *stmp, *dmmap_sect;
+        DIR *dir;
+        struct dirent *ent;
+        char *v, *sysfs_rep_path, *instance= NULL;
+        struct sysfs_dmsection *p, *tmp;
+        LIST_HEAD(dup_list_no_inst);
 
-	dmmap_file_path_get(dmmap_package);
+        dmmap_file_path_get(dmmap_package);
 
-	sysfs_foreach_file(sysfsrep, dir, ent) {
-		if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
-			continue;
+        sysfs_foreach_file(sysfsrep, dir, ent) {
+                if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
+                        continue;
 
-		/*
-		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
-		 */
-		dmasprintf(&sysfs_rep_path, "%s/%s", sysfsrep, ent->d_name);
-		if ((dmmap_sect = get_dup_section_in_dmmap_opt(dmmap_package, dmmap_section, opt_name, sysfs_rep_path)) == NULL) {
-			dmuci_add_section_bbfdm(dmmap_package, dmmap_section, &dmmap_sect, &v);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, opt_name, sysfs_rep_path);
-		}
+                /*
+                 * create/update corresponding dmmap section that have same config_section link and using param_value_array
+                 */
+                dmasprintf(&sysfs_rep_path, "%s/%s", sysfsrep, ent->d_name);
+                if ((dmmap_sect = get_dup_section_in_dmmap_opt(dmmap_package, dmmap_section, opt_name, sysfs_rep_path)) == NULL) {
+                        dmuci_add_section_bbfdm(dmmap_package, dmmap_section, &dmmap_sect, &v);
+                        DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, opt_name, sysfs_rep_path);
+                }
 
-		dmuci_get_value_by_section_string(dmmap_sect, inst_opt, &instance);
+                dmuci_get_value_by_section_string(dmmap_sect, inst_opt, &instance);
 
-		/*
-		 * Add system and dmmap sections to the list
-		 */
+                /*
+                 * Add system and dmmap sections to the list
+                 */
 
-		if(instance == NULL || strlen(instance) <= 0)
-			add_sysfs_sectons_list_paramameter(&dup_list_no_inst, dmmap_sect, ent->d_name, sysfs_rep_path);
-		else
-			add_sysfs_sectons_list_paramameter(dup_list, dmmap_sect, ent->d_name, sysfs_rep_path);
-	}
-	if (dir)
-		closedir(dir);
+                if(instance == NULL || strlen(instance) <= 0)
+                        add_sysfs_sectons_list_paramameter(&dup_list_no_inst, dmmap_sect, ent->d_name, sysfs_rep_path);
+                else
+                        add_sysfs_sectons_list_paramameter(dup_list, dmmap_sect, ent->d_name, sysfs_rep_path);
+        }
+        if (dir)
+                closedir(dir);
 
-	/*
-	 * fusion two lists
-	 */
-	list_for_each_entry_safe(p, tmp, &dup_list_no_inst, list)
-		list_move_tail(&p->list, dup_list);
+        /*
+         * fusion two lists
+         */
+        list_for_each_entry_safe(p, tmp, &dup_list_no_inst, list)
+                list_move_tail(&p->list, dup_list);
 
-	/*
-	 * Delete unused dmmap sections
-	 */
-	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
-		dmuci_get_value_by_section_string(s, opt_name, &v);
-		if(isfolderexist(v) == 0){
-			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
-		}
-	}
-	return 0;
+        /*
+         * Delete unused dmmap sections
+         */
+        uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
+                dmuci_get_value_by_section_string(s, opt_name, &v);
+                if(isfolderexist(v) == 0){
+                        dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
+                }
+        }
+        return 0;
 }
 
 void get_dmmap_section_of_config_section(char* dmmap_package, char* section_type, char *section_name, struct uci_section **dmmap_section)
 {
-	struct uci_section* s;
+        struct uci_section* s;
 
-	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, "section_name", section_name, s) {
-		*dmmap_section = s;
-		return;
-	}
-	*dmmap_section = NULL;
+        uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, "section_name", section_name, s) {
+                *dmmap_section = s;
+                return;
+        }
+        *dmmap_section = NULL;
 }
 
 void get_dmmap_section_of_config_section_eq(char* dmmap_package, char* section_type, char *opt, char* value, struct uci_section **dmmap_section)
 {
-	struct uci_section* s;
+        struct uci_section* s;
 
-	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, opt, value, s){
-		*dmmap_section = s;
-		return;
-	}
-	*dmmap_section = NULL;
+        uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, opt, value, s){
+                *dmmap_section = s;
+                return;
+        }
+        *dmmap_section = NULL;
 }
 
 void get_config_section_of_dmmap_section(char* package, char* section_type, char *section_name, struct uci_section **config_section)
 {
-	struct uci_section* s;
+        struct uci_section* s;
 
-	uci_foreach_sections(package, section_type, s) {
-		if (strcmp(section_name(s), section_name) == 0) {
-			*config_section = s;
-			return;
-		}
-	}
-	*config_section= NULL;
+        uci_foreach_sections(package, section_type, s) {
+                if (strcmp(section_name(s), section_name) == 0) {
+                        *config_section = s;
+                        return;
+                }
+        }
+        *config_section= NULL;
 }
 
 void check_create_dmmap_package(char *dmmap_package)
 {
-	char *dmmap_file_path = dmmap_file_path_get(dmmap_package);
-	dmfree(dmmap_file_path);
+        char *dmmap_file_path = dmmap_file_path_get(dmmap_package);
+        dmfree(dmmap_file_path);
 }
 
 int is_section_unnamed(char *section_name)
@@ -1228,241 +1354,241 @@ int is_section_unnamed(char *section_name)
 
 void add_dmmap_list_section(struct list_head *dup_list, char* section_name, char* instance)
 {
-	struct dmmap_sect *dmsect;
+        struct dmmap_sect *dmsect;
 
-	dmsect = dmcalloc(1, sizeof(struct dmmap_sect));
-	list_add_tail(&dmsect->list, dup_list);
-	dmasprintf(&dmsect->section_name, "%s", section_name);
-	dmasprintf(&dmsect->instance, "%s", instance);
+        dmsect = dmcalloc(1, sizeof(struct dmmap_sect));
+        list_add_tail(&dmsect->list, dup_list);
+        dmasprintf(&dmsect->section_name, "%s", section_name);
+        dmasprintf(&dmsect->instance, "%s", instance);
 }
 
-void delete_sections_save_next_sections(char* dmmap_package, char *section_type, char *instancename, char *section_name, int instance, struct list_head *dup_list) 
+void delete_sections_save_next_sections(char* dmmap_package, char *section_type, char *instancename, char *section_name, int instance, struct list_head *dup_list)
 {
-	struct uci_section *s, *stmp;
-	char *v=NULL, *lsectname= NULL, *tmp= NULL;
-	int inst;
+        struct uci_section *s, *stmp;
+        char *v=NULL, *lsectname= NULL, *tmp= NULL;
+        int inst;
 
-	dmasprintf(&lsectname, "%s", section_name);
+        dmasprintf(&lsectname, "%s", section_name);
 
-	uci_path_foreach_sections(bbfdm, dmmap_package, section_type, s) {
-		dmuci_get_value_by_section_string(s, instancename, &v);
-		inst= atoi(v);
-		if(inst>instance){
-			dmuci_get_value_by_section_string(s, "section_name", &tmp);
-			add_dmmap_list_section(dup_list, lsectname, v);
-			dmfree(lsectname);
-			lsectname= NULL;
-			dmasprintf(&lsectname, "%s", tmp);
-			dmfree(tmp);
-			tmp= NULL;
-		}
-	}
+        uci_path_foreach_sections(bbfdm, dmmap_package, section_type, s) {
+                dmuci_get_value_by_section_string(s, instancename, &v);
+                inst= atoi(v);
+                if(inst>instance){
+                        dmuci_get_value_by_section_string(s, "section_name", &tmp);
+                        add_dmmap_list_section(dup_list, lsectname, v);
+                        dmfree(lsectname);
+                        lsectname= NULL;
+                        dmasprintf(&lsectname, "%s", tmp);
+                        dmfree(tmp);
+                        tmp= NULL;
+                }
+        }
 
-	if(lsectname != NULL) dmfree(lsectname);
+        if(lsectname != NULL) dmfree(lsectname);
 
 
-	uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
-		dmuci_get_value_by_section_string(s, instancename, &v);
-		inst= atoi(v);
-		if(inst>=instance)
-			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
-	}
+        uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
+                dmuci_get_value_by_section_string(s, instancename, &v);
+                inst= atoi(v);
+                if(inst>=instance)
+                        dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
+        }
 }
 
 void update_dmmap_sections(struct list_head *dup_list, char *instancename, char* dmmap_package, char *section_type)
 {
-	struct uci_section *dm_sect;
-	char *v;
-	struct dmmap_sect *p;
+        struct uci_section *dm_sect;
+        char *v;
+        struct dmmap_sect *p = NULL;
 
-	list_for_each_entry(p, dup_list, list) {
-		dmuci_add_section_bbfdm(dmmap_package, section_type, &dm_sect, &v);
-		dmuci_set_value_by_section(dm_sect, "section_name", p->section_name);
-		dmuci_set_value_by_section(dm_sect, instancename, p->instance);
-	}
+        list_for_each_entry(p, dup_list, list) {
+                dmuci_add_section_bbfdm(dmmap_package, section_type, &dm_sect, &v);
+                dmuci_set_value_by_section(dm_sect, "section_name", p->section_name);
+                dmuci_set_value_by_section(dm_sect, instancename, p->instance);
+        }
 }
 
 struct uci_section *is_dmmap_section_exist(char* package, char* section)
 {
-	struct uci_section *s;
+        struct uci_section *s;
 
-	uci_path_foreach_sections(bbfdm, package, section, s) {
-		return s;
-	}
-	return NULL;
+        uci_path_foreach_sections(bbfdm, package, section, s) {
+                return s;
+        }
+        return NULL;
 }
 
 struct uci_section *is_dmmap_section_exist_eq(char* package, char* section, char* opt, char* value)
 {
-	struct uci_section *s;
+        struct uci_section *s;
 
-	uci_path_foreach_option_eq(bbfdm, package, section, opt, value, s) {
-		return s;
-	}
-	return NULL;
+        uci_path_foreach_option_eq(bbfdm, package, section, opt, value, s) {
+                return s;
+        }
+        return NULL;
 }
 
 unsigned char isdigit_str(char *str)
 {
-	if (!(*str)) return 0;
-	while(isdigit(*str++));
-	return ((*(str-1)) ? 0 : 1);
+        if (!(*str)) return 0;
+        while(isdigit(*str++));
+        return ((*(str-1)) ? 0 : 1);
 }
 
 static inline int isword_delim(char c)
 {
-	if (c == ' ' ||
-		c == ',' ||
-		c == '\t' ||
-		c == '\v' ||
-		c == '\r' ||
-		c == '\n' ||
-		c == '\0')
-		return 1;
-	return 0;
+        if (c == ' ' ||
+                c == ',' ||
+                c == '\t' ||
+                c == '\v' ||
+                c == '\r' ||
+                c == '\n' ||
+                c == '\0')
+                return 1;
+        return 0;
 }
 
 char *dm_strword(char *src, char *str)
 {
-	char *ret = src;
-	int len;
-	if (src[0] == '\0')
-		return NULL;
-	len = strlen(str);
-	while ((ret = strstr(ret, str)) != NULL) {
-		if ((ret == src && isword_delim(ret[len])) ||
-			(ret != src && isword_delim(ret[len]) && isword_delim(*(ret - 1))))
-			return ret;
-		ret++;
-	}
-	return NULL;
+        char *ret = src;
+        int len;
+        if (src[0] == '\0')
+                return NULL;
+        len = strlen(str);
+        while ((ret = strstr(ret, str)) != NULL) {
+                if ((ret == src && isword_delim(ret[len])) ||
+                        (ret != src && isword_delim(ret[len]) && isword_delim(*(ret - 1))))
+                        return ret;
+                ret++;
+        }
+        return NULL;
 }
 
 char **strsplit(const char* str, const char* delim, size_t* numtokens)
 {
-	char *s = strdup(str);
-	size_t tokens_alloc = 1;
-	size_t tokens_used = 0;
-	char **tokens = dmcalloc(tokens_alloc, sizeof(char*));
-	char *token, *strtok_ctx;
+        char *s = strdup(str);
+        size_t tokens_alloc = 1;
+        size_t tokens_used = 0;
+        char **tokens = dmcalloc(tokens_alloc, sizeof(char*));
+        char *token, *strtok_ctx;
 
-	for (token = strtok_r(s, delim, &strtok_ctx);
-		token != NULL;
-		token = strtok_r(NULL, delim, &strtok_ctx)) {
+        for (token = strtok_r(s, delim, &strtok_ctx);
+                token != NULL;
+                token = strtok_r(NULL, delim, &strtok_ctx)) {
 
-		if (tokens_used == tokens_alloc) {
-			tokens_alloc *= 2;
-			tokens = dmrealloc(tokens, tokens_alloc * sizeof(char*));
-		}
-		tokens[tokens_used++] = dmstrdup(token);
-	}
-	if (tokens_used == 0) {
-		dmfree(tokens);
-		tokens = NULL;
-	} else {
-		tokens = dmrealloc(tokens, tokens_used * sizeof(char*));
-	}
-	*numtokens = tokens_used;
-	FREE(s);
-	return tokens;
+                if (tokens_used == tokens_alloc) {
+                        tokens_alloc *= 2;
+                        tokens = dmrealloc(tokens, tokens_alloc * sizeof(char*));
+                }
+                tokens[tokens_used++] = dmstrdup(token);
+        }
+        if (tokens_used == 0) {
+                dmfree(tokens);
+                tokens = NULL;
+        } else {
+                tokens = dmrealloc(tokens, tokens_used * sizeof(char*));
+        }
+        *numtokens = tokens_used;
+        FREE(s);
+        return tokens;
 }
 
 char **strsplit_by_str(const char str[], char *delim)
 {
-	char *substr = NULL;
-	size_t tokens_alloc = 1;
-	size_t tokens_used = 0;
-	char **tokens = dmcalloc(tokens_alloc, sizeof(char*));
-	char *strparse = strdup(str);
-	do {
-		substr = strstr(strparse, delim);
-		if (substr == NULL && (strparse == NULL || strparse[0] == '\0'))
-				break;
+        char *substr = NULL;
+        size_t tokens_alloc = 1;
+        size_t tokens_used = 0;
+        char **tokens = dmcalloc(tokens_alloc, sizeof(char*));
+        char *strparse = strdup(str);
+        do {
+                substr = strstr(strparse, delim);
+                if (substr == NULL && (strparse == NULL || strparse[0] == '\0'))
+                                break;
 
-		if (substr == NULL) {
-			substr = strdup(strparse);
-			tokens[tokens_used] = dmcalloc(strlen(substr)+1, sizeof(char));
-			strncpy(tokens[tokens_used], strparse, strlen(strparse));
-			FREE(strparse);
-			break;
-		}
+                if (substr == NULL) {
+                        substr = strdup(strparse);
+                        tokens[tokens_used] = dmcalloc(strlen(substr)+1, sizeof(char));
+                        strncpy(tokens[tokens_used], strparse, strlen(strparse));
+                        FREE(strparse);
+                        break;
+                }
 
-		if (tokens_used == tokens_alloc) {
-			if (strparse == NULL)
-				tokens_alloc++;
-			else
-				tokens_alloc += 2;
-			tokens = dmrealloc(tokens, tokens_alloc * sizeof(char*));
-		}
+                if (tokens_used == tokens_alloc) {
+                        if (strparse == NULL)
+                                tokens_alloc++;
+                        else
+                                tokens_alloc += 2;
+                        tokens = dmrealloc(tokens, tokens_alloc * sizeof(char*));
+                }
 
-		tokens[tokens_used] = dmcalloc(substr-strparse+1, sizeof(char));
-		strncpy(tokens[tokens_used], strparse, substr-strparse);
-		tokens_used++;
-		FREE(strparse);
-		strparse = strdup(substr+strlen(delim));
-	} while (substr != NULL);
-	FREE(strparse);
-	return tokens;
+                tokens[tokens_used] = dmcalloc(substr-strparse+1, sizeof(char));
+                strncpy(tokens[tokens_used], strparse, substr-strparse);
+                tokens_used++;
+                FREE(strparse);
+                strparse = strdup(substr+strlen(delim));
+        } while (substr != NULL);
+        FREE(strparse);
+        return tokens;
 }
 
 char *get_macaddr(char *interface_name)
 {
-	char *device = get_device(interface_name);
-	char *mac;
+        char *device = get_device(interface_name);
+        char *mac;
 
-	if(device[0]) {
-		char file[128];
-		char val[32];
+        if(device[0]) {
+                char file[128];
+                char val[32];
 
-		snprintf(file, sizeof(file), "/sys/class/net/%s/address", device);
-		dm_read_sysfs_file(file, val, sizeof(val));
-		mac = dmstrdup(val);
-	} else {
-		mac = "";
-	}
-	return mac;
+                snprintf(file, sizeof(file), "/sys/class/net/%s/address", device);
+                dm_read_sysfs_file(file, val, sizeof(val));
+                mac = dmstrdup(val);
+        } else {
+                mac = "";
+        }
+        return mac;
 }
 
 char *get_device(char *interface_name)
 {
-	json_object *res;
+        json_object *res;
 
-	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", interface_name, String}}, 1, &res);
-	return dmjson_get_value(res, 1, "device");
+        dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", interface_name, String}}, 1, &res);
+        return dmjson_get_value(res, 1, "device");
 }
 
 char *get_device_from_wifi_iface(const char *wifi_iface, const char *wifi_section)
 {
-	json_object *jobj;
-	array_list *jarr;
-	unsigned n = 0, i;
-	const char *ifname = "";
+        json_object *jobj;
+        array_list *jarr;
+        unsigned n = 0, i;
+        const char *ifname = "";
 
-	if (wifi_iface[0] == 0 || wifi_section[0] == 0)
-		return "";
+        if (wifi_iface[0] == 0 || wifi_section[0] == 0)
+                return "";
 
-	dmubus_call("network.wireless", "status", UBUS_ARGS{{}}, 0, &jobj);
-	if (jobj == NULL)
-		return "";
+        dmubus_call("network.wireless", "status", UBUS_ARGS{{}}, 0, &jobj);
+        if (jobj == NULL)
+                return "";
 
-	json_object_object_get_ex(jobj, wifi_iface, &jobj);
-	json_object_object_get_ex(jobj, "interfaces", &jobj);
+        json_object_object_get_ex(jobj, wifi_iface, &jobj);
+        json_object_object_get_ex(jobj, "interfaces", &jobj);
 
-	jarr = json_object_get_array(jobj);
-	if (jarr)
-		n = array_list_length(jarr);
+        jarr = json_object_get_array(jobj);
+        if (jarr)
+                n = array_list_length(jarr);
 
-	for (i = 0; i < n; i++) {
-		json_object *j_e = jarr->array[i];
-		const char *sect;
+        for (i = 0; i < n; i++) {
+                json_object *j_e = jarr->array[i];
+                const char *sect;
 
-		sect = __dmjson_get_string(j_e, "section");
-		if (!strcmp(sect, wifi_section)) {
-			ifname = __dmjson_get_string(j_e, "ifname");
-			break;
-		}
-	}
-	return (char *)ifname;
+                sect = __dmjson_get_string(j_e, "section");
+                if (!strcmp(sect, wifi_section)) {
+                        ifname = __dmjson_get_string(j_e, "ifname");
+                        break;
+                }
+        }
+        return (char *)ifname;
 }
 
 /*
@@ -1471,82 +1597,82 @@ char *get_device_from_wifi_iface(const char *wifi_iface, const char *wifi_sectio
 
 int is_elt_exit_in_str_list(char *str_list, char *elt)
 {
-	char *pch, *spch, *list;
-	list= dmstrdup(str_list);
-	for (pch = strtok_r(list, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
-		if(strcmp(pch, elt) == 0)
-			return 1;
-	}
-	return 0;
+        char *pch, *spch, *list;
+        list= dmstrdup(str_list);
+        for (pch = strtok_r(list, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
+                if(strcmp(pch, elt) == 0)
+                        return 1;
+        }
+        return 0;
 }
 
 void add_elt_to_str_list(char **str_list, char *elt)
 {
-	char *list= NULL;
-	if(*str_list == NULL || strlen(*str_list) == 0){
-		dmasprintf(str_list, "%s", elt);
-		return;
-	}
-	list= dmstrdup(*str_list);
-	dmfree(*str_list);
-	*str_list= NULL;
-	dmasprintf(str_list, "%s %s", list, elt);
+        char *list= NULL;
+        if(*str_list == NULL || strlen(*str_list) == 0){
+                dmasprintf(str_list, "%s", elt);
+                return;
+        }
+        list= dmstrdup(*str_list);
+        dmfree(*str_list);
+        *str_list= NULL;
+        dmasprintf(str_list, "%s %s", list, elt);
 }
 
 void remove_elt_from_str_list(char **iface_list, char *ifname)
 {
-	char *list= NULL, *tmp=NULL;
-	char *pch, *spch;
-	if (*iface_list == NULL || strlen(*iface_list) == 0)
-		return;
-	list= dmstrdup(*iface_list);
-	dmfree(*iface_list);
-	*iface_list= NULL;
-	for (pch = strtok_r(list, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
-		if(strcmp(pch, ifname) == 0)
-			continue;
-		if(tmp == NULL)
-			dmasprintf(iface_list, "%s", pch);
-		else
-			dmasprintf(iface_list, "%s %s", tmp, pch);
-		if(tmp){
-			dmfree(tmp);
-			tmp= NULL;
-		}
-		if(*iface_list){
-			tmp= dmstrdup(*iface_list);
-			dmfree(*iface_list);
-			*iface_list= NULL;
-		}
-	}
-	dmasprintf(iface_list, "%s", tmp);
+        char *list= NULL, *tmp=NULL;
+        char *pch, *spch;
+        if (*iface_list == NULL || strlen(*iface_list) == 0)
+                return;
+        list= dmstrdup(*iface_list);
+        dmfree(*iface_list);
+        *iface_list= NULL;
+        for (pch = strtok_r(list, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
+                if(strcmp(pch, ifname) == 0)
+                        continue;
+                if(tmp == NULL)
+                        dmasprintf(iface_list, "%s", pch);
+                else
+                        dmasprintf(iface_list, "%s %s", tmp, pch);
+                if(tmp){
+                        dmfree(tmp);
+                        tmp= NULL;
+                }
+                if(*iface_list){
+                        tmp= dmstrdup(*iface_list);
+                        dmfree(*iface_list);
+                        *iface_list= NULL;
+                }
+        }
+        dmasprintf(iface_list, "%s", tmp);
 }
 
 int is_array_elt_exist(char **str_array, char *str, int length)
 {
-	int i;
+        int i;
 
-	for (i = 0; i < length; i++){
-		if (strcmp(str_array[i], str) == 0)
-			return 1;
-	}
-	return 0;
+        for (i = 0; i < length; i++){
+                if (strcmp(str_array[i], str) == 0)
+                        return 1;
+        }
+        return 0;
 }
 
 int get_shift_time_time(int shift_time, char *local_time, int size)
 {
-	time_t t_time;
-	struct tm *t_tm;
+        time_t t_time;
+        struct tm *t_tm;
 
-	t_time = time(NULL) + shift_time;
-	t_tm = localtime(&t_time);
-	if (t_tm == NULL)
-		return -1;
+        t_time = time(NULL) + shift_time;
+        t_tm = localtime(&t_time);
+        if (t_tm == NULL)
+                return -1;
 
-	if (strftime(local_time, size, "%Y-%m-%dT%H:%M:%SZ", t_tm) == 0)
-		return -1;
+        if (strftime(local_time, size, "%Y-%m-%dT%H:%M:%SZ", t_tm) == 0)
+                return -1;
 
-	return 0;
+        return 0;
 }
 
 int get_shift_time_shift(char *local_time, char *shift)
@@ -1701,15 +1827,15 @@ int dm_time_format(time_t ts, char **dst)
 
 	*dst = "0001-01-01T00:00:00Z";
 
-	t_tm = localtime(&ts);
-	if (t_tm == NULL)
-		return -1;
+        t_tm = localtime(&ts);
+        if (t_tm == NULL)
+                return -1;
 
-	if(strftime(time_buf, sizeof(time_buf), "%Y-%m-%dT%H:%M:%SZ", t_tm) == 0)
-		return -1;
+        if(strftime(time_buf, sizeof(time_buf), "%Y-%m-%dT%H:%M:%SZ", t_tm) == 0)
+                return -1;
 
-	*dst = dmstrdup(time_buf);
-	return 0;
+        *dst = dmstrdup(time_buf);
+        return 0;
 }
 
 bool match(const char *string, const char *pattern)

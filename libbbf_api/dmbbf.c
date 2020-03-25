@@ -619,14 +619,57 @@ char *get_vlan_last_instance_bbfdm(char *package, char *section, char *opt_inst,
 
 	uci_path_foreach_sections(bbfdm, package, section, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &sect_name);
-		get_config_section_of_dmmap_section("network", "device", sect_name, &confsect);
+		get_config_section_of_dmmap_section("network", "interface", sect_name, &confsect);
 		dmuci_get_value_by_section_string(confsect, "type", &type);
 		if ((strcmp(vlan_method, "2") != 0 && strcmp(vlan_method, "1") != 0) || (strcmp(vlan_method, "1") == 0 && strcmp(type, "untagged") == 0) )
 			continue;
-		inst = update_instance_bbfdm(s, last_inst, opt_inst);
-		if(last_inst)
-			dmfree(last_inst);
-		last_inst = dmstrdup(inst);
+
+		char *proto;
+		dmuci_get_value_by_section_string(confsect, "proto", &proto);
+		if (*proto == '\0') {
+			continue;
+		}
+
+		char *ifname;
+		dmuci_get_value_by_section_string(confsect, "ifname", &ifname);
+		if (*ifname == '\0') {
+			continue;
+		}
+
+		char interface[250] = {0};
+		strncpy(interface, ifname, sizeof(interface));
+
+		/* Only tagged interfaces should be considered. */
+		int ret = 0;
+		char *tok, *end;
+		tok = strtok_r(ifname, " ", &end);
+		if (tok == NULL) {
+			char *intf, *tag;
+			intf = strtok_r(tok, ".", &tag);
+			if (tag != NULL) {
+				char tag_if[10] = {0};
+				strncpy(tag_if, tag, sizeof(tag_if));
+				if (strncmp(tag_if, "1", sizeof(tag_if)) != 0) {
+					ret = 1;
+				} else {
+					ret = 0;
+				}
+			} else {
+				ret = 0;
+			}
+		} else {
+			char *p = strstr(interface, ".");
+			if (p) {
+				ret = 1;
+			}
+		}
+
+		if (ret == 1) {
+			inst = update_instance_bbfdm(s, last_inst, opt_inst);
+			if(last_inst)
+				dmfree(last_inst);
+			last_inst = dmstrdup(inst);
+		}
 	}
 	return inst;
 }

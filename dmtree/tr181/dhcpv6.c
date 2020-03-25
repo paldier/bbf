@@ -207,6 +207,7 @@ static int browseDHCPv6ServerPoolOptionInst(struct dmctx *dmctx, DMNODE *parent_
 	int j;
 	struct dhcpv6_client_option_args dhcp_client_opt_args = {0};
 
+	check_create_dmmap_package("dmmap_dhcpv6");
 	dmuci_get_value_by_section_list(curr_dhcp_args->dhcp_sec, "dhcp_option", &dhcp_options_list);
 	if (dhcp_options_list != NULL) {
 		uci_foreach_element(dhcp_options_list, e) {
@@ -216,7 +217,7 @@ static int browseDHCPv6ServerPoolOptionInst(struct dmctx *dmctx, DMNODE *parent_
 				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "option_tag", tagvalue[0]);
 				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(curr_dhcp_args->dhcp_sec));
 			}
-			optionvalue=dmstrdup(tagvalue[1]);
+			optionvalue=dmstrdup(length>1?tagvalue[1]:"");
 			if (length > 2) {
 				for (j = 2; j < length; j++){
 					tmp=dmstrdup(optionvalue);
@@ -915,7 +916,7 @@ static int set_DHCPv6ServerPool_Interface(char *refparam, struct dmctx *ctx, voi
 }
 
 /*#Device.DHCPv6.Server.Pool.{i}.VendorClassID!UCI:dhcp/dhcp,@i-1/vendorclass*/
-static int get_DHCPv6ServerPool_VendorClassID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DHCPv6ServerPool_VendorClassID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value) //TODO return wrong value
 {
 	struct uci_section *vendorclassidclassifier = get_dhcpv6_classifier("vendorclass", ((struct dhcpv6_args *)data)->interface);
 	if (vendorclassidclassifier)
@@ -1014,7 +1015,7 @@ static int set_DHCPv6ServerPool_SourceAddress(char *refparam, struct dmctx *ctx,
 	return 0;
 }
 
-static int get_DHCPv6ServerPool_SourceAddressMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_DHCPv6ServerPool_SourceAddressMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)  //TODO: return wrong value
 {
 	struct uci_section *macaddrclassifier;
 	char *mac, **macarray, *res = NULL, *tmp = "";

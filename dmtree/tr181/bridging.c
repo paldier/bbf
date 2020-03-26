@@ -1798,7 +1798,7 @@ static int set_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, c
 			/* Get the upstream interface. */
 			struct uci_section *port_s = NULL;
 			char intf_tag[50] = {0};
-			uci_foreach_option_eq("ports", "ethport", "name", "WAN", port_s) {
+			uci_foreach_option_eq("ports", "ethport", "uplink", "1", port_s) {
 				char *iface;
 				dmuci_get_value_by_section_string(port_s, "ifname", &iface);
 				if (*iface != '\0') {

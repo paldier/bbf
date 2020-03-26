@@ -425,7 +425,7 @@ static int addObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void
 	char *mac;
 	struct uci_section *port_s = NULL;
 	char intf_tag[50] = {0};
-	uci_foreach_option_eq("ports", "ethport", "name", "WAN", port_s) {
+	uci_foreach_option_eq("ports", "ethport", "uplink", "1", port_s) {
 		char *iface;
 		dmuci_get_value_by_section_string(port_s, "ifname", &iface);
 		if (*iface != '\0') {
@@ -974,7 +974,7 @@ static int get_EthernetLink_LastChange(char *refparam, struct dmctx *ctx, void *
 static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
-	char *link_mac, *type, *ifname, *mac, *br_inst, *mg, *p, linker[64] = "";
+	char *link_mac, *type, *ifname, *mac, *br_inst, *mg, linker[64] = "";
 	struct uci_section *dmmap_section, *port;
 
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "mac", &link_mac);
@@ -1006,9 +1006,18 @@ static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 			}
 		} else {
 			/* For upstream interface, set the lowerlayer to wan port of Ethernet.Interface */
-			p = get_device(section_name(s));
-			if (p) {
-				adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), p, value);
+			struct uci_section *port_s = NULL;
+			char intf_tag[50] = {0};
+			uci_foreach_option_eq("ports", "ethport", "uplink", "1", port_s) {
+				char *iface;
+				dmuci_get_value_by_section_string(port_s, "ifname", &iface);
+				if (*iface != '\0') {
+					strncpy(intf_tag, iface, sizeof(intf_tag));
+				}
+			}
+			strcat(intf_tag, ".1");
+			if (intf_tag[0] != '\0') {
+				adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), intf_tag, value);
 				if (*value == NULL)
 					*value = "";
 			}
@@ -1103,7 +1112,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 				/* Get the upstream interface. */
 				struct uci_section *port_s = NULL;
 				char intf_tag[50] = {0};
-				uci_foreach_option_eq("ports", "ethport", "name", "WAN", port_s) {
+				uci_foreach_option_eq("ports", "ethport", "uplink", "1", port_s) {
 					char *iface;
 					dmuci_get_value_by_section_string(port_s, "ifname", &iface);
 					if (*iface != '\0') {

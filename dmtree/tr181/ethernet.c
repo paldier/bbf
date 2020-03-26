@@ -91,9 +91,8 @@ static void create_link(char *ifname)
 		return;
 
 	/* Interfaces might share the same mac address */
-	if (is_mac_exist(macaddr)) {
+	if (is_mac_exist(macaddr))
 		return;
-	}
 
 	/* Fix: For all the Ethernet link objects pointing to same Ethernet Interface,
 	 * we can omit creating multiple Ethernet link entries.*/
@@ -101,9 +100,8 @@ static void create_link(char *ifname)
 	strncpy(intf, device, sizeof(intf));
 	char *p = strtok(intf, ".");
 	if (p != NULL) {
-		if (is_device_exist(p)) {
+		if (is_device_exist(p))
 			return;
-		}
 	}
 
 	/* Check if section_name exists or not, if yes then do not add section just update
@@ -111,7 +109,7 @@ static void create_link(char *ifname)
 	struct uci_section *s = NULL;
 	char *sec_name;
 	int ret = 1;
-	
+
 	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
 		dmuci_get_value_by_section_string(s, "section_name", &sec_name);
 		if (strcmp(ifname, sec_name) == 0) {
@@ -140,11 +138,11 @@ static int dmmap_synchronizeEthernetLink(struct dmctx *dmctx, DMNODE *parent_nod
 
 	uci_foreach_sections("network", "interface", s) {
 		dmuci_get_value_by_section_string(s, "type", &type);
+
 		/* Fix: The creating of multiple ethernet links.*/
 		dmuci_get_value_by_section_string(s, "proto", &proto);
-		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback") == 0 || *proto == '\0') {
+		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback") == 0 || *proto == '\0')
 			continue;
-		}
 
 		dmuci_get_value_by_section_string(s, "ifname", &ifname);
 		if (*ifname == '\0' || *ifname == '@')
@@ -176,6 +174,7 @@ static char *get_vlan_last_instance_bbfdm(char *package, char *section, char *op
 
 		char interface[250] = {0};
 		strncpy(interface, ifname, sizeof(interface));
+
 		/* Only tagged interfaces should be considered. */
 		int ret = 0;
 		char *tok, *end;
@@ -421,7 +420,46 @@ static int addObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void
 	dmuci_set_value_by_section(s, "section_name", vlan_name);
 	dmasprintf(&name, "%s.%s", eth_wan, vid);
 	dmuci_set_value_by_section(s, "ifname", name);
-	dmuci_set_value_by_section(s, "macaddr", "02:10:18:01:CC:05");
+
+	/* Get the upstream interface. */
+	char *mac;
+	struct uci_section *port_s = NULL;
+	char intf_tag[50] = {0};
+	uci_foreach_option_eq("ports", "ethport", "name", "WAN", port_s) {
+		char *iface;
+		dmuci_get_value_by_section_string(port_s, "ifname", &iface);
+		if (*iface != '\0') {
+			strncpy(intf_tag, iface, sizeof(intf_tag));
+		}
+	}
+
+	/* Fetch the macaddress of upstream interface. */
+	if (intf_tag[0] != '\0') {
+		char file[128];
+		char val[32];
+
+		snprintf(file, sizeof(file), "/sys/class/net/%s/address", intf_tag);
+		dm_read_sysfs_file(file, val, sizeof(val));
+		mac = dmstrdup(val);
+	} else {
+		mac = "";
+	}
+
+	/* Create a mac address for the tagged upstream interfaces
+	 * using the base mac address. */
+	char mac_addr[20] = {0};
+	int  num = 0;
+	if (*mac != '\0') {
+		strncpy(mac_addr, mac, sizeof(mac_addr));
+		int len = strlen(mac_addr);
+
+		/* Fetch the last octect of base mac address in integer variable. */
+		if (sscanf(&mac_addr[len - 2], "%02x", &num) >  0) {
+			num += 1;
+			sprintf(&mac_addr[len - 2], "%02x", num);
+			dmuci_set_value_by_section(s, "macaddr", mac_addr);
+		}
+	}
 
 	dmuci_add_section_bbfdm("dmmap_network", "interface", &dmmap_network, &v);
 	dmuci_set_value_by_section(dmmap_network, "section_name", vlan_name);
@@ -967,7 +1005,7 @@ static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 				}
 			}
 		} else {
-			/* for upstream interface, set the lowerlayer to wan port of Ethernet.Interface */
+			/* For upstream interface, set the lowerlayer to wan port of Ethernet.Interface */
 			p = get_device(section_name(s));
 			if (p) {
 				adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), p, value);
@@ -1006,7 +1044,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 					for (i = 0; i < strlen(lower_layer) - len; i++) {
 						new_if[i] = lower_layer[i];
 					}
-					
+
 					char br_key = new_if[strlen(new_if) - 2];
 
 					char key[10] = {0};
@@ -1050,9 +1088,9 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 									dmuci_set_value_by_section(s, "section_name", section_name(intf_s));
 									break;
 								}
-							}	
+							}
 
-							/* Set the value of proto to the section. */		
+							/* Set the value of proto to the section. */
 							dmuci_set_value_by_section(intf_s, "proto", "dhcp");
 						}
 					}
@@ -1062,10 +1100,24 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 				char *linker;
 				adm_entry_get_linker_value(ctx, lower_layer, &linker);
 
+				/* Get the upstream interface. */
+				struct uci_section *port_s = NULL;
+				char intf_tag[50] = {0};
+				uci_foreach_option_eq("ports", "ethport", "name", "WAN", port_s) {
+					char *iface;
+					dmuci_get_value_by_section_string(port_s, "ifname", &iface);
+					if (*iface != '\0') {
+						strncpy(intf_tag, iface, sizeof(intf_tag));
+					}
+				}
+
+				/* Create untagged upstream interface. */
+				strcat(intf_tag, ".1");
+
 				/* Check if linker is present in network UCI, if yes the update
 				 * the proto, else create a interface and device section. */
 				char intf[20] = {0};
-				if (strcmp(linker, "eth5.1") == 0)
+				if (strcmp(linker, intf_tag) == 0)
 					strncpy(intf, linker, sizeof(intf));
 				else
 					snprintf(intf, sizeof(intf), "%s.%s", linker, "1");
@@ -1086,7 +1138,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 							dmuci_set_value_by_section(link_s, "section_name", section_name(s));
 							break;
 						}
-					}	
+					}
 
 					dmuci_set_value_by_section(s, "proto", "dhcp");
 					ret = 1;
@@ -1107,7 +1159,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 							dmuci_set_value_by_section(link_s, "section_name", section_name(s));
 							break;
 						}
-					}	
+					}
 
 					dmuci_set_value_by_section(s, "proto", "dhcp");
 					dmuci_set_value_by_section(s, "ifname", intf);
@@ -1268,8 +1320,7 @@ static int get_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx 
 	char *pch, *spch, *devifname, *ifname, *dupifname, *mac;
 	struct uci_section *section = NULL;
 
-	/* Fix : Use ifname paramter to find the name of the interface in specified section. */	
-	//dmuci_get_value_by_section_string(section_name(((struct dm_args *)data)->section), "ifname", &devifname);
+	/* Fix : Use ifname parameter to find the name of the interface in specified section. */
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &devifname);
 
 	uci_foreach_sections("network", "interface", section) {
@@ -1292,7 +1343,7 @@ static int get_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx 
 static int set_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *iface_list, *linker = NULL, *newvalue = NULL, *vlan_name = NULL;
-	struct uci_section *s;
+	struct uci_section *s = NULL;
 
 	switch (action) {
 		case VALUECHECK:

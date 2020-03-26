@@ -1908,6 +1908,12 @@ static int set_WiFiEndPointProfileSecurity_KeyPassphrase(char *refparam, struct 
 static int get_WiFiEndPointProfileSecurity_MFPConfig(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section*)data, "ieee80211w", value);
+	if(*value[0] == 0 || *value[0] == '0')
+		*value = "Disabled";
+	else if (strcmp(*value, "1") == 0)
+		*value = "Optional";
+	else if (strcmp(*value, "2") == 0)
+		*value = "Required";
 	return 0;
 }
 
@@ -1919,7 +1925,12 @@ static int set_WiFiEndPointProfileSecurity_MFPConfig(char *refparam, struct dmct
 				return FAULT_9007;
 			break;
 		case VALUESET:
-			dmuci_set_value_by_section((struct uci_section*)data, "ieee80211w", value);
+			if (strcmp(value, "Disabled") == 0)
+				dmuci_set_value_by_section((struct uci_section*)data, "ieee80211w", "0");
+			else if (strcmp(value, "Optional") == 0)
+				dmuci_set_value_by_section((struct uci_section*)data, "ieee80211w", "1");
+			else if (strcmp(value, "Required") == 0)
+				dmuci_set_value_by_section((struct uci_section*)data, "ieee80211w", "2");
 			break;
 	}
 	return 0;

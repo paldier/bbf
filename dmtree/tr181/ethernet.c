@@ -19,8 +19,6 @@ struct eth_port_args
 	char *ifname;
 };
 
-static char *wan_ifname = NULL;
-
 /*************************************************************
 * INIT
 **************************************************************/
@@ -219,13 +217,8 @@ static int browseEthernetInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node,
 	LIST_HEAD(dup_list);
 
 	synchronize_specific_config_sections_with_dmmap("ports", "ethport", "dmmap_ports", &dup_list);
-	dmuci_get_option_value_string("ports", "WAN", "ifname", &wan_ifname);
 	list_for_each_entry(p, &dup_list, list) {
 		dmuci_get_value_by_section_string(p->config_section, "ifname", &ifname);
-		if (strcmp(ifname, wan_ifname) == 0) {
-			if(strchr(ifname, '.')== NULL)
-				dmasprintf(&ifname, "%s.1", ifname);
-		}
 		init_eth_port(&curr_eth_port_args, p->config_section, ifname);
 		int_num =  handle_update_instance(1, dmctx, &int_num_last, update_instance_alias, 3, p->dmmap_section, "eth_port_instance", "eth_port_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_eth_port_args, int_num) == DM_STOP)
@@ -323,12 +316,16 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 static int get_linker_interface(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
 	if (data && ((struct eth_port_args *)data)->ifname) {
-		*linker = ((struct eth_port_args *)data)->ifname;
-		return 0;
-	} else {
+		char *wan_ifname = NULL;
+		dmuci_get_option_value_string("ports", "WAN", "ifname", &wan_ifname);
+		if (strcmp(((struct eth_port_args *)data)->ifname, wan_ifname) == 0) {
+			if(strchr(((struct eth_port_args *)data)->ifname, '.') == NULL)
+				dmasprintf(linker, "%s.1", wan_ifname);
+		} else
+			*linker = ((struct eth_port_args *)data)->ifname;
+	} else
 		*linker = "";
-		return 0;
-	}
+	return 0;
 }
 
 static int get_linker_link(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
@@ -581,24 +578,16 @@ static int get_Ethernet_VLANTerminationNumberOfEntries(char *refparam, struct dm
 static int get_EthernetInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-	char *ifname;
 
-	if (strstr(((struct eth_port_args *)data)->ifname, wan_ifname)) {
-		ifname = dmstrdup(wan_ifname);
-	} else
-		ifname = dmstrdup(((struct eth_port_args *)data)->ifname);
-
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ifname, String}}, 1, &res);
+	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct eth_port_args *)data)->ifname, String}}, 1, &res);
 	DM_ASSERT(res, *value = "");
 	*value = dmjson_get_value(res, 1, "carrier");
-	dmfree(ifname);
 	return 0;
 }
 
 static int set_EthernetInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
-	char *ifname;
 
 	switch (action) {
 		case VALUECHECK:
@@ -607,13 +596,7 @@ static int set_EthernetInterface_Enable(char *refparam, struct dmctx *ctx, void 
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if (strstr(((struct eth_port_args *)data)->ifname, wan_ifname))
-				ifname = dmstrdup(wan_ifname);
-			else
-				ifname = dmstrdup(((struct eth_port_args *)data)->ifname);
-
-			DMCMD("ethctl", 3, ifname, "phy-power", b ? "up" : "down");
-			dmfree(ifname);
+			DMCMD("ethctl", 3, ((struct eth_port_args *)data)->ifname, "phy-power", b ? "up" : "down");
 			return 0;
 	}
 	return 0;
@@ -635,10 +618,7 @@ static int get_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_ports", "ethport", section_name(((struct eth_port_args *)data)->eth_port_sec), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "eth_port_alias", value);
-	if (*value == NULL || strlen(*value) < 1)
-		dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "name", value);
+	dmuci_get_value_by_section_string(dmmap_section, "eth_port_alias", value);
 	return 0;
 }
 
@@ -663,7 +643,7 @@ static int set_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *
 /*#Device.Ethernet.Interface.{i}.Name!UCI:ports/ethport,@i-1/name*/
 static int get_EthernetInterface_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "name", value);
+	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "ifname", value);
 	return 0;
 }
 
@@ -710,11 +690,8 @@ static int set_EthernetInterface_LowerLayers(char *refparam, struct dmctx *ctx, 
 
 static int get_EthernetInterface_Upstream(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
-	dmuci_get_option_value_string("network", "lan", "ifname", &ifname);
-	if (strstr(ifname, ((struct eth_port_args *)data)->ifname))
-		*value = "1";
-	else
+	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "uplink", value);
+	if ((*value)[0] == '\0')
 		*value = "0";
 	return 0;
 }
@@ -725,49 +702,33 @@ static int get_EthernetInterface_MACAddress(char *refparam, struct dmctx *ctx, v
 	return eth_port_sysfs(data, "address", value);
 }
 
-/*#Device.Ethernet.Interface.{i}.MaxBitRate!UCI:ports/ethport,@i-1/speed*/
+/*#Device.Ethernet.Interface.{i}.MaxBitRate!UBUS:network.device/status/name,@Name/link-supported*/
 static int get_EthernetInterface_MaxBitRate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *pch, *spch, *speed;
+	json_object *res = NULL, *link_supported = NULL;
+	int rate = 0;
+	char *max_link;
 
-	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "speed", &speed);
-	if (speed[0] == '\0' || strcmp(speed, "disabled") == 0 )
-		*value = "0";
-	else {
-		if (strcmp(speed, "auto") == 0)
-			*value = "-1";
-		else {
-			pch = strtok_r(speed, "FHfh", &spch);
-			*value = dmstrdup(pch);
-		}
+	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct eth_port_args *)data)->ifname, String}}, 1, &res);
+	DM_ASSERT(res, *value = "-1");
+	json_object_object_get_ex(res, "link-supported", &link_supported);
+	if (link_supported) {
+		max_link = dmjson_get_value_in_array_idx(link_supported, json_object_array_length(link_supported) - 1, 0);
+		sscanf(max_link, "%d%*s", &rate);
+		dmasprintf(value, "%d", rate);
 	}
 	return 0;
 }
 
 static int set_EthernetInterface_MaxBitRate(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *duplex, *val = "", *p = "";
-
 	switch (action) {
 		case VALUECHECK:
 			if (dm_validate_int(value, RANGE_ARGS{{"-1",NULL}}, 1))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcasecmp(value, "0") == 0 )
-				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", "disabled");
-			else if (strcmp(value, "-1") == 0)
-				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", "auto");
-			else {
-				dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "speed", &duplex);
-				if (strcmp(duplex, "auto") == 0 || strcmp(duplex, "disabled") == 0)
-					p = "FDAUTO";
-				else
-					p = strchr(duplex, 'F') ? strchr(duplex, 'F') : strchr(duplex, 'H');
-				if (p) dmastrcat(&val, value, p);
-				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", val);
-				dmfree(val);
-			}
+			//TODO
 			return 0;
 	}
 	return 0;
@@ -776,42 +737,39 @@ static int set_EthernetInterface_MaxBitRate(char *refparam, struct dmctx *ctx, v
 /*#Device.Ethernet.Interface.{i}.CurrentBitRate!UBUS:network.device/status/name,@Name/speed*/
 static int get_EthernetInterface_CurrentBitRate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	char *speed, *pch;
+	json_object *res = NULL;
+	int speed = 0;
 
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct eth_port_args *)data)->ifname, String}}, 1, &res);
 	DM_ASSERT(res, *value = "0");
-	speed = dmjson_get_value(res, 1, "speed");
-	if(speed[0] != '\0') {
-		pch = strtok(speed, "FHfh");
-		*value = dmstrdup(pch);
-	} else
-		*value = "0";
+	*value = dmjson_get_value(res, 1, "speed");
+	sscanf(*value, "%d%*c", &speed);
+	dmasprintf(value, "%d", speed);
 	return 0;
 }
 
-/*#Device.Ethernet.Interface.{i}.DuplexMode!UCI:ports/status/ethport,@i-1/speed*/
+/*#Device.Ethernet.Interface.{i}.DuplexMode!UBUS:network.device/status/name,@Name/speed*/
 static int get_EthernetInterface_DuplexMode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "speed", value);
-	if (*value[0] == '\0')
-		*value = "";
-	else if (strcmp(*value, "auto") == 0)
+	json_object *res = NULL;
+	char mode, *speed, *autoneg;
+
+	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct eth_port_args *)data)->ifname, String}}, 1, &res);
+	DM_ASSERT(res, *value = "Auto");
+	autoneg = dmjson_get_value(res, 1, "autoneg");
+	if (strcmp(autoneg, "true") == 0) {
 		*value = "Auto";
-	else {
-		if (strchr(*value, 'F'))
-			*value = "Full";
-		else if (strchr(*value, 'H'))
-			*value = "Half";
-		else
-			*value = "";
+	} else {
+		speed = dmjson_get_value(res, 1, "speed");
+		sscanf(speed, "%*d%c", &mode);
+		*value = (mode == 'F') ? "Full" : "Half";
 	}
 	return 0;
 }
 
 static int set_EthernetInterface_DuplexMode(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *m, *spch, *rate, *val = NULL;
+	char *speed, *spch, *val = NULL;
 
 	switch (action) {
 		case VALUECHECK:
@@ -819,28 +777,26 @@ static int set_EthernetInterface_DuplexMode(char *refparam, struct dmctx *ctx, v
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (strcasecmp(value, "auto") == 0) {
+			// For setting Auto
+			if (strcmp(value, "Auto") == 0) {
 				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", "auto");
 				return 0;
 			}
-			dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "speed", &m);
-			m = dmstrdup(m);
-			rate = m;
-			if (strcmp(rate, "auto") == 0)
-				rate = "100";
-			else {
-				strtok_r(rate, "FHfh", &spch);
-			}
-			if (strcasecmp(value, "full") == 0)
-				dmastrcat(&val, rate, "FD");
-			else if (strcasecmp(value, "half") == 0)
-				dmastrcat(&val, rate, "HD");
-			else {
-				dmfree(m);
-				return 0;
-			}
+
+			// For setting Full or Half
+			dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "speed", &speed);
+
+			if (strcmp(speed, "auto") == 0)
+				speed = "100";
+			else
+				strtok_r(speed, "FHfh", &spch);
+
+			if (strcmp(value, "Full") == 0)
+				dmastrcat(&val, speed, "FD");
+			else
+				dmastrcat(&val, speed, "HD");
+
 			dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", val);
-			dmfree(m);
 			dmfree(val);
 			return 0;
 	}

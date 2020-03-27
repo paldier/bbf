@@ -17351,16 +17351,14 @@
 					"unit": "Mbps", 
 					"mapping": [
 						{
-							"type": "uci", 
-							"uci": {
-								"file": "ports", 
-								"section": {
-									"type": "ethport", 
-									"index": "@i-1"
+							"type": "ubus", 
+							"ubus": {
+								"object": "network.device", 
+								"method": "status", 
+								"args": {
+									"name": "@Name"
 								}, 
-								"option": {
-									"name": "speed"
-								}
+								"key": "link-supported"
 							}
 						}
 					]
@@ -17405,12 +17403,14 @@
 					], 
 					"mapping": [
 						{
-							"type": "uci", 
-							"uci": {
-								"file": "ports", 
-								"section": {
-									"type": "status"
-								}
+							"type": "ubus", 
+							"ubus": {
+								"object": "network.device", 
+								"method": "status", 
+								"args": {
+									"name": "@Name"
+								}, 
+								"key": "speed"
 							}
 						}
 					]
@@ -17991,7 +17991,7 @@
 					"uci": {
 						"file": "network", 
 						"section": {
-							"type": "device"
+							"type": "interface"
 						}, 
 						"dmmapfile": "dmmap_network"
 					}
@@ -28778,16 +28778,12 @@
 					}, 
 					"mapping": [
 						{
-							"type": "uci", 
-							"uci": {
-								"file": "wireless", 
-								"section": {
-									"type": "wifi-device", 
-									"index": "@i-1"
-								}, 
-								"option": {
-									"name": "hwmode"
-								}
+							"type": "ubus", 
+							"ubus": {
+								"object": "wifi.radio.@Name", 
+								"method": "status", 
+								"args": {}, 
+								"key": "standard"
 							}
 						}
 					]
@@ -30887,6 +30883,17 @@
 						"Enabled", 
 						"Error_Misconfigured", 
 						"Error"
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "wifi.ap.@Name", 
+								"method": "status", 
+								"args": {}, 
+								"key": "status"
+							}
+						}
 					]
 				}, 
 				"Alias": {

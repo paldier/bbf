@@ -916,9 +916,8 @@ void synchronize_specific_config_sections_with_dmmap_vlan(char *package, char *s
 			char *type, *intf;
 			dmuci_get_value_by_section_string(s, "type", &type);
 			dmuci_get_value_by_section_string(s, "ifname", &intf);
-			if (strcmp(type,"bridge") != 0 || strcmp(intf, ifname) != 0){
-					continue;
-			}
+			if (strcmp(type,"bridge") != 0 || strcmp(intf, ifname) != 0)
+				continue;
 		}
 
 		/* Fix: Vlan object should not be created for transparent bridges. */
@@ -938,9 +937,8 @@ void synchronize_specific_config_sections_with_dmmap_vlan(char *package, char *s
 			p = strtok(NULL, " ");
 		}
 
-		if (tag == 0) {
+		if (tag == 0)
 			continue;
-		}
 
 		/*
 		 * Add system and dmmap sections to the list
@@ -954,9 +952,8 @@ void synchronize_specific_config_sections_with_dmmap_vlan(char *package, char *s
 	 */
 	uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &v);
-		if(get_origin_section_from_config(package, section_type, v) == NULL){
+		if (get_origin_section_from_config(package, section_type, v) == NULL)
 			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
-		}
 	}
 }
 
@@ -980,9 +977,8 @@ void synchronize_specific_config_sections_with_dmmap(char *package, char *sectio
 		if (strcmp(package, "network") == 0  && strcmp(section_type, "interface") == 0 && strcmp(dmmap_package, "dmmap_network") == 0) {
 			char *value;
 			dmuci_get_value_by_section_string(s, "proto", &value);
-			if (*value == '\0') {
+			if (*value == '\0')
 				continue;
-			}
 		}
 
 		/*
@@ -996,9 +992,8 @@ void synchronize_specific_config_sections_with_dmmap(char *package, char *sectio
 	 */
 	uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &v);
-		if (get_origin_section_from_config(package, section_type, v) == NULL) {
+		if (get_origin_section_from_config(package, section_type, v) == NULL)
 			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
-		}
 	}
 }
 
@@ -1029,9 +1024,8 @@ void synchronize_specific_config_sections_with_dmmap_eq(char *package, char *sec
 	 */
 	uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &v);
-		if(get_origin_section_from_config(package, section_type, v) == NULL){
+		if (get_origin_section_from_config(package, section_type, v) == NULL)
 			dmuci_delete_by_section(s, NULL, NULL);
-		}
 	}
 }
 
@@ -1052,8 +1046,8 @@ void synchronize_specific_config_sections_with_dmmap_eq_no_delete(char *package,
 		}
 	}
 
-	dmmap_sect= NULL;
-	s= NULL;
+	dmmap_sect = NULL;
+	s = NULL;
 	uci_path_foreach_sections(bbfdm, dmmap_package, section_type, dmmap_sect) {
 		dmuci_get_value_by_section_string(dmmap_sect, "section_name", &v);
 		get_config_section_of_dmmap_section("network", "interface", v, &s);
@@ -1088,10 +1082,8 @@ void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *s
 	 */
 	uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &v);
-
-		if(get_origin_section_from_config(package, section_type, v) == NULL){
+		if (get_origin_section_from_config(package, section_type, v) == NULL)
 			dmuci_delete_by_section(s, NULL, NULL);
-		}
 	}
 }
 
@@ -1122,9 +1114,8 @@ void synchronize_multi_config_sections_with_dmmap_set(char *package, char *secti
 			char bridge_key_1[10] = {0};
 			strncpy(bridge_key_1, key, sizeof(bridge_key_1));
 
-			if (strncmp(bridge_key, bridge_key_1, sizeof(bridge_key)) == 0) {
+			if (strncmp(bridge_key, bridge_key_1, sizeof(bridge_key)) == 0)
 				DMUCI_SET_VALUE_BY_SECTION(bbfdm, sec, "section_name", section_name(s));
-			}
 		}
 	}
 }
@@ -1168,9 +1159,8 @@ bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *sectio
 		dmuci_get_value_by_section_string(s, "package", &pack);
 		dmuci_get_value_by_section_string(s, "section", &sect);
 		if (v!=NULL && strlen(v)>0 && strcmp(package, pack)==0 && strcmp(section_type, sect)== 0) {
-			if(get_origin_section_from_config(package, section_type, v) == NULL){
+			if (get_origin_section_from_config(package, section_type, v) == NULL)
 				dmuci_delete_by_section(s, NULL, NULL);
-			}
 		}
 	}
 
@@ -1213,10 +1203,9 @@ bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *s
 		dmuci_get_value_by_section_string(s, "section_name", &v);
 		dmuci_get_value_by_section_string(s, "package", &pack);
 		dmuci_get_value_by_section_string(s, "section", &sect);
-		if(v!=NULL && strlen(v)>0 && strcmp(package, pack)==0 && strcmp(section_type, sect)== 0){
-			if(get_origin_section_from_config(package, section_type, v) == NULL){
+		if (v != NULL && strlen(v) > 0 && strcmp(package, pack) == 0 && strcmp(section_type, sect) == 0) {
+			if (get_origin_section_from_config(package, section_type, v) == NULL)
 				dmuci_delete_by_section(s, NULL, NULL);
-			}
 		}
 	}
 
@@ -1283,9 +1272,8 @@ int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_packag
 	 */
 	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
 		dmuci_get_value_by_section_string(s, opt_name, &v);
-		if(isfolderexist(v) == 0){
+		if (isfolderexist(v) == 0)
 			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
-		}
 	}
 	return 0;
 }

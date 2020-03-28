@@ -86,8 +86,12 @@ static int __dm_ubus_call(const char *obj, const char *method, const struct ubus
 	}
 
 	blob_buf_init(&b, 0);
-	for (i = 0; i < u_args_size; i++)
-		blobmsg_add_string(&b, u_args[i].key, u_args[i].val);
+	for (i = 0; i < u_args_size; i++) {
+		if (u_args[i].type != Integer)
+			blobmsg_add_string(&b, u_args[i].key, u_args[i].val);
+		else
+			blobmsg_add_u32(&b, u_args[i].key, atoi(u_args[i].val));
+	}
 
 	if (!ubus_lookup_id(ubus_ctx, obj, &id))
 		rc = ubus_invoke(ubus_ctx, id, method, b.head,

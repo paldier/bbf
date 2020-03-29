@@ -173,41 +173,8 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 
 	/* Higher layers are Device.Ethernet.VLANTermination.{i}. */
 	uci_foreach_sections("network", "interface", s) {
-		dmuci_get_value_by_section_string(s, "proto", &proto);
-		if (*proto == '\0')
+		if (!is_vlan_termination_section(s))
 			continue;
-		dmuci_get_value_by_section_string(s, "ifname", &ifname);
-		if (*ifname == '\0')
-			continue;
-		char intf[250] = {0};
-		strncpy(intf, ifname, sizeof(intf) - 1);
-		char *if_name = strtok(intf, " ");
-		if (NULL != if_name) {
-			char name[250] = {0};
-			strncpy(name, if_name, sizeof(name) - 1);
-			int macvlan = 0;
-			char *p = strstr(name, ".");
-			if (!p) {
-				char *t = strstr(name, "_");
-				if (t)
-					macvlan = 1;
-				else
-					continue;
-			}
-			char *end;
-			if (macvlan == 1)
-				strtok_r(name, "_", &end);
-			else
-				strtok_r(name, ".", &end);
-			if (end == NULL)
-				continue;
-			if (macvlan == 0) {
-				char tag[20] = {0};
-				strncpy(tag, end, sizeof(tag) - 1);
-				if (strncmp(tag, "1", sizeof(tag)) == 0)
-					continue;
-			}
-		}
 		layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "vlan_term_instance", "vlan_term_alias");
 		if (*layer_inst == '\0')
 			continue;

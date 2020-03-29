@@ -11,33 +11,6 @@
 #include "dmentry.h"
 #include "dns.h"
 
-
-struct NSLookupResult
-{
-	char *Status;
-	char *AnswerType;
-	char *HostNameReturned;
-	char *IPAddresses;
-	char *DNSServerIP;
-	char *ResponseTime;
-};
-
-
-/********************************
- * init function
- ********************************/
-static inline int init_nslookup_results(struct NSLookupResult *args, char *Status, char *AnswerType, char *HostNameReturned, char *IPAddresses, char *DNSServerIP, char *ResponseTime)
-{
-	args->Status = Status;
-	args->AnswerType = AnswerType;
-	args->HostNameReturned = HostNameReturned;
-	args->IPAddresses = IPAddresses;
-	args->DNSServerIP = DNSServerIP;
-	args->ResponseTime = ResponseTime;
-	return 0;
-}
-
-/****************************************************************************************************************************/
 static inline char *nslookup_get(char *option, char *def)
 {
 	char *tmp;

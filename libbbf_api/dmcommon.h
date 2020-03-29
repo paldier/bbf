@@ -255,14 +255,8 @@ void remove_vid_interfaces_from_ifname(char *vid, char *ifname, char *new_ifname
 void update_section_option_list(char *config, char *section, char *option, char *option_2,char *val, char *val_2, char *name);
 void update_section_list_bbfdm(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1,  char *option2, char *val2);
 void update_section_list(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1,  char *option2, char *val2);
-char *get_nvram_wpakey();
-int reset_wlan(struct uci_section *s);
-int get_cfg_layer2idx(char *pack, char *section_type, char *option, int shift);
 int wan_remove_dev_interface(struct uci_section *interface_setion, char *dev);
-int filter_lan_device_interface(struct uci_section *s);
 void remove_vlan_from_bridge_interface(char *bridge_key, struct uci_section *vb);
-void update_remove_vlan_from_bridge_interface(char *bridge_key, struct uci_section *vb);
-int filter_lan_ip_interface(struct uci_section *ss, void *v);
 void remove_interface_from_ifname(char *iface, char *ifname, char *new_ifname);
 int max_array(int a[], int size);
 int check_ifname_is_vlan(char *ifname);
@@ -330,4 +324,5 @@ char **get_all_iop_certificates(int *length);
 char *decode64 (char *enc);
 char *stringToHex(char *text, int length);
 char *replace_char(char *str, char find, char replace);
+int is_vlan_termination_section(struct uci_section *s);
 #endif

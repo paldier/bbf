@@ -979,6 +979,33 @@ static void get_value_security_mode(char **value, char *encryption, char *cipher
 		*value = "unknown";
 }
 
+static char *get_nvram_wpakey(void)
+{
+	//TODO: to be updated
+	json_object *res;
+	char *wpakey = "";
+	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
+	if (res)
+		wpakey = dmjson_get_value(res, 2, "keys", "wpa");
+	return dmstrdup(wpakey);
+}
+
+static int reset_wlan(struct uci_section *s)
+{
+	dmuci_delete_by_section(s, "gtk_rekey", NULL);
+	dmuci_delete_by_section(s, "cipher", NULL);
+	dmuci_delete_by_section(s, "wps", NULL);
+	dmuci_delete_by_section(s, "key", NULL);
+	dmuci_delete_by_section(s, "key1", NULL);
+	dmuci_delete_by_section(s, "key2", NULL);
+	dmuci_delete_by_section(s, "key3", NULL);
+	dmuci_delete_by_section(s, "key4", NULL);
+	dmuci_delete_by_section(s, "radius_server", NULL);
+	dmuci_delete_by_section(s, "radius_port", NULL);
+	dmuci_delete_by_section(s, "radius_secret", NULL);
+	return 0;
+}
+
 static int get_access_point_security_modes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *encryption, *cipher, *mode;

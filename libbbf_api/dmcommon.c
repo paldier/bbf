@@ -440,7 +440,7 @@ void remove_vid_interfaces_from_ifname(char *vid, char *ifname, char *new_ifname
 	dmfree(ifname);
 }
 
-char * dmmap_file_path_get(const char *dmmap_package)
+char *dmmap_file_path_get(const char *dmmap_package)
 {
 	char *path;
 	int rc;
@@ -586,54 +586,12 @@ void update_section_list(char *config, char *section, char *option, int number, 
 	}
 }
 
-char *get_nvram_wpakey() {
-	json_object *res;
-	char *wpakey = "";
-	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
-	if (res)
-		wpakey = dmjson_get_value(res, 2, "keys", "wpa");
-	return dmstrdup(wpakey);
-}
-
-int reset_wlan(struct uci_section *s)
-{
-	dmuci_delete_by_section(s, "gtk_rekey", NULL);
-	dmuci_delete_by_section(s, "cipher", NULL);
-	dmuci_delete_by_section(s, "wps", NULL);
-	dmuci_delete_by_section(s, "key", NULL);
-	dmuci_delete_by_section(s, "key1", NULL);
-	dmuci_delete_by_section(s, "key2", NULL);
-	dmuci_delete_by_section(s, "key3", NULL);
-	dmuci_delete_by_section(s, "key4", NULL);
-	dmuci_delete_by_section(s, "radius_server", NULL);
-	dmuci_delete_by_section(s, "radius_port", NULL);
-	dmuci_delete_by_section(s, "radius_secret", NULL);
-	return 0;
-}
-
-int get_cfg_layer2idx(char *pack, char *section_type, char *option, int shift)
-{
-	char *si, *value;
-	int idx = 0, max = -1;
-	struct uci_section *s = NULL;
-
-	uci_foreach_sections(pack, section_type, s) {
-		dmuci_get_value_by_section_string(s, option, &value);
-		si = value + shift;
-		idx = atoi(si);
-		if (idx > max)
-			max = idx;
-	}
-	return (max + 1);
-}
-
 int wan_remove_dev_interface(struct uci_section *interface_setion, char *dev)
 {
 	char *ifname, new_ifname[64], *p, *pch, *spch;
 	new_ifname[0] = '\0';
 	p = new_ifname;
 	dmuci_get_value_by_section_string(interface_setion, "ifname", &ifname);
-	ifname = dmstrdup(ifname);
 	for (pch = strtok_r(ifname, " ", &spch); pch; pch = strtok_r(NULL, " ", &spch)) {
 		if (!strstr(pch, dev)) {
 			if (new_ifname[0] != '\0') {
@@ -643,74 +601,11 @@ int wan_remove_dev_interface(struct uci_section *interface_setion, char *dev)
 		}
 	}
 	dmstrappendend(p);
-	dmfree(ifname);
-	if (new_ifname[0] == '\0') {
+	if (new_ifname[0] == '\0')
 		dmuci_delete_by_section(interface_setion, NULL, NULL);
-	}
-	else {
+	else
 		dmuci_set_value_by_section(interface_setion, "ifname", new_ifname);
-	}
 	return 0;
-}
-
-int filter_lan_device_interface(struct uci_section *s)
-{
-	char *ifname = NULL;
-	char *phy_itf = NULL, *phy_itf_local;
-	char *pch, *spch, *ftype, *islan;
-
-	dmuci_get_value_by_section_string(s, "type", &ftype);
-	if (strcmp(ftype, "alias") != 0) {
-		dmuci_get_value_by_section_string(s, "is_lan", &islan);
-		if (islan[0] == '1' && strcmp(section_name(s), "loopback") != 0 )
-			return 0;
-		dmuci_get_value_by_section_string(s, "ifname", &ifname);
-		db_get_value_string("hw", "board", "ethernetLanPorts", &phy_itf);
-		phy_itf_local = dmstrdup(phy_itf);
-		for (pch = strtok_r(phy_itf_local, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
-			if (strstr(ifname, pch)) {
-				dmfree(phy_itf_local);
-				return 0;
-			}
-		}
-		dmfree(phy_itf_local);
-	}
-	return -1;
-}
-
-void update_remove_vlan_from_bridge_interface(char *bridge_key, struct uci_section *vb)
-{
-	char *ifname,*vid;
-	char new_ifname[128];
-	struct uci_section *s;
-
-	uci_foreach_option_eq("network", "interface", "bridge_instance", bridge_key, s)
-	{
-		break;
-	}
-	if (!s) return;
-	dmuci_get_value_by_section_string(vb, "vid", &vid);
-	dmuci_get_value_by_section_string(s, "ifname", &ifname);
-	remove_vid_interfaces_from_ifname(vid, ifname, new_ifname);
-	dmuci_set_value_by_section(s, "ifname", new_ifname);
-}
-
-int filter_lan_ip_interface(struct uci_section *ss, void *v)
-{
-	struct uci_section *lds = (struct uci_section *)v;
-	char *value, *type;
-	dmuci_get_value_by_section_string(ss, "type", &type);
-	if (ss == lds) {
-		return 0;
-	}
-	else if (strcmp(type, "alias") == 0) {
-		dmuci_get_value_by_section_string(ss, "ifname", &value);
-		if(strncmp(value, "br-", 3) == 0)
-			value += 3;
-		if (strcmp(value, section_name(lds)) == 0)
-			return 0;
-	}
-	return -1;
 }
 
 void remove_interface_from_ifname(char *iface, char *ifname, char *new_ifname)
@@ -724,8 +619,7 @@ void remove_interface_from_ifname(char *iface, char *ifname, char *new_ifname)
 		if (strcmp(pch, iface) != 0) {
 			if (p == new_ifname) {
 				dmstrappendstr(p, pch);
-			}
-			else {
+			} else {
 				dmstrappendchr(p, ' ');
 				dmstrappendstr(p, pch);
 			}
@@ -739,8 +633,7 @@ void remove_interface_from_ifname(char *iface, char *ifname, char *new_ifname)
 int max_array(int a[], int size)
 {
 	int i, max = 0;
-	for (i = 0; i< size; i++)
-	{
+	for (i = 0; i < size; i++) {
 		if(a[i] > max )
 		max = a[i];
 	}
@@ -891,17 +784,10 @@ struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* secti
 void synchronize_specific_config_sections_with_dmmap_vlan(char *package, char *section_type, char *dmmap_package, char *ifname, struct list_head *dup_list, int *count, char *id)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
-	FILE *fp;
-	char *v, *dmmap_file_path;
+	char *v;
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 */
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
+	dmmap_file_path_get(dmmap_package);
+
 	uci_foreach_sections(package, section_type, s) {
 		/*
 		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
@@ -911,23 +797,23 @@ void synchronize_specific_config_sections_with_dmmap_vlan(char *package, char *s
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
 		}
 
-		/* Fix : Entry for only VLANS. */
+		/* Entry for only VLANS. */
 		if (strcmp(package, "network") == 0  && strcmp(section_type, "interface") == 0 && strcmp(dmmap_package, "dmmap_network") == 0) {
 			char *type, *intf;
 			dmuci_get_value_by_section_string(s, "type", &type);
 			dmuci_get_value_by_section_string(s, "ifname", &intf);
-			if (strcmp(type,"bridge") != 0 || strcmp(intf, ifname) != 0)
+			if (strcmp(type, "bridge") != 0 || strcmp(intf, ifname) != 0)
 				continue;
 		}
 
-		/* Fix: Vlan object should not be created for transparent bridges. */
+		/* Vlan object should not be created for transparent bridges. */
 		int tag = 0;
 		char name[250] = {0};
-		strncpy(name, ifname, sizeof(name));
+		strncpy(name, ifname, sizeof(name) - 1);
 		char *p = strtok(name, " ");
 		while (p != NULL) {
 			char intf[250] = {0};
-			strncpy(intf, p, sizeof(intf));
+			strncpy(intf, p, sizeof(intf) - 1);
 			char *find = strstr(intf, ".");
 			if (find) {
 				tag = 1;
@@ -1089,19 +975,10 @@ void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *s
 
 void synchronize_multi_config_sections_with_dmmap_set(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char *instance, char *br_key)
 {
-	/* Fix : Dmmap set for configuring the lower layer of Bridge.Port object. */
 	struct uci_section *s;
-	FILE *fp;
-	char *dmmap_file_path, *key;
+	char *key;
 
-	dmasprintf(&dmmap_file_path, "/etc/bbfdm/%s", dmmap_package);
-	if (access(dmmap_file_path, F_OK)) {
-		/*
-		 *File does not exist
-		 **/
-		fp = fopen(dmmap_file_path, "w"); // new empty file
-		fclose(fp);
-	}
+	dmmap_file_path_get(dmmap_package);
 
 	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
 		/* Check if bridge_port_instance is present in dmmap_bridge_port.*/
@@ -1109,10 +986,10 @@ void synchronize_multi_config_sections_with_dmmap_set(char *package, char *secti
 		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_port_instance", instance, sec) {
 			dmuci_get_value_by_section_string(sec, "bridge_key", &key);
 			char bridge_key[10] = {0};
-			strncpy(bridge_key, br_key, sizeof(bridge_key));
+			strncpy(bridge_key, br_key, sizeof(bridge_key) - 1);
 
 			char bridge_key_1[10] = {0};
-			strncpy(bridge_key_1, key, sizeof(bridge_key_1));
+			strncpy(bridge_key_1, key, sizeof(bridge_key_1) - 1);
 
 			if (strncmp(bridge_key, bridge_key_1, sizeof(bridge_key)) == 0)
 				DMUCI_SET_VALUE_BY_SECTION(bbfdm, sec, "section_name", section_name(s));
@@ -1171,7 +1048,7 @@ bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *s
 {
 	struct uci_section *s, *stmp, *dmmap_sect;
 	char *v, *pack, *sect, *optval;
-	bool found= false;
+	bool found = false;
 
 	dmmap_file_path_get(dmmap_package);
 
@@ -1219,8 +1096,8 @@ void add_sysfs_sectons_list_paramameter(struct list_head *dup_list, struct uci_s
 	dmmap_sysfs = dmcalloc(1, sizeof(struct sysfs_dmsection));
 	list_add_tail(&dmmap_sysfs->list, dup_list);
 	dmmap_sysfs->dm = dmmap_section;
-	dmmap_sysfs->sysfs_folder_name= dmstrdup(file_name);
-	dmmap_sysfs->sysfs_folder_path= dmstrdup(filepath);
+	dmmap_sysfs->sysfs_folder_name = dmstrdup(file_name);
+	dmmap_sysfs->sysfs_folder_path = dmstrdup(filepath);
 }
 
 int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, struct list_head *dup_list)
@@ -1323,12 +1200,12 @@ int is_section_unnamed(char *section_name)
 {
 	int i;
 
-	if(strlen(section_name)!=9)
+	if (strlen(section_name) != 9)
 		return 0;
 	if(strstr(section_name, "cfg") != section_name)
 		return 0;
-	for(i=3; i<9; i++){
-		if(!isxdigit(section_name[i]))
+	for (i = 3; i < 9; i++) {
+		if (!isxdigit(section_name[i]))
 			return 0;
 	}
 	return 1;
@@ -1347,7 +1224,7 @@ void add_dmmap_list_section(struct list_head *dup_list, char* section_name, char
 void delete_sections_save_next_sections(char* dmmap_package, char *section_type, char *instancename, char *section_name, int instance, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp;
-	char *v=NULL, *lsectname= NULL, *tmp= NULL;
+	char *v = NULL, *lsectname = NULL, *tmp = NULL;
 	int inst;
 
 	dmasprintf(&lsectname, "%s", section_name);
@@ -2043,7 +1920,7 @@ int dm_validate_string_list(char *value, int min_item, int max_item, int max_siz
 
 	/* copy data in buffer */
 	char buf[strlen(value)+1];
-	strncpy(buf, value, sizeof(buf));
+	strncpy(buf, value, sizeof(buf) - 1);
 	buf[strlen(value)] = '\0';
 
 	/* for each value, validate string */
@@ -2071,7 +1948,7 @@ int dm_validate_unsignedInt_list(char *value, int min_item, int max_item, int ma
 
 	/* copy data in buffer */
 	char buf[strlen(value)+1];
-	strncpy(buf, value, sizeof(buf));
+	strncpy(buf, value, sizeof(buf) - 1);
 	buf[strlen(value)] = '\0';
 
 	/* for each value, validate string */
@@ -2207,4 +2084,51 @@ char *replace_char(char *str, char find, char replace)
         current_pos = strchr(current_pos, find);
     }
     return str;
+}
+
+int is_vlan_termination_section(struct uci_section *s)
+{
+	char *proto, *ifname;
+
+	dmuci_get_value_by_section_string(s, "proto", &proto);
+	if (*proto == '\0')
+		return 0;
+
+	dmuci_get_value_by_section_string(s, "ifname", &ifname);
+	if (*ifname == '\0')
+		return 0;
+
+	char intf[250] = {0};
+	strncpy(intf, ifname, sizeof(intf) - 1);
+	char *if_name = strtok(intf, " ");
+	if (NULL != if_name) {
+		char name[250] = {0};
+		strncpy(name, if_name, sizeof(name) - 1);
+		int macvlan = 0;
+		char *p = strstr(name, ".");
+		if (!p) {
+			char *t = strstr(name, "_");
+			if (t)
+				macvlan = 1;
+			else
+				return 0;
+		}
+		char *end;
+		if (macvlan == 1)
+			strtok_r(name, "_", &end);
+		else
+			strtok_r(name, ".", &end);
+
+		if (end == NULL)
+			return 0;
+
+		if (macvlan == 0) {
+			char tag[20] = {0};
+			strncpy(tag, end, sizeof(tag) - 1);
+			if (strncmp(tag, "1", sizeof(tag)) == 0)
+				return 0;
+		}
+	}
+
+	return 1;
 }

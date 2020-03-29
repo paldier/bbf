@@ -17167,14 +17167,16 @@
 					"datatype": "boolean", 
 					"mapping": [
 						{
-							"type": "ubus", 
-							"ubus": {
-								"object": "network.device", 
-								"method": "status", 
-								"args": {
-									"name": "@Name"
+							"type": "uci", 
+							"uci": {
+								"file": "ports", 
+								"section": {
+									"type": "ethport", 
+									"index": "@i-1"
 								}, 
-								"key": "carrier"
+								"option": {
+									"name": "enabled"
+								}
 							}
 						}
 					]
@@ -17250,7 +17252,7 @@
 									"index": "@i-1"
 								}, 
 								"option": {
-									"name": "name"
+									"name": "ifname"
 								}
 							}
 						}
@@ -17433,7 +17435,22 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "boolean"
+					"datatype": "boolean", 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ports", 
+								"section": {
+									"type": "ethport", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "eee"
+								}
+							}
+						}
+					]
 				}, 
 				"Device.Ethernet.Interface.{i}.Stats.": {
 					"type": "object", 

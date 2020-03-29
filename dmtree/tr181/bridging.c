@@ -416,7 +416,7 @@ static int get_br_port_status(char *refparam, struct dmctx *ctx, void *data, cha
 
 static int get_br_port_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "name", value);
+	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", value);
 	return 0;
 }
 
@@ -986,9 +986,9 @@ static int get_br_port_alias(char *refparam, struct dmctx *ctx, void *data, char
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
-	if (!dmmap_section)
-		dmmap_section = ((struct bridging_port_args *)data)->bridge_port_sec;
 	dmuci_get_value_by_section_string(dmmap_section, "bridge_port_alias", value);
+	if ((*value)[0] == '\0')
+		dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "name", value);
 	return 0;
 }
 
@@ -1003,9 +1003,8 @@ static int set_br_port_alias(char *refparam, struct dmctx *ctx, void *data, char
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
-			if(!dmmap_section)
-				dmmap_section = ((struct bridging_port_args *)data)->bridge_port_sec;
-			dmuci_set_value_by_section(dmmap_section, "bridge_port_alias", value);
+			if (dmmap_section)
+				dmuci_set_value_by_section(dmmap_section, "bridge_port_alias", value);
 			return 0;
 	}
 	return 0;
@@ -1160,8 +1159,8 @@ static int add_br_vlanport(char *refparam, struct dmctx *ctx, void *data, char *
 
 					/* Get the last vlan_instance and add one. */
 					int m = get_vlanport_last_inst(br_args->br_key);
-					char instance[10];
-					sprintf(instance, "%d", m+1);
+					char instance[10] = {0};
+					snprintf(instance, sizeof(instance), "%d", m+1);
 					dmuci_set_value_by_section(dmmap_port, "vport_inst", instance);
 					dmasprintf(&name, "%s_%d", "vlanport", m);
 					dmuci_set_value_by_section(dmmap_port, "section_name", name);
@@ -1178,8 +1177,8 @@ static int add_br_vlanport(char *refparam, struct dmctx *ctx, void *data, char *
 
 	/* Get the vlan port instance. */
 	int m = get_vlanport_last_inst(br_args->br_key);
-	char inst[10];
-	sprintf(inst, "%d", m+1);
+	char inst[10] = {0};
+	snprintf(inst, sizeof(inst), "%d", m+1);
 	dmuci_set_value_by_section(dmmap_port, "vport_inst", inst);
 	dmasprintf(&name, "%s_%d", "vlanport", m);
 	dmuci_set_value_by_section(dmmap_port, "section_name", name);
@@ -1284,8 +1283,8 @@ static int delete_br_vlanport(char *refparam, struct dmctx *ctx, void *data, cha
 			for (j = val; j <= v_last; j++) {
 				dmasprintf(&name, "%s_%d", "vlanport", (j - 1));
 				get_dmmap_section_of_config_section("dmmap_network", "vlanport", name, &vport_sec);
-				char inst_val[10];
-				sprintf(inst_val, "%d", (j-1));
+				char inst_val[10] = {0};
+				snprintf(inst_val, sizeof(inst_val), "%d", (j-1));
 				dmuci_set_value_by_section(vport_sec, "vport_inst", inst_val);
 				char *v_name;
 				dmasprintf(&v_name, "%s_%d", "vlanport", (j - 2));

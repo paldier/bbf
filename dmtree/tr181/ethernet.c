@@ -92,10 +92,10 @@ static void create_link(char *ifname)
 	if (is_mac_exist(macaddr))
 		return;
 
-	/* Fix: For all the Ethernet link objects pointing to same Ethernet Interface,
+	/* For all the Ethernet link objects pointing to same Ethernet Interface,
 	 * we can omit creating multiple Ethernet link entries.*/
 	char intf[250] = {0};
-	strncpy(intf, device, sizeof(intf));
+	strncpy(intf, device, sizeof(intf) - 1);
 	char *p = strtok(intf, ".");
 	if (p != NULL) {
 		if (is_device_exist(p))
@@ -136,9 +136,8 @@ static int dmmap_synchronizeEthernetLink(struct dmctx *dmctx, DMNODE *parent_nod
 
 	uci_foreach_sections("network", "interface", s) {
 		dmuci_get_value_by_section_string(s, "type", &type);
-
-		/* Fix: The creating of multiple ethernet links.*/
 		dmuci_get_value_by_section_string(s, "proto", &proto);
+
 		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback") == 0 || *proto == '\0')
 			continue;
 
@@ -171,7 +170,7 @@ static char *get_vlan_last_instance_bbfdm(char *package, char *section, char *op
 			continue;
 
 		char interface[250] = {0};
-		strncpy(interface, ifname, sizeof(interface));
+		strncpy(interface, ifname, sizeof(interface) - 1);
 
 		/* Only tagged interfaces should be considered. */
 		int ret = 0;
@@ -182,7 +181,7 @@ static char *get_vlan_last_instance_bbfdm(char *package, char *section, char *op
 			strtok_r(tok, ".", &tag);
 			if (tag != NULL) {
 				char tag_if[10] = {0};
-				strncpy(tag_if, tag, sizeof(tag_if));
+				strncpy(tag_if, tag, sizeof(tag_if) - 1);
 				if (strncmp(tag_if, "1", sizeof(tag_if)) != 0)
 					ret = 1;
 				else
@@ -253,7 +252,6 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 	struct dmmap_dup *p = NULL;
 	LIST_HEAD(dup_list);
 
-	/* Fix : Creating of vlan instance for only upstream interface with proto defined. */
 	synchronize_specific_config_sections_with_dmmap("network", "interface", "dmmap_network", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
 		char *proto;
@@ -305,7 +303,6 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_vlan_term_args, vlan_term) == DM_STOP)
 			break;
 	}
-
 	free_dmmap_config_dup_list(&dup_list);
 	return 0;
 }
@@ -330,21 +327,17 @@ static int get_linker_interface(char *refparam, struct dmctx *dmctx, void *data,
 
 static int get_linker_link(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	/* Fix: for get linker link */
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "mac", linker);
 	return 0;
 }
 
 static int get_linker_vlan_term(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	/* Fix: linker should be fetched using ifname. */
-	if(((struct dm_args *)data)->section) {
+	if(data && ((struct dm_args *)data)->section)
 		dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", linker);
-		return 0;
-	} else {
+	else
 		*linker = "";
-		return 0;
-	}
+	return 0;
 }
 
 /*************************************************************
@@ -363,17 +356,16 @@ static int addObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, cha
 
 static int delObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
-	char *sect_name= NULL;
+	char *sect_name = NULL;
 	struct uci_section *s = NULL;
 
 	switch (del_action) {
 		case DEL_INST:
-			/* Fix : Deletion of EthernetLink to support L2 VLAN deployments. */
+			/* Deletion of EthernetLink to support L2 VLAN deployments. */
 			dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "section_name", &sect_name);
 			get_config_section_of_dmmap_section("network", "interface", sect_name, &s);
 			if(!s) {
 				dmuci_delete_by_section(((struct dm_args *)data)->section, NULL, NULL);
-				return 0;
 			} else {
 				/* Get section from section_name.*/
 				struct uci_section *intf_s = NULL;
@@ -389,13 +381,10 @@ static int delObjEthernetLink(char *refparam, struct dmctx *ctx, void *data, cha
 				struct uci_section *dmmap_section;
 				get_dmmap_section_of_config_section("dmmap", "link", sect_name, &dmmap_section);
 				dmuci_delete_by_section(dmmap_section, NULL, NULL);
-				return 0;
 			}
-			return FAULT_9005;
-			break;
+			return 0;
 		case DEL_ALL:
 			return FAULT_9005;
-			break;
 	}
 
 	return 0;
@@ -426,7 +415,7 @@ static int addObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void
 		char *iface;
 		dmuci_get_value_by_section_string(port_s, "ifname", &iface);
 		if (*iface != '\0') {
-			strncpy(intf_tag, iface, sizeof(intf_tag));
+			strncpy(intf_tag, iface, sizeof(intf_tag) - 1);
 		}
 	}
 
@@ -447,7 +436,7 @@ static int addObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void
 	char mac_addr[20] = {0};
 	int  num = 0;
 	if (*mac != '\0') {
-		strncpy(mac_addr, mac, sizeof(mac_addr));
+		strncpy(mac_addr, mac, sizeof(mac_addr) - 1);
 		int len = strlen(mac_addr);
 
 		/* Fetch the last octect of base mac address in integer variable. */
@@ -476,7 +465,7 @@ static int delObjEthernetVLANTermination(char *refparam, struct dmctx *ctx, void
 			update_dmmap_sections(&dup_list, "vlan_term_instance", "dmmap_network", "interface");
 			dmuci_delete_by_section_unnamed(((struct dm_args *)data)->section, NULL, NULL);
 		} else {
-			get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name(((struct dm_args *)data)->section), &dmmap_section);
+			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct dm_args *)data)->section), &dmmap_section);
 			if (dmmap_section != NULL)
 				dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
 			dmuci_delete_by_section(((struct dm_args *)data)->section, NULL, NULL);
@@ -523,7 +512,6 @@ static int get_Ethernet_VLANTerminationNumberOfEntries(char *refparam, struct dm
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	/* Fix: Browse interface to find the no of vlan termination  entries. */
 	uci_foreach_sections("network", "interface", s) {
 		char *proto;
 		dmuci_get_value_by_section_string(s, "proto", &proto);
@@ -574,14 +562,10 @@ static int get_Ethernet_VLANTerminationNumberOfEntries(char *refparam, struct dm
 	return 0;
 }
 
-/*#Device.Ethernet.Interface.{i}.Enable!UBUS:network.device/status/name,@Name/carrier*/
+/*#Device.Ethernet.Interface.{i}.Enable!UCI:ports/ethport,@i-1/enabled*/
 static int get_EthernetInterface_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct eth_port_args *)data)->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "carrier");
+	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "enabled", value);
 	return 0;
 }
 
@@ -596,20 +580,21 @@ static int set_EthernetInterface_Enable(char *refparam, struct dmctx *ctx, void 
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			DMCMD("ethctl", 3, ((struct eth_port_args *)data)->ifname, "phy-power", b ? "up" : "down");
+			dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "enabled", b ? "1" : "0");
 			return 0;
 	}
 	return 0;
 }
 
-/*#Device.Ethernet.Interface.{i}.Status!UBUS:network.device/status/name,@Name/carrier*/
 static int get_EthernetInterface_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	bool b;
-
-	get_EthernetInterface_Enable(refparam, ctx, data, instance, value);
-	string_to_bool(*value, &b);
-	*value = b ? "Up" : "Down";
+	get_net_device_sysfs(((struct eth_port_args *)data)->ifname, "operstate", value);
+	if (strcmp(*value, "up") == 0)
+		*value = "Up";
+	else if (strcmp(*value, "down") == 0)
+		*value = "Down";
+	else
+		*value = "Unknown";
 	return 0;
 }
 
@@ -619,6 +604,8 @@ static int get_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *
 
 	get_dmmap_section_of_config_section("dmmap_ports", "ethport", section_name(((struct eth_port_args *)data)->eth_port_sec), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "eth_port_alias", value);
+	if ((*value)[0] == '\0')
+		dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "name", value);
 	return 0;
 }
 
@@ -640,7 +627,7 @@ static int set_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-/*#Device.Ethernet.Interface.{i}.Name!UCI:ports/ethport,@i-1/name*/
+/*#Device.Ethernet.Interface.{i}.Name!UCI:ports/ethport,@i-1/ifname*/
 static int get_EthernetInterface_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "ifname", value);
@@ -728,7 +715,7 @@ static int set_EthernetInterface_MaxBitRate(char *refparam, struct dmctx *ctx, v
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			//TODO
+			dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", value);
 			return 0;
 	}
 	return 0;
@@ -769,35 +756,21 @@ static int get_EthernetInterface_DuplexMode(char *refparam, struct dmctx *ctx, v
 
 static int set_EthernetInterface_DuplexMode(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *speed, *spch, *val = NULL;
-
 	switch (action) {
 		case VALUECHECK:
 			if (dm_validate_string(value, -1, -1, DuplexMode, 3, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			// For setting Auto
-			if (strcmp(value, "Auto") == 0) {
-				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", "auto");
-				return 0;
+			if (strcmp(value, "Auto") == 0)
+				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "autoneg", "1");
+			else {
+				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "autoneg", "0");
+				if (strcmp(value, "Full") == 0)
+					dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "duplex", "full");
+				else
+					dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "duplex", "half");
 			}
-
-			// For setting Full or Half
-			dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "speed", &speed);
-
-			if (strcmp(speed, "auto") == 0)
-				speed = "100";
-			else
-				strtok_r(speed, "FHfh", &spch);
-
-			if (strcmp(value, "Full") == 0)
-				dmastrcat(&val, speed, "FD");
-			else
-				dmastrcat(&val, speed, "HD");
-
-			dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", val);
-			dmfree(val);
 			return 0;
 	}
 	return 0;
@@ -805,7 +778,31 @@ static int set_EthernetInterface_DuplexMode(char *refparam, struct dmctx *ctx, v
 
 static int get_EthernetInterface_EEECapability(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "0";
+	*value = "1";
+	return 0;
+}
+
+/*#Device.Ethernet.Interface.{i}.EEEEnable!UCI:ports/ethport,@i-1/eee*/
+static int get_EthernetInterface_EEEEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "eee", value);
+	return 0;
+}
+
+static int set_EthernetInterface_EEEEnable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	bool b;
+
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			string_to_bool(value, &b);
+			dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "eee", b ? "1" : "0");
+			break;
+	}
 	return 0;
 }
 
@@ -968,7 +965,7 @@ static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 				char *iface;
 				dmuci_get_value_by_section_string(port_s, "ifname", &iface);
 				if (*iface != '\0') {
-					strncpy(intf_tag, iface, sizeof(intf_tag));
+					strncpy(intf_tag, iface, sizeof(intf_tag) - 1);
 				}
 			}
 			strcat(intf_tag, ".1");
@@ -996,7 +993,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 			if (value[strlen(value)-1] != '.')
 				snprintf(lower_layer, sizeof(lower_layer), "%s.", value);
 			else
-				strncpy(lower_layer, value, sizeof(lower_layer));
+				strncpy(lower_layer, value, sizeof(lower_layer) - 1);
 
 			/* Check if the value is valid or not. */
 			if (strncmp(lower_layer, "Device.Bridging.Bridge.", 23) == 0) {
@@ -1030,7 +1027,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 					uci_foreach_sections("network", "interface", intf_s) {
 						struct uci_section *s = NULL;
 						char  sec[20] = {0};
-						strncpy(sec, section_name(intf_s), sizeof(sec));
+						strncpy(sec, section_name(intf_s), sizeof(sec) - 1);
 						if (strncmp(sec, sec_name, sizeof(sec)) == 0) {
 							char *type, *ifname;
 							dmuci_get_value_by_section_string(intf_s, "type", &type);
@@ -1046,7 +1043,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 								char *inst;
 								char link_inst[10] = {0};
 								dmuci_get_value_by_section_string(s, "link_instance", &inst);
-								strncpy(link_inst, instance, sizeof(link_inst));
+								strncpy(link_inst, instance, sizeof(link_inst) - 1);
 
 								/* Check if the link instance are same or not. */
 								if (strncmp(link_inst, inst, sizeof(link_inst)) == 0) {
@@ -1072,7 +1069,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 					char *iface;
 					dmuci_get_value_by_section_string(port_s, "ifname", &iface);
 					if (*iface != '\0') {
-						strncpy(intf_tag, iface, sizeof(intf_tag));
+						strncpy(intf_tag, iface, sizeof(intf_tag) - 1);
 					}
 				}
 
@@ -1083,7 +1080,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 				 * the proto, else create a interface and device section. */
 				char intf[20] = {0};
 				if (strcmp(linker, intf_tag) == 0)
-					strncpy(intf, linker, sizeof(intf));
+					strncpy(intf, linker, sizeof(intf) - 1);
 				else
 					snprintf(intf, sizeof(intf), "%s.%s", linker, "1");
 
@@ -1096,7 +1093,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 						char *inst;
 						char link_inst[10] = {0};
 						dmuci_get_value_by_section_string(link_s, "link_instance", &inst);
-						strncpy(link_inst, instance, sizeof(link_inst));
+						strncpy(link_inst, instance, sizeof(link_inst) - 1);
 
 						/* Check if the link instance are same or not. */
 						if (strncmp(link_inst, inst, sizeof(link_inst)) == 0) {
@@ -1117,7 +1114,7 @@ static int set_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 						char *inst;
 						char link_inst[10] = {0};
 						dmuci_get_value_by_section_string(link_s, "link_instance", &inst);
-						strncpy(link_inst, instance, sizeof(link_inst));
+						strncpy(link_inst, instance, sizeof(link_inst) - 1);
 
 						/* Check if the link instance are same or not. */
 						if (strncmp(link_inst, inst, sizeof(link_inst)) == 0) {
@@ -1225,7 +1222,6 @@ static int get_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, 
 {
 	struct uci_section *dmmap_section = NULL;
 
-	/* Fix: Browse interface in dmmap_network to fetch the value. */
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct dm_args *)data)->section), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "vlan_term_alias", value);
 	return 0;
@@ -1241,7 +1237,6 @@ static int set_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, 
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			/* Fix: Browse interface in dmmap_network to fetch the value. */
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct dm_args *)data)->section), &dmmap_section);
 			if(dmmap_section)
 				dmuci_set_value_by_section(dmmap_section, "vlan_term_alias", value);
@@ -1263,7 +1258,6 @@ static int get_EthernetVLANTermination_LastChange(char *refparam, struct dmctx *
 	struct uci_section *s = NULL;
 	char *ifname, *devifname;
 
-	/* Fix : Use section_name and ifname to find the value of interface. */
 	*value ="0";
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &devifname);
 	uci_foreach_sections("network", "interface", s) {
@@ -1285,7 +1279,6 @@ static int get_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx 
 	char *pch, *spch, *devifname, *ifname, *dupifname, *mac;
 	struct uci_section *section = NULL;
 
-	/* Fix : Use ifname parameter to find the name of the interface in specified section. */
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "ifname", &devifname);
 
 	uci_foreach_sections("network", "interface", section) {
@@ -1293,7 +1286,6 @@ static int get_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx 
 		dupifname = dmstrdup(ifname);
 		for (pch = strtok_r(dupifname, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
 			if(strcmp(pch, devifname) == 0) {
-				/* Fix: Use mac address instead of section name for lower layer. */
 				mac = get_macaddr(section_name(section));
 				if (mac[0] != '\0') {
 					adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), mac, value);
@@ -1501,6 +1493,7 @@ DMLEAF tEthernetInterfaceParams[] = {
 {"CurrentBitRate", &DMREAD, DMT_UNINT, get_EthernetInterface_CurrentBitRate, NULL, NULL, NULL, BBFDM_BOTH},
 {"DuplexMode", &DMWRITE, DMT_STRING, get_EthernetInterface_DuplexMode, set_EthernetInterface_DuplexMode, NULL, NULL, BBFDM_BOTH},
 {"EEECapability", &DMREAD, DMT_BOOL, get_EthernetInterface_EEECapability, NULL, NULL, NULL, BBFDM_BOTH},
+{"EEEEnable", &DMWRITE, DMT_BOOL, get_EthernetInterface_EEEEnable, set_EthernetInterface_EEEEnable, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

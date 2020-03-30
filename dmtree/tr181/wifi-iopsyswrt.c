@@ -596,3 +596,10 @@ int os__browse_wifi_associated_device(struct dmctx *dmctx, DMNODE *parent_node, 
 	}
 	return 0;
 }
+
+char * os__get_default_wpa_key()
+{
+	char *wpakey;
+	db_get_value_string("hw", "board", "wpa_key", &wpakey);
+	return wpakey;
+}

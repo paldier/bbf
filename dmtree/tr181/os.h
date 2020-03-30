@@ -107,6 +107,7 @@ char * os__get_radio_channel_nocache(const struct wifi_radio_args *args);
 void os__wifi_start_scan(const char *radio);
 int os_get_wifi_access_point_status (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os_get_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
+char * os__get_default_wpa_key();
 
 /* IOPSYS-WRT only
  */

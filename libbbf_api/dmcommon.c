@@ -180,7 +180,7 @@ pid_t get_pid(char *pname)
 	return -1;
 }
 
-int check_file(char *path) 
+int check_file(char *path)
 {
 	glob_t globbuf;
 	if(glob(path, 0, NULL, &globbuf) == 0) {
@@ -859,7 +859,7 @@ void synchronize_specific_config_sections_with_dmmap(char *package, char *sectio
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
 		}
 
-	   /* Fix : Change to fix multiple IP interface creation. */
+		/* Change to fix multiple IP interface creation. */
 		if (strcmp(package, "network") == 0  && strcmp(section_type, "interface") == 0 && strcmp(dmmap_package, "dmmap_network") == 0) {
 			char *value;
 			dmuci_get_value_by_section_string(s, "proto", &value);
@@ -996,6 +996,73 @@ void synchronize_multi_config_sections_with_dmmap_set(char *package, char *secti
 		}
 	}
 }
+
+bool synchronize_multi_config_sections_with_dmmap_port(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list, char *br_key)
+{
+	struct uci_section *s, *stmp, *dmmap_sect;
+	char *v, *pack, *sect;
+	bool found = false;
+
+	dmmap_file_path_get(dmmap_package);
+
+	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
+		found = true;
+		/*
+		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
+		 */
+		if ((dmmap_sect = get_dup_section_in_dmmap(dmmap_package, dmmap_section, section_name(s))) == NULL) {
+			dmuci_add_section_bbfdm(dmmap_package, dmmap_section, &dmmap_sect, &v);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
+		} else {
+			/* Get the bridge_key associated with the dmmap section. */
+			char *key;
+			dmuci_get_value_by_section_string(dmmap_sect, "bridge_key", &key);
+			if (strcmp(br_key, key) == 0) {
+				/* Dmmap set for configuring the lower layer of Bridge.Port object. */
+				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
+				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
+				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
+			} else {
+				struct uci_section *br_s = NULL;
+				uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_key, br_s) {
+					/* Get the section name. */
+					char *sec_name;
+					dmuci_get_value_by_section_string(br_s, "section_name", &sec_name);
+
+					if (strcmp(sec_name, section_name(s)) == 0) {
+						DMUCI_SET_VALUE_BY_SECTION(bbfdm, br_s, "section_name", section_name(s));
+						DMUCI_SET_VALUE_BY_SECTION(bbfdm, br_s, "package", package);
+						DMUCI_SET_VALUE_BY_SECTION(bbfdm, br_s, "section", section_type);
+					}
+				}
+			}
+		}
+
+		/*
+		 * Add system and dmmap sections to the list
+		 */
+		add_sectons_list_paramameter(dup_list, s, dmmap_sect, additional_attribute);
+	}
+
+	/*
+	 * Delete unused dmmap sections
+	 */
+	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
+		dmuci_get_value_by_section_string(s, "section_name", &v);
+		dmuci_get_value_by_section_string(s, "package", &pack);
+		dmuci_get_value_by_section_string(s, "section", &sect);
+		if (v != NULL && strlen(v) > 0 && strcmp(package, pack) == 0 && strcmp(section_type, sect) == 0) {
+			if(get_origin_section_from_config(package, section_type, v) == NULL){
+				dmuci_delete_by_section(s, NULL, NULL);
+			}
+		}
+	}
+
+	return found;
+}
+
 
 bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list)
 {
@@ -2131,4 +2198,44 @@ int is_vlan_termination_section(struct uci_section *s)
 	}
 
 	return 1;
+}
+
+int get_upstream_interface(char *intf_tag, int len)
+{
+	/* Get the upstream interface. */
+	struct uci_section *port_s = NULL;
+	uci_foreach_option_eq("ports", "ethport", "uplink", "1", port_s) {
+		char *iface;
+		dmuci_get_value_by_section_string(port_s, "ifname", &iface);
+		if (*iface != '\0') {
+			strncpy(intf_tag, iface, len - 1);
+			break;
+		}
+	}
+
+	return 0;
+}
+
+int create_mac_addr_upstream_intf(char *mac_addr, char *mac, int len)
+{
+	int  num = 0;
+	char macaddr[25] = {0};
+
+	if (*mac != '\0') {
+		strncpy(macaddr, mac, sizeof(macaddr) - 1);
+		int len = strlen(macaddr);
+
+		/* Fetch the last octect of base mac address in integer variable. */
+		if (sscanf(&macaddr[len - 2], "%02x", &num) >  0) {
+			num += 1;
+			snprintf(&macaddr[len - 2], sizeof(macaddr), "%02x", num);
+		}
+
+		if (macaddr[0] != '\0') {
+			strncpy(mac_addr, macaddr, len);
+			return 0;
+		}
+	}
+
+	return -1;
 }

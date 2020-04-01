@@ -273,6 +273,7 @@ void synchronize_specific_config_sections_with_dmmap_eq(char *package, char *sec
 void synchronize_specific_config_sections_with_dmmap_eq_no_delete(char *package, char *section_type, char *dmmap_package,char* option_name, char* option_value, struct list_head *dup_list);
 void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *section_type, char *dmmap_package,char* option_name, char* option_value, struct list_head *dup_list);
 bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list);
+bool synchronize_multi_config_sections_with_dmmap_port(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list, char *br_key);
 bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char* opt_diff_name, char* opt_diff_value, void* additional_attribute, struct list_head *dup_list);
 void add_sysfs_sectons_list_paramameter(struct list_head *dup_list, struct uci_section *dmmap_section, char *file_name, char* filepath);
 int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, struct list_head *dup_list);
@@ -325,4 +326,6 @@ char *decode64 (char *enc);
 char *stringToHex(char *text, int length);
 char *replace_char(char *str, char find, char replace);
 int is_vlan_termination_section(struct uci_section *s);
+int get_upstream_interface(char *intf_tag, int len);
+int create_mac_addr_upstream_intf(char *mac_addr, char *mac, int len);
 #endif

@@ -756,10 +756,7 @@ static int get_dhcp_enable(char *refparam, struct dmctx *ctx, void *data, char *
 
 	uci_foreach_option_eq("dhcp", "dhcp", "interface", ((struct dhcp_args *)data)->interface, s) {
 		dmuci_get_value_by_section_string(s, "ignore", value);
-		if ((*value)[0] == '\0')
-			*value = "1";
-		else
-			*value = "0";
+		*value = ((*value)[0] == '1') ? "0" : "1";
 		return 0;
 	}
 	*value = "0";

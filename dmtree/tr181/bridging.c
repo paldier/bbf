@@ -872,8 +872,9 @@ static int set_br_vlan_vid(char *refparam, struct dmctx *ctx, void *data, char *
 			while (token != NULL) {
 				char intf[50] = {0};
 				strncpy(intf, token, sizeof(intf) - 1);
-				char *tok, *tag;
-				tok = strtok_r(intf, ".", &tag);
+				char *tag;
+
+				strtok_r(intf, ".", &tag);
 
 				/* Remove all the config device section before setting the vlan id. */
 				if (tag != NULL ) {
@@ -1250,8 +1251,8 @@ static int delete_br_vlanport(char *refparam, struct dmctx *ctx, void *data, cha
 					char intf[250] = {0};
 					strncpy(intf, ifname, sizeof(intf) - 1);
 
-					char *tok, *tag;
-					tok =  strtok_r(intf, ".", &tag);
+					char *tag;
+					strtok_r(intf, ".", &tag);
 					if (tag != NULL) {
 						/* Remove the tag in ifname from UCI file.*/
 						remove_ifname_from_uci(ifname, data, intf);

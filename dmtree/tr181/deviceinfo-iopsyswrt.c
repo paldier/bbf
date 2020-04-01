@@ -34,6 +34,12 @@ char * os__get_softwareversion()
 	return v;
 }
 
+int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	db_get_value_string("hw", "board", "hardwareVersion", value);
+	return 0;
+}
+
 char * os__get_deviceid_manufactureroui()
 {
 	char *v, *mac = NULL, str[16], macreadfile[18] = {0};

@@ -82,12 +82,6 @@ static int get_device_softwareversion(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-static int get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	db_get_value_string("hw", "board", "hardwareVersion", value);
-	return 0;
-}
-
 static int get_device_routermodel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	db_get_value_string("hw", "board", "model_name", value);
@@ -380,7 +374,7 @@ DMLEAF tDeviceInfoParams[] = {
 {"ModelName", &DMREAD, DMT_STRING, get_device_routermodel, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"ProductClass", &DMREAD, DMT_STRING, get_device_productclass, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"SerialNumber", &DMREAD, DMT_STRING, get_device_serialnumber, NULL,  &DMFINFRM, NULL, BBFDM_BOTH},
-{"HardwareVersion", &DMREAD, DMT_STRING, get_device_hardwareversion, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
+{"HardwareVersion", &DMREAD, DMT_STRING, os__get_device_hardwareversion, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"SoftwareVersion", &DMREAD, DMT_STRING, get_device_softwareversion, NULL, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
 {"UpTime", &DMREAD, DMT_UNINT, get_device_info_uptime, NULL, NULL, NULL, BBFDM_BOTH},
 {"DeviceLog", &DMREAD, DMT_STRING, get_device_devicelog, NULL, NULL, NULL, BBFDM_BOTH},

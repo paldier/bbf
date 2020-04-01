@@ -32,6 +32,12 @@ char * os__get_softwareversion()
 	return get_uci_deviceinfo("SoftwareVersion");
 }
 
+int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = get_uci_deviceinfo("HardwareVersion");
+	return 0;
+}
+
 char * os__get_deviceid_manufactureroui()
 {
 	return get_uci_deviceinfo("ManufacturerOUI");

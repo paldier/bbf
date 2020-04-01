@@ -43,24 +43,6 @@ struct uci_section *dmsect, struct certificate_profile *certprofile)
 }
 
 #ifdef LOPENSSL
-static int convert_ASN1TIME(ASN1_TIME *t, char* buf, size_t len)
-{
-	int rc;
-	BIO *b = BIO_new(BIO_s_mem());
-	rc = ASN1_TIME_print(b, t);
-	if (rc <= 0) {
-		BIO_free(b);
-		return EXIT_FAILURE;
-	}
-	rc = BIO_gets(b, buf, len);
-	if (rc <= 0) {
-		BIO_free(b);
-		return EXIT_FAILURE;
-	}
-	BIO_free(b);
-	return EXIT_SUCCESS;
-}
-
 static char *get_certificate_sig_alg(int sig_nid)
 {
 	switch(sig_nid) {
@@ -316,10 +298,12 @@ static int get_SecurityCertificate_NotBefore(char *refparam, struct dmctx *ctx, 
 {
 	*value = "";
 #ifdef LOPENSSL
+	struct tm not_before_time;
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	char not_before_str[DATE_LEN];
 	ASN1_TIME *not_before = X509_get_notBefore(cert_profile->openssl_cert);
-	convert_ASN1TIME(not_before, not_before_str, DATE_LEN);
+	ASN1_TIME_to_tm(not_before, &not_before_time);
+	strftime(not_before_str, sizeof(not_before_str), "%Y-%m-%dT%H:%M:%SZ", &not_before_time);
 	*value = dmstrdup(not_before_str);
 #elif LMBEDTLS
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
@@ -332,10 +316,12 @@ static int get_SecurityCertificate_NotAfter(char *refparam, struct dmctx *ctx, v
 {
 	*value = "";
 #ifdef LOPENSSL
+	struct tm not_after_time;
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;
 	char not_after_str[DATE_LEN];
 	ASN1_TIME *not_after = X509_get_notAfter(cert_profile->openssl_cert);
-	convert_ASN1TIME(not_after, not_after_str, DATE_LEN);
+	ASN1_TIME_to_tm(not_after, &not_after_time);
+	strftime(not_after_str, sizeof(not_after_str), "%Y-%m-%dT%H:%M:%SZ", &not_after_time);
 	*value = dmstrdup(not_after_str);
 #elif LMBEDTLS
 	struct certificate_profile *cert_profile = (struct certificate_profile*)data;

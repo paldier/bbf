@@ -1176,6 +1176,7 @@ int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_packag
 	struct sysfs_dmsection *p, *tmp;
 	LIST_HEAD(dup_list_no_inst);
 
+
 	dmmap_file_path_get(dmmap_package);
 
 	sysfs_foreach_file(sysfsrep, dir, ent) {
@@ -1682,7 +1683,7 @@ int copy_temporary_file_to_original_file(char *f1, char *f2)
 
 static inline int char_is_valid(char c)
 {
-	return c > 0x20 && c < 0x7f;
+	return c >= 0x20 && c < 0x7f;
 }
 
 int dm_read_sysfs_file(const char *file, char *dst, unsigned len)

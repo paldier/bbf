@@ -126,7 +126,7 @@ static int browseUSBInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void
 	LIST_HEAD(dup_list);
 	struct sysfs_dmsection *p;
 
-	synchronize_system_folders_with_dmmap_opt(SYSFS_USB_DEVICES_PATH, "dmmap_usb", "dmmap_interface", "port_link", "usb_iface_instance", &dup_list);
+	synchronize_system_folders_with_dmmap_opt(SYSFS_USB_DEVICES_PATH, "dmmap_usb", "dmmap_interface", "usb_iface_link", "usb_iface_instance", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
 		char netfolderpath[256];
 		char port_link[128];
@@ -143,7 +143,6 @@ static int browseUSBInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void
 		if(p->dm){
 			foldersplit= strsplit(p->sysfs_folder_name, ":", &length);
 			snprintf(port_link, sizeof(port_link), "%s", foldersplit[0]);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, p->dm, "port_link", port_link);
 		}
 		sysfs_foreach_file(netfolderpath, dir, ent) {
 			if(strcmp(ent->d_name, ".")==0 || strcmp(ent->d_name, "..")==0)
@@ -342,6 +341,7 @@ static int browseUSBUSBHostsHostDeviceConfigurationInst(struct dmctx *dmctx, DMN
 	s = is_dmmap_section_exist("dmmap_usb", "usb_device_conf");
 	if (!s)
 		dmuci_add_section_bbfdm("dmmap_usb", "usb_device_conf", &s, &v);
+	DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "usb_parent_device", usb_dev->folder_path);
 
 	init_usb_port(s, usb_dev->folder_name, usb_dev->folder_path, &port);
 	handle_update_instance(1, dmctx, &instnbr, update_instance_alias, 3, s, "usb_device_conf_instance", "usb_device_conf_alias");
@@ -516,7 +516,7 @@ static int get_USBInterface_Name(char *refparam, struct dmctx *ctx, void *data, 
 
 static int get_USBInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	const struct usb_interface *iface = data;
+	const struct usb_interface *iface = (struct usb_interface *)data;
 
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), iface->iface_name, value);
 	return 0;
@@ -738,9 +738,9 @@ static int set_USBUSBHostsHost_Enable(char *refparam, struct dmctx *ctx, void *d
 			string_to_bool(value, &b);
 			dmasprintf(&filepath, "%s/power/wakeup", usbhost->folder_path);
 			if(b)
-				writeFileContent(usbhost->folder_path, "enabled");
+				writeFileContent(filepath, "enabled");
 			else
-				writeFileContent(usbhost->folder_path, "disabled");
+				writeFileContent(filepath, "disabled");
 			break;
 	}
 	return 0;
@@ -896,7 +896,17 @@ static int get_USBUSBHostsHostDevice_DeviceProtocol(char *refparam, struct dmctx
 
 static int get_USBUSBHostsHostDevice_ProductID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	return read_sysfs_usb_port(data, "idProduct", value);
+	char *idproduct = NULL;
+	unsigned int ui_idproduct;
+
+	*value = "";
+	int rc =  read_sysfs_usb_port(data, "idProduct", &idproduct);
+
+	if(idproduct != NULL) {
+		sscanf(idproduct, "%x", &ui_idproduct);
+		dmasprintf(value, "%u", ui_idproduct);
+	}
+	return rc;
 }
 
 static int get_USBUSBHostsHostDevice_VendorID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)

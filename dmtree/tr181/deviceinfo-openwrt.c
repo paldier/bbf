@@ -38,6 +38,12 @@ int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
+int os__get_device_routermodel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = get_uci_deviceinfo("ModelName");
+	return 0;
+}
+
 char * os__get_deviceid_manufactureroui()
 {
 	return get_uci_deviceinfo("ManufacturerOUI");

@@ -44,6 +44,12 @@ int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
+int os__get_device_routermodel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	db_get_value_string("hw", "board", "model_name", value);
+	return 0;
+}
+
 char * os__get_deviceid_manufactureroui()
 {
 	char *v, *mac = NULL, str[16];

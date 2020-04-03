@@ -80,7 +80,6 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/dhcpv6.c					\
 	../dmtree/tr181/dsl.c						\
 	../dmtree/tr181/interfacestack.c			\
-	../dmtree/tr181/qos.c						\
 	../dmtree/tr181/usb.c 						\
 	../dmtree/tr181/datamodelversion.c			\
 	../dmtree/tr181/gre.c 						\
@@ -92,12 +91,14 @@ if GENERIC_OPENWRT
 libbbfdm_la_SOURCES += \
 	../dmtree/tr181/deviceinfo-openwrt.c \
 	../dmtree/tr181/wifi-openwrt.c \
-	../dmtree/tr181/hosts-openwrt.c
+	../dmtree/tr181/hosts-openwrt.c\
+	../dmtree/tr181/qos.c						
 else
 libbbfdm_la_SOURCES += \
 	../dmtree/tr181/deviceinfo-iopsyswrt.c \
 	../dmtree/tr181/wifi-iopsyswrt.c \
-	../dmtree/tr181/hosts-iopsyswrt.c
+	../dmtree/tr181/hosts-iopsyswrt.c\
+	../dmtree/tr181/qos-iopsyswrt.c						
 endif
 
 if BBF_TR104

@@ -535,14 +535,13 @@ int os__get_radio_supported_standard(char *refparam, struct dmctx *ctx, void *da
 int os_get_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;
-	char object[32], *standard = NULL, *iface = NULL;
-	char  **standards = NULL;
+	char object[32], *standard = NULL;
+	char  **standards = NULL, *str_append= NULL;
 	int i;
 	size_t length;
 
 	*value = "";
-	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "device", &iface);
-	snprintf(object, sizeof(object), "wifi.radio.%s", iface);
+	snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
 	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
 
 	DM_ASSERT(res, standard = "");
@@ -550,16 +549,19 @@ int os_get_radio_operating_standard(char *refparam, struct dmctx *ctx, void *dat
 	standards = strsplit(standard, "/", &length);
 
 	for (i=0; i<length;i++) {
-		if (strcmp(standards[i], "802.11") == 0)
-			continue;
+		if (strstr(standards[i], "802.11") == standards[i])
+			str_append = dmstrdup(strstr(standards[i], "802.11") + strlen("802.11"));
+		else
+			str_append = dmstrdup(standards[i]);
 		if (strlen(*value) == 0){
-			dmasprintf(value, "%s", standards[i]);
+			dmasprintf(value, "%s", str_append);
 			continue;
 		}
-		dmasprintf(value, "%s,%s", *value, standards[i]);
+		dmasprintf(value, "%s,%s", *value, str_append);
+		FREE(str_append);
 	}
-	return 0;
 
+	return 0;
 }
 
 int os__get_access_point_total_associations(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)

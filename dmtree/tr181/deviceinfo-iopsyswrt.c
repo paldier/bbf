@@ -6,6 +6,10 @@ char * os__get_deviceid_manufacturer()
 {
 	char *v;
 	dmuci_get_option_value_string("cwmp","cpe","manufacturer", &v);
+	if (v[0] == '\0') {
+		db_get_value_string("hw", "board", "manufacturer", &v);
+		return v;
+	}
 	return v;
 }
 
@@ -14,7 +18,7 @@ char * os__get_deviceid_productclass()
 	char *v;
 	dmuci_get_option_value_string("cwmp", "cpe", "override_productclass", &v);
 	if (v[0] == '\0') {
-		db_get_value_string("hw", "board", "iopVerBoard", &v);
+		db_get_value_string("hw", "board", "iopVerFam", &v);
 		return v;
 	}
 	return v;
@@ -36,38 +40,24 @@ char * os__get_softwareversion()
 
 int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	db_get_value_string("hw", "board", "hardwareVersion", value);
+	db_get_value_string("hw", "board", "model_name", value);
 	return 0;
 }
 
 char * os__get_deviceid_manufactureroui()
 {
-	char *v, *mac = NULL, str[16], macreadfile[18] = {0};
+	char *v, *mac = NULL, str[16];
 	json_object *res;
-	FILE *nvrammac = NULL;
 
 	dmuci_get_option_value_string("cwmp", "cpe", "override_oui", &v);
 	if (v[0])
 		return v;
 
 	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
-	if (!(res)) {
+	if (!(res))
 		db_get_value_string("hw", "board", "basemac", &mac);
-		if (!mac || strlen(mac) == 0) {
-			if ((nvrammac = fopen("/proc/nvram/BaseMacAddr", "r")) == NULL) {
-				mac = NULL;
-			} else {
-				fscanf(nvrammac,"%17[^\n]", macreadfile);
-				macreadfile[17] = '\0';
-				sscanf(macreadfile,"%2c %2c %2c", str, str+2, str+4);
-				str[6] = '\0';
-				v = dmstrdup(str); // MEM WILL BE FREED IN DMMEMCLEAN
-				fclose(nvrammac);
-				return v;
-			}
-		}
-	} else
-		mac = dmjson_get_value(res, 2, "system", "basemac");
+	else
+		mac = dmjson_get_value(res, 1, "basemac");
 
 	if(mac) {
 		size_t ln = strlen(mac);

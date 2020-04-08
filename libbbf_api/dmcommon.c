@@ -778,6 +778,175 @@ struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* secti
 	return NULL;
 }
 
+void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, char *section_type,
+					void *data, char *dmmap_package, char *dmmap_sec, char *proto,
+					struct list_head *dup_list)
+{
+	struct uci_section *s, *dmmap_sect, *d_sec, *stmp;
+	char *v;
+	char *s_name;
+
+	dmmap_file_path_get(dmmap_package);
+	uci_foreach_sections(package, section_type, s) {
+		if (strcmp(section_name(s), section_name((struct uci_section *)data)) != 0)
+			continue;
+
+		// The list snooping_interface and proxy_interface in the uci file corresponds to the
+		// proxy_interface section in the dmmap. First, read the list of proxy interfaces
+		// and update the dmmap section accordingly. The do the same exercise for the list
+		// snooping_interface
+		struct uci_list *proxy_iface = NULL;
+		dmuci_get_value_by_section_list(s, "proxy_interface", &proxy_iface);
+		if (proxy_iface != NULL) {
+			struct uci_element *e;
+			uci_foreach_element(proxy_iface, e) {
+				char *p_ifname = strdup(e->name);
+				int found = 0;
+				uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "ifname",
+						p_ifname, d_sec) {
+					dmuci_get_value_by_section_string(d_sec, "section_name", &s_name);
+					if (strcmp(s_name, section_name(s)) == 0) {
+						add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
+						found = 1;
+						break;
+					}
+				}
+
+				if (found == 0) {
+					// add entry in dmmap for this
+					dmuci_add_section_bbfdm(dmmap_package, dmmap_sec, &d_sec, &v);
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "section_name",
+							section_name(s));
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "ifname",
+							p_ifname);
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "upstream",
+							"1");
+					add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
+				}
+			}
+		}
+
+		struct uci_list *snooping_iface = NULL;
+		dmuci_get_value_by_section_list(s, "snooping_interface", &snooping_iface);
+		if (snooping_iface != NULL) {
+			struct uci_element *e;
+			uci_foreach_element(snooping_iface, e) {
+				char *s_ifname = strdup(e->name);
+				int found = 0;
+				uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "ifname",
+						s_ifname, d_sec) {
+					dmuci_get_value_by_section_string(d_sec, "section_name", &s_name);
+					if (strcmp(s_name, section_name(s)) == 0) {
+						add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
+						found = 1;
+						break;
+					}
+				}
+
+				if (found == 0) {
+					// add entry in dmmap for this
+					dmuci_add_section_bbfdm(dmmap_package, dmmap_sec, &d_sec, &v);
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "section_name",
+							section_name(s));
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "ifname",
+							s_ifname);
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "upstream",
+							"0");
+					add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
+				}
+			}
+		}
+
+		char *f_ifname;
+		// There can be entries in the dmmap_mcast file that do not have an ifname set.
+		// For such entries, now add to dup_list
+		uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "section_name",
+				section_name(s), dmmap_sect) {
+			dmuci_get_value_by_section_string(dmmap_sect, "ifname", &f_ifname);
+
+			if (strcmp(f_ifname, "") == 0)
+				add_sectons_list_paramameter(dup_list, s, dmmap_sect, NULL);
+		}
+	}
+
+	/*
+	 * Delete unused dmmap sections
+	 */
+	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_sec, stmp, s) {
+		dmuci_get_value_by_section_string(s, "section_name", &v);
+		if (get_origin_section_from_config(package, section_type, v) == NULL)
+			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
+	}
+}
+
+void synchronize_specific_config_sections_with_dmmap_filter(char *package, char *section_type, void *data,
+							char *dmmap_package, char *dmmap_sec, char *proto,
+							struct list_head *dup_list)
+{
+	struct uci_section *s, *dmmap_sect, *d_sec, *stmp;
+	char *v;
+	char *s_name;
+
+	dmmap_file_path_get(dmmap_package);
+
+	uci_foreach_sections(package, section_type, s) {
+		if (strcmp(section_name(s), section_name((struct uci_section *)data)) != 0)
+			continue;
+		/*
+		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
+		 */
+		struct uci_list *l = NULL;
+
+		dmuci_get_value_by_section_list(s, "filter", &l);
+		if (l != NULL) {
+			struct uci_element *e;
+			uci_foreach_element(l, e) {
+				char *ip_addr = strdup(e->name);
+				int found = 0;
+				uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "ipaddr",
+						ip_addr, d_sec) {
+					dmuci_get_value_by_section_string(d_sec, "section_name", &s_name);
+					if (strcmp(s_name, section_name(s)) == 0) {
+						add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
+						found = 1;
+						break;
+					}
+				}
+
+				if (found == 0) {
+					// add entry in dmmap for this
+					dmuci_add_section_bbfdm(dmmap_package, dmmap_sec, &d_sec, &v);
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "section_name",
+							section_name(s));
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "ipaddr",
+							ip_addr);
+					add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
+				}
+			}
+		}
+
+		char *f_ip;
+		// There can be entries in the dmmap_mcast file that do not have an IP address set.
+		// For such entries, now add to dup_list
+		uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "section_name",
+				section_name(s), dmmap_sect) {
+			dmuci_get_value_by_section_string(dmmap_sect, "ipaddr", &f_ip);
+
+			if (strcmp(f_ip, "") == 0)
+				add_sectons_list_paramameter(dup_list, s, dmmap_sect, NULL);
+		}
+	}
+
+	/*
+	 * Delete unused dmmap sections
+	 */
+	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_sec, stmp, s) {
+		dmuci_get_value_by_section_string(s, "section_name", &v);
+		if (get_origin_section_from_config(package, section_type, v) == NULL)
+			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
+	}
+}
+
 void synchronize_specific_config_sections_with_dmmap(char *package, char *section_type, char *dmmap_package, struct list_head *dup_list)
 {
 	struct uci_section *s, *stmp, *dmmap_sect;

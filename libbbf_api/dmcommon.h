@@ -270,6 +270,12 @@ int dmcommon_check_notification_value(char *value);
 void hex_to_ip(char *address, char *ret);
 void ip_to_hex(char *address, char *ret);
 void free_dmmap_config_dup_list(struct list_head *dup_list);
+void synchronize_specific_config_sections_with_dmmap_filter(char *package, char *section_type,
+					void *data, char *dmmap_package, char *dmmap_sec,
+					char *proto, struct list_head *dup_list);
+void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, char *section_type,
+					void *data, char *dmmap_package, char *dmmap_sec, char *proto,
+					struct list_head *dup_list);
 void synchronize_specific_config_sections_with_dmmap(char *package, char *section_type, char *dmmap_package, struct list_head *dup_list);
 void synchronize_multi_config_sections_with_dmmap_set(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char *instance, char *br_key);
 void synchronize_specific_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package,char* option_name, char* option_value, struct list_head *dup_list);

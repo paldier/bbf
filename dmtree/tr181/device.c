@@ -15,6 +15,7 @@
 #include "managementserver.h"
 #include "times.h"
 #include "upnp.h"
+#include "x_iopsys_eu_igmp.h"
 #include "x_iopsys_eu_syslog.h"
 #include "xmpp.h"
 #include "x_iopsys_eu_owsd.h"
@@ -78,6 +79,7 @@ DMOBJ tRoot_181_Obj[] = {
 #endif
 {CUSTOM_PREFIX"Syslog", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, NULL, tSe_SyslogParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"OWSD", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, X_IOPSYS_EU_OWSDObj, X_IOPSYS_EU_OWSDParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"IGMP", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, X_IOPSYS_EU_IGMPObj, X_IOPSYS_EU_IGMPParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Dropbear", &DMWRITE, add_dropbear_instance, delete_dropbear_instance, NULL, browseXIopsysEuDropbear, NULL, &DMNONE, NULL, NULL, X_IOPSYS_EU_DropbearParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Buttons", &DMREAD, NULL, NULL, NULL, browseXIopsysEuButton, NULL, &DMNONE, NULL, NULL, X_IOPSYS_EU_ButtonParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"WiFiLife", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, X_IOPSYS_EU_WiFiLifeObj, X_IOPSYS_EU_WiFiLifeParams, NULL, BBFDM_BOTH},

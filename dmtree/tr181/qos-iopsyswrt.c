@@ -78,6 +78,7 @@ static int browseQoSQueueStatsInst(struct dmctx *dmctx, DMNODE *parent_node, voi
 	return 0;
 }
 #endif
+
 static int browseQoSShaperInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *inst = NULL, *inst_last = NULL;
@@ -212,7 +213,7 @@ static int addObjQoSQueue(char *refparam, struct dmctx *ctx, void *data, char **
 
 	check_create_dmmap_package("dmmap_qos");
 	inst = get_last_instance_bbfdm("dmmap_qos", "queue", "queueinstance");
-	dmuci_add_section_and_rename("qos", "queue", &s, &value);
+	dmuci_add_section("qos", "queue", &s, &value);
 	dmuci_set_value_by_section(s, "enable", "false");
 	dmuci_set_value_by_section(s, "status", "disabled");
 	dmuci_set_value_by_section(s, "all_interface", "false");
@@ -238,10 +239,17 @@ static int delObjQoSQueue(char *refparam, struct dmctx *ctx, void *data, char *i
 
 	switch (del_action) {
 		case DEL_INST:
-			get_dmmap_section_of_config_section("dmmap_qos", "queue", section_name((struct uci_section *)data), &dmmap_section);
-			if(dmmap_section != NULL)
-				dmuci_delete_by_section(dmmap_section, NULL, NULL);
-			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
+			if(is_section_unnamed(section_name((struct uci_section *)data))){
+				LIST_HEAD(dup_list);
+				delete_sections_save_next_sections("dmmap_qos", "queue", "queueinstance", section_name((struct uci_section *)data), atoi(instance), &dup_list);
+				update_dmmap_sections(&dup_list, "queueinstance", "dmmap_qos", "queue");
+				dmuci_delete_by_section_unnamed((struct uci_section *)data, NULL, NULL);
+			} else {
+				get_dmmap_section_of_config_section("dmmap_qos", "queue", section_name((struct uci_section *)data), &dmmap_section);
+				if(dmmap_section != NULL)
+					dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
+				dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
+			}
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("qos", "queue", s) {
@@ -291,7 +299,7 @@ static int addObjQoSShaper(char *refparam, struct dmctx *ctx, void *data, char *
 
 	check_create_dmmap_package("dmmap_qos");
 	inst = get_last_instance_bbfdm("dmmap_qos", "shaper", "shaperinstance");
-	dmuci_add_section_and_rename("qos", "shaper", &s, &value);
+	dmuci_add_section("qos", "shaper", &s, &value);
 
 	dmuci_set_value_by_section(s, "enable", "false");
 	dmuci_set_value_by_section(s, "status", "disabled");
@@ -310,10 +318,17 @@ static int delObjQoSShaper(char *refparam, struct dmctx *ctx, void *data, char *
 
 	switch (del_action) {
 		case DEL_INST:
-			get_dmmap_section_of_config_section("dmmap_qos", "shaper", section_name((struct uci_section *)data), &dmmap_section);
-			if(dmmap_section != NULL)
-				dmuci_delete_by_section(dmmap_section, NULL, NULL);
-			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
+			if(is_section_unnamed(section_name((struct uci_section *)data))){
+				LIST_HEAD(dup_list);
+				delete_sections_save_next_sections("dmmap_qos", "shaper", "shaperinstance", section_name((struct uci_section *)data), atoi(instance), &dup_list);
+				update_dmmap_sections(&dup_list, "shaperinstance", "dmmap_qos", "shaper");
+				dmuci_delete_by_section_unnamed((struct uci_section *)data, NULL, NULL);
+			} else {
+				get_dmmap_section_of_config_section("dmmap_qos", "shaper", section_name((struct uci_section *)data), &dmmap_section);
+				if(dmmap_section != NULL)
+					dmuci_delete_by_section_unnamed_bbfdm(dmmap_section, NULL, NULL);
+				dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
+			}
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("qos", "shaper", s) {
@@ -395,18 +410,13 @@ static int get_QoS_PolicerNumberOfEntries(char *refparam, struct dmctx *ctx, voi
 	//TODO
 	return 0;
 }
-#endif
+
 static int get_QoS_MaxQueueEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *s = NULL;
-	int cnt = 0;
-
-	uci_foreach_sections("qos", "queue", s) {
-		cnt++;
-	}
-	dmasprintf(value, "%d", cnt);
+	//TODO
 	return 0;
 }
+#endif
 
 /*#Device.QoS.QueueNumberOfEntries!UCI:qos/queue,false/false*/
 static int get_QoS_QueueNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
@@ -426,18 +436,13 @@ static int get_QoS_QueueStatsNumberOfEntries(char *refparam, struct dmctx *ctx, 
 	//TODO
 	return 0;
 }
-#endif
+
 static int get_QoS_MaxShaperEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *s = NULL;
-	int cnt = 0;
-
-	uci_foreach_sections("qos", "shaper", s) {
-		cnt++;
-	}
-	dmasprintf(value, "%d", cnt);
+	//TODO
 	return 0;
 }
+#endif
 
 static int get_QoS_ShaperNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -2756,21 +2761,31 @@ static int get_QoSPolicer_NonConformingCountedBytes(char *refparam, struct dmctx
 	return 0;
 }
 #endif
+
 static int get_QoSQueue_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
-	char *default_val = "true";
-	dmasprintf(value, "%s", default_val);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
+	if(*value[0] == '\0' || *value[0] == '0')
+		*value = "0";
+	else
+		*value = "1";
 	return 0;
 }
 
 static int set_QoSQueue_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	bool b;
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
-			//TODO
+			string_to_bool(value, &b);
+			if(b)
+				dmuci_set_value_by_section((struct uci_section *)data, "enable", "1");
+			else
+				dmuci_set_value_by_section((struct uci_section *)data, "enable", "0");
 			break;
 	}
 	return 0;
@@ -2778,27 +2793,34 @@ static int set_QoSQueue_Enable(char *refparam, struct dmctx *ctx, void *data, ch
 
 static int get_QoSQueue_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
-	char *default_val = "Enabled";
-	dmasprintf(value, "%s", default_val);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
+	if(*value[0] == '\0' || *value[0] == '0')
+		*value = "Disabled";
+	else
+		*value = "Enabled";
 	return 0;
 }
 
 static int get_QoSQueue_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
-	char *default_val = " ";
-	dmasprintf(value, "%s", default_val);
+	struct uci_section *dmmap_section = NULL;
+	get_dmmap_section_of_config_section("dmmap_qos", "queue", section_name((struct uci_section *)data), &dmmap_section);
+	dmuci_get_value_by_section_string(dmmap_section, "queuealias", value);
 	return 0;
 }
 
 static int set_QoSQueue_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	struct uci_section *dmmap_section = NULL;
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
+				return FAULT_9007;
 			break;
 		case VALUESET:
-			//TODO
+			get_dmmap_section_of_config_section("dmmap_qos", "queue", section_name((struct uci_section *)data), &dmmap_section);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_section, "queuealias", value);
 			break;
 	}
 	return 0;
@@ -2826,28 +2848,40 @@ static int get_QoSQueue_Interface(char *refparam, struct dmctx *ctx, void *data,
 {
 	char *ifname;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "ifname", &ifname);
-        adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+	if (*value == NULL)
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cPPP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+	if (*value == NULL)
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+	if (*value == NULL)
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cWiFi%cRadio%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+	if (*value == NULL)
+		*value = "";
+
 	return 0;
 }
 
 static int set_QoSQueue_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	char *interface_linker = NULL;
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
+				return FAULT_9007;
 			break;
 		case VALUESET:
-			//TODO
-			dmuci_set_value_by_section((struct uci_section *)data, "ifname", value);
+			adm_entry_get_linker_value(ctx, value, &interface_linker);
+			dmuci_set_value_by_section((struct uci_section *)data, "ifname", interface_linker);
 			break;
 	}
 	return 0;
 }
 
+#if 0
 static int get_QoSQueue_AllInterfaces(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
-	char *default_val = "false";
-	dmasprintf(value, "%s", default_val);
+	//TODO
 	return 0;
 }
 
@@ -2855,6 +2889,8 @@ static int set_QoSQueue_AllInterfaces(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -2865,20 +2901,17 @@ static int set_QoSQueue_AllInterfaces(char *refparam, struct dmctx *ctx, void *d
 
 static int get_QoSQueue_HardwareAssisted(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
-	char *default_val = "true";
-	dmasprintf(value, "%s", default_val);
+	//TODO
 	return 0;
 }
 
 /*#Device.QoS.Queue.{i}.BufferLength!UCI:qos/class,@i-1/maxsize*/
 static int get_QoSQueue_BufferLength(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
-	char *default_val = "0";
-	dmasprintf(value, "%s", default_val);
+	//TODO
 	return 0;
 }
+#endif
 
 static int get_QoSQueue_Weight(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -2890,9 +2923,11 @@ static int set_QoSQueue_Weight(char *refparam, struct dmctx *ctx, void *data, ch
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
+				return FAULT_9007;
 			break;
-		case VALUESET:
-			dmuci_set_value_by_section((struct uci_section *)data, "weight", value);
+			case VALUESET:
+				dmuci_set_value_by_section((struct uci_section *)data, "weight", value);
 			break;
 	}
 	return 0;
@@ -2909,6 +2944,8 @@ static int set_QoSQueue_Precedence(char *refparam, struct dmctx *ctx, void *data
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"1",NULL}}, 1))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "precedence", value);
@@ -2917,6 +2954,7 @@ static int set_QoSQueue_Precedence(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
+#if 0
 static int get_QoSQueue_REDThreshold(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
@@ -2929,6 +2967,8 @@ static int set_QoSQueue_REDThreshold(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,"100"}}, 1))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -2949,6 +2989,8 @@ static int set_QoSQueue_REDPercentage(char *refparam, struct dmctx *ctx, void *d
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,"100"}}, 1))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			//TODO
@@ -2971,11 +3013,13 @@ static int set_QoSQueue_DropAlgorithm(char *refparam, struct dmctx *ctx, void *d
 		case VALUECHECK:
 			break;
 		case VALUESET:
-			//TODO
+			if (dm_validate_string(value, -1, -1, DropAlgorithm, 4, NULL, 0))
+				return FAULT_9007;
 			break;
 	}
 	return 0;
 }
+#endif
 
 static int get_QoSQueue_SchedulerAlgorithm(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -2987,6 +3031,8 @@ static int set_QoSQueue_SchedulerAlgorithm(char *refparam, struct dmctx *ctx, vo
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, -1, -1, SchedulerAlgorithm, 3, NULL, 0))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "scheduling", value);
@@ -2995,6 +3041,7 @@ static int set_QoSQueue_SchedulerAlgorithm(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
+
 /*#Device.QoS.Queue.{i}.ShapingRate!UCI:qos/class,@i-1/limitrate*/
 static int get_QoSQueue_ShapingRate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -3002,10 +3049,13 @@ static int get_QoSQueue_ShapingRate(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
+
 static int set_QoSQueue_ShapingRate(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_int(value, RANGE_ARGS{{"-1",NULL}}, 1))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "rate", value);
@@ -3026,6 +3076,8 @@ static int set_QoSQueue_ShapingBurstSize(char *refparam, struct dmctx *ctx, void
 		case VALUECHECK:
 			break;
 		case VALUESET:
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
+				return FAULT_9007;
 			dmuci_set_value_by_section((struct uci_section *)data, "burst_size", value);
 			break;
 	}
@@ -3148,19 +3200,28 @@ static int get_QoSQueueStats_QueueOccupancyPercentage(char *refparam, struct dmc
 #endif
 static int get_QoSShaper_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
-	char *default_val = "true";
-	dmasprintf(value, "%s", default_val);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
+	if(*value[0] == '\0' || *value[0] == '0')
+		*value = "0";
+	else
+		*value = "1";
 	return 0;
 }
 
 static int set_QoSShaper_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	bool b;
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			break;
 		case VALUESET:
-			//TODO
+			string_to_bool(value, &b);
+			if(b)
+				dmuci_set_value_by_section((struct uci_section *)data, "enable", "1");
+			else
+				dmuci_set_value_by_section((struct uci_section *)data, "enable", "0");
 			break;
 	}
 	return 0;
@@ -3168,27 +3229,34 @@ static int set_QoSShaper_Enable(char *refparam, struct dmctx *ctx, void *data, c
 
 static int get_QoSShaper_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
-	char *default_val = "Enabled";
-	dmasprintf(value, "%s", default_val);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
+	if(*value[0] == '\0' || *value[0] == '0')
+		*value = "Disabled";
+	else
+		*value = "Enabled";
 	return 0;
 }
 
 static int get_QoSShaper_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	/* Simply setting default value as mentioned in tr-181 | since no paraneter in UCI (qos) file */
-	char *default_val = " ";
-	dmasprintf(value, "%s", default_val);
+	struct uci_section *dmmap_section = NULL;
+	get_dmmap_section_of_config_section("dmmap_qos", "shaper", section_name((struct uci_section *)data), &dmmap_section);
+	dmuci_get_value_by_section_string(dmmap_section, "shaperalias", value);
 	return 0;
 }
 
 static int set_QoSShaper_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	struct uci_section *dmmap_section = NULL;
+
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
+				return FAULT_9007;
 			break;
 		case VALUESET:
-			//TODO
+			get_dmmap_section_of_config_section("dmmap_qos", "shaper", section_name((struct uci_section *)data), &dmmap_section);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_section, "shaperalias", value);
 			break;
 	}
 	return 0;
@@ -3196,19 +3264,32 @@ static int set_QoSShaper_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 
 static int get_QoSShaper_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *ifname;
+	char *ifname = NULL;
+
 	dmuci_get_value_by_section_string((struct uci_section *)data, "ifname", &ifname);
-        adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+	if (*value == NULL)
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cPPP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+	if (*value == NULL)
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+	if (*value == NULL)
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cWiFi%cRadio%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
+	if (*value == NULL)
+		*value = "";
 	return 0;
 }
 
 static int set_QoSShaper_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	char *interface_linker = NULL;
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))
+				return FAULT_9007;
 			break;
 		case VALUESET:
-			dmuci_set_value_by_section((struct uci_section *)data, "ifname", value);
+			adm_entry_get_linker_value(ctx, value, &interface_linker);
+			dmuci_set_value_by_section((struct uci_section *)data, "ifname", interface_linker);
 			break;
 	}
 	return 0;
@@ -3224,6 +3305,8 @@ static int set_QoSShaper_ShapingRate(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_int(value, RANGE_ARGS{{"-1",NULL}}, 1))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "rate", value);
@@ -3242,6 +3325,8 @@ static int set_QoSShaper_ShapingBurstSize(char *refparam, struct dmctx *ctx, voi
 {
 	switch (action)	{
 		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
+				return FAULT_9007;
 			break;
 		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "burst_size", value);
@@ -3272,10 +3357,10 @@ DMLEAF tQoSParams[] = {
 //{"FlowNumberOfEntries", &DMREAD, DMT_UNINT, get_QoS_FlowNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 //{"MaxPolicerEntries", &DMREAD, DMT_UNINT, get_QoS_MaxPolicerEntries, NULL, NULL, NULL, BBFDM_BOTH},
 //{"PolicerNumberOfEntries", &DMREAD, DMT_UNINT, get_QoS_PolicerNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{"MaxQueueEntries", &DMREAD, DMT_UNINT, get_QoS_MaxQueueEntries, NULL, NULL, NULL, BBFDM_BOTH},
+//{"MaxQueueEntries", &DMREAD, DMT_UNINT, get_QoS_MaxQueueEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {"QueueNumberOfEntries", &DMREAD, DMT_UNINT, get_QoS_QueueNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 //{"QueueStatsNumberOfEntries", &DMREAD, DMT_UNINT, get_QoS_QueueStatsNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{"MaxShaperEntries", &DMREAD, DMT_UNINT, get_QoS_MaxShaperEntries, NULL, NULL, NULL, BBFDM_BOTH},
+//{"MaxShaperEntries", &DMREAD, DMT_UNINT, get_QoS_MaxShaperEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {"ShaperNumberOfEntries", &DMREAD, DMT_UNINT, get_QoS_ShaperNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 //{"DefaultForwardingPolicy", &DMWRITE, DMT_UNINT, get_QoS_DefaultForwardingPolicy, set_QoS_DefaultForwardingPolicy, NULL, NULL, BBFDM_BOTH},
 //{"DefaultTrafficClass", &DMWRITE, DMT_UNINT, get_QoS_DefaultTrafficClass, set_QoS_DefaultTrafficClass, NULL, NULL, BBFDM_BOTH},
@@ -3449,14 +3534,14 @@ DMLEAF tQoSQueueParams[] = {
 {"Alias", &DMWRITE, DMT_STRING, get_QoSQueue_Alias, set_QoSQueue_Alias, NULL, NULL, BBFDM_BOTH},
 {"TrafficClasses", &DMWRITE, DMT_STRING, get_QoSQueue_TrafficClasses, set_QoSQueue_TrafficClasses, NULL, NULL, BBFDM_BOTH},
 {"Interface", &DMWRITE, DMT_STRING, get_QoSQueue_Interface, set_QoSQueue_Interface, NULL, NULL, BBFDM_BOTH},
-{"AllInterfaces", &DMWRITE, DMT_BOOL, get_QoSQueue_AllInterfaces, set_QoSQueue_AllInterfaces, NULL, NULL, BBFDM_BOTH},
-{"HardwareAssisted", &DMREAD, DMT_BOOL, get_QoSQueue_HardwareAssisted, NULL, NULL, NULL, BBFDM_BOTH},
-{"BufferLength", &DMREAD, DMT_UNINT, get_QoSQueue_BufferLength, NULL, NULL, NULL, BBFDM_BOTH},
+//{"AllInterfaces", &DMWRITE, DMT_BOOL, get_QoSQueue_AllInterfaces, set_QoSQueue_AllInterfaces, NULL, NULL, BBFDM_BOTH},
+//{"HardwareAssisted", &DMREAD, DMT_BOOL, get_QoSQueue_HardwareAssisted, NULL, NULL, NULL, BBFDM_BOTH},
+//{"BufferLength", &DMREAD, DMT_UNINT, get_QoSQueue_BufferLength, NULL, NULL, NULL, BBFDM_BOTH},
 {"Weight", &DMWRITE, DMT_UNINT, get_QoSQueue_Weight, set_QoSQueue_Weight, NULL, NULL, BBFDM_BOTH},
 {"Precedence", &DMWRITE, DMT_UNINT, get_QoSQueue_Precedence, set_QoSQueue_Precedence, NULL, NULL, BBFDM_BOTH},
-{"REDThreshold", &DMWRITE, DMT_UNINT, get_QoSQueue_REDThreshold, set_QoSQueue_REDThreshold, NULL, NULL, BBFDM_BOTH},
-{"REDPercentage", &DMWRITE, DMT_UNINT, get_QoSQueue_REDPercentage, set_QoSQueue_REDPercentage, NULL, NULL, BBFDM_BOTH},
-{"DropAlgorithm", &DMWRITE, DMT_STRING, get_QoSQueue_DropAlgorithm, set_QoSQueue_DropAlgorithm, NULL, NULL, BBFDM_BOTH},
+//{"REDThreshold", &DMWRITE, DMT_UNINT, get_QoSQueue_REDThreshold, set_QoSQueue_REDThreshold, NULL, NULL, BBFDM_BOTH},
+//{"REDPercentage", &DMWRITE, DMT_UNINT, get_QoSQueue_REDPercentage, set_QoSQueue_REDPercentage, NULL, NULL, BBFDM_BOTH},
+//{"DropAlgorithm", &DMWRITE, DMT_STRING, get_QoSQueue_DropAlgorithm, set_QoSQueue_DropAlgorithm, NULL, NULL, BBFDM_BOTH},
 {"SchedulerAlgorithm", &DMWRITE, DMT_STRING, get_QoSQueue_SchedulerAlgorithm, set_QoSQueue_SchedulerAlgorithm, NULL, NULL, BBFDM_BOTH},
 {"ShapingRate", &DMWRITE, DMT_INT, get_QoSQueue_ShapingRate, set_QoSQueue_ShapingRate, NULL, NULL, BBFDM_BOTH},
 {"ShapingBurstSize", &DMWRITE, DMT_UNINT, get_QoSQueue_ShapingBurstSize, set_QoSQueue_ShapingBurstSize, NULL, NULL, BBFDM_BOTH},

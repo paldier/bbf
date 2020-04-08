@@ -645,32 +645,30 @@ static int get_ipv4_addressing_type(char *refparam, struct dmctx *ctx, void *dat
 
 static int get_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char linker[64] = "", *proto, *device, *mac;
-	const struct ip_args *ip = data;
-	char *section;
+	char *proto, *device, *mac, linker[64] = {0};
 
-	dmuci_get_value_by_section_string(ip->ip_sec, "proto", &proto);
+	dmuci_get_value_by_section_string(((struct ip_args *)data)->ip_sec, "proto", &proto);
 	if (strstr(proto, "ppp")) {
 		snprintf(linker, sizeof(linker), "%s", section_name(((struct ip_args *)data)->ip_sec));
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cPPP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
-		goto end;
+		if (*value != NULL)
+			return 0;
 	}
 
-	section = section_name(ip->ip_sec);
-	device = get_device(section);
+	device = get_device(section_name(((struct ip_args *)data)->ip_sec));
 	if (device[0] != '\0') {
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cVLANTermination%c", dmroot, dm_delim, dm_delim, dm_delim), device, value);
 		if (*value != NULL)
 			return 0;
 	}
 
-	mac = get_macaddr(section);
+	mac = get_macaddr(section_name(((struct ip_args *)data)->ip_sec));
 	if (mac[0] != '\0') {
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), mac, value);
-		goto end;
+		if (*value != NULL)
+			return 0;
 	}
 
-end:
 	if (*value == NULL)
 		*value = "";
 	return 0;
@@ -686,7 +684,7 @@ static int set_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (value[strlen(value)-1]!='.') {
+			if (value[strlen(value)-1] != '.') {
 				dmasprintf(&newvalue, "%s.", value);
 				adm_entry_get_linker_value(ctx, newvalue, &linker);
 			} else
@@ -1721,15 +1719,15 @@ static int get_linker_ipv6_prefix(char *refparam, struct dmctx *dmctx, void *dat
 static int browseIPIfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *ip_int = NULL, *ip_int_last = NULL;
-	char *type, *ipv4addr = "";
+	char *proto, *ipv4addr = "";
 	struct ip_args curr_ip_args = {0};
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 
 	synchronize_specific_config_sections_with_dmmap("network", "interface", "dmmap_network", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
-		dmuci_get_value_by_section_string(p->config_section, "type", &type);
-		if (strcmp(type, "alias") == 0 || strcmp(section_name(p->config_section), "loopback")==0)
+		dmuci_get_value_by_section_string(p->config_section, "proto", &proto);
+		if (strcmp(section_name(p->config_section), "loopback") == 0 || *proto == '\0')
 			continue;
 
 		/* IPv4 address */

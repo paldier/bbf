@@ -72,21 +72,21 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 {
 	struct interfacestack_data ifdata = {0};
 	struct uci_section *s = NULL, *sd = NULL, *port, *port_s, *ss, *dmmap_s = NULL;
-	char *proto, *type, *pch, *spch, *layer_inst, *v, *vb, *higheralias, *loweralias, *ifname, *br_inst, *mg, *value, *device, *name;
+	char *proto, *type, *pch, *layer_inst, *v, *vb, *higheralias, *loweralias, *ifname, *br_inst, *mg, *value, *device, *name;
 	char *interface_stack_int = NULL, *interface_stack_int_last = NULL, *wanifname, *wanlinker, *mac, *sectionname, *package, *section;
-	char buf_lowerlayer[128] = "";
-	char buf_higherlayer[128] = "";
-	char buf_higheralias[64] = "";
-	char buf_loweralias[64] = "";
-	char buf_instance[32] = "";
-	char linker[64] = "";
-	char buf_tmp[64] = "";
+	char buf_lowerlayer[128] = {0};
+	char buf_higherlayer[128] = {0};
+	char buf_higheralias[64] = {0};
+	char buf_loweralias[64] = {0};
+	char buf_instance[32] = {0};
+	char linker[64] = {0};
+	char buf_tmp[64] = {0};
 	int instance = 0, found = 0;
 
 	/* Higher layers are Device.IP.Interface.{i}. */
 	uci_foreach_sections("network", "interface", s) {
-		dmuci_get_value_by_section_string(s, "type", &type);
-		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback")==0)
+		dmuci_get_value_by_section_string(s, "proto", &proto);
+		if (strcmp(section_name(s), "loopback") == 0 || *proto == '\0')
 			continue;
 		layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "ip_int_instance", "ip_int_alias");
 		if (*layer_inst == '\0')
@@ -94,7 +94,6 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		snprintf(buf_higherlayer, sizeof(buf_higherlayer), "Device.IP.Interface.%s.", layer_inst);
 		higheralias = get_alias_by_section("dmmap_network", "interface", s, "ip_int_alias");
 		snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
-		dmuci_get_value_by_section_string(s, "proto", &proto);
 		if (strstr(proto, "ppp")) {
 			layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "ppp_int_instance", "ppp_int_alias");
 			if (*layer_inst == '\0')
@@ -102,8 +101,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			snprintf(buf_lowerlayer, sizeof(buf_lowerlayer), "Device.PPP.Interface.%s.", layer_inst);
 			loweralias = get_alias_by_section("dmmap_network", "interface", s, "ppp_int_alias");
 			snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
-		}
-		else {
+		} else {
 			device = get_device(section_name(s));
 			if (device[0] != '\0') {
 				adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cVLANTermination%c", dmroot, dm_delim, dm_delim, dm_delim), device, &v);
@@ -172,30 +170,38 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 	}
 
 	/* Higher layers are Device.Ethernet.VLANTermination.{i}. */
-	uci_foreach_sections("network", "interface", s) {
-		if (!is_vlan_termination_section(s))
+	uci_foreach_sections("network", "device", s) {
+		dmuci_get_value_by_section_string(s, "type", &type);
+		dmuci_get_value_by_section_string(s, "name", &name);
+		if (strcmp(type, "untagged") == 0 || !is_vlan_termination_section(name))
 			continue;
-		layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "vlan_term_instance", "vlan_term_alias");
+		layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "device", s, "vlan_term_instance", "vlan_term_alias");
 		if (*layer_inst == '\0')
 			continue;
 		snprintf(buf_higherlayer, sizeof(buf_higherlayer), "Device.Ethernet.VLANTermination.%s.", layer_inst);
 		higheralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
 		snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
-
-		dmuci_get_value_by_section_string(s, "name", &value);
+		char *macaddr = get_macaddr_from_device(name);
+		if (macaddr[0] != '\0') {
+			if (is_mac_exist(macaddr)) {
+				pch = macaddr;
+			} else {
+				char intf_tag[64] = {0};
+				dmuci_get_value_by_section_string(s, "ifname", &ifname);
+				snprintf(intf_tag, sizeof(intf_tag), "%s.1", ifname);
+				pch = get_macaddr_from_device(intf_tag);
+			}
+		}
+		if (pch[0] != '\0') {
+			adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), pch, &v);
+			if (v == NULL)
+				v = "";
+		}
 		uci_foreach_sections("network", "interface", ss) {
-			dmuci_get_value_by_section_string(ss, "ifname", &ifname);
-			for (pch = strtok_r(ifname, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
-				if(strcmp(pch, value) == 0) {
-					mac = get_macaddr(section_name(ss));
-					if (mac[0] != '\0') {
-						adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), mac, &v);
-						loweralias = get_alias_by_section("dmmap", "link", ss, "link_alias");
-						if (v == NULL)
-							v = "";
-						break;
-					}
-				}
+			mac = get_macaddr(section_name(ss));
+			if (strcmp(pch, mac) == 0) {
+				loweralias = get_alias_by_section("dmmap", "link", ss, "link_alias");
+				break;
 			}
 		}
 		snprintf(buf_lowerlayer, sizeof(buf_lowerlayer), "%s", v);
@@ -215,7 +221,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 	uci_foreach_sections("network", "interface", s) {
 		dmuci_get_value_by_section_string(s, "type", &type);
 		dmuci_get_value_by_section_string(s, "proto", &proto);
-		if (strcmp(type, "alias") == 0 || strcmp(section_name(s), "loopback") == 0 || *proto == '\0')
+		if (strcmp(section_name(s), "loopback") == 0 || *proto == '\0')
 			continue;
 		dmuci_get_value_by_section_string(s, "ifname", &ifname);
 		if (*ifname == '\0' || *ifname == '@')

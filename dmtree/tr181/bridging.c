@@ -363,48 +363,79 @@ static int get_br_vlan_port_number_of_entries(char *refparam, struct dmctx *ctx,
 	return 0;
 }
 
-/*#Device.Bridging.Bridge.{i}.Port.{i}.Enable!UBUS:network.device/status/name,@Name/speed*/
 static int get_br_port_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	char *speed, *val;
-	struct uci_section *wifi_device_s = NULL;
-
 	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", value);
+
+	// wifi-iface wireless section
 	if(strncmp(*value, "wl", 2) == 0 || strncmp(*value, "ra", 2) == 0 || strncmp(*value, "apclii", 6) == 0) {
+		struct uci_section *wifi_device_s = NULL;
+		char *val;
+
 		uci_foreach_option_eq("wireless", "wifi-iface", "ifname", *value, wifi_device_s) {
 			dmuci_get_value_by_section_string(wifi_device_s, "disabled", &val);
-			if ((val[0] == '\0') || (val[0] == '0'))
-				*value = "true";
-			else
-				*value = "false";
+			*value = (val[0] == '1') ? "0" : "1";
 			return 0;
 		}
 	}
-	dmubus_call("network.device", "status", UBUS_ARGS{{"name", *value, String}}, 1, &res);
-	DM_ASSERT(res, *value = "false");
-	speed = dmjson_get_value(res, 1, "speed");
-	if(*speed != '\0')
-		*value = "true";
-	else
-		*value = "false";
+
+	// ethport ports section
+	char *type;
+	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "type", &type);
+	if (*type == '\0') {
+		dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "enabled", value);
+	} else {
+		struct uci_section *s = NULL;
+		uci_foreach_option_eq("ports", "ethport", "ifname", *value, s) {
+			dmuci_get_value_by_section_string(s, "enabled", value);
+			break;
+		}
+	}
+	if ((*value)[0] == '\0') *value = "1";
 	return 0;
 }
 
 static int set_br_port_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	bool b;
+	char *ifname;
+
 	switch (action) {
 		case VALUECHECK:
 			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
+			string_to_bool(value, &b);
+			dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", &ifname);
+
+			// wifi-iface wireless section
+			if(strncmp(ifname, "wl", 2) == 0 || strncmp(ifname, "ra", 2) == 0 || strncmp(ifname, "apclii", 6) == 0) {
+				struct uci_section *wifi_device_s = NULL;
+
+				uci_foreach_option_eq("wireless", "wifi-iface", "ifname", ifname, wifi_device_s) {
+					dmuci_set_value_by_section(wifi_device_s, "disabled", b ? "0" : "1");
+					return 0;
+				}
+			}
+
+			// ethport ports section
+			char *type;
+			dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "type", &type);
+			if (*type == '\0') {
+				dmuci_set_value_by_section(((struct bridging_port_args *)data)->bridge_port_sec, "enabled", b ? "1" : "0");
+			} else {
+				struct uci_section *s = NULL;
+				uci_foreach_option_eq("ports", "ethport", "ifname", ifname, s) {
+					dmuci_set_value_by_section(s, "enabled", b ? "1" : "0");
+					break;
+				}
+			}
 			return 0;
 	}
 	return 0;
 }
 
-/*#Device.Bridging.Bridge.{i}.Port.{i}.Status!UBUS:network.device/status/name,@Name/speed*/
 static int get_br_port_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	bool b;
@@ -494,7 +525,7 @@ static int get_br_port_default_user_priority(char *refparam, struct dmctx *ctx, 
 	struct uci_section *s = NULL;
 	char *name, *type;
 
-	*value = "";
+	*value = "0";
 	dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "name", &name);
 	s = check_if_ifname_is_tagged(name);
 	if (s != NULL) {
@@ -989,8 +1020,20 @@ static int get_br_port_alias(char *refparam, struct dmctx *ctx, void *data, char
 
 	get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "bridge_port_alias", value);
-	if ((*value)[0] == '\0')
-		dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "name", value);
+	if ((*value)[0] == '\0') {
+		char *type;
+		dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "type", &type);
+		if (*type == '\0') {
+			dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "name", value);
+		} else {
+			struct uci_section *s = NULL;
+			dmuci_get_value_by_section_string(((struct bridging_port_args *)data)->bridge_port_sec, "ifname", value);
+			uci_foreach_option_eq("ports", "ethport", "ifname", *value, s) {
+				dmuci_get_value_by_section_string(s, "name", value);
+				break;
+			}
+		}
+	}
 	return 0;
 }
 
@@ -1529,12 +1572,7 @@ static int check_port_with_ifname (char *ifname, struct uci_section **ss, int *i
 	struct uci_section *sss = NULL, *s = NULL;
 	char *atm_device, *ptm_device;
 
-	if (check_ifname_is_vlan(ifname)) {
-		uci_foreach_option_eq("network", "device", "name", ifname, s) {
-			*ss = s;
-			break;
-		}
-	} else if (strncmp(ifname, "ptm", 3) == 0) {
+	if (strncmp(ifname, "ptm", 3) == 0) {
 		if (access("/etc/config/dsl", F_OK) != -1) {
 			uci_foreach_sections("dsl", "ptm-device", sss) {
 				dmuci_get_value_by_section_string(sss, "device", &ptm_device);
@@ -1622,7 +1660,7 @@ static int get_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, c
 			/* Added support for tagged and untagged interfaces. */
 			int is_tag = 0;
 			check_port_with_ifname(pch, &s, &is_tag);
-			if(s == NULL)
+			if (s == NULL)
 				continue;
 			snprintf(plinker, sizeof(plinker), "%s+%s", section_name(s), pch);
 			adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), plinker, value);

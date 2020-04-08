@@ -1238,7 +1238,7 @@ void get_dmmap_section_of_config_section_eq(char* dmmap_package, char* section_t
 {
 	struct uci_section* s;
 
-	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, opt, value, s){
+	uci_path_foreach_option_eq(bbfdm, dmmap_package, section_type, opt, value, s) {
 		*dmmap_section = s;
 		return;
 	}
@@ -1255,7 +1255,7 @@ void get_config_section_of_dmmap_section(char* package, char* section_type, char
 			return;
 		}
 	}
-	*config_section= NULL;
+	*config_section = NULL;
 }
 
 void check_create_dmmap_package(char *dmmap_package)
@@ -1457,12 +1457,29 @@ char **strsplit_by_str(const char str[], char *delim)
 	return tokens;
 }
 
+char *get_macaddr_from_device(char *device_name)
+{
+	char *mac;
+
+	if (device_name[0]) {
+		char file[128];
+		char val[32];
+
+		snprintf(file, sizeof(file), "/sys/class/net/%s/address", device_name);
+		dm_read_sysfs_file(file, val, sizeof(val));
+		mac = dmstrdup(val);
+	} else {
+		mac = "";
+	}
+	return mac;
+}
+
 char *get_macaddr(char *interface_name)
 {
 	char *device = get_device(interface_name);
 	char *mac;
 
-	if(device[0]) {
+	if (device[0]) {
 		char file[128];
 		char val[32];
 
@@ -1534,41 +1551,40 @@ int is_elt_exit_in_str_list(char *str_list, char *elt)
 
 void add_elt_to_str_list(char **str_list, char *elt)
 {
-	char *list= NULL;
-	if(*str_list == NULL || strlen(*str_list) == 0){
+	if (*str_list == NULL || strlen(*str_list) == 0) {
 		dmasprintf(str_list, "%s", elt);
 		return;
 	}
-	list= dmstrdup(*str_list);
+	char *list = dmstrdup(*str_list);
 	dmfree(*str_list);
-	*str_list= NULL;
+	*str_list = NULL;
 	dmasprintf(str_list, "%s %s", list, elt);
 }
 
 void remove_elt_from_str_list(char **iface_list, char *ifname)
 {
-	char *list= NULL, *tmp=NULL;
-	char *pch, *spch;
+	char *list = NULL, *tmp = NULL, *pch, *spch;
+
 	if (*iface_list == NULL || strlen(*iface_list) == 0)
 		return;
-	list= dmstrdup(*iface_list);
+	list = dmstrdup(*iface_list);
 	dmfree(*iface_list);
-	*iface_list= NULL;
+	*iface_list = NULL;
 	for (pch = strtok_r(list, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
-		if(strcmp(pch, ifname) == 0)
+		if (strcmp(pch, ifname) == 0)
 			continue;
-		if(tmp == NULL)
+		if (tmp == NULL)
 			dmasprintf(iface_list, "%s", pch);
 		else
 			dmasprintf(iface_list, "%s %s", tmp, pch);
-		if(tmp){
+		if (tmp) {
 			dmfree(tmp);
-			tmp= NULL;
+			tmp = NULL;
 		}
 		if(*iface_list){
-			tmp= dmstrdup(*iface_list);
+			tmp = dmstrdup(*iface_list);
 			dmfree(*iface_list);
-			*iface_list= NULL;
+			*iface_list = NULL;
 		}
 	}
 	dmasprintf(iface_list, "%s", tmp);
@@ -1761,6 +1777,19 @@ int dm_time_format(time_t ts, char **dst)
 		return -1;
 
 	*dst = dmstrdup(time_buf);
+	return 0;
+}
+
+int is_mac_exist(char *macaddr)
+{
+	struct uci_section *s = NULL;
+	char *mac;
+
+	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
+		dmuci_get_value_by_section_string(s, "mac", &mac);
+		if (strcmp(mac, macaddr) == 0)
+			return 1;
+	}
 	return 0;
 }
 
@@ -2154,51 +2183,28 @@ char *replace_char(char *str, char find, char replace)
     return str;
 }
 
-int is_vlan_termination_section(struct uci_section *s)
+int is_vlan_termination_section(char *name)
 {
-	char *proto, *ifname;
+	struct uci_section *s;
 
-	dmuci_get_value_by_section_string(s, "proto", &proto);
-	if (*proto == '\0')
-		return 0;
+	uci_foreach_sections("network", "interface", s) {
+		// check proto is not empty
+		char *proto;
+		dmuci_get_value_by_section_string(s, "proto", &proto);
+		if (*proto == '\0')
+			continue;
 
-	dmuci_get_value_by_section_string(s, "ifname", &ifname);
-	if (*ifname == '\0')
-		return 0;
+		// check ifname is not empty
+		char *ifname;
+		dmuci_get_value_by_section_string(s, "ifname", &ifname);
+		if (*ifname == '\0')
+			continue;
 
-	char intf[250] = {0};
-	strncpy(intf, ifname, sizeof(intf) - 1);
-	char *if_name = strtok(intf, " ");
-	if (NULL != if_name) {
-		char name[250] = {0};
-		strncpy(name, if_name, sizeof(name) - 1);
-		int macvlan = 0;
-		char *p = strstr(name, ".");
-		if (!p) {
-			char *t = strstr(name, "_");
-			if (t)
-				macvlan = 1;
-			else
-				return 0;
-		}
-		char *end;
-		if (macvlan == 1)
-			strtok_r(name, "_", &end);
-		else
-			strtok_r(name, ".", &end);
-
-		if (end == NULL)
-			return 0;
-
-		if (macvlan == 0) {
-			char tag[20] = {0};
-			strncpy(tag, end, sizeof(tag) - 1);
-			if (strncmp(tag, "1", sizeof(tag)) == 0)
-				return 0;
-		}
+		// check if name exist in the list ifname
+		if (strcmp(ifname, name) == 0)
+			return 1;
 	}
-
-	return 1;
+	return 0;
 }
 
 int get_upstream_interface(char *intf_tag, int len)

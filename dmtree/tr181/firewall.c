@@ -293,7 +293,7 @@ static int get_rule_source_interface(char *refparam, struct dmctx *ctx, void *da
 {
 	struct uci_list *v = NULL, *v1 = NULL;
 	struct uci_element *e;
-	char *vallink, *zone, buf[256] = "", *val;
+	char *vallink = NULL, *zone, buf[256] = "", *val;
 	struct uci_section *s = NULL;
 
 	dmuci_get_value_by_section_string((struct uci_section *)data, "src", &zone);
@@ -320,7 +320,7 @@ static int get_rule_source_interface(char *refparam, struct dmctx *ctx, void *da
 	if (v != NULL) {
 		uci_foreach_element(v, e) {
 			adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), e->name, &vallink);
-			if (*vallink == '\0')
+			if (vallink == NULL)
 				continue;
 			if (*buf != '\0')
 				strcat(buf, ",");
@@ -328,7 +328,8 @@ static int get_rule_source_interface(char *refparam, struct dmctx *ctx, void *da
 		}
 	} else {
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), zone, &vallink);
-		strcpy(buf, vallink);
+		if (vallink)
+			strcpy(buf, vallink);
 	}
 
 	*value = dmstrdup(buf);
@@ -339,7 +340,7 @@ static int get_rule_dest_interface(char *refparam, struct dmctx *ctx, void *data
 {
 	struct uci_list *v = NULL;
 	struct uci_element *e;
-	char *zone, *ifaceobj, buf[256] = "", *val;
+	char *zone, *ifaceobj = NULL, buf[256] = "", *val;
 	struct uci_section *s = NULL;
 
 	dmuci_get_value_by_section_string((struct uci_section *)data, "dest", &zone);
@@ -353,7 +354,7 @@ static int get_rule_dest_interface(char *refparam, struct dmctx *ctx, void *data
 	if (v != NULL) {
 		uci_foreach_element(v, e) {
 			adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), e->name, &ifaceobj);
-			if (*ifaceobj == '\0')
+			if (ifaceobj == NULL)
 				continue;
 			if (*buf != '\0')
 				strcat(buf, ",");

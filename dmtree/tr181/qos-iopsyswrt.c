@@ -206,6 +206,7 @@ static int delObjQoSPolicer(char *refparam, struct dmctx *ctx, void *data, char 
 	return 0;
 }
 #endif
+
 static int addObjQoSQueue(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char *inst, *value, *v;
@@ -215,16 +216,12 @@ static int addObjQoSQueue(char *refparam, struct dmctx *ctx, void *data, char **
 	inst = get_last_instance_bbfdm("dmmap_qos", "queue", "queueinstance");
 	dmuci_add_section("qos", "queue", &s, &value);
 	dmuci_set_value_by_section(s, "enable", "false");
-	dmuci_set_value_by_section(s, "status", "disabled");
-	dmuci_set_value_by_section(s, "all_interface", "false");
-	dmuci_set_value_by_section(s, "hw_assisted", "false");
 	dmuci_set_value_by_section(s, "weight", "0");
-	dmuci_set_value_by_section(s, "precedence", "1");
-	dmuci_set_value_by_section(s, "red_threshold", "0");
-	dmuci_set_value_by_section(s, "red_percentage", "0");
-	dmuci_set_value_by_section(s, "drop_algorithm", "DT");
+	dmuci_set_value_by_section(s, "precedence", "0");
+	dmuci_set_value_by_section(s, "burst_size", "0");
 	dmuci_set_value_by_section(s, "scheduling", "ST");
-	dmuci_set_value_by_section(s, "rate", "-1");
+	dmuci_set_value_by_section(s, "rate", "0");
+	dmuci_set_value_by_section(s, "traffic_class", "0");
 
 	dmuci_add_section_bbfdm("dmmap_qos", "queue", &dmmap, &v);
 	dmuci_set_value_by_section(dmmap, "section_name", section_name(s));
@@ -301,9 +298,9 @@ static int addObjQoSShaper(char *refparam, struct dmctx *ctx, void *data, char *
 	inst = get_last_instance_bbfdm("dmmap_qos", "shaper", "shaperinstance");
 	dmuci_add_section("qos", "shaper", &s, &value);
 
-	dmuci_set_value_by_section(s, "enable", "false");
-	dmuci_set_value_by_section(s, "status", "disabled");
-	dmuci_set_value_by_section(s, "rate", "-1");
+	dmuci_set_value_by_section(s, "enable", "0");
+	dmuci_set_value_by_section(s, "burst_size", "0");
+	dmuci_set_value_by_section(s, "rate", "0");
 
 	dmuci_add_section_bbfdm("dmmap_qos", "shaper", &dmmap, &v);
 	dmuci_set_value_by_section(dmmap, "section_name", section_name(s));

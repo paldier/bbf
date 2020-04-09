@@ -1,0 +1,298 @@
+{
+	"Device.DSL.Line.{i}.": {
+		"type": "object", 
+		"protocols": [
+			"cwmp", 
+			"usp"
+		], 
+		"array": true,
+		"mapping": {
+			"type": "ubus", 
+			"ubus": {
+				"object": "dsl", 
+				"method": "status", 
+				"args": {}, 
+				"key": "line"
+			}
+		},
+		"FirmwareVersion": {
+			"type": "string­", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": false,
+			"mapping": {
+				"type": "ubus", 
+				"ubus": {
+					"object": "dsl.line.@i-1", 
+					"method": "status", 
+					"args": {}, 
+					"key": "firmware_version"
+				}
+			}
+		}, 
+		"UpstreamMaxBitRate": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": false,
+			"mapping": {
+				"type": "ubus", 
+				"ubus": {
+					"object": "dsl.line.@i-1", 
+					"method": "status", 
+					"args": {}, 
+					"key": "max_bit_rate.us"
+				}
+			}
+		}, 
+		"Device.DSL.Line.{i}.Stats.": {
+			"type": "object", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			],  
+			"array": false, 
+			"TotalStart": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"mapping": {
+					"type": "ubus", 
+					"ubus": {
+						"object": "dsl.line.@i-1", 
+						"method": "stats", 
+						"args": {}, 
+						"key": "total_start"
+					}
+				}
+			}, 
+			"ShowtimeStart": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"mapping": {
+					"type": "ubus", 
+					"ubus": {
+						"object": "dsl.line.@i-1", 
+						"method": "stats", 
+						"args": {}, 
+						"key": "showtime_start"
+					}
+				}
+			}, 
+			"QuarterHourStart": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": false, 
+				"mapping": {
+					"type": "ubus", 
+					"ubus": {
+						"object": "dsl.line.@i-1", 
+						"method": "stats", 
+						"args": {}, 
+						"key": "quarter_hour_start"
+					}
+				}
+			}, 
+			"Device.DSL.Line.{i}.Stats.Total.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"array": false, 
+				"ErroredSecs": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"mapping": {
+						"type": "ubus", 
+						"ubus": {
+							"object": "dsl.line.@i-1", 
+							"method": "stats", 
+							"args": {}, 
+							"key": "total.errored_secs"
+						}
+					}
+				}, 
+				"SeverelyErroredSecs": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"mapping": {
+						"type": "ubus", 
+						"ubus": {
+							"object": "dsl.line.@i-1", 
+							"method": "stats", 
+							"args": {}, 
+							"key": "total.severely_errored_secs"
+						}
+					}
+				}
+			},
+			"Device.DSL.Line.{i}.Stats.LastShowtime.": {
+				"type": "object", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"array": false, 
+				"ErroredSecs": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"mapping": {
+						"type": "ubus", 
+						"ubus": {
+							"object": "dsl.line.@i-1", 
+							"method": "stats", 
+							"args": {}, 
+							"key": "lastshowtime.errored_secs"
+						}
+					}
+				}, 
+				"SeverelyErroredSecs": {
+					"type": "unsignedInt", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"read": true, 
+					"write": false, 
+					"mapping": {
+						"type": "ubus", 
+						"ubus": {
+							"object": "dsl.line.@i-1", 
+							"method": "stats", 
+							"args": {}, 
+							"key": "lastshowtime.severely_errored_secs"
+						}
+					}
+				}
+			}
+		}
+	},
+	"Device.X_IOPSYS_EU_WiFiLife.": {
+		"type": "object", 
+		"protocols": [
+			"cwmp", 
+			"usp"
+		], 
+		"array": false, 
+		"Enable": {
+			"type": "boolean", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": {
+				"type": "uci", 
+				"uci": {
+					"file": "wifilife", 
+					"section": {
+						"type": "wifilife", 
+						"name": "@wifilife[0]"
+					}, 
+					"option": {
+						"name": "enabled"
+					}
+				}
+			}
+		},
+		"Device.X_IOPSYS_EU_WiFiLife.Steering.{i}.": {
+			"type": "object", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"array": true, 
+			"mapping": {
+				"type": "uci", 
+				"uci": {
+					"file": "wifilife", 
+					"section": {
+						"type": "steer"
+					}, 
+					"dmmapfile": "dmmap_wifilife"
+				}
+			}, 
+			"Enable": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": {
+					"type": "uci", 
+					"uci": {
+						"file": "wifilife", 
+						"section": {
+							"type": "steer", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "enabled"
+						}
+					}
+				}
+			},
+			"LegacyFallback": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": {
+					"type": "uci", 
+					"uci": {
+						"file": "wifilife", 
+						"section": {
+							"type": "steer", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "fallback_legacy"
+						}
+					}
+				}
+			}
+		}
+	}
+}
+

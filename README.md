@@ -238,6 +238,8 @@ The bbfdm library allows all applications installed on the box to import its own
 
 The application should bring its JSON file under **'/etc/bbfdm/json/'** path with **UCI** and **UBUS** mappings. The new added parameters will be automatically shown by icwmp and uspd/obuspa.
 
+To build a new JSON file, you can use **example.json file** under **dynamic_parameters/json** folder to help you build it.
+
 **1. Object without instance:**
 ```plain
 "Device.CWMP.": {
@@ -273,9 +275,32 @@ The application should bring its JSON file under **'/etc/bbfdm/json/'** path wit
 }
 ```
 
+- **UBUS command:** ubus call dsl status | jsonfilter -e @.line
+```plain
+"Device.DSL.Line.{i}.": {
+	"type": "object", 
+	"protocols": [
+		"cwmp", 
+		"usp"
+	], 
+	"array": true,
+	"mapping": {
+		"type": "ubus", 
+		"ubus": {
+			"object": "dsl", 
+			"method": "status", 
+			"args": {}, 
+			"key": "line"
+		}
+	}
+}
+```
+
 **3. Parameter under object with instance:**
-- **UCI command:** uci get wireless.@wifi-device[0].country<br/>
+- **UCI command:** uci get wireless.@wifi-device[0].country
+
 - **@i:** is the number of instance object
+
 ```plain
 "Country": {
     "type": "string", 
@@ -420,7 +445,7 @@ The application should bring its JSON file under **'/etc/bbfdm/json/'** path wit
 
 The application should bring its plugin(library) file under **'/usr/lib/bbfdm/'** path that contains the sub tree of **Objects/Parameters** and the related functions **Get/Set/Add/Delete/Operate**. The new added objects, parameters and operates will be automatically shown by icwmp and uspd/obuspa.
 
-To build a new library, you can use **example source code** under **library** folder to help you build it.
+To build a new library, you can use **example source code** under **dynamic_parameters/library** folder to help you build it.
 
 Each library should contains two Root table named **“tRootDynamicObj”** and **“tRootDynamicOperate”** to define the parant path for each new object and operate.
 

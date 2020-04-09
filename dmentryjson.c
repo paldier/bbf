@@ -256,38 +256,38 @@ static int check_json_root_obj(struct dmctx *ctx, char *in_param_json, DMOBJ **r
 
 int browse_obj(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	//UCI: arg1=type :: arg2=uci_file :: arg3=uci_section_type :: arg4=uci_dmmap_file :: arg5="" :: arg6=""
-
-	char *arg1 = NULL, *arg2 = NULL, *arg3 = NULL, *arg4 = NULL, *prefix_obj = NULL, *object = NULL;
-	char buf_instance[64] = "", buf_alias[64] = "";
 	struct dm_json_parameter *pleaf;
+	char *arg1 = NULL, *arg2 = NULL, *arg3 = NULL, *arg4 = NULL, *arg5 = NULL, *arg6 = NULL;
 
 	char *obj = generate_obj_without_instance(parent_node->current_object, true);
-	generate_prefixobj_and_obj_full_obj(parent_node->current_object, &prefix_obj, &object);
-
-	snprintf(buf_instance, sizeof(buf_instance), "%s_instance", object);
-	snprintf(buf_alias, sizeof(buf_alias), "%s_alias", object);
-	for (int i = 0; buf_instance[i]; i++) {
-		buf_instance[i] = tolower(buf_instance[i]);
-	}
-	for (int i = 0; buf_alias[i]; i++) {
-		buf_alias[i] = tolower(buf_alias[i]);
-	}
-
 	list_for_each_entry(pleaf, &json_list, list) {
 		if (strcmp(pleaf->name, obj) == 0) {
 			arg1 = pleaf->arg1;
 			arg2 = pleaf->arg2;
 			arg3 = pleaf->arg3;
 			arg4 = pleaf->arg4;
+			arg5 = pleaf->arg5;
+			arg6 = pleaf->arg6;
 			break;
 		}
 	}
 
 	if (arg1 && strcmp(arg1, "uci") == 0) {
+		//UCI: arg1=type :: arg2=uci_file :: arg3=uci_section_type :: arg4=uci_dmmap_file :: arg5="" :: arg6=""
+
+		char buf_instance[64] = "", buf_alias[64] = "", *prefix_obj = NULL, *object = NULL;
 		char *instance = NULL, *instnbr = NULL;
 		struct dmmap_dup *p;
 		LIST_HEAD(dup_list);
+
+		generate_prefixobj_and_obj_full_obj(parent_node->current_object, &prefix_obj, &object);
+		snprintf(buf_instance, sizeof(buf_instance), "%s_instance", object);
+		snprintf(buf_alias, sizeof(buf_alias), "%s_alias", object);
+		for (int i = 0; buf_instance[i]; i++)
+			buf_instance[i] = tolower(buf_instance[i]);
+
+		for (int i = 0; buf_alias[i]; i++)
+			buf_alias[i] = tolower(buf_alias[i]);
 
 		if(arg2 && arg3 && arg4) {
 			synchronize_specific_config_sections_with_dmmap(arg2, arg3, arg4, &dup_list);
@@ -298,6 +298,25 @@ int browse_obj(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *
 			}
 		}
 		free_dmmap_config_dup_list(&dup_list);
+	}
+	else if (arg1 && strcmp(arg1, "ubus") == 0) {
+		//UBUS: arg1=type :: arg2=ubus_object :: arg3=ubus_method :: arg4=ubus_args1 :: arg5=ubus_args2 :: arg6=ubus_key
+
+		json_object *res = NULL, *dyn_obj = NULL, *arrobj = NULL;
+		char *idx, *idx_last = NULL;
+		int id = 0, j = 0;
+
+		if (arg2 && arg3 && arg4 && arg5)
+			dmubus_call(arg2, arg3, UBUS_ARGS{{arg4, arg5, String}}, 1, &res);
+		else
+			dmubus_call(arg2, arg3, UBUS_ARGS{{}}, 0, &res);
+		if (res && arg6) {
+			dmjson_foreach_obj_in_array(res, arrobj, dyn_obj, j, 1, arg6) {
+				idx = handle_update_instance(1, dmctx, &idx_last, update_instance_without_section, 1, ++id);
+				if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)dyn_obj, idx) == DM_STOP)
+					break;
+			}
+		}
 	}
 	return 0;
 }
@@ -431,20 +450,30 @@ static int getvalue_param(char *refparam, struct dmctx *ctx, void *data, char *i
 		//UBUS: arg1=type :: arg2=ubus_object :: arg3=ubus_method :: arg4=ubus_args1 :: arg5=ubus_args2 :: arg6=ubus_key
 
 		json_object *res = NULL;
-		if (arg2 && arg3 && arg4 && arg5) {
-			if (data && (strcmp(arg5, "@Name") == 0))
-				dmubus_call(arg2, arg3, UBUS_ARGS{{arg4, section_name((struct uci_section *)data), String}}, 1, &res);
-			else
-				dmubus_call(arg2, arg3, UBUS_ARGS{{arg4, arg5, String}}, 1, &res);
+		char arg2_1[128] = {0}, *opt = NULL;
+		if ((opt = strstr(arg2, "@Name"))) {
+			*opt = '\0';
+			snprintf(arg2_1, sizeof(arg2_1), "%s%s", arg2, section_name((struct uci_section *)data));
+		} else if ((opt = strstr(arg2, "@i-1"))) {
+			*opt = '\0';
+			snprintf(arg2_1, sizeof(arg2_1), "%s%d", arg2, atoi(instance) - 1);
+		} else {
+			strncpy(arg2_1, arg2, sizeof(arg2_1) - 1);
+		}
 
-		} else if (arg2 && arg3) {
-			dmubus_call(arg2, arg3, UBUS_ARGS{{}}, 0, &res);
+		if (arg4 && arg5) {
+			if (data && (strcmp(arg5, "@Name") == 0))
+				dmubus_call(arg2_1, arg3, UBUS_ARGS{{arg4, section_name((struct uci_section *)data), String}}, 1, &res);
+			else
+				dmubus_call(arg2_1, arg3, UBUS_ARGS{{arg4, arg5, String}}, 1, &res);
+		} else {
+			dmubus_call(arg2_1, arg3, UBUS_ARGS{{}}, 0, &res);
 		}
 
 		DM_ASSERT(res, *value = "");
 
 		if (arg6) {
-			char arg6_1[32] = "";
+			char arg6_1[128] = "";
 			strcpy(arg6_1, arg6);
 			char *opt = strchr(arg6_1, '.');
 			if (opt) {
@@ -528,6 +557,23 @@ static void parse_mapping_obj(char *object, json_object *mapping, struct list_he
 
 		//Add to list
 		add_json_data_to_list(list, object, "uci", json_object_get_string(file), json_object_get_string(section_type), json_object_get_string(dmmap_file), "", "");
+	}
+	else if (strcmp(json_object_get_string(type), "ubus") == 0) {
+		//UBUS: arg1=type :: arg2=ubus_object :: arg3=ubus_method :: arg4=ubus_args1 :: arg5=ubus_args2 :: arg6=ubus_key
+
+		struct json_object *obj1, *method, *key, *args;
+		char *args1 = NULL;
+		json_object_object_get_ex(mapping, "ubus", &obj);
+		json_object_object_get_ex(obj, "object", &obj1);
+		json_object_object_get_ex(obj, "method", &method);
+		json_object_object_get_ex(obj, "args", &args);
+		json_object_object_foreach(args, arg1, args2) {
+			args1 = arg1;
+		}
+		json_object_object_get_ex(obj, "key", &key);
+
+		//Add to list
+		add_json_data_to_list(list, object, "ubus", json_object_get_string(obj1), json_object_get_string(method), args1, json_object_get_string(args2), json_object_get_string(key));
 	}
 	else {
 		//Add to list

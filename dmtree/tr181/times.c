@@ -90,7 +90,7 @@ static int set_time_LocalTimeZone(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-static int get_local_time_zone_olson(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_local_time_zone_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("system", "@system[0]", "zonename", value);
 	return 0;
@@ -260,7 +260,7 @@ DMLEAF tTimeParams[] = {
 {"NTPServer5", &DMWRITE, DMT_STRING, get_time_ntpserver5, set_time_ntpserver5, NULL, NULL, BBFDM_BOTH},
 {"CurrentLocalTime", &DMREAD, DMT_TIME, get_time_CurrentLocalTime, NULL, NULL, NULL, BBFDM_BOTH},
 {"LocalTimeZone", &DMWRITE, DMT_STRING, get_time_LocalTimeZone, set_time_LocalTimeZone, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"LocalTimeZoneOlson", &DMREAD, DMT_STRING, get_local_time_zone_olson, NULL, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"LocalTimeZoneName", &DMREAD, DMT_STRING, get_local_time_zone_name, NULL, NULL, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"SourceInterface", &DMWRITE, DMT_STRING, get_time_source_interface, set_time_source_interface, NULL, NULL, BBFDM_BOTH},
 {0}
 };

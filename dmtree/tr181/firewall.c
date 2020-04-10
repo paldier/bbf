@@ -1279,8 +1279,8 @@ DMLEAF tFirewallChainRuleParams[] = {
 {"DestPortRangeMax", &DMWRITE, DMT_INT, get_rule_dest_port_range_max, set_rule_dest_port_range_max, NULL, NULL, BBFDM_BOTH},
 {"SourcePort", &DMWRITE, DMT_INT, get_rule_source_port, set_rule_source_port, NULL, NULL, BBFDM_BOTH},
 {"SourcePortRangeMax", &DMWRITE, DMT_INT, get_rule_source_port_range_max, set_rule_source_port_range_max, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"IcmpType", &DMWRITE, DMT_STRING, get_rule_icmp_type, set_rule_icmp_type, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"SourceMac", &DMWRITE, DMT_STRING, get_rule_source_mac, set_rule_source_mac, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"ICMPType", &DMWRITE, DMT_STRING, get_rule_icmp_type, set_rule_icmp_type, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"SourceMACAddress", &DMWRITE, DMT_STRING, get_rule_source_mac, set_rule_source_mac, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

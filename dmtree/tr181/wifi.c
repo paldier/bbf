@@ -141,29 +141,6 @@ static int get_WiFi_EndPointNumberOfEntries(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
-static int get_wifi_bandsteering_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	dmuci_get_option_value_string("wireless", "bandsteering", "enabled", value);
-	return 0;
-}
-
-static int set_wifi_bandsteering_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	bool b;
-
-	switch (action) {
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			return 0;
-		case VALUESET:
-			string_to_bool(value, &b);
-			dmuci_set_value("wireless", "bandsteering", "enabled", b ? "1" : "0");
-			return 0;
-	}
-	return 0;
-}
-
 /*#Device.WiFi.SSID.{i}.Enable!UCI:wireless/wifi-iface,@i-1/disabled*/
 static int get_wifi_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -2437,7 +2414,6 @@ DMLEAF tWiFiParams[] = {
 {"SSIDNumberOfEntries", &DMREAD, DMT_UNINT, get_WiFi_SSIDNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {"AccessPointNumberOfEntries", &DMREAD, DMT_UNINT, get_WiFi_AccessPointNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {"EndPointNumberOfEntries", &DMREAD, DMT_UNINT, get_WiFi_EndPointNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"Bandsteering_Enable", &DMWRITE, DMT_BOOL, get_wifi_bandsteering_enable, set_wifi_bandsteering_enable, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

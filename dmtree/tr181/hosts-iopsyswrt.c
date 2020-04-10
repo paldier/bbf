@@ -7,42 +7,6 @@ struct host_args
 	char *key;
 };
 
-
-static char * get_interface_type(char *mac, char *ndev)
-{
-	json_object *res;
-	int wlctl_num;
-	struct uci_section *s, *d;
-	char buf[8], *p, *network, *value, *wunit;
-
-	uci_foreach_sections("wireless", "wifi-device", d) {
-		wlctl_num = 0;
-		wunit = section_name(d);
-		uci_foreach_option_eq("wireless", "wifi-iface", "device", wunit, s) {
-			dmuci_get_value_by_section_string(s, "network", &network);
-			if (strcmp(network, ndev) == 0) {
-				if (wlctl_num != 0) {
-					snprintf(buf, sizeof(buf), "%s.%d", wunit, wlctl_num);
-					p = buf;
-				} else {
-					p = wunit;
-				}
-				dmubus_call("router.wireless", "stas", UBUS_ARGS{{"vif", p, String}}, 1, &res);
-				if(res) {
-					json_object_object_foreach(res, key, val) {
-						UNUSED(key);
-						value = dmjson_get_value(val, 1, "macaddr");
-						if (strcasecmp(value, mac) == 0)
-							return "802.11";
-					}
-				}
-				wlctl_num++;
-			}
-		}
-	}
-	return "Ethernet";
-}
-
 static inline int init_host_args(struct host_args *args, json_object *clients, char *key)
 {
 	args->client = clients;
@@ -88,16 +52,6 @@ int os__get_host_nbr_entries(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
-int os__get_host_interfacetype(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *mac, *network;
-
-	mac = dmjson_get_value(((struct host_args *)data)->client, 1, "macaddr");
-	network = dmjson_get_value(((struct host_args *)data)->client, 1, "network");
-	*value = get_interface_type(mac, network);
-	return 0;
-}
-
 /*************************************************************
 * GET & SET PARAM
 **************************************************************/
@@ -128,43 +82,6 @@ int os__get_host_layer3interface(char *refparam, struct dmctx *ctx, void *data, 
 	adm_entry_get_linker_param(ctx, "Device.IP.Interface.", ip_linker, value);
 	if (*value == NULL)
 		*value = "";
-	return 0;
-}
-
-int os__get_host_interface_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *type= NULL;
-	char *ifname = dmjson_get_value(((struct host_args *)data)->client, 1, "network");
-	struct uci_section *ss = NULL;
-
-	uci_foreach_sections("network", "interface", ss) {
-		if (!strcmp(ifname, section_name(ss))) {
-			dmuci_get_value_by_section_string(ss, "type", &type);
-			if (type!=NULL) {
-				if (!strcmp(type, "bridge")) *value="Bridge";else *value= "Normal";
-				break;
-			}
-		}
-	}
-	return 0;
-}
-
-int os__get_host_interfacename(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *frequency, *wireless;
-
-	frequency = dmjson_get_value(((struct host_args *)data)->client, 1, "frequency");
-	wireless = dmjson_get_value(((struct host_args *)data)->client, 1, "wireless");
-	if ((*frequency != '\0') && (strcmp(wireless, "true")==0)) {
-		if(strcmp(frequency,"5GHz")==0)
-			*value = "WiFi@5GHz";
-		else
-			*value = "WiFi@2.4GHz";
-	} else {
-		*value = dmjson_get_value(((struct host_args *)data)->client, 1, "ethport");
-		if (*value == NULL)
-			*value = "";
-	}
 	return 0;
 }
 

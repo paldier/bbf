@@ -628,48 +628,6 @@ static int set_dns_server(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
-static int get_dhcp_configurable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	struct uci_section *s = NULL;
-
-	uci_foreach_option_eq("dhcp", "dhcp", "interface", ((struct dhcp_args *)data)->interface, s) {
-		*value = "1";
-		return 0;
-	}
-	*value = "0";
-	return 0;
-}
-
-static int set_dhcp_configurable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
-{
-	bool b;
-	struct uci_section *s = NULL;
-
-	switch (action) {
-		case VALUECHECK:
-			if (dm_validate_boolean(value))
-				return FAULT_9007;
-			return 0;
-		case VALUESET:
-			string_to_bool(value, &b);
-			uci_foreach_option_eq("dhcp", "dhcp", "interface", ((struct dhcp_args *)data)->interface, s) {
-				if (!b) {
-					dmuci_delete_by_section(s, NULL, NULL);
-				}
-				break;
-			}
-			if (s == NULL && b) {
-				dmuci_set_value("dhcp",((struct dhcp_args *)data)->interface, NULL, "dhcp");
-				dmuci_set_value("dhcp", ((struct dhcp_args *)data)->interface, "interface", ((struct dhcp_args *)data)->interface);
-				dmuci_set_value("dhcp", ((struct dhcp_args *)data)->interface, "start", "100");
-				dmuci_set_value("dhcp", ((struct dhcp_args *)data)->interface, "limit", "150");
-				dmuci_set_value("dhcp", ((struct dhcp_args *)data)->interface, "leasetime", "12h");
-			}
-			return 0;
-	}
-	return 0;
-}
-
 /*#Device.DHCPv4.Server.Pool.{i}.Status!UCI:dhcp/interface,@i-1/ignore*/
 static int get_dhcp_status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -3013,7 +2971,6 @@ DMLEAF tDHCPv4ServerPoolParams[] = {
 {"DNSServers", &DMWRITE, DMT_STRING,  get_dns_server, set_dns_server, NULL, NULL, BBFDM_BOTH},
 {"Status", &DMREAD, DMT_STRING,  get_dhcp_status, NULL, NULL, NULL, BBFDM_BOTH},
 {"Order", &DMWRITE, DMT_UNINT, get_dhcp_sever_pool_order, set_dhcp_sever_pool_order, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"DHCPServerConfigurable", &DMWRITE, DMT_BOOL, get_dhcp_configurable, set_dhcp_configurable, NULL, NULL, BBFDM_BOTH},
 {"Enable", &DMWRITE, DMT_BOOL,  get_dhcp_enable, set_dhcp_enable, NULL, NULL, BBFDM_BOTH},
 {"MinAddress", &DMWRITE, DMT_STRING, get_dhcp_interval_address_min, set_dhcp_address_min, NULL, NULL, BBFDM_BOTH},
 {"MaxAddress", &DMWRITE, DMT_STRING,get_dhcp_interval_address_max, set_dhcp_address_max, NULL, NULL, BBFDM_BOTH},

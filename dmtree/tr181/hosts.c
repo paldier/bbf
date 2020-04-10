@@ -35,11 +35,8 @@ DMLEAF tHostsHostParams[] = {
 {"HostName", &DMREAD, DMT_STRING, os__get_host_hostname, NULL, NULL, NULL, BBFDM_BOTH},
 {"Active", &DMREAD, DMT_BOOL, os__get_host_active, NULL, NULL, NULL, BBFDM_BOTH},
 {"PhysAddress", &DMREAD, DMT_STRING, os__get_host_phy_address, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"LinkType", &DMREAD, DMT_STRING, os__get_host_interfacetype, NULL, NULL, NULL, BBFDM_BOTH},
 {"AddressSource", &DMREAD, DMT_STRING, os__get_host_address_source, NULL, NULL, NULL, BBFDM_BOTH},
 {"LeaseTimeRemaining", &DMREAD, DMT_INT, os__get_host_leasetime_remaining, NULL, NULL, NULL, BBFDM_BOTH},
 {"DHCPClient", &DMREAD, DMT_STRING, os__get_host_dhcp_client, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"InterfaceType", &DMREAD, DMT_STRING, os__get_host_interface_type, NULL, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"ifname", &DMREAD, DMT_STRING, os__get_host_interfacename, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };

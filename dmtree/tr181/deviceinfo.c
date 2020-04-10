@@ -353,7 +353,6 @@ static int browseVlfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_da
 /* *** Device.DeviceInfo. *** */
 DMOBJ tDeviceInfoObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{CUSTOM_PREFIX"CATV", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tCatTvParams, NULL, BBFDM_BOTH},
 {"VendorConfigFile", &DMREAD, NULL, NULL, NULL, browseVcfInst, NULL, NULL, NULL, NULL, tDeviceInfoVendorConfigFileParams, NULL, BBFDM_BOTH},
 {"VendorLogFile", &DMREAD, NULL, NULL, NULL, browseVlfInst, NULL, NULL, NULL, NULL, tDeviceInfoVendorLogFileParams, NULL, BBFDM_BOTH},
 {"MemoryStatus", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDeviceInfoMemoryStatusParams, NULL, BBFDM_BOTH},
@@ -374,11 +373,7 @@ DMLEAF tDeviceInfoParams[] = {
 {"DeviceLog", &DMREAD, DMT_STRING, get_device_devicelog, NULL, NULL, NULL, BBFDM_BOTH},
 {"SpecVersion", &DMREAD, DMT_STRING, get_device_specversion, NULL,  &DMFINFRM, NULL, BBFDM_BOTH},
 {"ProvisioningCode", &DMWRITE, DMT_STRING, get_device_provisioningcode, set_device_provisioningcode, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
-{CUSTOM_PREFIX"BaseMacAddr", &DMREAD, DMT_STRING, os__get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
-#ifndef GENERIC_OPENWRT
-{CUSTOM_PREFIX"CATVEnabled", &DMWRITE, DMT_BOOL, os_iopsys_get_catv_enabled, os_iopsys_set_device_catvenabled, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"MemoryBank", &DMWRITE, DMT_INT, os_iopsys_get_device_memory_bank, os_iopsys_set_device_memory_bank, NULL, NULL, BBFDM_BOTH},
-#endif
+{CUSTOM_PREFIX"BaseMACAddr", &DMREAD, DMT_STRING, os__get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

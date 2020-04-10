@@ -19,7 +19,6 @@
 #define DEFAULT_CONFIG_DIR "/etc/config/"
 
 extern DMLEAF tDeviceInfoParams[];
-extern DMLEAF tCatTvParams[];
 extern DMLEAF tDeviceInfoVendorConfigFileParams[];
 extern DMLEAF tDeviceInfoVendorLogFileParams[];
 extern DMLEAF tDeviceInfoMemoryStatusParams[];

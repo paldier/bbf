@@ -31,11 +31,8 @@ int os__browseProcessEntriesInst(struct dmctx *dmctx, DMNODE *parent_node, void 
 
 int os__browsehostInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance);
 int os__get_host_nbr_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int os__get_host_interfacetype(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_host_associateddevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_host_layer3interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int os__get_host_interface_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int os__get_host_interfacename(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_host_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_host_hostname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_host_active(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
@@ -110,18 +107,5 @@ void os__wifi_start_scan(const char *radio);
 int os_get_wifi_access_point_status (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os_get_radio_operating_standard(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 char * os__get_default_wpa_key();
-
-/* IOPSYS-WRT only
- */
-#ifndef GENERIC_OPENWRT
-int os_iopsys_get_device_memory_bank(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int os_iopsys_set_device_memory_bank(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);
-int os_iopsys_get_catv_enabled(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int os_iopsys_set_device_catvenabled(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action);
-int os_iopsys_get_catv_optical_input_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int os_iopsys_get_catv_rf_output_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int os_iopsys_get_catv_temperature(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-int os_iopsys_get_catv_voltage(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
-#endif
 
 #endif

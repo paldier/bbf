@@ -17,27 +17,12 @@ int os__get_host_nbr_entries(char *refparam, struct dmctx *ctx, void *data, char
 	return not_implemented(value);
 }
 
-int os__get_host_interfacetype(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	return not_implemented(value);
-}
-
 int os__get_host_associateddevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }
 
 int os__get_host_layer3interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	return not_implemented(value);
-}
-
-int os__get_host_interface_type(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	return not_implemented(value);
-}
-
-int os__get_host_interfacename(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);
 }

@@ -423,19 +423,6 @@ DMLEAF tDeviceInfoProcessStatusProcessParams[] = {
 {0}
 };
 
-/*** DeviceInfo.X_IOPSYS_EU_CATV. ***/
-DMLEAF tCatTvParams[] = {
-#ifndef GENERIC_OPENWRT
-/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Enabled", &DMWRITE, DMT_STRING, os_iopsys_get_catv_enabled, os_iopsys_set_device_catvenabled, NULL, NULL, BBFDM_BOTH},
-{"OpticalInputLevel", &DMREAD, DMT_STRING, os_iopsys_get_catv_optical_input_level, NULL, NULL, NULL, BBFDM_BOTH},
-{"RFOutputLevel", &DMREAD, DMT_STRING, os_iopsys_get_catv_rf_output_level, NULL, NULL, NULL, BBFDM_BOTH},
-{"Temperature", &DMREAD, DMT_STRING, os_iopsys_get_catv_temperature, NULL, NULL, NULL, BBFDM_BOTH},
-{"Voltage", &DMREAD, DMT_STRING, os_iopsys_get_catv_voltage, NULL, NULL, NULL, BBFDM_BOTH},
-#endif
-{0}
-};
-
 /* *** Device.DeviceInfo.VendorLogFile.{i}. *** */
 DMLEAF tDeviceInfoVendorLogFileParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/

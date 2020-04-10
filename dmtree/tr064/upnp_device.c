@@ -92,10 +92,7 @@ DMOBJ tRoot181ObjUPNPBBF[] = {
 #if BBF_TR104
 {"VoiceService", &DMREAD, NULL, NULL, NULL, browseVoiceServiceInst, NULL, NULL, tServicesVoiceServiceObj, tServicesVoiceServiceParams, NULL, BBFDM_BOTH},
 #endif
-{CUSTOM_PREFIX"ICE", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_IceParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"IGMP", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_IgmpParam, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"IpAccCfg", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tSe_IpAccObj, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"LoginCfg", &DMREAD, NULL, NULL, NULL, NULL,NULL, &DMNONE,NULL, tSe_LoginCfgParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"PowerManagement", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_PowerManagementParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"SyslogCfg", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_SyslogCfgParam, NULL, BBFDM_BOTH},
 {"SoftwareModules", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tSoftwareModulesObj, NULL, NULL, BBFDM_BOTH},
@@ -127,10 +124,7 @@ UPNP_SUPPORTED_DM tUPNPSupportedDM_181[] = {
 {"/BBF/Time/", DMROOT_URI_181, DMROOT_URL_181, "Time from "DMROOT_DESC_181, ""},
 {"/BBF/UPnP/", DMROOT_URI_181, DMROOT_URL_181, "UPnP from "DMROOT_DESC_181, ""},
 {"/BBF/VoiceService/", "urn:broadband-forum-org:wt-104-2-0-0", "https://www.broadband-forum.org/cwmp/tr-104-2-0-0.html", "TR-104 Voice:2 Service Object definition", ""},
-{"/BBF/"CUSTOM_PREFIX"ICE/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for ICE", ""},
 {"/BBF/"CUSTOM_PREFIX"IGMP/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for ICE", ""},
-{"/BBF/"CUSTOM_PREFIX"IpAccCfg/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for IGMP", ""},
-{"/BBF/"CUSTOM_PREFIX"LoginCfg/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for LoginCfg", ""},
 {"/BBF/"CUSTOM_PREFIX"PowerManagement/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for PowerManagement", ""},
 {"/BBF/"CUSTOM_PREFIX"SyslogCfg/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for SyslogCfg", ""},
 {"/BBF/SoftwareModules/", DMROOT_URI_181, DMROOT_URL_181, "SoftwareModules from "DMROOT_DESC_181, ""},

@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-#      This program is free software: you can redistribute it and/or modify
-#      it under the terms of the GNU General Public License as published by
-#      the Free Software Foundation, either version 2 of the License, or
-#      (at your option) any later version.
-#
 #      Copyright (C) 2019 iopsys Software Solutions AB
 #		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
 
@@ -123,7 +118,7 @@ def objhasparam (dmobject):
 
 def cprinttopfile (fp, filename):
 	print >> fp, "/*"
-	print >> fp, "* Copyright (C) 2020 iopsys Software Solutions AB
+	print >> fp, "* Copyright (C) 2020 iopsys Software Solutions AB"
 	print >> fp, "*"
 	print >> fp, "* This program is free software; you can redistribute it and/or modify"
 	print >> fp, "* it under the terms of the GNU Lesser General Public License version 2.1"
@@ -139,7 +134,7 @@ def cprinttopfile (fp, filename):
 
 def hprinttopfile (fp, filename):
 	print >> fp, "/*"
-	print >> fp, "* Copyright (C) 2020 iopsys Software Solutions AB
+	print >> fp, "* Copyright (C) 2020 iopsys Software Solutions AB"
 	print >> fp, "*"
 	print >> fp, "* This program is free software; you can redistribute it and/or modify"
 	print >> fp, "* it under the terms of the GNU Lesser General Public License version 2.1"

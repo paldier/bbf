@@ -349,7 +349,7 @@ def cprinttopfile (fp, filename):
 	print >> fp, " * it under the terms of the GNU Lesser General Public License version 2.1"
 	print >> fp, " * as published by the Free Software Foundation"
 	print >> fp, " *"
-	print >> fp, " *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>"
+	print >> fp, " *	Author: <Name> <Surname> <name.surname@iopsys.eu>"
 	print >> fp, " */"
 	print >> fp, ""
 	print >> fp, "#include \"%s.h\"" % filename.lower()
@@ -363,7 +363,7 @@ def hprinttopfile (fp, filename):
 	print >> fp, " * it under the terms of the GNU Lesser General Public License version 2.1"
 	print >> fp, " * as published by the Free Software Foundation"
 	print >> fp, " *"
-	print >> fp, " *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>"
+	print >> fp, " *	Author: <Name> <Surname> <name.surname@iopsys.eu>"
 	print >> fp, " */"
 	print >> fp, ""
 	print >> fp, "#ifndef __%s_H" % filename.upper()

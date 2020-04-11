@@ -601,15 +601,20 @@ static int get_EthernetInterface_MaxBitRate(char *refparam, struct dmctx *ctx, v
 {
 	json_object *res = NULL, *link_supported = NULL;
 	int rate = 0;
-	char *max_link;
+	char *max_link, *autoneg;
 
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct eth_port_args *)data)->ifname, String}}, 1, &res);
 	DM_ASSERT(res, *value = "-1");
-	json_object_object_get_ex(res, "link-supported", &link_supported);
-	if (link_supported) {
-		max_link = dmjson_get_value_in_array_idx(link_supported, json_object_array_length(link_supported) - 1, 0);
-		sscanf(max_link, "%d%*s", &rate);
-		dmasprintf(value, "%d", rate);
+	autoneg = dmjson_get_value(res, 1, "autoneg");
+	if (strcmp(autoneg, "true") == 0) {
+		*value = "-1";
+	} else {
+		json_object_object_get_ex(res, "link-supported", &link_supported);
+		if (link_supported) {
+			max_link = dmjson_get_value_in_array_idx(link_supported, json_object_array_length(link_supported) - 1, 0);
+			sscanf(max_link, "%d%*s", &rate);
+			dmasprintf(value, "%d", rate);
+		}
 	}
 	return 0;
 }
@@ -622,7 +627,12 @@ static int set_EthernetInterface_MaxBitRate(char *refparam, struct dmctx *ctx, v
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", value);
+			if (strcmp(value, "-1") == 0)
+				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "autoneg", "1");
+			else {
+				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "autoneg", "0");
+				dmuci_set_value_by_section(((struct eth_port_args *)data)->eth_port_sec, "speed", value);
+			}
 			return 0;
 	}
 	return 0;

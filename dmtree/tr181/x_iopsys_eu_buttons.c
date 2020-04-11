@@ -34,6 +34,12 @@ int browseXIopsysEuButton(struct dmctx *dmctx, DMNODE *parent_node, void *prev_d
 
 static int get_x_iopsys_eu_button_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
+	dmasprintf(value, "%s", section_name((struct uci_section *)data));
+	return 0;
+}
+
+static int get_x_iopsys_eu_button_gpio(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
 	struct uci_list *val;
 
 	dmuci_get_value_by_section_list((struct uci_section *)data, "button", &val);
@@ -153,11 +159,12 @@ static int set_x_iopsys_eu_button_alias(char *refparam, struct dmctx *ctx, void 
 DMLEAF X_IOPSYS_EU_ButtonParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_x_iopsys_eu_button_alias, set_x_iopsys_eu_button_alias, NULL, NULL, BBFDM_BOTH},
-{"button", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_name, NULL, NULL, NULL, BBFDM_BOTH},
-{"hotplug", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_hotplug, NULL, NULL, NULL, BBFDM_BOTH},
-{"hotplug_long", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_hotplug_long, NULL, NULL, NULL, BBFDM_BOTH},
-{"minpress", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_button_minpress, set_x_iopsys_eu_button_minpress, NULL, NULL, BBFDM_BOTH},
-{"longpress", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_button_longpress, set_x_iopsys_eu_button_longpress, NULL, NULL, BBFDM_BOTH},
-{"enable", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_button_enable, set_x_iopsys_eu_button_enable, NULL, NULL, BBFDM_BOTH},
+{"Enable", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_button_enable, set_x_iopsys_eu_button_enable, NULL, NULL, BBFDM_BOTH},	
+{"Name", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_name, NULL, NULL, NULL, BBFDM_BOTH},
+{"GPIOButton", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_gpio, NULL, NULL, NULL, BBFDM_BOTH},
+{"HotplugInterface", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_hotplug, NULL, NULL, NULL, BBFDM_BOTH},
+{"HotplugInterfaceForLongPress", &DMREAD, DMT_STRING, get_x_iopsys_eu_button_hotplug_long, NULL, NULL, NULL, BBFDM_BOTH},
+{"MinPressTime", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_button_minpress, set_x_iopsys_eu_button_minpress, NULL, NULL, BBFDM_BOTH},
+{"LongPressTime", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_button_longpress, set_x_iopsys_eu_button_longpress, NULL, NULL, BBFDM_BOTH},
 {0}
 };

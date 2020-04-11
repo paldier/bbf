@@ -13,7 +13,7 @@
 #include "dmentry.h"
 #include "x_iopsys_eu_owsd.h"
 
-static int browseXIopsysEuOwsdListenObj(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browseXIopsysEuOWSDVirtualHost(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *iowsd_listen = NULL, *iowsd_listen_last = NULL;
 	struct dmmap_dup *p;
@@ -69,9 +69,9 @@ static int set_x_iopsys_eu_owsd_global_redirect(char *refparam, struct dmctx *ct
 }
 
 /*************************************************************************************
-**** function related to owsd_listenobj ****
+**** function related to owsd_websocket_interface ****
 **************************************************************************************/
-static int get_x_iopsys_eu_owsd_listenobj_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "port", value);
 	if ((*value)[0] == '\0') {
@@ -80,7 +80,7 @@ static int get_x_iopsys_eu_owsd_listenobj_port(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_listenobj_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
 		case VALUECHECK:
@@ -92,7 +92,7 @@ static int set_x_iopsys_eu_owsd_listenobj_port(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-static int get_x_iopsys_eu_owsd_listenobj_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *iface;
 
@@ -105,7 +105,7 @@ static int get_x_iopsys_eu_owsd_listenobj_interface(char *refparam, struct dmctx
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_listenobj_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker;
 
@@ -123,7 +123,7 @@ static int set_x_iopsys_eu_owsd_listenobj_interface(char *refparam, struct dmctx
 	return 0;
 }
 
-static int get_x_iopsys_eu_owsd_listenobj_ipv6_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_ipv6_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "ipv6", value);
 	if ((*value)[0] != '\0' && (*value)[0] == 'o' && (*value)[1] == 'n' ) {
@@ -134,7 +134,7 @@ static int get_x_iopsys_eu_owsd_listenobj_ipv6_enable(char *refparam, struct dmc
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_listenobj_ipv6_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_ipv6_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -151,7 +151,7 @@ static int set_x_iopsys_eu_owsd_listenobj_ipv6_enable(char *refparam, struct dmc
 	return 0;
 }
 
-static int get_x_iopsys_eu_owsd_listenobj_whitelist_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_whitelist_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "whitelist_interface_as_origin", value);
 	if ((*value)[0] == '\0' ) {
@@ -160,7 +160,7 @@ static int get_x_iopsys_eu_owsd_listenobj_whitelist_interface(char *refparam, st
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_listenobj_whitelist_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_whitelist_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -177,7 +177,7 @@ static int set_x_iopsys_eu_owsd_listenobj_whitelist_interface(char *refparam, st
 	return 0;
 }
 
-static int get_x_iopsys_eu_owsd_listenobj_whitelist_dhcp(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_whitelist_dhcp(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "whitelist_dhcp_domains", value);
 	if ((*value)[0] == '\0') {
@@ -186,7 +186,7 @@ static int get_x_iopsys_eu_owsd_listenobj_whitelist_dhcp(char *refparam, struct 
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_listenobj_whitelist_dhcp(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_whitelist_dhcp(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -203,7 +203,7 @@ static int set_x_iopsys_eu_owsd_listenobj_whitelist_dhcp(char *refparam, struct 
 	return 0;
 }
 
-static int get_x_iopsys_eu_owsd_listenobj_origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_list *val;
 
@@ -215,7 +215,7 @@ static int get_x_iopsys_eu_owsd_listenobj_origin(char *refparam, struct dmctx *c
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_listenobj_origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_origin(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *pch, *spch;
 
@@ -237,7 +237,7 @@ static int set_x_iopsys_eu_owsd_listenobj_origin(char *refparam, struct dmctx *c
 }
 
 ////////////////////////SET AND GET ALIAS/////////////////////////////////
-static int get_x_iopsys_eu_owsd_listenobj_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -247,7 +247,7 @@ static int get_x_iopsys_eu_owsd_listenobj_alias(char *refparam, struct dmctx *ct
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_listenobj_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *dmmap_section = NULL;
 
@@ -335,88 +335,56 @@ static int set_x_iopsys_eu_owsd_ubus_proxy_ca(char *refparam, struct dmctx *ctx,
 	return 0;
 }
 
-static int get_x_iopsys_eu_owsd_ubus_cert(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_certificate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *net_cur_mode = NULL;
-	dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-
-	if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-		dmuci_get_value_by_section_string((struct uci_section *)data, "cert", value);
-	}
+	dmuci_get_value_by_section_string((struct uci_section *)data, "cert", value);
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_ubus_cert(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_certificate(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *net_cur_mode = NULL;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-			if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-				if (strcmp(section_name((struct uci_section *)data), "wan_https")== 0)
-					dmuci_set_value_by_section((struct uci_section *)data, "cert", value);
-			}
+			dmuci_set_value_by_section((struct uci_section *)data, "cert", value);
 			return 0;
 	}
 	return 0;
 }
 
-static int get_x_iopsys_eu_owsd_ubus_key(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_key(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *net_cur_mode= NULL;
+	dmuci_get_value_by_section_string((struct uci_section *)data, "key", value);
 
-	dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-	if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-		dmuci_get_value_by_section_string((struct uci_section *)data, "key", value);
-	}
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_ubus_key(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_key(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *net_cur_mode = NULL;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-			if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-				if(strcmp(section_name((struct uci_section *)data), "wan_https") == 0)
-					dmuci_set_value_by_section((struct uci_section *)data, "key", value);
-			}
+			dmuci_set_value_by_section((struct uci_section *)data, "key", value);
 			return 0;
 	}
 	return 0;
 }
 
-static int get_x_iopsys_eu_owsd_ubus_ca(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_x_iopsys_eu_owsd_virtualhost_ca(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *net_cur_mode = NULL;
-
-	dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-	if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-		dmuci_get_value_by_section_string((struct uci_section *)data, "ca", value);
-	}
+	dmuci_get_value_by_section_string((struct uci_section *)data, "ca", value);
 	return 0;
 }
 
-static int set_x_iopsys_eu_owsd_ubus_ca(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_x_iopsys_eu_owsd_virtualhost_ca(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *net_cur_mode = NULL;
-
 	switch (action) {
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			dmuci_get_option_value_string("netmode", "setup", "curmode", &net_cur_mode);
-			if (strstr(net_cur_mode, "repeater") || strstr(net_cur_mode, "extender")) {
-				if (strcmp(section_name((struct uci_section *)data), "wan_https") == 0)
-					dmuci_set_value_by_section((struct uci_section *)data, "ca", value);
-			}
+			dmuci_set_value_by_section((struct uci_section *)data, "ca", value);
 			return 0;
 	}
 	return 0;
@@ -484,41 +452,41 @@ static int delete_owsd_listen_instance(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-/*** DMROOT.X_IOPSYS_EU_Owsd. ***/
-DMLEAF XIopsysEuOwsdParams[] = {
+/*** DMROOT.X_IOPSYS_EU_OWSD. ***/
+DMLEAF X_IOPSYS_EU_OWSDParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Socket", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_global_sock, set_x_iopsys_eu_owsd_global_sock, NULL, NULL, BBFDM_BOTH},
-{"Redirect", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_global_redirect, set_x_iopsys_eu_owsd_global_redirect, NULL, NULL, BBFDM_BOTH},
+{"UnixSocket", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_global_sock, set_x_iopsys_eu_owsd_global_sock, NULL, NULL, BBFDM_BOTH},
+{"URLRedirect", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_global_redirect, set_x_iopsys_eu_owsd_global_redirect, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMOBJ XIopsysEuOwsdObj[] = {
+DMOBJ X_IOPSYS_EU_OWSDObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{CUSTOM_PREFIX"UbusProxy", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, UbusProxyParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"ListenObj", &DMWRITE, add_owsd_listen, delete_owsd_listen_instance, NULL, browseXIopsysEuOwsdListenObj, NULL, NULL, NULL, NULL, X_IOPSYS_EU_ListenObjParams, NULL, BBFDM_BOTH},
+{"UbusProxy", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, UbusProxyParams, NULL, BBFDM_BOTH},
+{"VirtualHost", &DMWRITE, add_owsd_listen, delete_owsd_listen_instance, NULL, browseXIopsysEuOWSDVirtualHost, NULL, NULL, NULL, NULL, VirtualHostParams, NULL, BBFDM_BOTH},
 {0}
 };
 
 DMLEAF UbusProxyParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Enable", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_owsd_ubus_proxy_enable, set_x_iopsys_eu_owsd_ubus_proxy_enable, NULL, NULL, BBFDM_BOTH},
-{"UbusProxyCert", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_ubus_proxy_cert, set_x_iopsys_eu_owsd_ubus_proxy_cert, NULL, NULL, BBFDM_BOTH},
-{"UbusProxyKey", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_ubus_proxy_key, set_x_iopsys_eu_owsd_ubus_proxy_key, NULL, NULL, BBFDM_BOTH},
-{"UbusProxyCa", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_ubus_proxy_ca, set_x_iopsys_eu_owsd_ubus_proxy_ca, NULL, NULL, BBFDM_BOTH},
+{"PeerCertificate", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_ubus_proxy_cert, set_x_iopsys_eu_owsd_ubus_proxy_cert, NULL, NULL, BBFDM_BOTH},
+{"PeerKey", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_ubus_proxy_key, set_x_iopsys_eu_owsd_ubus_proxy_key, NULL, NULL, BBFDM_BOTH},
+{"PeerCA", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_ubus_proxy_ca, set_x_iopsys_eu_owsd_ubus_proxy_ca, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF X_IOPSYS_EU_ListenObjParams[] = {
+DMLEAF VirtualHostParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Alias", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_listenobj_alias, set_x_iopsys_eu_owsd_listenobj_alias, NULL, NULL, BBFDM_BOTH},
-{"Port", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_owsd_listenobj_port, set_x_iopsys_eu_owsd_listenobj_port, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_listenobj_interface, set_x_iopsys_eu_owsd_listenobj_interface, NULL, NULL, BBFDM_BOTH},
-{"Ipv6", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_owsd_listenobj_ipv6_enable, set_x_iopsys_eu_owsd_listenobj_ipv6_enable, NULL, NULL, BBFDM_BOTH},
-{"Whitelist_interface", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_owsd_listenobj_whitelist_interface, set_x_iopsys_eu_owsd_listenobj_whitelist_interface, NULL, NULL, BBFDM_BOTH},
-{"Whitelist_dhcp", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_owsd_listenobj_whitelist_dhcp, set_x_iopsys_eu_owsd_listenobj_whitelist_dhcp, NULL, NULL, BBFDM_BOTH},
-{"Origin", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_listenobj_origin, set_x_iopsys_eu_owsd_listenobj_origin, NULL, NULL, BBFDM_BOTH},
-{"UbusCert", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_ubus_cert, set_x_iopsys_eu_owsd_ubus_cert, NULL, NULL, BBFDM_BOTH},
-{"UbusKey", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_ubus_key, set_x_iopsys_eu_owsd_ubus_key, NULL, NULL, BBFDM_BOTH},
-{"UbusCa", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_ubus_ca, set_x_iopsys_eu_owsd_ubus_ca, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_virtualhost_alias, set_x_iopsys_eu_owsd_virtualhost_alias, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_virtualhost_interface, set_x_iopsys_eu_owsd_virtualhost_interface, NULL, NULL, BBFDM_BOTH},
+{"Port", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_owsd_virtualhost_port, set_x_iopsys_eu_owsd_virtualhost_port, NULL, NULL, BBFDM_BOTH},
+{"IPv6Enable", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_owsd_virtualhost_ipv6_enable, set_x_iopsys_eu_owsd_virtualhost_ipv6_enable, NULL, NULL, BBFDM_BOTH},
+{"AllowInterfaceIPAddressAsOrigin", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_owsd_virtualhost_whitelist_interface, set_x_iopsys_eu_owsd_virtualhost_whitelist_interface, NULL, NULL, BBFDM_BOTH},
+{"AllowDHCPDomainsAsOrigin", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_owsd_virtualhost_whitelist_dhcp, set_x_iopsys_eu_owsd_virtualhost_whitelist_dhcp, NULL, NULL, BBFDM_BOTH},
+{"AllowedOrigins", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_virtualhost_origin, set_x_iopsys_eu_owsd_virtualhost_origin, NULL, NULL, BBFDM_BOTH},
+{"Certificate", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_virtualhost_certificate, set_x_iopsys_eu_owsd_virtualhost_certificate, NULL, NULL, BBFDM_BOTH},
+{"Key", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_virtualhost_key, set_x_iopsys_eu_owsd_virtualhost_key, NULL, NULL, BBFDM_BOTH},
+{"CA", &DMWRITE, DMT_STRING, get_x_iopsys_eu_owsd_virtualhost_ca, set_x_iopsys_eu_owsd_virtualhost_ca, NULL, NULL, BBFDM_BOTH},
 {0}
 };

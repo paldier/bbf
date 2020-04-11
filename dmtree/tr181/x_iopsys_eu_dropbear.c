@@ -417,11 +417,11 @@ DMLEAF X_IOPSYS_EU_DropbearParams[] = {
 {"RootLogin", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_root_login, set_x_iopsys_eu_dropbear_root_login, NULL, NULL, BBFDM_BOTH},
 {"GatewayPorts", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_gateway_ports, set_x_iopsys_eu_dropbear_gateway_ports, NULL, NULL, BBFDM_BOTH},
 {"Interface", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_interface, set_x_iopsys_eu_dropbear_interface, NULL, NULL, BBFDM_BOTH},
-{"rsakeyfile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_rsakeyfile, set_x_iopsys_eu_dropbear_rsakeyfile, NULL, NULL, BBFDM_BOTH},
-{"dsskeyfile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_dsskeyfile, set_x_iopsys_eu_dropbear_dsskeyfile, NULL, NULL, BBFDM_BOTH},
+{"RSAKeyFile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_rsakeyfile, set_x_iopsys_eu_dropbear_rsakeyfile, NULL, NULL, BBFDM_BOTH},
+{"DSSKeyFile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_dsskeyfile, set_x_iopsys_eu_dropbear_dsskeyfile, NULL, NULL, BBFDM_BOTH},
 {"SSHKeepAlive", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_dropbear_ssh_keepalive, set_x_iopsys_eu_dropbear_ssh_keepalive, NULL, NULL, BBFDM_BOTH},
 {"IdleTimeout", &DMWRITE, DMT_UNINT, get_x_iopsys_eu_dropbear_idle_timeout, set_x_iopsys_eu_dropbear_idle_timeout, NULL, NULL, BBFDM_BOTH},
-{"verbose", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_verbose, set_x_iopsys_eu_dropbear_verbose, NULL, NULL, BBFDM_BOTH},
+{"Verbose", &DMWRITE, DMT_BOOL, get_x_iopsys_eu_dropbear_verbose, set_x_iopsys_eu_dropbear_verbose, NULL, NULL, BBFDM_BOTH},
 {"BannerFile", &DMWRITE, DMT_STRING, get_x_iopsys_eu_dropbear_banner_file, set_x_iopsys_eu_dropbear_banner_file, NULL, NULL, BBFDM_BOTH},
 {0}
 };

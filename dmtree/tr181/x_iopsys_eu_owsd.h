@@ -15,9 +15,9 @@
 
 #include <libbbf_api/dmcommon.h>
 
-extern DMLEAF XIopsysEuOwsdParams[];
-extern DMOBJ XIopsysEuOwsdObj[];
-extern DMLEAF X_IOPSYS_EU_ListenObjParams[];
+extern DMLEAF X_IOPSYS_EU_OWSDParams[];
+extern DMOBJ X_IOPSYS_EU_OWSDObj[];
+extern DMLEAF VirtualHostParams[];
 extern DMLEAF UbusProxyParams[];
 
 #endif

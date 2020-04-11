@@ -373,7 +373,7 @@ DMLEAF tDeviceInfoParams[] = {
 {"DeviceLog", &DMREAD, DMT_STRING, get_device_devicelog, NULL, NULL, NULL, BBFDM_BOTH},
 {"SpecVersion", &DMREAD, DMT_STRING, get_device_specversion, NULL,  &DMFINFRM, NULL, BBFDM_BOTH},
 {"ProvisioningCode", &DMWRITE, DMT_STRING, get_device_provisioningcode, set_device_provisioningcode, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
-{CUSTOM_PREFIX"BaseMACAddr", &DMREAD, DMT_STRING, os__get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"BaseMACAddress", &DMREAD, DMT_STRING, os__get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

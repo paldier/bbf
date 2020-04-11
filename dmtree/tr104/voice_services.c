@@ -1586,7 +1586,7 @@ static int set_line_tel_line(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
-static int get_line_confort_noise_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_line_comfort_noise_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct tel_args *telargs = (struct tel_args *)data;
 
@@ -1594,7 +1594,7 @@ static int get_line_confort_noise_enable(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-static int set_line_confort_noise_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_line_comfort_noise_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 	struct tel_args *telargs = (struct tel_args *)data;
@@ -2478,7 +2478,7 @@ DMLEAF tServicesVoiceServiceVoiceProfileLineParams[] = {
 {"CallState", &DMREAD, DMT_STRING, get_voice_profile_line_callstate, set_line_alias, NULL, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"LineProfile", &DMWRITE, DMT_STRING, get_line_line_profile, set_line_line_profile, NULL, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"TELLine", &DMWRITE, DMT_STRING, get_line_tel_line, set_line_tel_line, NULL, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"Confort_Noise_Enable", &DMWRITE, DMT_BOOL, get_line_confort_noise_enable, set_line_confort_noise_enable, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"ComfortNoiseEnable", &DMWRITE, DMT_BOOL, get_line_comfort_noise_enable, set_line_comfort_noise_enable, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

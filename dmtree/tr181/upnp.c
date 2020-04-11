@@ -842,8 +842,8 @@ DMOBJ tUPnPDeviceObj[] = {
 
 DMLEAF tUPnPDeviceParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{CUSTOM_PREFIX"Status", &DMREAD, DMT_STRING, get_upnp_status, NULL, NULL, NULL, BBFDM_BOTH},
 {"Enable", &DMWRITE, DMT_BOOL, get_UPnPDevice_Enable, set_UPnPDevice_Enable, NULL, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"Status", &DMREAD, DMT_STRING, get_upnp_status, NULL, NULL, NULL, BBFDM_BOTH},
 {"UPnPMediaServer", &DMWRITE, DMT_BOOL, get_UPnPDevice_UPnPMediaServer, set_UPnPDevice_UPnPMediaServer, NULL, NULL, BBFDM_BOTH},
 //{"UPnPMediaRenderer", &DMWRITE, DMT_BOOL, get_UPnPDevice_UPnPMediaRenderer, set_UPnPDevice_UPnPMediaRenderer, NULL, NULL, BBFDM_BOTH},
 //{"UPnPWLANAccessPoint", &DMWRITE, DMT_BOOL, get_UPnPDevice_UPnPWLANAccessPoint, set_UPnPDevice_UPnPWLANAccessPoint, NULL, NULL, BBFDM_BOTH},

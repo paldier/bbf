@@ -76,11 +76,11 @@ static int set_remote_log_level(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-/*** DMROOT.X_IOPSYS_EU_SyslogCfg. ***/
-DMLEAF tSe_SyslogCfgParam[] = {
+/*** DMROOT.X_IOPSYS_EU_Syslog. ***/
+DMLEAF tSe_SyslogParam[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"ServerIPAddress", &DMWRITE, DMT_STRING, get_server_ip_address, set_server_ip_address, NULL, NULL, BBFDM_BOTH},
-{"ServerPortNumber", &DMWRITE, DMT_UNINT, get_server_port_number, set_server_port_number, NULL, NULL, BBFDM_BOTH},
-{"RemoteLogLevel", &DMWRITE, DMT_UNINT, get_remote_log_level, set_remote_log_level, NULL, NULL, BBFDM_BOTH},
+{"ServerPort", &DMWRITE, DMT_UNINT, get_server_port_number, set_server_port_number, NULL, NULL, BBFDM_BOTH},
+{"ConsoleLogLevel", &DMWRITE, DMT_UNINT, get_remote_log_level, set_remote_log_level, NULL, NULL, BBFDM_BOTH},
 {0}
 };

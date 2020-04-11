@@ -14,6 +14,6 @@
 
 #include <libbbf_api/dmcommon.h>
 
-extern DMLEAF tSe_SyslogCfgParam[];
+extern DMLEAF tSe_SyslogParam[];
 
 #endif

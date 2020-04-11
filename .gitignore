@@ -18,6 +18,8 @@ compile
 config.log
 config.rpath
 config.status
+config.guess
+config.sub
 configure
 depcomp
 install-sh
@@ -27,6 +29,9 @@ missing
 .dirstamp
 .git_update
 .pkgdir/
+libtool
+ltmain.sh
+COPYING
 json/tr*/
 json/tr*.xls
 tools/tr*/

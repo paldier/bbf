@@ -123,13 +123,13 @@ def objhasparam (dmobject):
 
 def cprinttopfile (fp, filename):
 	print >> fp, "/*"
-	print >> fp, "*      This program is free software: you can redistribute it and/or modify"
-	print >> fp, "*      it under the terms of the GNU General Public License as published by"
-	print >> fp, "*      the Free Software Foundation, either version 2 of the License, or"
-	print >> fp, "*      (at your option) any later version."
+	print >> fp, "* Copyright (C) 2020 iopsys Software Solutions AB
 	print >> fp, "*"
-	print >> fp, "*      Copyright (C) 2019 iopsys Software Solutions AB"
-	print >> fp, "*		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>"
+	print >> fp, "* This program is free software; you can redistribute it and/or modify"
+	print >> fp, "* it under the terms of the GNU Lesser General Public License version 2.1"
+	print >> fp, "* as published by the Free Software Foundation"
+	print >> fp, "*"
+	print >> fp, "*		Author: <Name> <Surname> <name.surname@iopsys.eu>"
 	print >> fp, "*/"
 	print >> fp, ""
 	print >> fp, "#include \"dmbbf.h\""
@@ -139,13 +139,13 @@ def cprinttopfile (fp, filename):
 
 def hprinttopfile (fp, filename):
 	print >> fp, "/*"
-	print >> fp, "*      This program is free software: you can redistribute it and/or modify"
-	print >> fp, "*      it under the terms of the GNU General Public License as published by"
-	print >> fp, "*      the Free Software Foundation, either version 2 of the License, or"
-	print >> fp, "*      (at your option) any later version."
+	print >> fp, "* Copyright (C) 2020 iopsys Software Solutions AB
 	print >> fp, "*"
-	print >> fp, "*      Copyright (C) 2019 iopsys Software Solutions AB"
-	print >> fp, "*		Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>"
+	print >> fp, "* This program is free software; you can redistribute it and/or modify"
+	print >> fp, "* it under the terms of the GNU Lesser General Public License version 2.1"
+	print >> fp, "* as published by the Free Software Foundation"
+	print >> fp, "*"
+	print >> fp, "*		Author: <Name> <Surname> <name.surname@iopsys.eu>"
 	print >> fp, "*/"
 	print >> fp, ""
 	print >> fp, "#ifndef __%s_H" % filename.upper()

@@ -99,45 +99,6 @@ static int get_device_info_uptime(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-static int get_device_devicelog(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = "";
-	int i = 0, nbrlines = 4;
-	char buff[512], *msg = NULL;
-	int len = klogctl(3 , buff, sizeof(buff) - 1); /* read ring buffer */
-	if (len <= 0)
-		return 0;
-	buff[len] = '\0';
-	char *p = buff;
-	while (*p) {
-		if (*p == '<') {
-			*p = '(';
-			if (p == buff || *(p-1) == '\n') {
-				if(msg == NULL) msg = p;
-				i++;
-				if (i == nbrlines) {
-					*(p-1) = '\0';
-					break;
-				}
-			}
-		}
-		else if (*p == '>')
-			*p = ')';
-		p++;
-	}
-	if (msg == NULL)
-		*value = "";
-	else
-		*value = dmstrdup(msg);// MEM WILL BE FREED IN DMMEMCLEAN
-	return 0;
-}
-
-static int get_device_specversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = "1.0";
-	return 0;
-}
-
 /*#Device.DeviceInfo.ProvisioningCode!UCI:cwmp/cwmp,cpe/provisioning_code*/
 static int get_device_provisioningcode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -370,8 +331,6 @@ DMLEAF tDeviceInfoParams[] = {
 {"HardwareVersion", &DMREAD, DMT_STRING, os__get_device_hardwareversion, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"SoftwareVersion", &DMREAD, DMT_STRING, get_device_softwareversion, NULL, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
 {"UpTime", &DMREAD, DMT_UNINT, get_device_info_uptime, NULL, NULL, NULL, BBFDM_BOTH},
-{"DeviceLog", &DMREAD, DMT_STRING, get_device_devicelog, NULL, NULL, NULL, BBFDM_BOTH},
-{"SpecVersion", &DMREAD, DMT_STRING, get_device_specversion, NULL,  &DMFINFRM, NULL, BBFDM_BOTH},
 {"ProvisioningCode", &DMWRITE, DMT_STRING, get_device_provisioningcode, set_device_provisioningcode, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
 {CUSTOM_PREFIX"BaseMACAddress", &DMREAD, DMT_STRING, os__get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
 {0}

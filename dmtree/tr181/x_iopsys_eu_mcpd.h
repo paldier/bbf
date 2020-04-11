@@ -9,11 +9,11 @@
  *
  */ 
 
-#ifndef __SE_IGMP_H
-#define __SE_IGMP_H
+#ifndef __EU_MCPD_H
+#define __EU_MCPD_H
 
 #include <libbbf_api/dmcommon.h>
 
-extern DMLEAF tSe_IgmpParam[];
+extern DMLEAF X_IOPSYS_EU_MCPDParams[];
 
 #endif

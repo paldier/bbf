@@ -14,7 +14,6 @@
 #include "managementserver.h"
 #include "times.h"
 #include "upnp.h"
-#include "x_iopsys_eu_mcpd.h"
 #include "x_iopsys_eu_power_mgmt.h"
 #include "x_iopsys_eu_syslog.h"
 #include "softwaremodules.h"
@@ -124,7 +123,6 @@ UPNP_SUPPORTED_DM tUPNPSupportedDM_181[] = {
 {"/BBF/Time/", DMROOT_URI_181, DMROOT_URL_181, "Time from "DMROOT_DESC_181, ""},
 {"/BBF/UPnP/", DMROOT_URI_181, DMROOT_URL_181, "UPnP from "DMROOT_DESC_181, ""},
 {"/BBF/VoiceService/", "urn:broadband-forum-org:wt-104-2-0-0", "https://www.broadband-forum.org/cwmp/tr-104-2-0-0.html", "TR-104 Voice:2 Service Object definition", ""},
-{"/BBF/"CUSTOM_PREFIX"MCPD/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for MulticastProxy", ""},
 {"/BBF/"CUSTOM_PREFIX"PowerManagement/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for PowerManagement", ""},
 {"/BBF/"CUSTOM_PREFIX"Syslog/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for Syslog", ""},
 {"/BBF/SoftwareModules/", DMROOT_URI_181, DMROOT_URL_181, "SoftwareModules from "DMROOT_DESC_181, ""},

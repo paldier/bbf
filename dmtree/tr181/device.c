@@ -15,7 +15,6 @@
 #include "managementserver.h"
 #include "times.h"
 #include "upnp.h"
-#include "x_iopsys_eu_mcpd.h"
 #include "x_iopsys_eu_power_mgmt.h"
 #include "x_iopsys_eu_syslog.h"
 #include "xmpp.h"
@@ -78,7 +77,6 @@ DMOBJ tRoot_181_Obj[] = {
 #ifdef BBF_TR104
 {"Services", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, tServicesObj, NULL, NULL, BBFDM_BOTH},
 #endif
-{CUSTOM_PREFIX"MCPD", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, NULL, X_IOPSYS_EU_MCPDParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"PowerManagement", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, NULL, tSe_PowerManagementParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Syslog", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, NULL, tSe_SyslogParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"OWSD", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, X_IOPSYS_EU_OWSDObj, X_IOPSYS_EU_OWSDParams, NULL, BBFDM_BOTH},

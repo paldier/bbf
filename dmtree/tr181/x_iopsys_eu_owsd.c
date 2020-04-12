@@ -242,8 +242,7 @@ static int get_x_iopsys_eu_owsd_virtualhost_alias(char *refparam, struct dmctx *
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "olistenalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "olistenalias", value);
 	return 0;
 }
 
@@ -253,6 +252,8 @@ static int set_x_iopsys_eu_owsd_virtualhost_alias(char *refparam, struct dmctx *
 
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name((struct uci_section *)data), &dmmap_section);
@@ -273,6 +274,8 @@ static int set_x_iopsys_eu_owsd_ubus_proxy_enable(char *refparam, struct dmctx *
 {
 	switch (action) {
 		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
 			return 0;
 		case VALUESET:
 			dmuci_set_value("owsd", "ubusproxy", "enable", value);

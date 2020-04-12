@@ -14,7 +14,6 @@
 #include "managementserver.h"
 #include "times.h"
 #include "upnp.h"
-#include "x_iopsys_eu_power_mgmt.h"
 #include "x_iopsys_eu_syslog.h"
 #include "softwaremodules.h"
 #include "xmpp.h"
@@ -91,8 +90,6 @@ DMOBJ tRoot181ObjUPNPBBF[] = {
 #if BBF_TR104
 {"VoiceService", &DMREAD, NULL, NULL, NULL, browseVoiceServiceInst, NULL, NULL, tServicesVoiceServiceObj, tServicesVoiceServiceParams, NULL, BBFDM_BOTH},
 #endif
-{CUSTOM_PREFIX"MCPD", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, X_IOPSYS_EU_MCPDParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"PowerManagement", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_PowerManagementParam, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Syslog", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,NULL, tSe_SyslogParam, NULL, BBFDM_BOTH},
 {"SoftwareModules", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,tSoftwareModulesObj, NULL, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"OWSD", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE,X_IOPSYS_EU_OWSDObj, X_IOPSYS_EU_OWSDParams, NULL, BBFDM_BOTH},
@@ -123,7 +120,6 @@ UPNP_SUPPORTED_DM tUPNPSupportedDM_181[] = {
 {"/BBF/Time/", DMROOT_URI_181, DMROOT_URL_181, "Time from "DMROOT_DESC_181, ""},
 {"/BBF/UPnP/", DMROOT_URI_181, DMROOT_URL_181, "UPnP from "DMROOT_DESC_181, ""},
 {"/BBF/VoiceService/", "urn:broadband-forum-org:wt-104-2-0-0", "https://www.broadband-forum.org/cwmp/tr-104-2-0-0.html", "TR-104 Voice:2 Service Object definition", ""},
-{"/BBF/"CUSTOM_PREFIX"PowerManagement/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for PowerManagement", ""},
 {"/BBF/"CUSTOM_PREFIX"Syslog/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for Syslog", ""},
 {"/BBF/SoftwareModules/", DMROOT_URI_181, DMROOT_URL_181, "SoftwareModules from "DMROOT_DESC_181, ""},
 {"/BBF/"CUSTOM_PREFIX"OWSD/", "urn:iopsys-eu:na", "https://www.iopsys.eu/", "iopsys extension for OWSD", ""},

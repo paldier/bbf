@@ -663,19 +663,21 @@ static int get_DynamicDNSClientHostname_LastUpdate(char *refparam, struct dmctx 
 
 	fp = fopen(path, "r");
 	if (fp != NULL) {
-		fgets(buf, 16, fp);
-		pch = strtok_r(buf, "\n", &spch);
+		if (fgets(buf, 16, fp) != NULL) {
+			pch = strtok_r(buf, "\n", &spch);
+			last_time = (pch) ? dmstrdup(pch) : "0";
+		}
 		fclose(fp);
-		last_time = dmstrdup(pch);
 	} else
 		last_time = "0";
 
 	fp = fopen("/proc/uptime", "r");
 	if (fp != NULL) {
-		fgets(buf, 16, fp);
-		pch = strtok_r(buf, ".", &spch);
+		if (fgets(buf, 16, fp) != NULL) {
+			pch = strtok_r(buf, ".", &spch);
+			uptime = (pch) ? dmstrdup(pch) : "0";
+		}
 		fclose(fp);
-		uptime = dmstrdup(pch);
 	} else
 		uptime = "0";
 

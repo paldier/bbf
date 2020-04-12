@@ -1780,7 +1780,7 @@ static struct uci_section *update_dmmap_network_ipv6(char *curr_inst, char *sect
 static int browseIfaceIPv6Inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *s;
-	char *ipv6_int = NULL, *ipv6_int_last = NULL, *ipv6addr = "", *ipv6mask = "", *ipv6_preferred = "", *ipv6_valid = "", buf[4]="";
+	char *ipv6_int = NULL, *ipv6_int_last = NULL, *ipv6addr = "", *ipv6mask = "", *ipv6_preferred = "", *ipv6_valid = "", buf[16]="";
 	struct ipv6_args curr_ipv6_args = {0};
 	json_object *res, *jobj, *jobj1;
 	int entries = 0;
@@ -1853,7 +1853,7 @@ static struct uci_section *update_dmmap_network_ipv6prefix(char *curr_inst, char
 static int browseIfaceIPv6PrefixInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *s;
-	char *ipv6prefix_int = NULL, *ipv6prefix_int_last = NULL, *ipv6prefixaddr = "", *ipv6prefixmask = "", *ipv6prefix_preferred = "", *ipv6prefix_valid = "", buf[4] = "";
+	char *ipv6prefix_int = NULL, *ipv6prefix_int_last = NULL, *ipv6prefixaddr = "", *ipv6prefixmask = "", *ipv6prefix_preferred = "", *ipv6prefix_valid = "", buf[16] = "";
 	struct ipv6prefix_args curr_ipv6prefix_args = {0};
 	json_object *res, *jobj;
 	int entries = 0;

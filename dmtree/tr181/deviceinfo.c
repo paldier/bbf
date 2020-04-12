@@ -89,11 +89,11 @@ static int get_device_info_uptime(char *refparam, struct dmctx *ctx, void *data,
 	*value = "0";
 
 	fp = fopen(UPTIME, "r");
-	if (fp != NULL) {		
-		fgets(buf, 64, fp);
-		pch = strtok_r(buf, ".", &spch);
-		if (pch)
-			*value = dmstrdup(pch); // MEM WILL BE FREED IN DMMEMCLEAN
+	if (fp != NULL) {
+		if (fgets(buf, 64, fp) != NULL) {
+			pch = strtok_r(buf, ".", &spch);
+			*value = (pch) ? dmstrdup(pch) : "0";
+		}
 		fclose(fp);
 	}
 	return 0;

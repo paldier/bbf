@@ -588,7 +588,7 @@ void update_section_list(char *config, char *section, char *option, int number, 
 
 int wan_remove_dev_interface(struct uci_section *interface_setion, char *dev)
 {
-	char *ifname, new_ifname[64], *p, *pch, *spch;
+	char *ifname, new_ifname[64], *p, *pch = NULL, *spch = NULL;
 	new_ifname[0] = '\0';
 	p = new_ifname;
 	dmuci_get_value_by_section_string(interface_setion, "ifname", &ifname);
@@ -1563,7 +1563,7 @@ void add_elt_to_str_list(char **str_list, char *elt)
 
 void remove_elt_from_str_list(char **iface_list, char *ifname)
 {
-	char *list = NULL, *tmp = NULL, *pch, *spch;
+	char *list = NULL, *tmp = NULL, *pch = NULL, *spch = NULL;
 
 	if (*iface_list == NULL || strlen(*iface_list) == 0)
 		return;

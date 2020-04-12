@@ -60,7 +60,7 @@ static int browseSoftwareModulesExecEnvInst(struct dmctx *dmctx, DMNODE *parent_
 static int browseSoftwareModulesDeploymentUnitInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	char *idx, *idx_last = NULL, buf[5];
+	char *idx, *idx_last = NULL, buf[16];
 	int id = 0, j = 0, i, incr;
 
 	for (i = 0;; i += 100) {
@@ -118,7 +118,7 @@ static int get_SoftwareModules_DeploymentUnitNumberOfEntries(char *refparam, str
 {
 	json_object *res = NULL, *deployment_unit = NULL;
 	size_t nbre_du = 0, total_du = 0;
-	char buf[5];
+	char buf[16];
 	int i;
 
 	for (i = 0;; i += 100) {
@@ -651,7 +651,7 @@ static int get_SoftwareModulesExecutionUnit_MemoryInUse(char *refparam, struct d
 static int get_SoftwareModulesExecutionUnit_References(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	char *environment, *name, *curr_environment, *curr_name, buf[5];
+	char *environment, *name, *curr_environment, *curr_name, buf[16];
 	int j = 0, env = 0, i, incr;
 
 	curr_name = dmjson_get_value((json_object *)data, 1, "name");
@@ -752,7 +752,7 @@ void get_deployment_unit_name_version(char *uuid, char **name, char **version, c
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
 	int j = 0, i, incr;
-	char *cur_uuid, buf[5];
+	char *cur_uuid, buf[16];
 
 	for (i = 0;; i += 100) {
 		snprintf(buf, sizeof(buf), "%d", i);
@@ -779,7 +779,7 @@ char *get_softwaremodules_uuid(char *url)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
 	int j = 0, i, incr;
-	char *cur_url, *uuid = "", buf[5];
+	char *cur_url, *uuid = "", buf[16];
 
 	for (i = 0;; i += 100) {
 		snprintf(buf, sizeof(buf), "%d", i);
@@ -805,7 +805,7 @@ char *get_softwaremodules_url(char *uuid)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
 	int j = 0, i, incr;
-	char *cur_uuid, *url = "", buf[5];
+	char *cur_uuid, *url = "", buf[16];
 
 	for (i = 0;; i += 100) {
 		snprintf(buf, sizeof(buf), "%d", i);

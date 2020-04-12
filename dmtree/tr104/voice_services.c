@@ -285,7 +285,7 @@ static int get_cfg_sipidx(void)
 static int add_profile_object(char *refparam, struct dmctx *ctx, void *data, char **instancepara)
 {
 	struct uci_section *dmmap_voice_section = NULL;
-	char sname[8], account[16], *instance, *v;
+	char sname[16], account[32], *instance, *v;
 	
 	check_create_dmmap_package("dmmap_voice_client");
 	int sipidx = get_cfg_sipidx();
@@ -418,7 +418,7 @@ static char *update_vp_line_instance(struct uci_section *tel_s, char *sipx)
 {
 	struct uci_section *s = NULL, *dmmap_section = NULL, *dmmap_dup = NULL;
 	int last_instance = 0, i_instance;
-	char *instance, buf[8];
+	char *instance, buf[16];
 
 	get_dmmap_section_of_config_section("dmmap_voice_client", "tel_line", section_name(tel_s), &dmmap_section);
 	if (dmmap_section)
@@ -1748,7 +1748,7 @@ static int get_line_sip_uri(char *refparam, struct dmctx *ctx, void *data, char 
 
 static int set_line_sip_uri(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch, *spch, *str1;
+	char *pch, *spch = NULL, *str1;
 	struct tel_args *telargs = (struct tel_args *)data;
 	
   switch (action) {

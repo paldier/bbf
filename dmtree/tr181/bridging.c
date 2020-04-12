@@ -1175,7 +1175,7 @@ static int add_br_vlanport(char *refparam, struct dmctx *ctx, void *data, char *
 
 	/* To add Bridge.VLANPort object from the management methods. */
 	struct bridging_args *br_args = (struct bridging_args *)data;
-	char *br_ifname_list, *br_ifname_dup, *pch, *spch;
+	char *br_ifname_list, *br_ifname_dup, *pch = NULL, *spch = NULL;
 
 	/* Check if the section name has tagged ifname or not. */
 	dmuci_get_value_by_section_string(br_args->bridge_sec, "ifname", &br_ifname_list);
@@ -2050,7 +2050,7 @@ static int browseBridgeInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev
 
 static int browseBridgePortInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance){
 	struct uci_section *new_port = NULL, *ss_atm = NULL, *ss_ptm = NULL;
-	char *port = NULL, *port_last = NULL, *ifname_dup = NULL, *pch, *spch, *is_dmmap, *deviceatm, *deviceptm, *atm_device, *ptm_device;
+	char *port = NULL, *port_last = NULL, *ifname_dup = NULL, *pch = NULL, *spch = NULL, *is_dmmap, *deviceatm, *deviceptm, *atm_device, *ptm_device;
 	bool find_max = true, found = false;
 	struct bridging_port_args curr_bridging_port_args = {0};
 	struct dmmap_dup *p = NULL;
@@ -2060,7 +2060,7 @@ static int browseBridgePortInst(struct dmctx *dmctx, DMNODE *parent_node, void *
 	update_section_list_bbfdm("dmmap_bridge_port","bridge_port", "bridge_key", 1, ((struct bridging_args *)prev_data)->br_key, "mg_port", "true", "bridge_port_instance", "1");
 	uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", ((struct bridging_args *)prev_data)->br_key, new_port) {
 		dmuci_get_value_by_section_string(new_port, "is_dmmap", &is_dmmap);
-		if(strcmp(is_dmmap, "false") !=0 ) {
+		if (strcmp(is_dmmap, "false") != 0) {
 			init_bridging_port_args(&curr_bridging_port_args, new_port, ((struct bridging_args *)prev_data)->bridge_sec, false, "");
 			port = handle_update_instance(2, dmctx, &port_last, update_instance_alias_bbfdm, 5, new_port, "bridge_port_instance", "bridge_port_alias",  &find_max, ((struct bridging_args *)prev_data)->br_key);
 			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_bridging_port_args, port) == DM_STOP)
@@ -2198,7 +2198,7 @@ static int browseBridgeVlanPortInst(struct dmctx *dmctx, DMNODE *parent_node, vo
 {
 	int cnt = 1;
 	char *vlan;
-	char *br_ifname_list, *br_ifname_dup, *pch, *spch;
+	char *br_ifname_list, *br_ifname_dup, *pch = NULL, *spch = NULL;
 	struct bridging_vlan_args curr_bridging_vlan_args = {0};
 	struct bridging_args *br_args = (struct bridging_args *)prev_data;
 	struct uci_section *sec = NULL;

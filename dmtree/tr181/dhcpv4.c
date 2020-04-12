@@ -945,7 +945,7 @@ static int get_dhcp_reserved_addresses(char *refparam, struct dmctx *ctx, void *
 static int set_dhcp_reserved_addresses(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s = NULL, *dhcp_section = NULL;
-	char *min, *max, *val, *local_value, *pch, *spch;
+	char *min, *max, *val, *local_value, *pch, *spch = NULL;
 	unsigned int n_min, n_max, n_ip, ipexist= 0;
 
 	switch (action) {
@@ -1057,7 +1057,7 @@ static int set_dhcp_iprouters(char *refparam, struct dmctx *ctx, void *data, cha
 static int get_dhcp_leasetime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	int mtime = 0;
-	char *ltime = "", *pch, *spch, *ltime_ini, *tmp, *tmp_ini;
+	char *ltime = "", *pch, *spch = NULL, *ltime_ini, *tmp, *tmp_ini;
 	struct uci_section *s = NULL;
 
 	uci_foreach_option_eq("dhcp", "dhcp", "interface", ((struct dhcp_args *)data)->interface, s) {
@@ -1722,7 +1722,7 @@ static int get_DHCPv4ClientSentOption_Tag(char *refparam, struct dmctx *ctx, voi
 
 static int set_DHCPv4ClientSentOption_Tag(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *pch, *spch, *list, *v, *opttagvalue, **sendopts, *oldopttagvalue;
+	char *pch, *spch = NULL, *list, *v, *opttagvalue, **sendopts, *oldopttagvalue;
 	size_t length;
 
 	switch (action)	{

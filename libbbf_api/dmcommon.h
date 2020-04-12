@@ -13,6 +13,10 @@
 #ifndef __DM_COMMON_H
 #define __DM_COMMON_H
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>

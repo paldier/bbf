@@ -49,7 +49,7 @@ int check_stats_library_folder(char *library_folder_path)
 {
 	int file_count = 0;
 	unsigned long size = 0, date = 0;
-	char str[64] = "";
+	char str[128] = "";
 
 	if (!get_stats_library_folder(library_folder_path, &file_count, &size, &date))
 		return 0;

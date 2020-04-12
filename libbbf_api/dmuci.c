@@ -187,7 +187,7 @@ int dmuci_get_option_value_list(char *package, char *section, char *option, stru
 	struct uci_element *e;
 	struct uci_ptr ptr = {0};
 	struct uci_list *list;
-	char *pch, *spch, *dup;
+	char *pch = NULL, *spch = NULL, *dup;
 
 	*value = NULL;
 	if (dmuci_lookup_ptr(uci_ctx, &ptr, package, section, option, NULL)) {
@@ -601,7 +601,7 @@ int dmuci_get_value_by_section_list(struct uci_section *s, char *option, struct 
 	struct uci_element *e;
 	struct uci_option *o;
 	struct uci_list *list;
-	char *pch, *spch, *dup;
+	char *pch = NULL, *spch = NULL, *dup;
 
 	*value = NULL;
 	uci_foreach_element(&s->options, e) {

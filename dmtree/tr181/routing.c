@@ -105,16 +105,18 @@ static bool is_cfg_route_active(struct uci_section *s)
 	char line[MAX_PROC_ROUTING];
 	struct proc_routing proute;
 	char *dest, *mask;
+	int lines = 0;
 
 	dmuci_get_value_by_section_string(s, "target", &dest);
 	dmuci_get_value_by_section_string(s, "netmask", &mask);
 
 	fp = fopen(ROUTING_FILE, "r");
 	if (fp != NULL) {
-		fgets(line, MAX_PROC_ROUTING, fp);
 		while (fgets(line, MAX_PROC_ROUTING, fp) != NULL) {
-			if (line[0] == '\n')
+			if (line[0] == '\n' || lines == 0) { /* skip the first line or skip the line if it's empty */
+				lines++;
 				continue;
+			}
 			parse_proc_route_line(line, &proute);
 			if (strcmp(dest, proute.destination) == 0 &&
 				(mask[0] == '\0' || strcmp(mask, proute.mask) == 0)) {
@@ -261,7 +263,7 @@ static int dmmap_synchronizeRoutingRouterIPv4Forwarding(struct dmctx *dmctx, DMN
 	json_object *jobj;
 	FILE* fp = NULL;
 	char *target, *iface, *name, *instance, *str, line[MAX_PROC_ROUTING];
-	int found, last_inst;
+	int found, last_inst, lines;
 
 	check_create_dmmap_package("dmmap_route_forwarding");
 	uci_path_foreach_sections_safe(bbfdm, "dmmap_route_forwarding", "route_dynamic", stmp, s) {
@@ -270,10 +272,12 @@ static int dmmap_synchronizeRoutingRouterIPv4Forwarding(struct dmctx *dmctx, DMN
 		found = 0;
 		fp = fopen(ROUTING_FILE, "r");
 		if ( fp != NULL) {
-			fgets(line, MAX_PROC_ROUTING, fp);
+			lines = 0;
 			while (fgets(line, MAX_PROC_ROUTING, fp) != NULL) {
-				if (line[0] == '\n')
+				if (line[0] == '\n' || lines == 0) { /* skip the first line or skip the line if it's empty */
+					lines++;
 					continue;
+				}
 				parse_proc_route_line(line, &proute);
 				if ((strcmp(iface, proute.iface) == 0) && strcmp(target, proute.destination) == 0) {
 					found = 1;
@@ -288,10 +292,12 @@ static int dmmap_synchronizeRoutingRouterIPv4Forwarding(struct dmctx *dmctx, DMN
 
 	fp = fopen(ROUTING_FILE, "r");
 	if ( fp != NULL) {
-		fgets(line, MAX_PROC_ROUTING, fp);
+		lines = 0;
 		while (fgets(line, MAX_PROC_ROUTING, fp) != NULL) {
-			if (line[0] == '\n')
+			if (line[0] == '\n' || lines == 0) { /* skip the first line or skip the line if it's empty */
+				lines++;
 				continue;
+			}
 			parse_proc_route_line(line, &proute);
 			if (is_proc_route_in_config(&proute))
 				continue;

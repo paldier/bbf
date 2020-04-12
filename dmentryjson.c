@@ -125,7 +125,7 @@ int check_stats_json_folder(char *json_folder_path)
 {
 	int file_count = 0;
 	unsigned long size = 0, date = 0;
-	char str[64] = "";
+	char str[128] = "";
 
 	if (!get_stats_json_folder(json_folder_path, &file_count, &size, &date))
 		return 0;
@@ -140,7 +140,7 @@ int check_stats_json_folder(char *json_folder_path)
 
 static void generate_prefixobj_and_obj_full_obj(char *full_obj, char **prefix_obj, char **obj)
 {
-	char *pch, *pchr, *tmp_obj = NULL, *str = NULL;
+	char *pch = NULL, *pchr = NULL, *tmp_obj = NULL, *str = NULL;
 
 	str = dmstrdupjson(full_obj);
 	for (pch = strtok_r(str, ".", &pchr); pch != NULL; pch = strtok_r(NULL, ".", &pchr)) {
@@ -162,7 +162,7 @@ static void generate_prefixobj_and_obj_full_obj(char *full_obj, char **prefix_ob
 
 static char *generate_obj_without_instance(char *full_obj, bool is_obj)
 {
-	char *pch, *pchr, *tmp_obj = NULL, *str = NULL, *obj = NULL;
+	char *pch = NULL, *pchr = NULL, *tmp_obj = NULL, *str = NULL, *obj = NULL;
 
 	str = dmstrdupjson(full_obj);
 	for (pch = strtok_r(str, ".", &pchr); pch != NULL; pch = strtok_r(NULL, ".", &pchr)) {

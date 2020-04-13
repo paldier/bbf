@@ -360,9 +360,7 @@ static int get_igmps_filter_enable(char *refparam, struct dmctx *ctx, void *data
 		}
 	}
 
-	if (f_enable[0] == '\0') {
-		*value = "false";
-	} else if (strcmp(f_enable, "1") == 0) {
+	if (strcmp(f_enable, "1") == 0) {
 		*value = "true";
 	} else {
 		*value = "false";
@@ -581,7 +579,9 @@ static int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *
 {
 	char val[16], sec_name[16]; // taking 16 here is same as that is size of linux names usually supported
 	char *val1;
+
 	dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &val1);
+
 	// The value is linux interface name so it would be br-wan for example, but the network
 	// section would be wan, so extract wan from br-wan
 	char *tok, *end;
@@ -607,17 +607,17 @@ static int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *
 		dmuci_get_value_by_section_string(dmmap_section, "bridge_instance", &br_inst);
 		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
 			dmuci_get_value_by_section_string(port, "mg_port", &mg);
-			if (strcmp(mg, "true") == 0)
+			if (strcmp(mg, "true") == 0) {
 				snprintf(linker, sizeof(linker), "%s+", section_name(port));
-			else
-				continue;
-
-			adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
-
-			if (*value == NULL)
-				*value = "";
+				adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot,
+							dm_delim, dm_delim, dm_delim), linker, value);
+				break;
+			}
 		}
 	}
+
+	if (*value == NULL)
+		*value = "";
 
 	return 0;
 }

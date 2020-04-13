@@ -587,7 +587,7 @@ static int get_igmp_snooping_interface_val(char *value, char *ifname, size_t s_i
 	/* Find out bridge section name using bridge key. */
 	struct uci_section *s = NULL;
 	char *sec_name;
-	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "interface", "bridge_instance", key, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "interface", "bridge_key", key, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &sec_name);
 		break;
 	}
@@ -674,10 +674,10 @@ static int del_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data
 				if (found) {
 					if (strcmp(upstream, "1") == 0) {
 						dmuci_del_list_value_by_section((struct uci_section *)data,
-								"proxy_interface", if_name);
+								"upstream_interface", if_name);
 					} else {
 						dmuci_del_list_value_by_section((struct uci_section *)data,
-								"snooping_interface", if_name);
+								"downstream_interface", if_name);
 					}
 					break;
 				}
@@ -692,10 +692,10 @@ static int del_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data
 				if (if_name[0] != '\0') {
 					if (strcmp(upstream, "1") == 0) {
 						dmuci_del_list_value_by_section((struct uci_section *)data,
-								"proxy_interface", if_name);
+								"upstream_interface", if_name);
 					} else {
 						dmuci_del_list_value_by_section((struct uci_section *)data,
-								"snooping_interface", if_name);
+								"downstream_interface", if_name);
 					}
 				}
 			}
@@ -1315,10 +1315,10 @@ static void update_proxy_interface_section(struct uci_section *s, char *section,
 
 static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *interface_linker = NULL;
+	char *linker, *interface_linker = NULL;
 	char ifname[16];
-	char *up, *f_inst;
-	struct uci_section *d_sec;
+	char *up, *f_inst, *if_type;
+	struct uci_section *d_sec, *s;
 	bool b;
 
 	switch (action) {
@@ -1331,7 +1331,18 @@ static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 			if (get_igmp_snooping_interface_val(value, ifname, sizeof(ifname)) == 0) {
 				interface_linker = dmstrdup(ifname);
 			} else {
-				adm_entry_get_linker_value(ctx, value, &interface_linker);
+				adm_entry_get_linker_value(ctx, value, &linker);
+				uci_foreach_sections("network", "interface", s) {
+					if(strcmp(section_name(s), linker) != 0) {
+						continue;
+					}
+					dmuci_get_value_by_section_string(s, "type", &if_type);
+					if (strcmp(if_type, "bridge") == 0)
+						dmasprintf(&interface_linker, "br-%s", linker);
+					else
+						dmuci_get_value_by_section_string(s, "ifname", &interface_linker);
+					break;
+				}
 			}
 			uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "proxy_interface",
 					"section_name", section_name((struct uci_section *)data), d_sec) {
@@ -1341,11 +1352,11 @@ static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 					dmuci_get_value_by_section_string(d_sec, "upstream", &up);
 					string_to_bool(up, &b);
 					update_proxy_interface_section((struct uci_section *)data,
-							"snooping_interface", interface_linker, !b);
+							"downstream_interface", interface_linker, !b);
 
 					// Now update the proxy_interface list
 					update_proxy_interface_section((struct uci_section *)data,
-							"proxy_interface", interface_linker, b);
+							"upstream_interface", interface_linker, b);
 					break;
 				}
 			}
@@ -1358,7 +1369,7 @@ static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 
 static int get_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *d_sec;
+	struct uci_section *d_sec, *s;
 	char *ifname, *f_inst;
 	char sec_name[16];
 	int found = 0;
@@ -1379,46 +1390,71 @@ static int get_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 	}
 
 	// Check if this is bridge type interface
-	char val[16];
-	strncpy(val, ifname, sizeof(val));
+	if (strstr(ifname, "br-")) {
+		// Interface is bridge type, convert to network uci file section name
+		char val[16];
+		strncpy(val, ifname, sizeof(val));
+		char *tok, *end;
+		tok = strtok_r(val, "-", &end);
+		if (strcmp(tok, "br") == 0) {
+			strncpy(sec_name, end, sizeof(sec_name));
+		} else {
+			goto end;
+		}
 
-	char *tok, *end;
-	tok = strtok_r(val, "-", &end);
-	if ((tok == NULL) || (end == NULL)) {
-		// Not a bridge interface
-		adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim,
-					dm_delim, dm_delim), ifname, value);
-		goto end;
-	}
+		char *proto;
+		uci_foreach_sections("network", "interface", s) {
+			if(strcmp(section_name(s), sec_name) != 0)
+				continue;
 
-	if (strcmp(tok, "br") == 0) {
-		strncpy(sec_name, end, sizeof(sec_name));
-		// In the dmmap_network file, the details related to the instance id etc. associated
-		// with this bridge is stored, we now switch our focus to it to extract the necessary
-		// information.
-		struct uci_section *dmmap_section, *port;
-		char *br_inst, *mg, linker[64] = "";
+			dmuci_get_value_by_section_string(s, "proto", &proto);
+			if (proto[0] != '\0') {
+				// It is a L3 bridge, get the linker accordingly
+				adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c",
+					dmroot, dm_delim, dm_delim, dm_delim), sec_name, value);
+			} else {
+				// It is a L2 bridge, get the linker accordingly
+				struct uci_section *dmmap_section, *port;
+				char *br_inst, *mg, linker[64] = "";
 
-		get_dmmap_section_of_config_section("dmmap_network", "interface", sec_name,
-				&dmmap_section);
-		if (dmmap_section != NULL) {
-			dmuci_get_value_by_section_string(dmmap_section, "bridge_instance", &br_inst);
-			uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port",
-					"bridge_key", br_inst, port) {
-				dmuci_get_value_by_section_string(port, "mg_port", &mg);
-				if (strcmp(mg, "true") == 0)
-					snprintf(linker, sizeof(linker), "%s+", section_name(port));
-				else
-					continue;
+				get_dmmap_section_of_config_section("dmmap_network", "interface", sec_name,
+						&dmmap_section);
+				if (dmmap_section != NULL) {
+					dmuci_get_value_by_section_string(dmmap_section, "bridge_instance", &br_inst);
+					uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port",
+							"bridge_port", "bridge_key", br_inst, port) {
+						dmuci_get_value_by_section_string(port, "mg_port", &mg);
+						if (strcmp(mg, "true") == 0)
+							snprintf(linker, sizeof(linker), "%s+", section_name(port));
+						else
+							continue;
 
-				adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+						adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+						break;
+					}
+				}
+			}
+			break;
+		}
+	} else {
+		char *device_name, *tmp_linker = NULL;
+		// it is a L3 interface, get the section name from device name to construct the linker
+		uci_foreach_sections("network", "interface", s) {
+			dmuci_get_value_by_section_string(s, "ifname", &device_name);
+			if (strcmp(device_name, ifname) == 0) {
+				tmp_linker = dmstrdup(section_name(s));
 				break;
 			}
 		}
+
+		if (tmp_linker == NULL) {
+			goto end;
+		}
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim,
+					dm_delim, dm_delim), tmp_linker, value);
 	}
 
 end:
-	// Now, convert to linker.
 	if (*value == NULL)
 		*value = "";
 
@@ -1445,11 +1481,11 @@ static int set_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void 
 					dmuci_get_value_by_section_string(d_sec, "ifname", &ifname);
 					dmuci_set_value_by_section(d_sec, "upstream", (b) ? "1" : "0");
 					update_proxy_interface_section((struct uci_section *)data,
-							"snooping_interface", ifname, !b);
+							"downstream_interface", ifname, !b);
 
 					// Now update the proxy_interface list
 					update_proxy_interface_section((struct uci_section *)data,
-							"proxy_interface", ifname, b);
+							"upstream_interface", ifname, b);
 					break;
 				}
 			}

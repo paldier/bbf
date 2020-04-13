@@ -796,7 +796,7 @@ void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, 
 		// and update the dmmap section accordingly. The do the same exercise for the list
 		// snooping_interface
 		struct uci_list *proxy_iface = NULL;
-		dmuci_get_value_by_section_list(s, "proxy_interface", &proxy_iface);
+		dmuci_get_value_by_section_list(s, "upstream_interface", &proxy_iface);
 		if (proxy_iface != NULL) {
 			struct uci_element *e;
 			uci_foreach_element(proxy_iface, e) {
@@ -827,7 +827,7 @@ void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, 
 		}
 
 		struct uci_list *snooping_iface = NULL;
-		dmuci_get_value_by_section_list(s, "snooping_interface", &snooping_iface);
+		dmuci_get_value_by_section_list(s, "downstream_interface", &snooping_iface);
 		if (snooping_iface != NULL) {
 			struct uci_element *e;
 			uci_foreach_element(snooping_iface, e) {

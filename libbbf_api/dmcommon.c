@@ -920,19 +920,22 @@ void synchronize_specific_config_sections_with_dmmap_filter(char *package, char 
 							section_name(s));
 					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "ipaddr",
 							ip_addr);
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "enable",
+							"1");
 					add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
 				}
 			}
 		}
 
-		char *f_ip;
+		char *f_ip, *f_enable;
 		// There can be entries in the dmmap_mcast file that do not have an IP address set.
 		// For such entries, now add to dup_list
 		uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "section_name",
 				section_name(s), dmmap_sect) {
 			dmuci_get_value_by_section_string(dmmap_sect, "ipaddr", &f_ip);
+			dmuci_get_value_by_section_string(dmmap_sect, "enable", &f_enable);
 
-			if (strcmp(f_ip, "") == 0)
+			if ((f_ip[0] == '\0') || (strcmp(f_enable, "0") == 0))
 				add_sectons_list_paramameter(dup_list, s, dmmap_sect, NULL);
 		}
 	}

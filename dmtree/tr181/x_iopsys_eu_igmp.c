@@ -11,6 +11,37 @@
 #include "dmentry.h"
 #include "x_iopsys_eu_igmp.h"
 
+static void sync_dmmap_bool_to_uci_list(struct uci_section *s, char *section, char *value,
+					bool b)
+{
+	struct uci_list *v = NULL;
+	struct uci_element *e;
+	char *val;
+
+	dmuci_get_value_by_section_list(s, section, &v);
+	if (v != NULL) {
+		uci_foreach_element(v, e) {
+			val = dmstrdup(e->name);
+			if (strcmp(val, value) == 0) {
+				if (!b) {
+					// remove this entry
+					dmuci_del_list_value_by_section(s, section, value);
+				}
+
+				// Further action is not required
+				return;
+			}
+		}
+	}
+
+	// If control has reached this point, that means, either the entry was not found
+	// in the list, hence, if b is true, add this entry to the list
+	if (b) {
+		dmuci_add_list_value_by_section(s, section, value);
+	}
+}
+
+
 static int add_igmp_proxy_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char *inst, *value, *v, *s_name;
@@ -223,6 +254,7 @@ static int add_igmps_filter_obj(char *refparam, struct dmctx *ctx, void *data, c
 	dmuci_add_section_bbfdm("dmmap_mcast", "snooping_filter", &dmmap_igmps_filter, &v);
 	dmuci_set_value_by_section(dmmap_igmps_filter, "section_name",
 				section_name((struct uci_section *)data));
+	dmuci_set_value_by_section(dmmap_igmps_filter, "enable", "0");
 	*instance = update_instance_bbfdm(dmmap_igmps_filter, last_inst, "filter_instance");
 
 	return 0;
@@ -259,9 +291,10 @@ static int del_igmps_filter_obj(char *refparam, struct dmctx *ctx, void *data, c
 			uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "snooping_filter",
 					"section_name", section_name((struct uci_section *)data), d_sec) {
 				dmuci_get_value_by_section_string(d_sec, "ipaddr", &ip_addr);
-				if (ip_addr[0] != '\0')
+				if (ip_addr[0] != '\0') {
 					dmuci_del_list_value_by_section((struct uci_section *)data,
 							"filter", ip_addr);
+				}
 			}
 
 			uci_path_foreach_sections_safe(bbfdm, "dmmap_mcast", "snooping_filter", stmp, d_sec) {
@@ -315,32 +348,79 @@ static int get_igmps_filter_no_of_entries(char *refparam, struct dmctx *ctx, voi
 
 static int get_igmps_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "true";
+	struct uci_section *f_sec;
+	char *f_inst, *f_enable;
+
+	uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "snooping_filter",
+			"section_name", section_name((struct uci_section *)data), f_sec) {
+		dmuci_get_value_by_section_string(f_sec, "filter_instance", &f_inst);
+		if (strcmp(instance, f_inst) == 0) {
+			dmuci_get_value_by_section_string(f_sec, "enable", &f_enable);
+			break;
+		}
+	}
+
+	if (f_enable[0] == '\0') {
+		*value = "false";
+	} else if (strcmp(f_enable, "1") == 0) {
+		*value = "true";
+	} else {
+		*value = "false";
+	}
+
 	return 0;
 }
 
+
 static int set_igmps_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	//Always considered enabled, so not supported
+	struct uci_section *f_sec;
+	char *f_inst, *ip_addr;
+	bool b;
+	switch (action) {
+		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			string_to_bool(value, &b);
+			uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "snooping_filter",
+					"section_name", section_name((struct uci_section *)data), f_sec) {
+				dmuci_get_value_by_section_string(f_sec, "filter_instance", &f_inst);
+				if (strcmp(instance, f_inst) == 0) {
+					dmuci_get_value_by_section_string(f_sec, "ipaddr", &ip_addr);
+					dmuci_set_value_by_section(f_sec, "enable", (b) ? "1" : "0");
+					if (ip_addr[0] != '\0') {
+						sync_dmmap_bool_to_uci_list((struct uci_section *)data,
+								"filter", ip_addr, b);
+					}
+					break;
+				}
+			}
+			break;
+	}
+
 	return 0;
 }
 
 static int get_igmps_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_list *v = NULL;
-	struct uci_element *e;
+	struct uci_section *d_sec;
+	char *f_inst, *ip_addr;
 
-	dmuci_get_value_by_section_list((struct uci_section *)data, "filter", &v);
-	if (v == NULL)
-		return 0;
-
-	int cnt = 1;
-	uci_foreach_element(v, e) {
-		if (cnt == atoi(instance)) {
-			*value = dmstrdup(e->name);
+	uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "snooping_filter",
+			"section_name", section_name((struct uci_section *)data), d_sec) {
+		dmuci_get_value_by_section_string(d_sec, "filter_instance", &f_inst);
+		if (strcmp(instance, f_inst) == 0) {
+			dmuci_get_value_by_section_string(d_sec, "ipaddr", &ip_addr);
 			break;
 		}
-		cnt++;
+	}
+
+	if (ip_addr[0] == '\0') {
+		*value = "";
+	} else {
+		*value = dmstrdup(ip_addr);
 	}
 
 	return 0;
@@ -349,7 +429,8 @@ static int get_igmps_filter_address(char *refparam, struct dmctx *ctx, void *dat
 static int set_igmps_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s = NULL;
-	char *s_inst;
+	char *s_inst, *up;
+	bool b;
 
 	switch (action) {
 		case VALUECHECK:
@@ -358,15 +439,17 @@ static int set_igmps_filter_address(char *refparam, struct dmctx *ctx, void *dat
 
 			break;
 		case VALUESET:
-			dmuci_add_list_value_by_section((struct uci_section *)data, "filter", value);
 			uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "snooping_filter",
 					"section_name", section_name((struct uci_section *)data), s) {
 				dmuci_get_value_by_section_string(s, "filter_instance", &s_inst);
 				if (strcmp(s_inst, instance) == 0) {
 					dmuci_set_value_by_section(s, "ipaddr", value);
+					dmuci_get_value_by_section_string(s, "enable", &up);
+					string_to_bool(up, &b);
+					sync_dmmap_bool_to_uci_list((struct uci_section *)data,
+							"filter", value, b);
 					break;
 				}
-
 			}
 
 			break;
@@ -380,12 +463,10 @@ static int get_igmp_snooping_enable(char *refparam, struct dmctx *ctx, void *dat
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", &val);
 
-	int enable = atoi(val);
-
-	if (enable == 0)
-		*value = "false";
-	else
+	if (strcmp(val, "1") == 0)
 		*value = "true";
+	else
+		*value = "false";
 
 	return 0;
 }
@@ -413,12 +494,10 @@ static int get_igmp_snooping_version(char *refparam, struct dmctx *ctx, void *da
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "version", &val);
 
-	int enable = atoi(val);
-
-	if (enable == 2)
-		dmasprintf(value, "%s", "V2");
+	if (strcmp(val, "2") == 0)
+		*value = "V2";
 	else
-		dmasprintf(value, "%s", "V3");
+		*value = "V3";
 
 	return 0;
 }
@@ -472,12 +551,10 @@ static int get_igmp_snooping_aggregation(char *refparam, struct dmctx *ctx, void
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "aggregation", &val);
 
-	int enable = atoi(val);
-
-	if (enable == 0)
-		dmasprintf(value, "%s", "false");
+	if (strcmp(val, "1") == 0)
+		*value = "true";
 	else
-		dmasprintf(value, "%S", "true");
+		*value = "false";
 
 	return 0;
 }
@@ -587,7 +664,7 @@ static int get_igmp_snooping_interface_val(char *value, char *ifname, size_t s_i
 	/* Find out bridge section name using bridge key. */
 	struct uci_section *s = NULL;
 	char *sec_name;
-	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "interface", "bridge_key", key, s) {
+	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "interface", "bridge_instance", key, s) {
 		dmuci_get_value_by_section_string(s, "section_name", &sec_name);
 		break;
 	}
@@ -644,7 +721,7 @@ static int add_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data
 
 	dmuci_add_section_bbfdm("dmmap_mcast", "proxy_interface", &dmmap_igmpp_interface, &v);
 	dmuci_set_value_by_section(dmmap_igmpp_interface, "section_name",
-			section_name((struct uci_section *)data));
+				section_name((struct uci_section *)data));
 	dmuci_set_value_by_section(dmmap_igmpp_interface, "upstream", "0");
 
 	*instance = update_instance_bbfdm(dmmap_igmpp_interface, last_inst, "iface_instance");
@@ -746,6 +823,8 @@ static int add_igmpp_filter_obj(char *refparam, struct dmctx *ctx, void *data, c
 	dmuci_add_section_bbfdm("dmmap_mcast", "proxy_filter", &dmmap_igmpp_filter, &v);
 	dmuci_set_value_by_section(dmmap_igmpp_filter, "section_name",
 			section_name((struct uci_section *)data));
+	dmuci_set_value_by_section(dmmap_igmpp_filter, "enable", "0");
+
 	*instance = update_instance_bbfdm(dmmap_igmpp_filter, last_inst, "filter_instance");
 
 	return 0;
@@ -838,34 +917,73 @@ static int get_igmpp_interface_no_of_entries(char *refparam, struct dmctx *ctx, 
 
 static int get_igmpp_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	// ToDo
-	*value = "true";
+	struct uci_section *f_sec;
+	char *f_inst, *f_enable;
+	uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "proxy_filter",
+			"section_name", section_name((struct uci_section *)data), f_sec) {
+		dmuci_get_value_by_section_string(f_sec, "filter_instance", &f_inst);
+		if (strcmp(instance, f_inst) == 0) {
+			dmuci_get_value_by_section_string(f_sec, "enable", &f_enable);
+			break;
+		}
+	}
+
+	if (strcmp(f_enable, "1") == 0) {
+		*value = "true";
+	} else {
+		*value = "false";
+	}
+
 	return 0;
 }
 
-
 static int set_igmpp_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	// ToDo
+	struct uci_section *f_sec;
+	char *f_inst, *ip_addr;
+	bool b;
+	switch (action) {
+		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			string_to_bool(value, &b);
+			uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "proxy_filter",
+					"section_name", section_name((struct uci_section *)data), f_sec) {
+				dmuci_get_value_by_section_string(f_sec, "filter_instance", &f_inst);
+				if (strcmp(instance, f_inst) == 0) {
+					dmuci_get_value_by_section_string(f_sec, "ipaddr", &ip_addr);
+					dmuci_set_value_by_section(f_sec, "enable", (b) ? "1" : "0");
+					sync_dmmap_bool_to_uci_list((struct uci_section *)data,
+							"filter", ip_addr, b);
+					break;
+				}
+			}
+			break;
+	}
+
 	return 0;
 }
 
 static int get_igmpp_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_list *v = NULL;
-	struct uci_element *e;
+	struct uci_section *d_sec;
+	char *f_inst, *ip_addr;
 
-	dmuci_get_value_by_section_list((struct uci_section *)data, "filter", &v);
-	if (v == NULL)
-		return 0;
-
-	int cnt = 1;
-	uci_foreach_element(v, e) {
-		if (cnt == atoi(instance)) {
-			*value = dmstrdup(e->name);
+	uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "proxy_filter",
+			"section_name", section_name((struct uci_section *)data), d_sec) {
+		dmuci_get_value_by_section_string(d_sec, "filter_instance", &f_inst);
+		if (strcmp(instance, f_inst) == 0) {
+			dmuci_get_value_by_section_string(d_sec, "ipaddr", &ip_addr);
 			break;
 		}
-		cnt++;
+	}
+
+	if (ip_addr[0] == '\0') {
+		*value = "";
+	} else {
+		*value = dmstrdup(ip_addr);
 	}
 
 	return 0;
@@ -874,20 +992,25 @@ static int get_igmpp_filter_address(char *refparam, struct dmctx *ctx, void *dat
 static int set_igmpp_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s = NULL;
-	char *s_inst;
+	char *s_inst, *up;
+	bool b;
 
 	switch (action) {
 		case VALUECHECK:
 			if (dm_validate_string(value, -1, 15, NULL, 0, IPv4Address, 1))
 				return FAULT_9007;
+
 			break;
 		case VALUESET:
-			dmuci_add_list_value_by_section((struct uci_section *)data, "filter", value);
 			uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "proxy_filter",
 					"section_name", section_name((struct uci_section *)data), s) {
 				dmuci_get_value_by_section_string(s, "filter_instance", &s_inst);
 				if (strcmp(s_inst, instance) == 0) {
 					dmuci_set_value_by_section(s, "ipaddr", value);
+					dmuci_get_value_by_section_string(s, "enable", &up);
+					string_to_bool(up, &b);
+					sync_dmmap_bool_to_uci_list((struct uci_section *)data,
+							"filter", value, b);
 					break;
 				}
 
@@ -1035,12 +1158,10 @@ static int get_igmp_proxy_enable(char *refparam, struct dmctx *ctx, void *data, 
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", &val);
 
-	int enable = atoi(val);
-
-	if (enable == 0)
-		dmasprintf(value, "%s", "false");
+	if (strcmp(val, "1") == 0)
+		*value = "true";
 	else
-		dmasprintf(value, "%s", "true");
+		*value = "false";
 
 	return 0;
 }
@@ -1067,12 +1188,10 @@ static int get_igmp_proxy_version(char *refparam, struct dmctx *ctx, void *data,
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "version", &val);
 
-	int enable = atoi(val);
-
-	if (enable == 2)
-		dmasprintf(value, "%s", "V2");
+	if (strcmp(val, "2") == 0)
+		*value = "V2";
 	else
-		dmasprintf(value, "%s", "V3");
+		*value = "V3";
 
 	return 0;
 }
@@ -1192,12 +1311,10 @@ static int get_igmp_proxy_aggregation(char *refparam, struct dmctx *ctx, void *d
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "aggregation", &val);
 
-	int enable = atoi(val);
-
-	if (enable == 0)
-		dmasprintf(value, "%s", "false");
+	if (strcmp(val, "1") == 0)
+		*value = "true";
 	else
-		dmasprintf(value, "%s", "true");
+		*value = "false";
 
 	return 0;
 }
@@ -1207,12 +1324,10 @@ static int get_igmp_proxy_fast_leave(char *refparam, struct dmctx *ctx, void *da
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "fast_leave", &val);
 
-	int enable = atoi(val);
-
-	if (enable == 0)
-		dmasprintf(value, "%s", "false");
+	if (strcmp(val, "1") == 0)
+		*value = "true";
 	else
-		dmasprintf(value, "%s", "true");
+		*value = "false";
 
 	return 0;
 }
@@ -1281,38 +1396,6 @@ static int set_igmpp_interface_snooping(char *refparam, struct dmctx *ctx, void 
 }
 #endif
 
-static void update_proxy_interface_section(struct uci_section *s, char *section, char *ifname,
-					bool b)
-{
-	// First update the snooping_inteface list
-	struct uci_list *v = NULL;
-	struct uci_element *e;
-	char *val;
-	int found = 0;
-	dmuci_get_value_by_section_list(s, section, &v);
-
-	if (v != NULL) {
-		uci_foreach_element(v, e) {
-			val = dmstrdup(e->name);
-			if (strcmp(val, ifname) == 0) {
-				found = 1;
-				if (!b) {
-					// remove this entry
-					dmuci_del_list_value_by_section(s, section, ifname);
-				}
-				break;
-			}
-		}
-
-		if ((found == 0) && (b))
-			dmuci_add_list_value_by_section(s, section, ifname);
-	} else {
-		if (b) {
-			dmuci_add_list_value_by_section(s, section, ifname);
-		}
-	}
-}
-
 static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker, *interface_linker = NULL;
@@ -1351,11 +1434,11 @@ static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 					dmuci_set_value_by_section(d_sec, "ifname", interface_linker);
 					dmuci_get_value_by_section_string(d_sec, "upstream", &up);
 					string_to_bool(up, &b);
-					update_proxy_interface_section((struct uci_section *)data,
+					sync_dmmap_bool_to_uci_list((struct uci_section *)data,
 							"downstream_interface", interface_linker, !b);
 
 					// Now update the proxy_interface list
-					update_proxy_interface_section((struct uci_section *)data,
+					sync_dmmap_bool_to_uci_list((struct uci_section *)data,
 							"upstream_interface", interface_linker, b);
 					break;
 				}
@@ -1429,7 +1512,8 @@ static int get_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 						else
 							continue;
 
-						adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+						adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot,
+									dm_delim, dm_delim, dm_delim), linker, value);
 						break;
 					}
 				}
@@ -1447,9 +1531,9 @@ static int get_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 			}
 		}
 
-		if (tmp_linker == NULL) {
+		if (tmp_linker == NULL)
 			goto end;
-		}
+
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim,
 					dm_delim, dm_delim), tmp_linker, value);
 	}
@@ -1465,8 +1549,8 @@ static int set_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void 
 {
 	char *f_inst, *ifname;
 	struct uci_section *d_sec;
-
 	bool b;
+
 	switch (action) {
 		case VALUECHECK:
 			if (dm_validate_boolean(value))
@@ -1480,11 +1564,10 @@ static int set_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void 
 				if (strcmp(instance, f_inst) == 0) {
 					dmuci_get_value_by_section_string(d_sec, "ifname", &ifname);
 					dmuci_set_value_by_section(d_sec, "upstream", (b) ? "1" : "0");
-					update_proxy_interface_section((struct uci_section *)data,
-							"downstream_interface", ifname, !b);
 
-					// Now update the proxy_interface list
-					update_proxy_interface_section((struct uci_section *)data,
+					sync_dmmap_bool_to_uci_list((struct uci_section *)data,
+							"downstream_interface", ifname, !b);
+					sync_dmmap_bool_to_uci_list((struct uci_section *)data,
 							"upstream_interface", ifname, b);
 					break;
 				}
@@ -1509,9 +1592,7 @@ static int get_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void 
 		}
 	}
 
-	if (up[0] == '\0') {
-		*value = "false";
-	} else if (strcmp(up, "1") == 0) {
+	if (strcmp(up, "1") == 0) {
 		*value = "true";
 	} else {
 		*value = "false";

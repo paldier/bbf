@@ -72,7 +72,9 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 {
 	struct interfacestack_data ifdata = {0};
 	struct uci_section *s = NULL, *sd = NULL, *port, *port_s, *ss, *dmmap_s = NULL;
-	char *proto, *type, *pch, *layer_inst, *v, *vb, *higheralias, *loweralias, *ifname, *br_inst, *mg, *value, *device, *name;
+	char *proto, *type, *pch, *layer_inst, *vb, *higheralias, *ifname, *br_inst, *mg, *value, *device, *name;
+	char *v = "";
+	char *loweralias = "";
 	char *interface_stack_int = NULL, *interface_stack_int_last = NULL, *wanifname, *wanlinker, *mac, *sectionname, *package, *section;
 	char buf_lowerlayer[128] = {0};
 	char buf_higherlayer[128] = {0};

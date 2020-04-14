@@ -823,7 +823,7 @@ static int set_EthernetLink_Alias(char *refparam, struct dmctx *ctx, void *data,
 
 static int get_EthernetLink_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = dmstrdup(section_name(((struct dm_args *)data)->section));
+	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "device", value);
 	return 0;
 }
 

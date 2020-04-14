@@ -136,6 +136,8 @@ char **s, const char *format, ...
 	va_start(arg,format);
 	va_copy(argcopy, arg);
 	size = vsnprintf(NULL, 0, format, argcopy);
+	if (size < 0)
+		return -1;
 	va_end(argcopy);
 #ifdef WITH_MEMTRACK
 	str = (char *)__dmcalloc(file, func, line, sizeof(char), size+1);

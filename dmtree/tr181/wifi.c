@@ -204,7 +204,7 @@ static int set_wlan_ssid(char *refparam, struct dmctx *ctx, void *data, char *in
 	return 0;
 }
 
-/*#Device.WiFi.SSID.{i}.MACAddress!UBUS:router.device/status/name,@Name/macaddr*/
+/*#Device.WiFi.SSID.{i}.MACAddress!UBUS:network.device/status/name,@Name/macaddr*/
 static int get_WiFiSSID_MACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res;

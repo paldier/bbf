@@ -30357,7 +30357,7 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "router.device", 
+								"object": "network.device",
 								"method": "status", 
 								"args": {
 									"name": "@Name"

@@ -2247,8 +2247,8 @@ static int browseBridgeVlanPortInst(struct dmctx *dmctx, DMNODE *parent_node, vo
 				dmuci_set_value_by_section(dmmap_port, "bridge_key", br_args->br_key);
 				/* Get the last vlan_instance and add one. */
 				int m = get_vlanport_last_inst(br_args->br_key);
-				char instance[10];
-				sprintf(instance, "%d", m+1);
+				char instance[10] = {0};
+				snprintf(instance, sizeof(instance), "%d", m+1);
 				dmuci_set_value_by_section(dmmap_port, "vport_inst", instance);
 				dmasprintf(&name, "%s_%d", "vlanport", m);
 				dmuci_set_value_by_section(dmmap_port, "section_name", name);

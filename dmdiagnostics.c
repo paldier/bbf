@@ -18,9 +18,9 @@ struct upload_diagnostic_stats upload_stats = {0};
 
 char *get_param_diagnostics(char *diag, char *option)
 {
-	char buf[32], *value;
+	char buf[32] = {0}, *value;
 
-	sprintf(buf, "@%s[0]", diag);
+	snprintf(buf, sizeof(buf), "@%s[0]", diag);
 	dmuci_get_varstate_string("cwmp", buf, option, &value);
 		return value;
 }
@@ -28,14 +28,14 @@ char *get_param_diagnostics(char *diag, char *option)
 void set_param_diagnostics(char *diag, char *option, char *value)
 {
 	struct uci_section *curr_section = NULL;
-	char buf[32], *tmp;
+	char buf[32] = {0}, *tmp;
 
 	curr_section = dmuci_walk_state_section("cwmp", diag, NULL, NULL, CMP_SECTION, NULL, NULL, GET_FIRST_SECTION);
 	if(!curr_section)
 	{
 		dmuci_add_state_section("cwmp", diag, &curr_section, &tmp);
 	}
-	sprintf(buf, "@%s[0]", diag);
+	snprintf(buf, sizeof(buf), "@%s[0]", diag);
 	dmuci_set_varstate_value("cwmp", buf, option, value);
 }
 
@@ -95,23 +95,23 @@ static void ftp_download_per_packet(libtrace_packet_t *packet)
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		download_stats.random_seq = ntohl(tcp->seq);
-		sprintf((download_stats.tcpopenrequesttime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(download_stats.tcpopenrequesttime, sizeof(download_stats.tcpopenrequesttime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 	}
 	if (strcmp(tcp_flag, "SYN ACK ") == 0 && download_stats.random_seq != 0 && (ntohl(tcp->ack_seq) - 1 ) == download_stats.random_seq)
 	{
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((download_stats.tcpopenresponsetime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(download_stats.tcpopenresponsetime, sizeof(download_stats.tcpopenresponsetime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		download_stats.random_seq = ntohl(tcp->ack_seq);
-		sprintf((download_stats.tcpopenresponsetime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(download_stats.tcpopenresponsetime, sizeof(download_stats.tcpopenresponsetime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 	}
 	if (strcmp(tcp_flag, "PSH ACK ") == 0 && strlen(nexthdr) > strlen(FTP_RETR_REQUEST) && strncmp(nexthdr, FTP_RETR_REQUEST, strlen(FTP_RETR_REQUEST)) == 0)
 	{
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((download_stats.romtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(download_stats.romtime, sizeof(download_stats.romtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 	}
 	if(strcmp(tcp_flag, "ACK ") == 0 && ntohl(tcp->seq) == download_stats.random_seq && download_stats.ack_seq == 0)
 	{
@@ -125,7 +125,7 @@ static void ftp_download_per_packet(libtrace_packet_t *packet)
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		if (download_stats.first_data == 0)
 		{
-			sprintf((download_stats.bomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+			snprintf(download_stats.bomtime, sizeof(download_stats.bomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		}
 		download_stats.first_data = 1;
 	}
@@ -136,10 +136,10 @@ static void ftp_download_per_packet(libtrace_packet_t *packet)
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		if (download_stats.first_data == 0)
 		{
-			sprintf((download_stats.bomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+			snprintf(download_stats.bomtime, sizeof(download_stats.bomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 			download_stats.first_data = 1;
 		}
-		sprintf((download_stats.eomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(download_stats.eomtime, sizeof(download_stats.eomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 	}
 }
 
@@ -172,7 +172,7 @@ static void http_download_per_packet(libtrace_packet_t *packet)
     	ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((download_stats.tcpopenrequesttime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(download_stats.tcpopenrequesttime, sizeof(download_stats.tcpopenrequesttime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		download_stats.random_seq = ntohl(tcp->seq);
 		return;
 	}
@@ -181,7 +181,7 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((download_stats.tcpopenresponsetime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(download_stats.tcpopenresponsetime, sizeof(download_stats.tcpopenresponsetime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		download_stats.random_seq = ntohl(tcp->seq);
 		return;
 	}
@@ -190,7 +190,7 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((download_stats.romtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(download_stats.romtime, sizeof(download_stats.romtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		download_stats.get_ack = ntohl(tcp->ack_seq);
 		return;
 	}
@@ -205,7 +205,7 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		if (download_stats.first_data == 0) {
-			sprintf((download_stats.bomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+			snprintf(download_stats.bomtime, sizeof(download_stats.bomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 			char *val = strstr(nexthdr,"Content-Length");
 			char *pch, *pchr;
 			val += strlen("Content-Length: ");
@@ -221,7 +221,7 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		if (download_stats.first_data == 0) {
-			sprintf((download_stats.bomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+			snprintf(download_stats.bomtime, sizeof(download_stats.bomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 			char *val = strstr(nexthdr,"Content-Length");
 			char *pch, *pchr;
 			val += strlen("Content-Length: ");
@@ -229,7 +229,7 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 			download_stats.test_bytes_received = atoi(pch);
 			download_stats.first_data = 1;
 		}
-		sprintf((download_stats.eomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(download_stats.eomtime, sizeof(download_stats.eomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		return;
 	}
 }
@@ -245,7 +245,7 @@ static void libtrace_cleanup(libtrace_t *trace, libtrace_packet_t *packet)
 
 static void set_download_stats(char *protocol)
 {
-	char buf[16];
+	char buf[16] = {0};
 
 	if(strcmp(protocol, "cwmp")== 0)
 		init_uci_varstate_ctx();
@@ -255,7 +255,7 @@ static void set_download_stats(char *protocol)
 	set_param_diagnostics("downloaddiagnostic", "EOMtime", download_stats.eomtime);
 	set_param_diagnostics("downloaddiagnostic", "TCPOpenRequestTime", download_stats.tcpopenrequesttime);
 	set_param_diagnostics("downloaddiagnostic", "TCPOpenResponseTime", download_stats.tcpopenresponsetime);
-	sprintf(buf,"%d", download_stats.test_bytes_received);
+	snprintf(buf, sizeof(buf), "%d", download_stats.test_bytes_received);
 	set_param_diagnostics("downloaddiagnostic", "TestBytesReceived", buf);
 
 	if(strcmp(protocol, "cwmp")== 0)
@@ -309,7 +309,7 @@ static void http_upload_per_packet(libtrace_packet_t *packet)
     	ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((upload_stats.tcpopenrequesttime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(upload_stats.tcpopenrequesttime, sizeof(upload_stats.tcpopenrequesttime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		upload_stats.random_seq = ntohl(tcp->seq);
 	}
 	if (strcmp(tcp_flag, "SYN ACK ") == 0 && upload_stats.random_seq != 0 && (ntohl(tcp->ack_seq) - 1 ) == upload_stats.random_seq)
@@ -317,7 +317,7 @@ static void http_upload_per_packet(libtrace_packet_t *packet)
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((upload_stats.tcpopenresponsetime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(upload_stats.tcpopenresponsetime, sizeof(upload_stats.tcpopenresponsetime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		upload_stats.random_seq = ntohl(tcp->seq);
 	}
 	if (strcmp(tcp_flag, "PSH ACK ") == 0 && strncmp(nexthdr, "PUT", 3) == 0)
@@ -325,7 +325,7 @@ static void http_upload_per_packet(libtrace_packet_t *packet)
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((upload_stats.romtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(upload_stats.romtime, sizeof(upload_stats.romtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		if (strstr(nexthdr, "Expect: 100-continue"))
 		{
 			upload_stats.tmp=1;
@@ -354,7 +354,7 @@ static void http_upload_per_packet(libtrace_packet_t *packet)
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		if (upload_stats.first_data == 0)
 		{
-			sprintf((upload_stats.bomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+			snprintf(upload_stats.bomtime, sizeof(upload_stats.bomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 			upload_stats.first_data = 1;
 		}
 	}
@@ -365,7 +365,7 @@ static void http_upload_per_packet(libtrace_packet_t *packet)
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		if (upload_stats.first_data == 0)
 		{
-			sprintf((upload_stats.bomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+			snprintf(upload_stats.bomtime, sizeof(upload_stats.bomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 			upload_stats.first_data = 1;
 		}
 	}
@@ -374,7 +374,7 @@ static void http_upload_per_packet(libtrace_packet_t *packet)
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((upload_stats.eomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(upload_stats.eomtime, sizeof(upload_stats.eomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 	}
 }
 
@@ -416,14 +416,14 @@ static void ftp_upload_per_packet(libtrace_packet_t *packet)
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		upload_stats.random_seq = ntohl(tcp->seq);
-		sprintf((upload_stats.tcpopenrequesttime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(upload_stats.tcpopenrequesttime, sizeof(upload_stats.tcpopenrequesttime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 	}
 	if (strcmp(tcp_flag, "SYN ACK ") == 0 && upload_stats.random_seq != 0 && (ntohl(tcp->ack_seq) - 1 ) == upload_stats.random_seq)
 	{
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((upload_stats.tcpopenresponsetime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(upload_stats.tcpopenresponsetime, sizeof(upload_stats.tcpopenresponsetime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		upload_stats.random_seq = ntohl(tcp->ack_seq);
 	}
 	if (strcmp(tcp_flag, "PSH ACK ") == 0 && strlen(nexthdr) > strlen(FTP_STOR_REQUEST) && strncmp(nexthdr, FTP_STOR_REQUEST, strlen(FTP_STOR_REQUEST)) == 0)
@@ -431,7 +431,7 @@ static void ftp_upload_per_packet(libtrace_packet_t *packet)
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((upload_stats.romtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(upload_stats.romtime, sizeof(upload_stats.romtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 	}
 	if(strcmp(tcp_flag, "ACK ") == 0 && ntohl(tcp->seq) == upload_stats.random_seq && upload_stats.ack_seq == 0)
 	{
@@ -445,7 +445,7 @@ static void ftp_upload_per_packet(libtrace_packet_t *packet)
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		if (upload_stats.first_data == 0)
 		{
-			sprintf((upload_stats.bomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+			snprintf(upload_stats.bomtime, sizeof(upload_stats.bomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 			upload_stats.first_data = 1;
 		}
 	}
@@ -456,7 +456,7 @@ static void ftp_upload_per_packet(libtrace_packet_t *packet)
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
 		if (upload_stats.first_data == 0)
 		{
-			sprintf((upload_stats.bomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+			snprintf(upload_stats.bomtime, sizeof(upload_stats.bomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 			upload_stats.first_data = 1;
 		}
 	}
@@ -465,7 +465,7 @@ static void ftp_upload_per_packet(libtrace_packet_t *packet)
 		ts = trace_get_timeval(packet);
 		(void) localtime_r(&(ts.tv_sec), &lt);
 		strftime(s_now, sizeof s_now, "%Y-%m-%dT%H:%M:%S", &lt);
-		sprintf((upload_stats.eomtime),"%s.%06ldZ", s_now, (long) ts.tv_usec);
+		snprintf(upload_stats.eomtime, sizeof(upload_stats.eomtime), "%s.%06ldZ", s_now, (long) ts.tv_usec);
 		read_next = 0;
 	}
 }

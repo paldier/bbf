@@ -269,13 +269,15 @@ int upnp_configuration_set_ipv4_defaultgateway(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
-int upnp_configuration_ipinterface_createinstance(char *refparam, struct dmctx *ctx, void *data, char **instance){
+int upnp_configuration_ipinterface_createinstance(char *refparam, struct dmctx *ctx, void *data, char **instance)
+{
 	char *value=NULL;
 	char *iface_instance=NULL, ib[8], ip_name[32];
 	char *p = ip_name;
 	struct uci_section *iface_sec = NULL;
+
 	iface_instance = get_last_instance("network","interface","upnp_ip_iface_instance");
-	sprintf(ib, "%d", iface_instance ? atoi(iface_instance)+1 : 1);
+	snprintf(ib, sizeof(ib), "%d", iface_instance ? atoi(iface_instance)+1 : 1);
 	dmstrappendstr(p, "ip_interface_");
 	dmstrappendstr(p, ib);
 	dmstrappendend(p);
@@ -286,8 +288,10 @@ int upnp_configuration_ipinterface_createinstance(char *refparam, struct dmctx *
 	return 0;
 }
 
-int upnp_configuration_ipinterface_deleteinstance(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action){
+int upnp_configuration_ipinterface_deleteinstance(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+{
 	struct upnp_configuration_args *upnp_configargs = (struct upnp_configuration_args *)data;
+
 	switch (del_action) {
 	case DEL_INST:
 		if(upnp_configargs->upnpConfiguration_sec == NULL) return FAULT_9005;

@@ -60,11 +60,11 @@ static int browseSoftwareModulesExecEnvInst(struct dmctx *dmctx, DMNODE *parent_
 static int browseSoftwareModulesDeploymentUnitInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	char *idx, *idx_last = NULL, buf[16];
+	char *idx, *idx_last = NULL, buf[16] = {0};
 	int id = 0, j = 0, i, incr;
 
 	for (i = 0;; i += 100) {
-		sprintf(buf, "%d", i);
+		snprintf(buf, sizeof(buf), "%d", i);
 		dmubus_call("softwaremanagement", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
 		if (res) {
 			incr = 0;
@@ -118,11 +118,11 @@ static int get_SoftwareModules_DeploymentUnitNumberOfEntries(char *refparam, str
 {
 	json_object *res = NULL, *deployment_unit = NULL;
 	size_t nbre_du = 0, total_du = 0;
-	char buf[16];
+	char buf[16] = {0};
 	int i;
 
 	for (i = 0;; i += 100) {
-		sprintf(buf, "%d", i);
+		snprintf(buf, sizeof(buf), "%d", i);
 		dmubus_call("softwaremanagement", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
 		DM_ASSERT(res, *value = "0");
 		json_object_object_get_ex(res, "deployment_unit", &deployment_unit);
@@ -651,14 +651,14 @@ static int get_SoftwareModulesExecutionUnit_MemoryInUse(char *refparam, struct d
 static int get_SoftwareModulesExecutionUnit_References(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	char *environment, *name, *curr_environment, *curr_name, buf[16];
+	char *environment, *name, *curr_environment, *curr_name, buf[16] = {0};
 	int j = 0, env = 0, i, incr;
 
 	curr_name = dmjson_get_value((json_object *)data, 1, "name");
 	curr_environment = dmjson_get_value((json_object *)data, 1, "environment");
 
 	for (i = 0;; i += 100) {
-		sprintf(buf, "%d", i);
+		snprintf(buf, sizeof(buf), "%d", i);
 		dmubus_call("softwaremanagement", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
 		DM_ASSERT(res, *value = "");
 		if (res) {

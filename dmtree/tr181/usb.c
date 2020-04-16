@@ -393,7 +393,7 @@ static int get_USB_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, v
 {
 	DIR *dir;
 	struct dirent *ent;
-	char filename[276];
+	char filename[276] = {0};
 	char buffer[64];
 	int nbre= 0;
 	ssize_t rc;
@@ -402,7 +402,7 @@ static int get_USB_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, v
 		return 0;
 
 	while ((ent = readdir (dir)) != NULL) {
-		sprintf(filename, "/sys/class/net/%s", ent->d_name);
+		snprintf(filename, sizeof(filename), "/sys/class/net/%s", ent->d_name);
 		rc = readlink (filename, buffer, sizeof(buffer) - 1);
 		if (rc > 0) {
 			buffer[rc] = 0;

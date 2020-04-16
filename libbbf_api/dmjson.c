@@ -253,8 +253,8 @@ char *____dmjson_get_value_array_all(json_object *mainjobj, char *delim, char *a
 			ret = dmstrdup(v);
 		} else if (*v) {
 			ret = dmrealloc(ret, strlen(ret) + dlen + strlen(v) + 1);
-			strcat(ret, delim);
-			strcat(ret, v);
+			strncat(ret, delim, strlen(delim));
+			strncat(ret, v, strlen(v));
 		}
 	}
 	return ret;

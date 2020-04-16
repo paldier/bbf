@@ -233,8 +233,8 @@ static int get_nat_interface_setting_interface(char *refparam, struct dmctx *ctx
 		if (ifaceobj == NULL)
 			continue;
 		if (*buf != '\0')
-			strcat(buf, ",");
-		strcat(buf, ifaceobj);
+			strncat(buf, ",", 1);
+		strncat(buf, ifaceobj, strlen(ifaceobj));
 	}
 	*value = dmstrdup(buf);
 	return 0;
@@ -349,8 +349,8 @@ static int get_nat_port_mapping_interface(char *refparam, struct dmctx *ctx, voi
 		if (ifaceobj == NULL)
 			continue;
 		if (*buf != '\0')
-			strcat(buf, ",");
-		strcat(buf, ifaceobj);
+			strncat(buf, ",", 1);
+		strncat(buf, ifaceobj, strlen(ifaceobj));
 	}
 	*value = dmstrdup(buf);
 	return 0;

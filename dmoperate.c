@@ -137,7 +137,7 @@ static char *get_param_val_from_op_cmd(char *op_cmd, const char *param)
 	strncpy(node, op_cmd, ret - op_cmd +1);
 
 	// Append param name to the trimmed path
-	strcat(node, param);
+	strncat(node, param, strlen(param));
 
 	// Get parameter value
 	val = bbf_get_value_by_id(node);
@@ -170,7 +170,7 @@ static opr_ret_t network_interface_reset(struct dmctx *dmctx, char *path, char *
 	char *zone = NULL;
 	zone = get_param_val_from_op_cmd(path, "Name");
 	if(zone) {
-		strcat(cmd, zone);
+		strncat(cmd, zone, strlen(zone));
 		dmfree(zone);
 	} else {
 		return FAIL;
@@ -214,7 +214,7 @@ static opr_ret_t ap_security_reset(struct dmctx *dmctx, char *path, char *input)
 
 	for (i = 0; i < len; i++) {
 		strncpy(reset_params[i].node, node, 255);
-		strcat(reset_params[i].node, reset_params[i].param);
+		strncat(reset_params[i].node, reset_params[i].param, strlen(reset_params[i].param));
 	}
 	const char *mode_enabled = "WPA2-Personal";
 

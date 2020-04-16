@@ -881,9 +881,9 @@ static int set_br_vlan_vid(char *refparam, struct dmctx *ctx, void *data, char *
 					dmuci_get_value_by_section_string(port_s, "ifname", &intf);
 					if (*intf != '\0') {
 						if (intf_name[0] != '\0') {
-							strcat(intf_name, " ");
+							strncat(intf_name, " ", 1);
 						}
-						strcat(intf_name, intf);
+						strncat(intf_name, intf, strlen(intf));
 					}
 				}
 			} else {
@@ -935,9 +935,9 @@ static int set_br_vlan_vid(char *refparam, struct dmctx *ctx, void *data, char *
 				}
 
 				if (intf_tag[0] != '\0') {
-					strcat(intf_tag, " ");
+					strncat(intf_tag, " ", 1);
 				}
-				strcat(intf_tag, name);
+				strncat(intf_tag, name, strlen(name));
 
 				/* Remove vlanport section from dmmap_network file. */
 				struct uci_section *s = NULL, *dmmap_section = NULL;
@@ -1247,14 +1247,14 @@ static int remove_ifname_from_uci(char *ifname, void *data, char *nontag_name)
 	while (tok != NULL) {
 		if (strncmp(intf, tok, sizeof(intf)) != 0) {
 			if (new_ifname[0] != '\0') {
-				strcat(new_ifname, " ");
+				strncat(new_ifname, " ", 1);
 			}
-			strcat(new_ifname, tok);
+			strncat(new_ifname, tok, strlen(tok));
 		} else {
 			if (new_ifname[0] != '\0') {
-				strcat(new_ifname, " ");
+				strncat(new_ifname, " ", 1);
 			}
-			strcat(new_ifname, nontag_name);
+			strncat(new_ifname, nontag_name, strlen(nontag_name));
 		}
 		tok = strtok(NULL, " ");
 	}
@@ -1355,9 +1355,9 @@ static int delete_br_vlanport(char *refparam, struct dmctx *ctx, void *data, cha
 
 				if (strstr(pch_tag, ".") == NULL) {
 					if( new_ifname[0] != '\0') {
-						strcat(new_ifname, " ");
+						strncat(new_ifname, " ", 1);
 					}
-					strcat(new_ifname, pch);
+					strncat(new_ifname, pch, strlen(pch));
 				} else {
 					/* Remove the tag. */
 					char name[50] = {0};
@@ -1366,9 +1366,9 @@ static int delete_br_vlanport(char *refparam, struct dmctx *ctx, void *data, cha
 					char *tag = strtok_r(name, ".", &tag_id);
 					if (tag != NULL) {
 						if( new_ifname[0] != '\0') {
-							strcat(new_ifname, " ");
+							strncat(new_ifname, " ", 1);
 						}
-						strcat(new_ifname, tag);
+						strncat(new_ifname, tag, strlen(tag));
 					}
 					if (tag_id != NULL) {
 						/* Check if the tag_id is 1, then remove the device section. */
@@ -1497,9 +1497,9 @@ static int delete_br_vlan(char *refparam, struct dmctx *ctx, void *data, char *i
 			}
 
 			if (final_list[0] != '\0') {
-				strcat(final_list, " ");
+				strncat(final_list, " ", 1);
 			}
-			strcat(final_list, tag);
+			strncat(final_list, tag, strlen(tag));
 		}
 		tok = strtok_r(NULL, " ", &end);
 	}
@@ -1681,7 +1681,7 @@ static int get_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, c
 		if(((struct bridging_port_args *)data)->vlan) {
 			strncpy(buf, linker, 5);
 			buf[5] = '\0';
-			strcat(buf, "1");
+			strncat(buf, "1", 1);
 			linker = buf;
 		}
 	}
@@ -1769,7 +1769,7 @@ static int set_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, c
 
 			/* Create untagged upstream interface. */
 			if (intf_tag[0] != '\0')
-				strcat(intf_tag, ".1");
+				strncat(intf_tag, ".1", 2);
 
 			if (strncmp(intf, intf_tag, sizeof(intf)) == 0) {
 				char *tok = strtok(intf, ".");
@@ -1798,9 +1798,9 @@ static int set_port_lower_layer(char *refparam, struct dmctx *ctx, void *data, c
 				strncpy(intf_name, name, sizeof(intf_name) - 1);
 				/* Append the interface name to it. */
 				if (intf_name[0] != '\0') {
-					strcat(intf_name, " ");
+					strncat(intf_name, " ", 1);
 				}
-				strcat(intf_name, linker);
+				strncat(intf_name, linker, strlen(linker));
 
 				synchronize_multi_config_sections_with_dmmap_set("ports", "ethport", "dmmap_bridge_port", "bridge_port", "ifname", linker, instance, br_key);
 
@@ -1967,9 +1967,9 @@ static int set_vlan_port_port_ref(char *refparam, struct dmctx *ctx, void *data,
 							}
 						}
 						if (new_ifname[0] != '\0') {
-							strcat(new_ifname, " ");
+							strncat(new_ifname, " ", 1);
 						}
-						strcat(new_ifname, new_if);
+						strncat(new_ifname, new_if, strlen(new_if));
 
 						/* Add ifname to vlanport section in dmmap. */
 						uci_path_foreach_option_eq(bbfdm, "dmmap_network", "vlanport", "vport_inst", instance, sec) {
@@ -1990,9 +1990,9 @@ static int set_vlan_port_port_ref(char *refparam, struct dmctx *ctx, void *data,
 					}
 				} else {
 					if (new_ifname[0] != '\0') {
-						strcat(new_ifname, " ");
+						strncat(new_ifname, " ", 1);
 					}
-					strcat(new_ifname, tok);
+					strncat(new_ifname, tok, strlen(tok));
 				}
 				tok = strtok_r(NULL, " ", &end);
 			}

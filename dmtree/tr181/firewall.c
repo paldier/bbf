@@ -323,8 +323,8 @@ static int get_rule_source_interface(char *refparam, struct dmctx *ctx, void *da
 			if (vallink == NULL)
 				continue;
 			if (*buf != '\0')
-				strcat(buf, ",");
-			strcat(buf, vallink);
+				strncat(buf, ",", 1);
+			strncat(buf, vallink, strlen(vallink));
 		}
 	} else {
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), zone, &vallink);
@@ -357,8 +357,8 @@ static int get_rule_dest_interface(char *refparam, struct dmctx *ctx, void *data
 			if (ifaceobj == NULL)
 				continue;
 			if (*buf != '\0')
-				strcat(buf, ",");
-			strcat(buf, ifaceobj);
+				strncat(buf, ",", 1);
+			strncat(buf, ifaceobj, strlen(ifaceobj));
 		}
 	}
 

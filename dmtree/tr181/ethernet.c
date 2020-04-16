@@ -804,6 +804,8 @@ static int get_EthernetLink_Status(char *refparam, struct dmctx *ctx, void *data
 static int get_EthernetLink_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "link_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1220,6 +1222,8 @@ static int get_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, 
 
 	get_dmmap_section_of_config_section("dmmap_network", "device", section_name(((struct dm_args *)data)->section), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "vlan_term_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

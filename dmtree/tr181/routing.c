@@ -1007,6 +1007,8 @@ static int get_RoutingRouteInformationInterfaceSetting_RouteLifetime(char *refpa
 static int get_RoutingRouter_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "router_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1034,8 +1036,9 @@ static int get_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, vo
 		get_dmmap_section_of_config_section("dmmap_route_forwarding", "route", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
 	else
 		get_dmmap_section_of_config_section("dmmap_route_forwarding", "route_disabled", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "routealias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "routealias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1070,8 +1073,9 @@ static int get_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *c
 		dmmap_section = ((struct routingfwdargs *)data)->routefwdsection;
 	else
 		get_dmmap_section_of_config_section("dmmap_route_forwarding", "route6", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "route6alias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "route6alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

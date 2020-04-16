@@ -323,8 +323,9 @@ static int get_x_iopsys_eu_dropbear_alias(char *refparam, struct dmctx *ctx, voi
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_dropbear", "dropbear", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "dropbearalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "dropbearalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

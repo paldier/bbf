@@ -214,8 +214,9 @@ static int get_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *in
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_dsl", "ptm-device", section_name(((struct ptm_args *)data)->ptm_sec), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "ptmlinkalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "ptmlinkalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

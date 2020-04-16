@@ -467,6 +467,8 @@ static int get_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *dat
 	struct uci_section *s = NULL;
 	uci_path_foreach_option_eq(bbfdm, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", instance, s) {
 		dmuci_get_value_by_section_string(s, "interface_stack_alias", value);
+		if ((*value)[0] == '\0')
+			dmasprintf(value, "cpe-%s", instance);
 	}
 	return 0;
 }

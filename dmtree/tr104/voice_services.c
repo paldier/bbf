@@ -2045,22 +2045,21 @@ static void codec_update_id()
 ////////////////////////SET AND GET ALIAS/////////////////////////////////
 int get_service_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *service_section = (struct uci_section *)data;
-	dmuci_get_value_by_section_string(service_section, "vsalias", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "vsalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
 static int set_service_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *service_section = (struct uci_section *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(service_section, "vsalias", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "vsalias", value);
 			return 0;
 	}
 	return 0;
@@ -2068,22 +2067,21 @@ static int set_service_alias(char *refparam, struct dmctx *ctx, void *data, char
 
 int get_cap_codec_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct codec_args *cur_codec_args = (struct codec_args *)data;
-	dmuci_get_value_by_section_string(cur_codec_args->codec_section, "codecalias", value);
+	dmuci_get_value_by_section_string(((struct codec_args *)data)->codec_section, "codecalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
 static int set_cap_codec_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct codec_args *cur_codec_args = (struct codec_args *)data;
-
 	switch (action) {
 		case VALUECHECK:
 			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			dmuci_set_value_by_section(cur_codec_args->codec_section, "codecalias", value);
+			dmuci_set_value_by_section(((struct codec_args *)data)->codec_section, "codecalias", value);
 			return 0;
 	}
 	return 0;
@@ -2091,18 +2089,17 @@ static int set_cap_codec_alias(char *refparam, struct dmctx *ctx, void *data, ch
 
 static int get_voice_profile_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct sip_args *sipargs = (struct sip_args *)data;
 	struct uci_section *dmmap_section = NULL;
 
-	get_dmmap_section_of_config_section("dmmap_voice_client", "sip_service_provider", section_name(sipargs->sip_section), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "profilealias", value);
+	get_dmmap_section_of_config_section("dmmap_voice_client", "sip_service_provider", section_name(((struct sip_args *)data)->sip_section), &dmmap_section);
+	dmuci_get_value_by_section_string(dmmap_section, "profilealias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
 static int set_voice_profile_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct sip_args *sipargs = (struct sip_args *)data;
 	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
@@ -2111,7 +2108,7 @@ static int set_voice_profile_alias(char *refparam, struct dmctx *ctx, void *data
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			get_dmmap_section_of_config_section("dmmap_voice_client", "sip_service_provider", section_name(sipargs->sip_section), &dmmap_section);
+			get_dmmap_section_of_config_section("dmmap_voice_client", "sip_service_provider", section_name(((struct sip_args *)data)->sip_section), &dmmap_section);
 			if (dmmap_section)
 				dmuci_set_value_by_section(dmmap_section, "profilealias", value);
 			return 0;
@@ -2121,18 +2118,17 @@ static int set_voice_profile_alias(char *refparam, struct dmctx *ctx, void *data
 
 static int get_line_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct tel_args *telarg = (struct tel_args *)data;
 	struct uci_section *dmmap_section = NULL;
 
-	get_dmmap_section_of_config_section("dmmap_voice_client", "tel_line", section_name(telarg->tel_section), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "linealias", value);
+	get_dmmap_section_of_config_section("dmmap_voice_client", "tel_line", section_name(((struct tel_args *)data)->tel_section), &dmmap_section);
+	dmuci_get_value_by_section_string(dmmap_section, "linealias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
 static int set_line_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct tel_args *telarg = (struct tel_args *)data;
 	struct uci_section *dmmap_section = NULL;
 
 	switch (action) {
@@ -2141,7 +2137,7 @@ static int set_line_alias(char *refparam, struct dmctx *ctx, void *data, char *i
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			get_dmmap_section_of_config_section("dmmap_voice_client", "tel_line", section_name(telarg->tel_section), &dmmap_section);
+			get_dmmap_section_of_config_section("dmmap_voice_client", "tel_line", section_name(((struct tel_args *)data)->tel_section), &dmmap_section);
 			if (dmmap_section)
 				dmuci_set_value_by_section(dmmap_section, "linealias", value);
 			return 0;
@@ -2152,6 +2148,8 @@ static int set_line_alias(char *refparam, struct dmctx *ctx, void *data, char *i
 static int get_line_codec_list_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct line_codec_args *)data)->codec_sec, "codecalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

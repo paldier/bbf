@@ -553,9 +553,8 @@ static int get_server_pool_alias(char *refparam, struct dmctx *ctx, void *data, 
 	struct uci_section *dmmap_sect = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_dhcp", "dhcp", section_name(((struct dhcp_args *)data)->dhcp_sec), &dmmap_sect);
-	dmuci_get_value_by_section_string(dmmap_sect, "dhcp_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
+	if (dmmap_sect)
+		dmuci_get_value_by_section_string(dmmap_sect, "dhcp_alias", value);
 	return 0;
 }
 
@@ -1232,9 +1231,8 @@ static int get_dhcp_static_alias(char *refparam, struct dmctx *ctx, void *data, 
 {
 	struct uci_section *dmmap_section = NULL;
 	get_dmmap_section_of_config_section("dmmap_dhcp", "host", section_name(((struct dhcp_static_args *)data)->dhcpsection), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "ldhcpalias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "ldhcpalias", value);
 	return 0;
 }
 
@@ -1397,8 +1395,7 @@ static int set_DHCPv4Client_Enable(char *refparam, struct dmctx *ctx, void *data
 static int get_DHCPv4Client_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dhcp_client_args *)data)->dhcp_client_dm, "bbf_dhcpv4client_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
+
 	return 0;
 }
 
@@ -1700,8 +1697,6 @@ static int set_DHCPv4ClientSentOption_Enable(char *refparam, struct dmctx *ctx, 
 static int get_DHCPv4ClientSentOption_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dhcp_client_option_args *)data)->opt_sect, "bbf_dhcpv4_sentopt_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1834,8 +1829,6 @@ static int set_DHCPv4ClientReqOption_Enable(char *refparam, struct dmctx *ctx, v
 static int get_DHCPv4ClientReqOption_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dhcp_client_option_args *)data)->opt_sect, "bbf_dhcpv4_reqtopt_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1965,8 +1958,6 @@ static int get_DHCPv4Server_PoolNumberOfEntries(char *refparam, struct dmctx *ct
 static int get_DHCPv4ServerPoolOption_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dhcp_client_option_args *)data)->opt_sect, "bbf_dhcpv4_servpool_option_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -2101,8 +2092,6 @@ static int set_DHCPv4RelayForwarding_Enable(char *refparam, struct dmctx *ctx, v
 static int get_DHCPv4RelayForwarding_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dhcp_client_args *)data)->dhcp_client_dm, "bbf_dhcpv4relay_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

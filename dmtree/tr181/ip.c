@@ -1188,8 +1188,6 @@ static int get_IPInterfaceTWAMPReflector_Status(char *refparam, struct dmctx *ct
 static int get_IPInterfaceTWAMPReflector_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "twamp_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1295,9 +1293,8 @@ static int get_IPInterface_Alias(char *refparam, struct dmctx *ctx, void *data, 
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct ip_args *)data)->ip_sec), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "ip_int_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "ip_int_alias", value);
 	return 0;
 }
 
@@ -1324,9 +1321,8 @@ static int get_ipv4_alias(char *refparam, struct dmctx *ctx, void *data, char *i
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct ip_args *)data)->ip_sec), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "ipv4_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
+	if (dmmap_section)
+		dmuci_get_value_by_section_string(dmmap_section, "ipv4_alias", value);
 	return 0;
 }
 
@@ -1355,11 +1351,8 @@ static int get_IPInterfaceIPv6Address_Alias(char *refparam, struct dmctx *ctx, v
 
 	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6", "ipv6_instance", instance, dmmap_section) {
 		dmuci_get_value_by_section_string(dmmap_section, "section_name", &name);
-		if (strcmp(name, section_name(((struct ipv6_args *)data)->ip_sec)) == 0) {
+		if(strcmp(name, section_name(((struct ipv6_args *)data)->ip_sec)) == 0)
 			dmuci_get_value_by_section_string(dmmap_section, "ipv6_alias", value);
-			if ((*value)[0] == '\0')
-				dmasprintf(value, "cpe-%s", instance);
-		}
 	}
 	return 0;
 }
@@ -1394,11 +1387,8 @@ static int get_IPInterfaceIPv6Prefix_Alias(char *refparam, struct dmctx *ctx, vo
 
 	uci_path_foreach_option_eq(bbfdm, "dmmap_network", "ipv6prefix", "ipv6prefix_instance", instance, dmmap_section) {
 		dmuci_get_value_by_section_string(dmmap_section, "section_name", &name);
-		if(strcmp(name, section_name(((struct ipv6prefix_args *)data)->ip_sec)) == 0) {
+		if(strcmp(name, section_name(((struct ipv6prefix_args *)data)->ip_sec)) == 0)
 			dmuci_get_value_by_section_string(dmmap_section, "ipv6prefix_alias", value);
-			if ((*value)[0] == '\0')
-				dmasprintf(value, "cpe-%s", instance);
-		}
 	}
 	return 0;
 }

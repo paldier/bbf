@@ -269,8 +269,6 @@ static int get_DSLLine_Status(char *refparam, struct dmctx *ctx, void *data, cha
 static int get_DSLLine_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dsl_line_args *)data)->line_sec, "dsl_line_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -898,8 +896,6 @@ static int get_DSLChannel_Status(char *refparam, struct dmctx *ctx, void *data, 
 static int get_DSLChannel_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dsl_channel_args *)data)->channel_sec, "dsl_channel_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

@@ -489,8 +489,6 @@ static int get_USBInterface_Alias(char *refparam, struct dmctx *ctx, void *data,
 {
 	struct usb_interface *usbiface= (struct usb_interface *)data;
 	dmuci_get_value_by_section_string(usbiface->dm_usb_iface, "usb_iface_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -596,8 +594,6 @@ static int get_USBPort_Alias(char *refparam, struct dmctx *ctx, void *data, char
 {
 	struct usb_port* port=(struct usb_port *)data;
 	dmuci_get_value_by_section_string(port->dm_usb_port, "usb_port_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -700,8 +696,6 @@ static int get_USBUSBHostsHost_Alias(char *refparam, struct dmctx *ctx, void *da
 {
 	struct usb_port* port=(struct usb_port *)data;
 	dmuci_get_value_by_section_string(port->dm_usb_port, "usb_host_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

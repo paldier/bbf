@@ -759,8 +759,6 @@ static int get_QoSClassification_Alias(char *refparam, struct dmctx *ctx, void *
 {
 	struct dmmap_dup *p= (struct dmmap_dup*)data;
 	dmuci_get_value_by_section_string(p->dmmap_section, "classifalias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -3546,8 +3544,6 @@ static int get_QoSQueueStats_Alias(char *refparam, struct dmctx *ctx, void *data
 {
 	struct queuestats *qts= (struct queuestats*)data;
 	dmuci_get_value_by_section_string(qts->dmsect, "queuestatsalias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

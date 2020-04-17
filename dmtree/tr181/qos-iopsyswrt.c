@@ -2803,11 +2803,8 @@ static int get_QoSQueue_Status(char *refparam, struct dmctx *ctx, void *data, ch
 static int get_QoSQueue_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
-
 	get_dmmap_section_of_config_section("dmmap_qos", "queue", section_name((struct uci_section *)data), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "queuealias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -3241,11 +3238,8 @@ static int get_QoSShaper_Status(char *refparam, struct dmctx *ctx, void *data, c
 static int get_QoSShaper_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
-
 	get_dmmap_section_of_config_section("dmmap_qos", "shaper", section_name((struct uci_section *)data), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "shaperalias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

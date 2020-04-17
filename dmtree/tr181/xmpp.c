@@ -121,8 +121,6 @@ static int set_connection_enable(char *refparam, struct dmctx *ctx, void *data, 
 static int get_xmpp_connection_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "connection_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -435,8 +433,6 @@ static int set_xmpp_connection_server_enable(char *refparam, struct dmctx *ctx, 
 static int get_xmpp_connection_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "connection_server_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

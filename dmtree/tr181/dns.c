@@ -309,8 +309,6 @@ static int get_server_status(char *refparam, struct dmctx *ctx, void *data, char
 static int get_server_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "dns_server_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -397,8 +395,6 @@ static int get_forwarding_status(char *refparam, struct dmctx *ctx, void *data, 
 static int get_forwarding_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "dns_server_alias", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

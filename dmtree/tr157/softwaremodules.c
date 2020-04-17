@@ -226,8 +226,6 @@ static int get_SoftwareModulesExecEnv_Alias(char *refparam, struct dmctx *ctx, v
 		dmuci_get_value_by_section_string(s, "name", &env_name);
 		if (strcmp(env_name, name) == 0) {
 			dmuci_get_value_by_section_string(s, "alias", value);
-			if ((*value)[0] == '\0')
-				dmasprintf(value, "cpe-%s", instance);
 			return 0;
 		}
 	}
@@ -386,8 +384,6 @@ static int get_SoftwareModulesDeploymentUnit_Alias(char *refparam, struct dmctx 
 		dmuci_get_value_by_section_string(s, "environment", &du_env);
 		if ((strcmp(du_name, name) == 0) && (strcmp(du_env, environment) == 0)) {
 			dmuci_get_value_by_section_string(s, "alias", value);
-			if ((*value)[0] == '\0')
-				dmasprintf(value, "cpe-%s", instance);
 			return 0;
 		}
 	}
@@ -557,8 +553,6 @@ static int get_SoftwareModulesExecutionUnit_Alias(char *refparam, struct dmctx *
 		dmuci_get_value_by_section_string(s, "environment", &eu_env);
 		if ((strcmp(eu_euid, euid) == 0) && (strcmp(eu_env, environment) == 0)) {
 			dmuci_get_value_by_section_string(s, "alias", value);
-			if ((*value)[0] == '\0')
-				dmasprintf(value, "cpe-%s", instance);
 			return 0;
 		}
 	}

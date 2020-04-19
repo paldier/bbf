@@ -397,8 +397,9 @@ static int get_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *d
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_ddns", "service", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "clientalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "clientalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -413,8 +414,7 @@ static int set_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *d
 			break;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_ddns", "service", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "clientalias", value);
+			dmuci_set_value_by_section(dmmap_section, "clientalias", value);
 			break;
 	}
 	return 0;
@@ -749,6 +749,8 @@ static int set_DynamicDNSServer_Name(char *refparam, struct dmctx *ctx, void *da
 static int get_DynamicDNSServer_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "serveralias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

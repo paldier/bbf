@@ -230,8 +230,9 @@ static int get_GRETunnel_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct dmmap_dup *)data)->config_section), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "gretunnel_alias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "gretunnel_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -246,8 +247,7 @@ static int set_GRETunnel_Alias(char *refparam, struct dmctx *ctx, void *data, ch
 			break;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct dmmap_dup *)data)->config_section), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "gretunnel_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "gretunnel_alias", value);
 			break;
 	}
 	return 0;
@@ -334,8 +334,9 @@ static int get_GRETunnelInterface_Alias(char *refparam, struct dmctx *ctx, void 
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct dmmap_dup *)data)->config_section), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "greiface_alias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "greiface_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -350,8 +351,7 @@ static int set_GRETunnelInterface_Alias(char *refparam, struct dmctx *ctx, void 
 			break;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct dmmap_dup *)data)->config_section), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "greiface_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "greiface_alias", value);
 			break;
 	}
 	return 0;

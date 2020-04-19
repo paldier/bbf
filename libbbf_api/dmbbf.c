@@ -552,14 +552,14 @@ char *update_instance_alias_bbfdm(int action, char **last_inst , void *argv[])
 			snprintf(buf, sizeof(buf), "%d", 1);
 		else
 			snprintf(buf, sizeof(buf), "%d", atoi(*last_inst)+1);
-		instance = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, inst_opt, buf);
+		instance = dmuci_set_value_by_section_bbfdm(s, inst_opt, buf);
 	}
 	*last_inst = instance;
 	if (action == INSTANCE_MODE_ALIAS) {
 		dmuci_get_value_by_section_string(s, alias_opt, &alias);
 		if (alias[0] == '\0') {
 			snprintf(buf, sizeof(buf), "cpe-%s", instance);
-			alias = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, alias_opt, buf);
+			alias = dmuci_set_value_by_section_bbfdm(s, alias_opt, buf);
 		}
 		snprintf(buf, sizeof(buf), "[%s]", alias);
 		instance = dmstrdup(buf);
@@ -600,13 +600,13 @@ char *update_instance_alias(int action, char **last_inst, void *argv[])
 char *update_instance_without_section(int action, char **last_inst, void *argv[])
 {
 	char *instance, buf[64] = {0};
-	long instnbr = (long) argv[0];
+	int instnbr = (int) argv[0];
 
 	if (action == INSTANCE_MODE_ALIAS) {
-		snprintf(buf, sizeof(buf), "[cpe-%ld]", instnbr);
+		snprintf(buf, sizeof(buf), "[cpe-%d]", instnbr);
 		instance = dmstrdup(buf);
 	} else {
-		snprintf(buf, sizeof(buf), "%ld", instnbr);
+		snprintf(buf, sizeof(buf), "%d", instnbr);
 		instance = dmstrdup(buf);
 	}
 	return instance;

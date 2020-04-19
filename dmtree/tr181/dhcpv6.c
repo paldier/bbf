@@ -509,6 +509,8 @@ static int set_DHCPv6Client_Enable(char *refparam, struct dmctx *ctx, void *data
 static int get_DHCPv6Client_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dhcpv6_client_args *)data)->dhcp_client_dm, "bbf_dhcpv6client_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -833,8 +835,9 @@ static int get_DHCPv6ServerPool_Alias(char *refparam, struct dmctx *ctx, void *d
 	struct uci_section *dmmap_sect = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_dhcpv6", "dhcp", section_name(((struct dhcpv6_args *)data)->dhcp_sec), &dmmap_sect);
-	if (dmmap_sect)
-		dmuci_get_value_by_section_string(dmmap_sect, "dhcpv6_serv_pool_alias", value);
+	dmuci_get_value_by_section_string(dmmap_sect, "dhcpv6_serv_pool_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -849,8 +852,7 @@ static int set_DHCPv6ServerPool_Alias(char *refparam, struct dmctx *ctx, void *d
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_dhcpv6", "dhcp", section_name(((struct dhcpv6_args *)data)->dhcp_sec), &dmmap_sect);
-			if (dmmap_sect)
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "dhcpv6_serv_pool_alias", value);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "dhcpv6_serv_pool_alias", value);
 			return 0;
 	}
 	return 0;
@@ -1236,6 +1238,8 @@ static int set_DHCPv6ServerPoolOption_Enable(char *refparam, struct dmctx *ctx, 
 static int get_DHCPv6ServerPoolOption_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dhcpv6_client_option_args *)data)->opt_sect, "bbf_dhcpv6_servpool_option_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 
 }

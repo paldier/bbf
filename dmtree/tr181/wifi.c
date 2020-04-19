@@ -1608,8 +1608,9 @@ static int get_WiFiEndPoint_Alias(char *refparam, struct dmctx *ctx, void *data,
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_enp_args *)data)->wifi_enp_sec), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "endpointalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "endpointalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1624,8 +1625,7 @@ static int set_WiFiEndPoint_Alias(char *refparam, struct dmctx *ctx, void *data,
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_enp_args *)data)->wifi_enp_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "endpointalias", value);
+			dmuci_set_value_by_section(dmmap_section, "endpointalias", value);
 			return 0;
 	}
 	return 0;
@@ -1670,11 +1670,11 @@ static int get_WiFiEndPointProfile_Alias(char *refparam, struct dmctx *ctx, void
 	char *epinst = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name((struct uci_section*)data), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "endpointinstance", &epinst);
+	dmuci_get_value_by_section_string(dmmap_section, "endpointinstance", &epinst);
 	get_dmmap_section_of_config_section_eq("dmmap_wireless", "ep_profile", "ep_key", epinst, &dm);
-	if (dm)
-		dmuci_get_value_by_section_string(dm, "ep_profile_alias", value);
+	dmuci_get_value_by_section_string(dm, "ep_profile_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1690,11 +1690,9 @@ static int set_WiFiEndPointProfile_Alias(char *refparam, struct dmctx *ctx, void
 			break;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name((struct uci_section*)data), &dmmap_section);
-			if (dmmap_section)
-				dmuci_get_value_by_section_string(dmmap_section, "endpointinstance", &epinst);
+			dmuci_get_value_by_section_string(dmmap_section, "endpointinstance", &epinst);
 			get_dmmap_section_of_config_section_eq("dmmap_wireless", "ep_profile", "ep_key", epinst, &dm);
-			if (dm)
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dm, "ep_profile_alias", value);
+			dmuci_set_value_by_section_bbfdm(dm, "ep_profile_alias", value);
 			break;
 	}
 	return 0;
@@ -2035,8 +2033,9 @@ static int get_radio_alias(char *refparam, struct dmctx *ctx, void *data, char *
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_wireless", "wifi-device", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "radioalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "radioalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -2051,8 +2050,7 @@ static int set_radio_alias(char *refparam, struct dmctx *ctx, void *data, char *
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_wireless", "wifi-device", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "radioalias", value);
+			dmuci_set_value_by_section(dmmap_section, "radioalias", value);
 			return 0;
 	}
 	return 0;
@@ -2063,8 +2061,9 @@ static int get_ssid_alias(char *refparam, struct dmctx *ctx, void *data, char *i
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_ssid_args *)data)->wifi_ssid_sec), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "ssidalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "ssidalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -2079,8 +2078,7 @@ static int set_ssid_alias(char *refparam, struct dmctx *ctx, void *data, char *i
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_ssid_args *)data)->wifi_ssid_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "ssidalias", value);
+			dmuci_set_value_by_section(dmmap_section, "ssidalias", value);
 			return 0;
 	}
 	return 0;
@@ -2091,8 +2089,9 @@ static int get_access_point_alias(char *refparam, struct dmctx *ctx, void *data,
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_acp_args *)data)->wifi_acp_sec), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "accesspointalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "accesspointalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -2107,8 +2106,7 @@ static int set_access_point_alias(char *refparam, struct dmctx *ctx, void *data,
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_acp_args *)data)->wifi_acp_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "accesspointalias", value);
+			dmuci_set_value_by_section(dmmap_section, "accesspointalias", value);
 			return 0;
 	}
 	return 0;

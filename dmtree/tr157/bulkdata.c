@@ -344,6 +344,8 @@ static int set_BulkDataProfile_Enable(char *refparam, struct dmctx *ctx, void *d
 static int get_BulkDataProfile_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "profile_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 

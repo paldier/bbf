@@ -993,6 +993,8 @@ static int get_br_alias(char *refparam, struct dmctx *ctx, void *data, char *ins
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct bridging_args *)data)->bridge_sec), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "bridge_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1007,8 +1009,7 @@ static int set_br_alias(char *refparam, struct dmctx *ctx, void *data, char *ins
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct bridging_args *)data)->bridge_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "bridge_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "bridge_alias", value);
 			return 0;
 	}
 	return 0;
@@ -1034,6 +1035,11 @@ static int get_br_port_alias(char *refparam, struct dmctx *ctx, void *data, char
 			}
 		}
 	}
+	if ((*value)[0] == '\0') {
+		dmasprintf(value, "cpe-%s", instance);
+	} else {
+		dmuci_set_value_by_section(dmmap_section, "bridge_port_alias", *value);
+	}
 	return 0;
 }
 
@@ -1048,8 +1054,7 @@ static int set_br_port_alias(char *refparam, struct dmctx *ctx, void *data, char
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_bridge_port", "bridge_port", section_name(((struct bridging_port_args *)data)->bridge_port_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "bridge_port_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "bridge_port_alias", value);
 			return 0;
 	}
 	return 0;
@@ -1059,9 +1064,10 @@ static int get_br_vlan_alias(char *refparam, struct dmctx *ctx, void *data, char
 {
 	struct uci_section *dmmap_section = NULL;
 
-	/* Interface section needs to be browsed to get the value for vlan alias. */
 	get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct bridging_vlan_args *)data)->bridge_vlan_sec), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "bridge_vlan_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1076,8 +1082,7 @@ static int set_br_vlan_alias(char *refparam, struct dmctx *ctx, void *data, char
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct bridging_vlan_args *)data)->bridge_vlan_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "bridge_vlan_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "bridge_vlan_alias", value);
 			return 0;
 	}
 	return 0;

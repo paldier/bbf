@@ -195,8 +195,9 @@ static int get_nat_interface_setting_alias(char *refparam, struct dmctx *ctx, vo
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "interface_setting_alias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "interface_setting_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -211,8 +212,7 @@ static int set_nat_interface_setting_alias(char *refparam, struct dmctx *ctx, vo
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_firewall", "zone", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "interface_setting_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "interface_setting_alias", value);
 			return 0;
 	}
 	return 0;
@@ -304,8 +304,9 @@ static int get_nat_port_mapping_alias(char *refparam, struct dmctx *ctx, void *d
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "port_mapping_alias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "port_mapping_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -320,8 +321,7 @@ static int set_nat_port_mapping_alias(char *refparam, struct dmctx *ctx, void *d
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_firewall", "redirect", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "port_mapping_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "port_mapping_alias", value);
 			return 0;
 	}
 	return 0;

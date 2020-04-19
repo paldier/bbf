@@ -511,8 +511,10 @@ static int get_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *
 
 	get_dmmap_section_of_config_section("dmmap_ports", "ethport", section_name(((struct eth_port_args *)data)->eth_port_sec), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "eth_port_alias", value);
-	if ((*value)[0] == '\0')
+	if ((*value)[0] == '\0') {
 		dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "name", value);
+		dmuci_set_value_by_section(dmmap_section, "eth_port_alias", *value);
+	}
 	return 0;
 }
 
@@ -527,8 +529,7 @@ static int set_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_ports", "ethport", section_name(((struct eth_port_args *)data)->eth_port_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "eth_port_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "eth_port_alias", value);
 			return 0;
 	}
 	return 0;
@@ -804,6 +805,8 @@ static int get_EthernetLink_Status(char *refparam, struct dmctx *ctx, void *data
 static int get_EthernetLink_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "link_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1220,6 +1223,8 @@ static int get_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, 
 
 	get_dmmap_section_of_config_section("dmmap_network", "device", section_name(((struct dm_args *)data)->section), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "vlan_term_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1234,8 +1239,7 @@ static int set_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, 
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_network", "device", section_name(((struct dm_args *)data)->section), &dmmap_section);
-			if(dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "vlan_term_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "vlan_term_alias", value);
 			return 0;
 	}
 	return 0;

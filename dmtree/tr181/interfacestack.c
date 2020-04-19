@@ -21,16 +21,12 @@ struct interfacestack_data {
 /*************************************************************
 * ENTRY METHOD
 **************************************************************/
-static char *get_instance_by_section(struct dmctx *dmctx, int mode, char *dmmap_config, char *section, struct uci_section *s, char *instance_option, char *alias_option)
+static char *get_instance_by_section(int mode, char *dmmap_config, char *section, struct uci_section *s, char *instance_option, char *alias_option)
 {
 	struct uci_section *dmmap_section;
 	char *instance;
 
 	get_dmmap_section_of_config_section(dmmap_config, section, section_name(s), &dmmap_section);
-	if (dmmap_section == NULL) {
-		return "";
-	}
-
 	if (mode == INSTANCE_MODE_NUMBER) {
 		dmuci_get_value_by_section_string(dmmap_section, instance_option, &instance);
 	} else {
@@ -45,9 +41,6 @@ static char *get_alias_by_section(char *dmmap_config, char *section, struct uci_
 	char *alias;
 
 	get_dmmap_section_of_config_section(dmmap_config, section, section_name(s), &dmmap_section);
-	if (dmmap_section == NULL) {
-		return "";
-	}
 	dmuci_get_value_by_section_string(dmmap_section, alias_option, &alias);
 	return alias;
 }
@@ -62,8 +55,8 @@ static struct uci_section *create_dmmap_interface_stack_section(char *curr_inst)
 		return s;
 	}
 	if (!s) {
-		DMUCI_ADD_SECTION(bbfdm, "dmmap_interface_stack", "interface_stack", &s, &name);
-		DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, "interface_stack_instance", curr_inst);
+		dmuci_add_section_bbfdm("dmmap_interface_stack", "interface_stack", &s, &name);
+		dmuci_set_value_by_section_bbfdm(s, "interface_stack_instance", curr_inst);
 	}
 	return s;
 }
@@ -72,7 +65,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 {
 	struct interfacestack_data ifdata = {0};
 	struct uci_section *s = NULL, *sd = NULL, *port, *port_s, *ss, *dmmap_s = NULL;
-	char *proto, *type, *pch, *layer_inst, *vb, *higheralias, *ifname, *br_inst, *mg, *value, *device, *name;
+	char *proto, *type, *pch, *layer_inst, *vb, *higheralias, *ifname, *br_inst, *mg, *value, *device, *name, *bridge_port_inst;
 	char *v = "";
 	char *loweralias = "";
 	char *interface_stack_int = NULL, *interface_stack_int_last = NULL, *wanifname, *wanlinker, *mac, *sectionname, *package, *section;
@@ -90,14 +83,17 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		dmuci_get_value_by_section_string(s, "proto", &proto);
 		if (strcmp(section_name(s), "loopback") == 0 || *proto == '\0')
 			continue;
-		layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "ip_int_instance", "ip_int_alias");
+		layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_network", "interface", s, "ip_int_instance", "ip_int_alias");
 		if (*layer_inst == '\0')
 			continue;
 		snprintf(buf_higherlayer, sizeof(buf_higherlayer), "Device.IP.Interface.%s.", layer_inst);
 		higheralias = get_alias_by_section("dmmap_network", "interface", s, "ip_int_alias");
-		snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
+		if (*higheralias == '\0')
+			snprintf(buf_higheralias, sizeof(buf_higheralias), "cpe-%s", layer_inst);
+		else
+			snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
 		if (strstr(proto, "ppp")) {
-			layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "ppp_int_instance", "ppp_int_alias");
+			layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_network", "interface", s, "ppp_int_instance", "ppp_int_alias");
 			if (*layer_inst == '\0')
 				continue;
 			snprintf(buf_lowerlayer, sizeof(buf_lowerlayer), "Device.PPP.Interface.%s.", layer_inst);
@@ -108,6 +104,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			if (device[0] != '\0') {
 				adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cVLANTermination%c", dmroot, dm_delim, dm_delim, dm_delim), device, &v);
 				loweralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
+				layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_network", "device", s, "vlan_term_instance", "vlan_term_alias");
 				if (v != NULL)
 					found = 1;
 			}
@@ -115,11 +112,15 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			if (mac[0] != '\0' && found == 0) {
 				adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), mac, &v);
 				loweralias = get_alias_by_section("dmmap", "link", s, "link_alias");
+				layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap", "link", s, "link_instance", "link_alias");
 				if (v == NULL)
 					v = "";
 			}
 			snprintf(buf_lowerlayer, sizeof(buf_lowerlayer), "%s", v);
-			snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
+			if (*loweralias == '\0')
+				snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", layer_inst);
+			else
+				snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
 		}
 		ifdata.higherlayer = buf_higherlayer;
 		ifdata.lowerlayer = buf_lowerlayer;
@@ -137,17 +138,21 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		dmuci_get_value_by_section_string(s, "proto", &proto);
 		if (!strstr(proto, "ppp"))
 			continue;
-		layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "ppp_int_instance", "ppp_int_alias");
+		layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_network", "interface", s, "ppp_int_instance", "ppp_int_alias");
 		if (*layer_inst == '\0')
 			continue;
-		snprintf(buf_higherlayer, sizeof(buf_higheralias), "Device.PPP.Interface.%s.", layer_inst);
+		snprintf(buf_higherlayer, sizeof(buf_higherlayer), "Device.PPP.Interface.%s.", layer_inst);
 		higheralias = get_alias_by_section("dmmap_network", "interface", s, "ppp_int_alias");
-		snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
+		if (*higheralias == '\0')
+			snprintf(buf_higheralias, sizeof(buf_higheralias), "cpe-%s", layer_inst);
+		else
+			snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
 		found = 0;
 		device = get_device(section_name(s));
 		if (device[0] != '\0') {
 			adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cVLANTermination%c", dmroot, dm_delim, dm_delim, dm_delim), device, &v);
 			loweralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
+			layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_network", "device", s, "vlan_term_instance", "vlan_term_alias");
 			if (v != NULL)
 				found = 1;
 		}
@@ -155,11 +160,15 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		if (mac[0] != '\0' && found == 0) {
 			adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), mac, &v);
 			loweralias = get_alias_by_section("dmmap", "link", s, "link_alias");
+			layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap", "link", s, "link_instance", "link_alias");
 			if (v == NULL)
 				v = "";
 		}
 		snprintf(buf_lowerlayer, sizeof(buf_lowerlayer), "%s", v);
-		snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
+		if (*loweralias == '\0')
+			snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", layer_inst);
+		else
+			snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
 		ifdata.higherlayer = buf_higherlayer;
 		ifdata.lowerlayer = buf_lowerlayer;
 		ifdata.higheralias = buf_higheralias;
@@ -177,12 +186,15 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		dmuci_get_value_by_section_string(s, "name", &name);
 		if (strcmp(type, "untagged") == 0 || !is_vlan_termination_section(name))
 			continue;
-		layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "device", s, "vlan_term_instance", "vlan_term_alias");
+		layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_network", "device", s, "vlan_term_instance", "vlan_term_alias");
 		if (*layer_inst == '\0')
 			continue;
 		snprintf(buf_higherlayer, sizeof(buf_higherlayer), "Device.Ethernet.VLANTermination.%s.", layer_inst);
 		higheralias = get_alias_by_section("dmmap_network", "device", s, "vlan_term_alias");
-		snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
+		if (*higheralias == '\0')
+			snprintf(buf_higheralias, sizeof(buf_higheralias), "cpe-%s", layer_inst);
+		else
+			snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
 		char *macaddr = get_macaddr_from_device(name);
 		if (macaddr[0] != '\0') {
 			if (is_mac_exist(macaddr)) {
@@ -203,11 +215,15 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			mac = get_macaddr(section_name(ss));
 			if (strcmp(pch, mac) == 0) {
 				loweralias = get_alias_by_section("dmmap", "link", ss, "link_alias");
+				layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap", "link", ss, "link_instance", "link_alias");
 				break;
 			}
 		}
 		snprintf(buf_lowerlayer, sizeof(buf_lowerlayer), "%s", v);
-		snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
+		if (*loweralias == '\0')
+			snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", layer_inst);
+		else
+			snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
 		ifdata.higherlayer = buf_higherlayer;
 		ifdata.lowerlayer = buf_lowerlayer;
 		ifdata.higheralias = buf_higheralias;
@@ -228,12 +244,15 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		dmuci_get_value_by_section_string(s, "ifname", &ifname);
 		if (*ifname == '\0' || *ifname == '@')
 			continue;
-		layer_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap", "link", s, "link_instance", "link_alias");
+		layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap", "link", s, "link_instance", "link_alias");
 		if (*layer_inst == '\0')
 			continue;
 		snprintf(buf_higherlayer, sizeof(buf_higherlayer), "Device.Ethernet.Link.%s.", layer_inst);
 		higheralias = get_alias_by_section("dmmap", "link", s, "link_alias");
-		snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
+		if (*higheralias == '\0')
+			snprintf(buf_higheralias, sizeof(buf_higheralias), "cpe-%s", layer_inst);
+		else
+			snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
 		if (strcmp(type, "bridge") == 0) {
 			br_inst = get_alias_by_section("dmmap_network", "interface", s, "bridge_instance");
 			uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
@@ -242,6 +261,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 					snprintf(linker, sizeof(linker), "%s+", section_name(port));
 					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &v);
 					dmuci_get_value_by_section_string(port, "bridge_port_alias", &loweralias);
+					dmuci_get_value_by_section_string(port, "bridge_port_instance", &layer_inst);
 					break;
 				}
 			}
@@ -253,13 +273,17 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), wanlinker, &v);
 					dmfree(wanlinker);
 					loweralias = get_alias_by_section("dmmap_ports", "ethport", port_s, "eth_port_alias");
+					layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_ports", "ethport", port_s, "eth_port_instance", "eth_port_alias");
 					break;
 				}
 			}
 		}
 		if (v == NULL)
 			v = "";
-		snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
+		if (*loweralias == '\0')
+			snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", layer_inst);
+		else
+			snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
 		ifdata.higherlayer = buf_higherlayer;
 		ifdata.lowerlayer = v;
 		ifdata.higheralias = buf_higheralias;
@@ -276,7 +300,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		dmuci_get_value_by_section_string(s, "type", &type);
 		if (strcmp(type, "bridge") != 0)
 			continue;
-		br_inst = get_instance_by_section(dmctx, dmctx->instance_mode, "dmmap_network", "interface", s, "bridge_instance", "bridge_alias");
+		br_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_network", "interface", s, "bridge_instance", "bridge_alias");
 		if (*br_inst == '\0')
 			continue;
 		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
@@ -285,7 +309,11 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 				snprintf(linker, sizeof(linker), "%s+", section_name(port));
 				adm_entry_get_linker_param(dmctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &pch);
 				dmuci_get_value_by_section_string(port, "bridge_port_alias", &higheralias);
-				snprintf(buf_tmp, sizeof(buf_tmp), "%s", higheralias);
+				dmuci_get_value_by_section_string(port, "bridge_port_instance", &bridge_port_inst);
+				if (*higheralias == '\0')
+					snprintf(buf_tmp, sizeof(buf_tmp), "cpe-%s", bridge_port_inst);
+				else
+					snprintf(buf_tmp, sizeof(buf_tmp), "%s", higheralias);
 				if (pch == NULL)
 					pch = "";
 				break;
@@ -316,7 +344,11 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			if (vb == NULL)
 				vb = "";
 			dmuci_get_value_by_section_string(sd, "bridge_port_alias", &loweralias);
-			snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
+			bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_bridge_port", "bridge_port", sd, "bridge_port_instance", "bridge_port_alias");
+			if (*loweralias == '\0')
+				snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", bridge_port_inst);
+			else
+				snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
 
 			ifdata.higherlayer = pch;
 			ifdata.lowerlayer = vb;
@@ -328,19 +360,25 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&ifdata, interface_stack_int) == DM_STOP)
 				goto end;
 
-			snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", loweralias);
+			if (*loweralias == '\0')
+				snprintf(buf_higheralias, sizeof(buf_higheralias), "cpe-%s", bridge_port_inst);
+			else
+				snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", loweralias);
 			if(strcmp(package, "ports") == 0) {
 				adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, &v);
 				loweralias = get_alias_by_section("dmmap_ports", "ethport", port_s, "eth_port_alias");
+				bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_ports", "ethport", port_s, "eth_port_instance", "eth_port_alias");
 			} else if(strcmp(package, "wireless") == 0) {
 				adm_entry_get_linker_param(dmctx,dm_print_path("%s%cWiFi%cSSID%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, &v);
 				loweralias = get_alias_by_section("dmmap_wireless", "wifi-iface", port_s, "ssidalias");
+				bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_wireless", "wifi-iface", port_s, "ssidinstance", "ssidalias");
 			}	else if(strcmp(package, "network") == 0) {
 				if(strstr(ifname, "atm")) {
 					adm_entry_get_linker_param(dmctx,dm_print_path("%s%cATM%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, &v);
 					uci_foreach_sections("dsl", "atm-device", ss) {
 						if(strcmp(section_name(ss), ifname) == 0) {
 							loweralias = get_alias_by_section("dmmap_dsl", "atm-device", ss, "atmlinkalias");
+							bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_dsl", "atm-device", port_s, "atmlinkinstance", "atmlinkalias");
 							break;
 						}
 					}
@@ -349,6 +387,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 					uci_foreach_sections("dsl", "ptm-device", ss) {
 						if(strcmp(section_name(ss), ifname) == 0) {
 							loweralias = get_alias_by_section("dmmap_dsl", "ptm-device", ss, "ptmlinkalias");
+							bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_dsl", "ptm-device", port_s, "ptmlinkinstance", "ptmlinkalias");
 							break;
 						}
 					}
@@ -356,9 +395,13 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 					snprintf(linker, sizeof(linker), "%s.1", ifname);
 					adm_entry_get_linker_param(dmctx,dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &v);
 					loweralias = get_alias_by_section("dmmap_ports", "ethport", port_s, "eth_port_alias");
+					bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_ports", "ethport", port_s, "eth_port_instance", "eth_port_alias");
 				}
 			}
-			snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
+			if (*loweralias == '\0')
+				snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", bridge_port_inst);
+			else
+				snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
 			if (v == NULL)
 				v = "";
 			ifdata.higherlayer = vb;
@@ -372,7 +415,10 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 				goto end;
 
 			if(strcmp(package, "wireless") == 0) {
-				snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", loweralias);
+				if (*loweralias == '\0')
+					snprintf(buf_higheralias, sizeof(buf_higheralias), "cpe-%s", bridge_port_inst);
+				else
+					snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", loweralias);
 				uci_foreach_option_eq("wireless", "wifi-iface", "ifname", ifname, ss) {
 					dmuci_get_value_by_section_string(ss, "device", &device);
 				}
@@ -381,13 +427,17 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 					uci_foreach_sections("wireless", "wifi-device", ss) {
 						if(strcmp(section_name(ss), device) == 0) {
 							loweralias = get_alias_by_section("dmmap_wireless", "wifi-device", ss, "radioalias");
+							bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_wireless", "wifi-device", ss, "radioinstance", "radioalias");
 							break;
 						}
 					}
 				}
 				if (vb == NULL)
 					vb = "";
-				snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
+				if (*loweralias == '\0')
+					snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", bridge_port_inst);
+				else
+					snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
 				ifdata.higherlayer = v;
 				ifdata.lowerlayer = vb;
 				ifdata.higheralias = buf_higheralias;
@@ -401,15 +451,22 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 
 			if(strcmp(package, "network") == 0) {
 				if(strstr(ifname, "atm") || strstr(ifname, "ptm")) {
-					snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", loweralias);
+					if (*loweralias == '\0')
+						snprintf(buf_higheralias, sizeof(buf_higheralias), "cpe-%s", bridge_port_inst);
+					else
+						snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", loweralias);
 					char *link_channel = "channel_0";
 					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cDSL%cChannel%c", dmroot, dm_delim, dm_delim, dm_delim), link_channel, &vb);
 					if (vb == NULL)
 						vb = "";
 					uci_path_foreach_sections(bbfdm, "dmmap", "dsl_channel", ss) {
 						dmuci_get_value_by_section_string(ss, "dsl_channel_alias", &loweralias);
+						bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap", "dsl_channel", ss, "dsl_channel_instance", "dsl_channel_alias");
 					}
-					snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
+					if (*loweralias == '\0')
+						snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", bridge_port_inst);
+					else
+						snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
 					ifdata.higherlayer = v;
 					ifdata.lowerlayer = vb;
 					ifdata.higheralias = buf_higheralias;
@@ -420,15 +477,22 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 					if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&ifdata, interface_stack_int) == DM_STOP)
 						goto end;
 
-					snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", loweralias);
+					if (*loweralias == '\0')
+						snprintf(buf_higheralias, sizeof(buf_higheralias), "cpe-%s", bridge_port_inst);
+					else
+						snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", loweralias);
 					char *link_line = "line_0";
 					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cDSL%cLine%c", dmroot, dm_delim, dm_delim, dm_delim), link_line, &value);
 					if (value == NULL)
 						value = "";
 					uci_path_foreach_sections(bbfdm, "dmmap", "dsl_line", ss) {
 						dmuci_get_value_by_section_string(ss, "dsl_line_alias", &loweralias);
+						bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap", "dsl_line", ss, "dsl_line_instance", "dsl_line_alias");
 					}
-					snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
+					if (*loweralias == '\0')
+						snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", bridge_port_inst);
+					else
+						snprintf(buf_loweralias, sizeof(buf_loweralias), "%s", loweralias);
 					ifdata.higherlayer = vb;
 					ifdata.lowerlayer = value;
 					ifdata.higheralias = buf_higheralias;
@@ -467,6 +531,8 @@ static int get_InterfaceStack_Alias(char *refparam, struct dmctx *ctx, void *dat
 	struct uci_section *s = NULL;
 	uci_path_foreach_option_eq(bbfdm, "dmmap_interface_stack", "interface_stack", "interface_stack_instance", instance, s) {
 		dmuci_get_value_by_section_string(s, "interface_stack_alias", value);
+		if ((*value)[0] == '\0')
+			dmasprintf(value, "cpe-%s", instance);
 	}
 	return 0;
 }

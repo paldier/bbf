@@ -243,6 +243,8 @@ static int get_x_iopsys_eu_owsd_virtualhost_alias(char *refparam, struct dmctx *
 
 	get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name((struct uci_section *)data), &dmmap_section);
 	dmuci_get_value_by_section_string(dmmap_section, "olistenalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -257,8 +259,7 @@ static int set_x_iopsys_eu_owsd_virtualhost_alias(char *refparam, struct dmctx *
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_owsd", "owsd-listen", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "olistenalias", value);
+			dmuci_set_value_by_section(dmmap_section, "olistenalias", value);
 			return 0;
 	}
 	return 0;

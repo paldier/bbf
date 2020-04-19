@@ -108,8 +108,9 @@ static int get_user_alias(char *refparam, struct dmctx *ctx, void *data, char *i
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_users", "user", section_name((struct uci_section *)data), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "user_alias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "user_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
     return 0;
 }
 
@@ -158,8 +159,7 @@ static int set_user_alias(char *refparam, struct dmctx *ctx, void *data, char *i
 			break;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_users", "user", section_name((struct uci_section *)data), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "user_alias", value);
+			dmuci_set_value_by_section(dmmap_section, "user_alias", value);
 			return 0;
 	}
 	return 0;

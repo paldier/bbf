@@ -163,7 +163,7 @@ static int get_forwarding_last_inst()
 static char *forwarding_update_instance_alias_bbfdm(int action, char **last_inst, void *argv[])
 {
 	char *instance, *alias;
-	char buf[8] = {0};
+	char buf[64] = {0};
 
 	struct uci_section *s = (struct uci_section *) argv[0];
 	char *inst_opt = (char *) argv[1];
@@ -181,14 +181,14 @@ static char *forwarding_update_instance_alias_bbfdm(int action, char **last_inst
 		} else {
 			snprintf(buf, sizeof(buf), "%d", atoi(*last_inst)+1);
 		}
-		instance = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, inst_opt, buf);
+		instance = dmuci_set_value_by_section_bbfdm(s, inst_opt, buf);
 	}
 	*last_inst = instance;
 	if (action == INSTANCE_MODE_ALIAS) {
 		dmuci_get_value_by_section_string(s, alias_opt, &alias);
 		if (alias[0] == '\0') {
 			snprintf(buf, sizeof(buf), "cpe-%s", instance);
-			alias = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, alias_opt, buf);
+			alias = dmuci_set_value_by_section_bbfdm(s, alias_opt, buf);
 		}
 		snprintf(buf, sizeof(buf), "[%s]", alias);
 		instance = dmstrdup(buf);
@@ -223,7 +223,7 @@ static int get_forwarding6_last_inst()
 static char *forwarding6_update_instance_alias_bbfdm(int action, char **last_inst, void *argv[])
 {
 	char *instance, *alias;
-	char buf[8] = {0};
+	char buf[64] = {0};
 
 	struct uci_section *s = (struct uci_section *) argv[0];
 	char *inst_opt = (char *) argv[1];
@@ -241,14 +241,14 @@ static char *forwarding6_update_instance_alias_bbfdm(int action, char **last_ins
 		} else {
 			snprintf(buf, sizeof(buf), "%d", atoi(*last_inst)+1);
 		}
-		instance = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, inst_opt, buf);
+		instance = dmuci_set_value_by_section_bbfdm(s, inst_opt, buf);
 	}
 	*last_inst = instance;
 	if (action == INSTANCE_MODE_ALIAS) {
 		dmuci_get_value_by_section_string(s, alias_opt, &alias);
 		if (alias[0] == '\0') {
 			snprintf(buf, sizeof(buf), "cpe-%s", instance);
-			alias = DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, alias_opt, buf);
+			alias = dmuci_set_value_by_section_bbfdm(s, alias_opt, buf);
 		}
 		snprintf(buf, sizeof(buf), "[%s]", alias);
 		instance = dmstrdup(buf);
@@ -1007,6 +1007,8 @@ static int get_RoutingRouteInformationInterfaceSetting_RouteLifetime(char *refpa
 static int get_RoutingRouter_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "router_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1034,8 +1036,9 @@ static int get_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, vo
 		get_dmmap_section_of_config_section("dmmap_route_forwarding", "route", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
 	else
 		get_dmmap_section_of_config_section("dmmap_route_forwarding", "route_disabled", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "routealias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "routealias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1055,8 +1058,7 @@ static int set_router_ipv4forwarding_alias(char *refparam, struct dmctx *ctx, vo
 				get_dmmap_section_of_config_section("dmmap_route_forwarding", "route", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
 			else
 				get_dmmap_section_of_config_section("dmmap_route_forwarding", "route_disabled", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "routealias", value);
+			dmuci_set_value_by_section(dmmap_section, "routealias", value);
 			return 0;
 	}
 	return 0;
@@ -1070,8 +1072,9 @@ static int get_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *c
 		dmmap_section = ((struct routingfwdargs *)data)->routefwdsection;
 	else
 		get_dmmap_section_of_config_section("dmmap_route_forwarding", "route6", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "route6alias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "route6alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -1089,8 +1092,7 @@ static int set_RoutingRouterIPv6Forwarding_Alias(char *refparam, struct dmctx *c
 				dmmap_section = ((struct routingfwdargs *)data)->routefwdsection;
 			else
 				get_dmmap_section_of_config_section("dmmap_route_forwarding", "route6", section_name(((struct routingfwdargs *)data)->routefwdsection), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "route6alias", value);
+			dmuci_set_value_by_section(dmmap_section, "route6alias", value);
 			return 0;
 	}
 	return 0;

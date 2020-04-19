@@ -24,7 +24,7 @@ struct atm_args
 static int get_atm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
 	if (data && ((struct atm_args *)data)->ifname) {
-		*linker =  ((struct atm_args *)data)->ifname;
+		*linker = ((struct atm_args *)data)->ifname;
 		return 0;
 	}
 	*linker = "" ;
@@ -323,8 +323,9 @@ static int get_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *in
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_dsl", "atm-device", section_name(((struct atm_args *)data)->atm_sec), &dmmap_section);
-	if (dmmap_section)
-		dmuci_get_value_by_section_string(dmmap_section, "atmlinkalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "atmlinkalias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
@@ -339,8 +340,7 @@ static int set_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *in
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_dsl", "atm-device", section_name(((struct atm_args *)data)->atm_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_set_value_by_section(dmmap_section, "atmlinkalias", value);
+			dmuci_set_value_by_section(dmmap_section, "atmlinkalias", value);
 			return 0;
 	}
 	return 0;
@@ -385,7 +385,7 @@ DMOBJ tATMLinkObj[] = {
 
 DMLEAF tATMLinkParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
-{"Alias", &DMWRITE, DMT_STRING,  get_atm_alias, set_atm_alias, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_atm_alias, set_atm_alias, NULL, NULL, BBFDM_BOTH},
 {"Enable", &DMWRITE, DMT_BOOL, get_atm_enable, set_atm_enable, NULL, NULL, BBFDM_BOTH},
 {"Name", &DMREAD, DMT_STRING, get_atm_link_name, NULL, NULL, NULL, BBFDM_BOTH},
 {"Status", &DMREAD, DMT_STRING, get_atm_status, NULL, NULL, NULL, BBFDM_BOTH},

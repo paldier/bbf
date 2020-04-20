@@ -52,6 +52,7 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/times.c						\
 	../dmtree/tr181/upnp.c						\
 	../dmtree/tr181/x_iopsys_eu_igmp.c 			\
+	../dmtree/tr181/x_iopsys_eu_mld.c 			\
 	../dmtree/tr181/x_iopsys_eu_syslog.c		\
 	../dmtree/tr181/x_iopsys_eu_dropbear.c		\
 	../dmtree/tr181/x_iopsys_eu_owsd.c			\

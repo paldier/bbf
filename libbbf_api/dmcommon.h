@@ -340,4 +340,9 @@ char *replace_char(char *str, char find, char replace);
 int is_vlan_termination_section(char *name);
 int get_upstream_interface(char *intf_tag, int len);
 int create_mac_addr_upstream_intf(char *mac_addr, char *mac, int len);
+int get_br_key_from_lower_layer(char *lower_layer, char *key, size_t s_key);
+int get_igmp_snooping_interface_val(char *value, char *ifname, size_t s_ifname);
+void sync_dmmap_bool_to_uci_list(struct uci_section *s, char *section,
+				char *value, bool b);
+void del_dmmap_sec_with_opt_eq(char *dmmap_file, char *section, char *option, char *value);
 #endif

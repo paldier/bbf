@@ -9,9 +9,9 @@
  *
  */ 
 #include "dmentry.h"
-#include "x_iopsys_eu_igmp.h"
+#include "x_iopsys_eu_mld.h"
 
-static int add_igmp_proxy_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int add_mld_proxy_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char *inst, *value, *v, *s_name;
 	struct uci_section  *dmmap = NULL, *s = NULL;
@@ -19,28 +19,28 @@ static int add_igmp_proxy_obj(char *refparam, struct dmctx *ctx, void *data, cha
 
 	check_create_dmmap_package("dmmap_mcast");
 	inst = get_last_instance_lev2_bbfdm_dmmap_opt("dmmap_mcast", "proxy", "proxy_instance",
-						"proto", "igmp");
+						"proto", "mld");
 	snprintf(i_no, sizeof(i_no), "%d", inst ? atoi(inst)+1 : 1);
 
-	dmasprintf(&s_name, "igmp_proxy_%s", i_no);
+	dmasprintf(&s_name, "mld_proxy_%s", i_no);
 
 	dmuci_add_section("mcast", "proxy", &s, &value);
 	dmuci_rename_section_by_section(s, s_name);
 	dmuci_set_value_by_section(s, "enable", "0");
-	dmuci_set_value_by_section(s, "proto", "igmp");
+	dmuci_set_value_by_section(s, "proto", "mld");
 	dmuci_set_value_by_section(s, "version", "2");
 	dmuci_set_value_by_section(s, "robustness", "2");
 	dmuci_set_value_by_section(s, "aggregation", "0");
 
 	dmuci_add_section_bbfdm("dmmap_mcast", "proxy", &dmmap, &v);
 	dmuci_set_value_by_section(dmmap, "section_name", section_name(s));
-	dmuci_set_value_by_section(dmmap, "proto", "igmp");
+	dmuci_set_value_by_section(dmmap, "proto", "mld");
 	*instance = update_instance_bbfdm(dmmap, inst, "proxy_instance");
 
 	return 0;
 }
 
-static int del_igmp_proxy_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int del_mld_proxy_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *s = NULL, *ss = NULL, *dmmap_section = NULL;
 	int found = 0;
@@ -63,7 +63,7 @@ static int del_igmp_proxy_obj(char *refparam, struct dmctx *ctx, void *data, cha
 			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			break;
 		case DEL_ALL:
-			uci_foreach_option_eq("mcast", "proxy", "proto", "igmp", s) {
+			uci_foreach_option_eq("mcast", "proxy", "proto", "mld", s) {
 				if (found != 0){
 					get_dmmap_section_of_config_section("dmmap_mcast", "proxy", section_name(s), &dmmap_section);
 					if(dmmap_section != NULL)
@@ -85,13 +85,13 @@ static int del_igmp_proxy_obj(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
-static int browse_igmp_proxy_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mld_proxy_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *inst = NULL, *inst_last = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 
-	synchronize_specific_config_sections_with_dmmap_cont("mcast", "proxy", "dmmap_mcast", "proto", "igmp", &dup_list);
+	synchronize_specific_config_sections_with_dmmap_cont("mcast", "proxy", "dmmap_mcast", "proto", "mld", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
 		inst =  handle_update_instance(1, dmctx, &inst_last, update_instance_alias, 3, p->dmmap_section, "proxy_instance", "proxy_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)p->config_section, inst) == DM_STOP)
@@ -102,7 +102,7 @@ static int browse_igmp_proxy_inst(struct dmctx *dmctx, DMNODE *parent_node, void
 	return 0;
 }
 
-static int add_igmp_snooping_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int add_mld_snooping_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char *inst, *value, *v, *s_name;
 	struct uci_section  *dmmap = NULL, *s = NULL;
@@ -110,28 +110,28 @@ static int add_igmp_snooping_obj(char *refparam, struct dmctx *ctx, void *data, 
 
 	check_create_dmmap_package("dmmap_mcast");
 	inst = get_last_instance_lev2_bbfdm_dmmap_opt("dmmap_mcast", "snooping",
-					"snooping_instance", "proto", "igmp");
+					"snooping_instance", "proto", "mld");
 	snprintf(i_no, sizeof(i_no), "%d", inst ? atoi(inst)+1 : 1);
 
-	dmasprintf(&s_name, "igmp_snoop_%s", i_no);
+	dmasprintf(&s_name, "mld_snoop_%s", i_no);
 
 	dmuci_add_section("mcast", "snooping", &s, &value);
 	dmuci_rename_section_by_section(s, s_name);
 	dmuci_set_value_by_section(s, "enable", "0");
-	dmuci_set_value_by_section(s, "proto", "igmp");
+	dmuci_set_value_by_section(s, "proto", "mld");
 	dmuci_set_value_by_section(s, "version", "2");
 	dmuci_set_value_by_section(s, "robustness", "2");
 	dmuci_set_value_by_section(s, "aggregation", "0");
 
 	dmuci_add_section_bbfdm("dmmap_mcast", "snooping", &dmmap, &v);
 	dmuci_set_value_by_section(dmmap, "section_name", section_name(s));
-	dmuci_set_value_by_section(dmmap, "proto", "igmp");
+	dmuci_set_value_by_section(dmmap, "proto", "mld");
 	*instance = update_instance_bbfdm(dmmap, inst, "snooping_instance");
 
 	return 0;
 }
 
-static int del_igmp_snooping_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int del_mld_snooping_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *s = NULL, *ss = NULL, *dmmap_section = NULL;
 	int found = 0;
@@ -152,7 +152,7 @@ static int del_igmp_snooping_obj(char *refparam, struct dmctx *ctx, void *data, 
 			dmuci_delete_by_section((struct uci_section *)data, NULL, NULL);
 			break;
 		case DEL_ALL:
-			uci_foreach_option_eq("mcast", "snooping", "proto", "igmp", s) {
+			uci_foreach_option_eq("mcast", "snooping", "proto", "mld", s) {
 				if (found != 0){
 					get_dmmap_section_of_config_section("dmmap_mcast", "snooping", section_name(s), &dmmap_section);
 					if(dmmap_section != NULL)
@@ -174,13 +174,13 @@ static int del_igmp_snooping_obj(char *refparam, struct dmctx *ctx, void *data, 
 	return 0;
 }
 
-static int browse_igmp_snooping_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mld_snooping_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	char *inst = NULL, *inst_last = NULL;
 	struct dmmap_dup *p;
 	LIST_HEAD(dup_list);
 
-	synchronize_specific_config_sections_with_dmmap_cont("mcast", "snooping", "dmmap_mcast", "proto", "igmp", &dup_list);
+	synchronize_specific_config_sections_with_dmmap_cont("mcast", "snooping", "dmmap_mcast", "proto", "mld", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
 		inst =  handle_update_instance(1, dmctx, &inst_last, update_instance_alias, 3, p->dmmap_section, "snooping_instance", "snooping_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)p->config_section, inst) == DM_STOP)
@@ -190,12 +190,12 @@ static int browse_igmp_snooping_inst(struct dmctx *dmctx, DMNODE *parent_node, v
 	return 0;
 }
 
-static int get_igmps_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_foreach_option_eq("mcast", "snooping", "proto", "igmp", s) {
+	uci_foreach_option_eq("mcast", "snooping", "proto", "mld", s) {
 		cnt++;
 	}
 
@@ -203,12 +203,12 @@ static int get_igmps_no_of_entries(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-static int get_igmpp_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
 
-	uci_foreach_option_eq("mcast", "proxy", "proto", "igmp", s) {
+	uci_foreach_option_eq("mcast", "proxy", "proto", "mld", s) {
 		cnt++;
 	}
 
@@ -216,38 +216,38 @@ static int get_igmpp_no_of_entries(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-static int browse_igmps_cgrp_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mlds_cgrp_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	//ToDo
 	return 0;
 }
 
 #if 0
-static int browse_igmpp_cgrp_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mldp_cgrp_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	//ToDo
 	return 0;
 }
 #endif
 
-static int add_igmps_filter_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int add_mlds_filter_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char *last_inst, *v;
-	struct uci_section *dmmap_igmps_filter = NULL;
+	struct uci_section *dmmap_mlds_filter = NULL;
 
 	last_inst = get_last_instance_lev2_bbfdm_dmmap_opt("dmmap_mcast", "snooping_filter", "filter_instance",
 					"section_name", section_name((struct uci_section *)data));
 
-	dmuci_add_section_bbfdm("dmmap_mcast", "snooping_filter", &dmmap_igmps_filter, &v);
-	dmuci_set_value_by_section(dmmap_igmps_filter, "section_name",
+	dmuci_add_section_bbfdm("dmmap_mcast", "snooping_filter", &dmmap_mlds_filter, &v);
+	dmuci_set_value_by_section(dmmap_mlds_filter, "section_name",
 				section_name((struct uci_section *)data));
-	dmuci_set_value_by_section(dmmap_igmps_filter, "enable", "0");
-	*instance = update_instance_bbfdm(dmmap_igmps_filter, last_inst, "filter_instance");
+	dmuci_set_value_by_section(dmmap_mlds_filter, "enable", "0");
+	*instance = update_instance_bbfdm(dmmap_mlds_filter, last_inst, "filter_instance");
 
 	return 0;
 }
 
-static int del_igmps_filter_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int del_mlds_filter_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *d_sec = NULL;
 	char *f_inst, *ip_addr;
@@ -291,14 +291,14 @@ static int del_igmps_filter_obj(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-static int browse_igmps_filter_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mlds_filter_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct dmmap_dup *p = NULL;
 	char *inst = NULL, *inst_last = NULL;
 	LIST_HEAD(dup_list);
 
 	synchronize_specific_config_sections_with_dmmap_filter("mcast", "snooping", prev_data, "dmmap_mcast",
-			"snooping_filter", "igmp", &dup_list);
+			"snooping_filter", "mld", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
 		if (!p->config_section)
 			break;
@@ -314,7 +314,7 @@ static int browse_igmps_filter_inst(struct dmctx *dmctx, DMNODE *parent_node, vo
 	return 0;
 }
 
-static int get_igmps_filter_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_filter_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
@@ -328,7 +328,7 @@ static int get_igmps_filter_no_of_entries(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-static int get_igmps_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *f_sec;
 	char *f_inst, *f_enable;
@@ -352,7 +352,7 @@ static int get_igmps_filter_enable(char *refparam, struct dmctx *ctx, void *data
 }
 
 
-static int set_igmps_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mlds_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *f_sec;
 	char *f_inst, *ip_addr;
@@ -383,7 +383,7 @@ static int set_igmps_filter_enable(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-static int get_igmps_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *d_sec;
 	char *f_inst, *ip_addr;
@@ -406,7 +406,7 @@ static int get_igmps_filter_address(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int set_igmps_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mlds_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s = NULL;
 	char *s_inst, *up;
@@ -414,7 +414,7 @@ static int set_igmps_filter_address(char *refparam, struct dmctx *ctx, void *dat
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, 15, NULL, 0, IPv4Address, 1))
+			if (dm_validate_string(value, -1, 45, NULL, 0, IPv6Address, 1))
 				return FAULT_9007;
 
 			break;
@@ -438,7 +438,7 @@ static int set_igmps_filter_address(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int get_igmp_snooping_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mld_snooping_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", &val);
@@ -451,7 +451,7 @@ static int get_igmp_snooping_enable(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int set_igmp_snooping_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_snooping_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -469,7 +469,7 @@ static int set_igmp_snooping_enable(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int get_igmp_snooping_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mld_snooping_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "version", &val);
@@ -477,25 +477,25 @@ static int get_igmp_snooping_version(char *refparam, struct dmctx *ctx, void *da
 	if (strcmp(val, "2") == 0)
 		*value = "V2";
 	else
-		*value = "V3";
+		*value = "V1";
 
 	return 0;
 }
 
-static int set_igmp_snooping_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_snooping_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char val[4];
 
 	switch (action) {
 		case VALUECHECK:
-			if ((strcmp("V2", value) != 0) && (strcmp("V3", value) != 0))
+			if ((strcmp("V2", value) != 0) && (strcmp("V1", value) != 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
 			if (strcmp(value, "V2") == 0)
 				strcpy(val, "2");
 			else
-				strcpy(val, "3");
+				strcpy(val, "1");
 
 			dmuci_set_value_by_section((struct uci_section *)data, "version", val);
 			break;
@@ -504,13 +504,13 @@ static int set_igmp_snooping_version(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-static int get_igmp_snooping_robustness(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mld_snooping_robustness(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "robustness", value);
 	return 0;
 }
 
-static int set_igmp_snooping_robustness(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_snooping_robustness(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -526,7 +526,7 @@ static int set_igmp_snooping_robustness(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-static int get_igmp_snooping_aggregation(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mld_snooping_aggregation(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "aggregation", &val);
@@ -539,7 +539,7 @@ static int get_igmp_snooping_aggregation(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-static int set_igmp_snooping_aggregation(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_snooping_aggregation(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -557,7 +557,7 @@ static int set_igmp_snooping_aggregation(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-static int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mld_snooping_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char val[16], sec_name[16]; // taking 16 here is same as that is size of linux names usually supported
 	char *val1;
@@ -604,7 +604,7 @@ static int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-static int set_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_snooping_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char ifname[16];
 	switch (action)	{
@@ -624,25 +624,25 @@ static int set_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
-static int add_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int add_mldp_interface_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	// This section works but commented for now as it is tested not much yet.
 	char *last_inst, *v;
-	struct uci_section *dmmap_igmpp_interface = NULL;
+	struct uci_section *dmmap_mldp_interface = NULL;
 
 	last_inst = get_last_instance_lev2_bbfdm_dmmap_opt("dmmap_mcast", "proxy_interface", "iface_instance",
 					"section_name", section_name((struct uci_section *)data));
 
-	dmuci_add_section_bbfdm("dmmap_mcast", "proxy_interface", &dmmap_igmpp_interface, &v);
-	dmuci_set_value_by_section(dmmap_igmpp_interface, "section_name",
+	dmuci_add_section_bbfdm("dmmap_mcast", "proxy_interface", &dmmap_mldp_interface, &v);
+	dmuci_set_value_by_section(dmmap_mldp_interface, "section_name",
 				section_name((struct uci_section *)data));
-	dmuci_set_value_by_section(dmmap_igmpp_interface, "upstream", "0");
+	dmuci_set_value_by_section(dmmap_mldp_interface, "upstream", "0");
 
-	*instance = update_instance_bbfdm(dmmap_igmpp_interface, last_inst, "iface_instance");
+	*instance = update_instance_bbfdm(dmmap_mldp_interface, last_inst, "iface_instance");
 	return 0;
 }
 
-static int del_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int del_mldp_interface_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *d_sec = NULL;
 	char *f_inst, *if_name, *upstream;
@@ -698,14 +698,14 @@ static int del_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-static int browse_igmpp_interface_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mldp_interface_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct dmmap_dup *p = NULL;
 	char *inst = NULL, *inst_last = NULL;
 	LIST_HEAD(dup_list);
 
 	synchronize_specific_config_sections_with_dmmap_mcast_iface("mcast", "proxy", prev_data,
-			"dmmap_mcast", "proxy_interface", "igmp", &dup_list);
+			"dmmap_mcast", "proxy_interface", "mld", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
 		if (!p->config_section)
 			break;
@@ -721,25 +721,25 @@ static int browse_igmpp_interface_inst(struct dmctx *dmctx, DMNODE *parent_node,
 	return 0;
 }
 
-static int add_igmpp_filter_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
+static int add_mldp_filter_obj(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char *last_inst, *v;
-	struct uci_section *dmmap_igmpp_filter = NULL;
+	struct uci_section *dmmap_mldp_filter = NULL;
 
 	last_inst = get_last_instance_lev2_bbfdm_dmmap_opt("dmmap_mcast", "proxy_filter", "filter_instance",
 			"section_name", section_name((struct uci_section *)data));
 
-	dmuci_add_section_bbfdm("dmmap_mcast", "proxy_filter", &dmmap_igmpp_filter, &v);
-	dmuci_set_value_by_section(dmmap_igmpp_filter, "section_name",
+	dmuci_add_section_bbfdm("dmmap_mcast", "proxy_filter", &dmmap_mldp_filter, &v);
+	dmuci_set_value_by_section(dmmap_mldp_filter, "section_name",
 			section_name((struct uci_section *)data));
-	dmuci_set_value_by_section(dmmap_igmpp_filter, "enable", "0");
+	dmuci_set_value_by_section(dmmap_mldp_filter, "enable", "0");
 
-	*instance = update_instance_bbfdm(dmmap_igmpp_filter, last_inst, "filter_instance");
+	*instance = update_instance_bbfdm(dmmap_mldp_filter, last_inst, "filter_instance");
 
 	return 0;
 }
 
-static int del_igmpp_filter_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+static int del_mldp_filter_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *d_sec = NULL;
 	char *f_inst, *ip_addr;
@@ -783,14 +783,14 @@ static int del_igmpp_filter_obj(char *refparam, struct dmctx *ctx, void *data, c
 	return 0;
 }
 
-static int browse_igmpp_filter_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mldp_filter_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct dmmap_dup *p = NULL;
 	char *inst = NULL, *inst_last = NULL;
 	LIST_HEAD(dup_list);
 
 	synchronize_specific_config_sections_with_dmmap_filter("mcast", "proxy", prev_data, "dmmap_mcast",
-			"proxy_filter", "igmp", &dup_list);
+			"proxy_filter", "mld", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
 		if (!p->config_section)
 			break;
@@ -806,7 +806,7 @@ static int browse_igmpp_filter_inst(struct dmctx *dmctx, DMNODE *parent_node, vo
 	return 0;
 }
 
-static int get_igmpp_interface_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_interface_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
@@ -820,7 +820,7 @@ static int get_igmpp_interface_no_of_entries(char *refparam, struct dmctx *ctx, 
 	return 0;
 }
 
-static int get_igmpp_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *f_sec;
 	char *f_inst, *f_enable;
@@ -842,7 +842,7 @@ static int get_igmpp_filter_enable(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-static int set_igmpp_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mldp_filter_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *f_sec;
 	char *f_inst, *ip_addr;
@@ -871,7 +871,7 @@ static int set_igmpp_filter_enable(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-static int get_igmpp_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *d_sec;
 	char *f_inst, *ip_addr;
@@ -894,7 +894,7 @@ static int get_igmpp_filter_address(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int set_igmpp_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mldp_filter_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct uci_section *s = NULL;
 	char *s_inst, *up;
@@ -902,7 +902,7 @@ static int set_igmpp_filter_address(char *refparam, struct dmctx *ctx, void *dat
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, 15, NULL, 0, IPv4Address, 1))
+			if (dm_validate_string(value, -1, 45, NULL, 0, IPv6Address, 1))
 				return FAULT_9007;
 
 			break;
@@ -927,138 +927,138 @@ static int set_igmpp_filter_address(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int browse_igmps_cgrp_assoc_dev_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mlds_cgrp_assoc_dev_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	//ToDo
 	return 0;
 }
 
-static int browse_igmpp_cgrp_assoc_dev_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mldp_cgrp_assoc_dev_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	//ToDo
 	return 0;
 }
 
-static int browse_igmps_cgrp_stats_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mlds_cgrp_stats_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	//ToDo
 	return 0;
 }
 
-static int browse_igmpp_cgrp_stats_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_mldp_cgrp_stats_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	//ToDo
 	return 0;
 }
-static int get_igmps_cgrp_gaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	//ToDo
-	return 0;
-}
-
-static int get_igmpp_cgrp_gaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_cgrp_gaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmps_cgrp_assoc_dev_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_cgrp_gaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmpp_cgrp_assoc_dev_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_cgrp_assoc_dev_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmps_cgrp_adev_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_cgrp_assoc_dev_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmpp_cgrp_adev_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_cgrp_adev_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmps_cgrp_stats_rsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_cgrp_adev_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmpp_cgrp_stats_rsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_cgrp_stats_rsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmps_cgrp_stats_rrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_cgrp_stats_rsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmpp_cgrp_stats_rrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_cgrp_stats_rrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmps_cgrp_stats_qsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_cgrp_stats_rrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmpp_cgrp_stats_qsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_cgrp_stats_qsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmps_cgrp_stats_qrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_cgrp_stats_qsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmpp_cgrp_stats_qrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_cgrp_stats_qrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmps_cgrp_stats_lsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_cgrp_stats_qrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmpp_cgrp_stats_lsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_cgrp_stats_lsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmps_cgrp_stats_lrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_cgrp_stats_lsent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmpp_cgrp_stats_lrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mlds_cgrp_stats_lrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int get_igmp_proxy_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_cgrp_stats_lrcvd(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	//ToDo
+	return 0;
+}
+
+static int get_mld_proxy_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", &val);
@@ -1070,7 +1070,7 @@ static int get_igmp_proxy_enable(char *refparam, struct dmctx *ctx, void *data, 
 
 	return 0;
 }
-static int set_igmp_proxy_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_proxy_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -1088,7 +1088,7 @@ static int set_igmp_proxy_enable(char *refparam, struct dmctx *ctx, void *data, 
 	return 0;
 }
 
-static int get_igmp_proxy_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mld_proxy_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "version", &val);
@@ -1096,25 +1096,25 @@ static int get_igmp_proxy_version(char *refparam, struct dmctx *ctx, void *data,
 	if (strcmp(val, "2") == 0)
 		*value = "V2";
 	else
-		*value = "V3";
+		*value = "V1";
 
 	return 0;
 }
 
-static int set_igmp_proxy_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_proxy_version(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char val[4];
 
 	switch (action) {
 		case VALUECHECK:
-			if ((strcmp("V2", value) != 0) && (strcmp("V3", value) != 0))
+			if ((strcmp("V2", value) != 0) && (strcmp("V1", value) != 0))
 				return FAULT_9007;
 			break;
 		case VALUESET:
 			if (strcmp(value, "V2") == 0)
 				strcpy(val, "2");
 			else
-				strcpy(val, "3");
+				strcpy(val, "1");
 
 			dmuci_set_value_by_section((struct uci_section *)data, "version", val);
 			break;
@@ -1123,31 +1123,31 @@ static int set_igmp_proxy_version(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-static int get_igmp_proxy_robustness(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mld_proxy_robustness(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "robustness", value);
 	return 0;
 }
 
-static int get_igmpp_query_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_query_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "query_interval", value);
 	return 0;
 }
 
-static int get_igmpp_q_response_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_q_response_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "query_response_interval", value);
 	return 0;
 }
 
-static int get_igmpp_last_mq_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_last_mq_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "last_member_query_interval", value);
 	return 0;
 }
 
-static int set_igmpp_query_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mldp_query_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -1163,7 +1163,7 @@ static int set_igmpp_query_interval(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int set_igmpp_q_response_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mldp_q_response_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -1179,7 +1179,7 @@ static int set_igmpp_q_response_interval(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-static int set_igmpp_last_mq_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mldp_last_mq_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -1195,7 +1195,7 @@ static int set_igmpp_last_mq_interval(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-static int set_igmp_proxy_robustness(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_proxy_robustness(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 
 	switch (action) {
@@ -1211,7 +1211,7 @@ static int set_igmp_proxy_robustness(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-static int get_igmp_proxy_aggregation(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mld_proxy_aggregation(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "aggregation", &val);
@@ -1224,7 +1224,7 @@ static int get_igmp_proxy_aggregation(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-static int get_igmp_proxy_fast_leave(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mld_proxy_fast_leave(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *val;
 	dmuci_get_value_by_section_string((struct uci_section *)data, "fast_leave", &val);
@@ -1237,7 +1237,7 @@ static int get_igmp_proxy_fast_leave(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-static int set_igmp_proxy_fast_leave(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_proxy_fast_leave(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -1255,7 +1255,7 @@ static int set_igmp_proxy_fast_leave(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-static int set_igmp_proxy_aggregation(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mld_proxy_aggregation(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	bool b;
 
@@ -1273,7 +1273,7 @@ static int set_igmp_proxy_aggregation(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-static int get_igmpp_filter_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_filter_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
@@ -1288,20 +1288,20 @@ static int get_igmpp_filter_no_of_entries(char *refparam, struct dmctx *ctx, voi
 }
 
 #if 0
-static int get_igmpp_interface_snooping(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_interface_snooping(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//ToDo
 	return 0;
 }
 
-static int set_igmpp_interface_snooping(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mldp_interface_snooping(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	//ToDo
 	return 0;
 }
 #endif
 
-static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mldp_interface_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker, *interface_linker = NULL;
 	char ifname[16];
@@ -1355,7 +1355,7 @@ static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-static int get_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_interface_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *d_sec, *s;
 	char *ifname, *f_inst;
@@ -1450,7 +1450,7 @@ end:
 	return 0;
 }
 
-static int set_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+static int set_mldp_interface_upstream(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *f_inst, *ifname;
 	struct uci_section *d_sec;
@@ -1483,7 +1483,7 @@ static int set_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-static int get_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_mldp_interface_upstream(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *d_sec;
 	char *f_inst, *up;
@@ -1506,127 +1506,127 @@ static int get_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-/* ***Device.X_IOPSYS_EU_IGMP. *** */
-DMOBJ X_IOPSYS_EU_IGMPObj[] = {
+/* ***Device.X_IOPSYS_EU_MLD. *** */
+DMOBJ X_IOPSYS_EU_MLDObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Snooping", &DMWRITE, add_igmp_snooping_obj, del_igmp_snooping_obj, NULL, browse_igmp_snooping_inst, NULL, NULL, NULL, X_IOPSYS_EU_IGMPSnoopingObj, X_IOPSYS_EU_IGMPSnoopingParams, NULL, BBFDM_BOTH},
-{"Proxy", &DMWRITE, add_igmp_proxy_obj, del_igmp_proxy_obj, NULL, browse_igmp_proxy_inst, NULL, NULL, NULL, X_IOPSYS_EU_IGMPProxyObj, X_IOPSYS_EU_IGMPProxyParams, NULL, BBFDM_BOTH},
+{"Snooping", &DMWRITE, add_mld_snooping_obj, del_mld_snooping_obj, NULL, browse_mld_snooping_inst, NULL, NULL, NULL, X_IOPSYS_EU_MLDSnoopingObj, X_IOPSYS_EU_MLDSnoopingParams, NULL, BBFDM_BOTH},
+{"Proxy", &DMWRITE, add_mld_proxy_obj, del_mld_proxy_obj, NULL, browse_mld_proxy_inst, NULL, NULL, NULL, X_IOPSYS_EU_MLDProxyObj, X_IOPSYS_EU_MLDProxyParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF X_IOPSYS_EU_IGMPParams[] = {
-{"SnoopingNumberOfEntries", &DMREAD, DMT_UNINT, get_igmps_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
-{"ProxyNumberOfEntries", &DMREAD, DMT_UNINT, get_igmpp_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+DMLEAF X_IOPSYS_EU_MLDParams[] = {
+{"SnoopingNumberOfEntries", &DMREAD, DMT_UNINT, get_mlds_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{"ProxyNumberOfEntries", &DMREAD, DMT_UNINT, get_mldp_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMOBJ X_IOPSYS_EU_IGMPSnoopingObj[] = {
-{"ClientGroup", &DMREAD, NULL, NULL, NULL, browse_igmps_cgrp_inst, NULL, NULL, NULL, IGMPSnoopingCLientGroupObj, IGMPSnoopingClientGroupParams, NULL, BBFDM_BOTH},
-{"Filter", &DMWRITE, add_igmps_filter_obj, del_igmps_filter_obj, NULL, browse_igmps_filter_inst, NULL, NULL, NULL, NULL, IGMPSnoopingFilterParams, NULL, BBFDM_BOTH},
+DMOBJ X_IOPSYS_EU_MLDSnoopingObj[] = {
+{"ClientGroup", &DMREAD, NULL, NULL, NULL, browse_mlds_cgrp_inst, NULL, NULL, NULL, MLDSnoopingCLientGroupObj, MLDSnoopingClientGroupParams, NULL, BBFDM_BOTH},
+{"Filter", &DMWRITE, add_mlds_filter_obj, del_mlds_filter_obj, NULL, browse_mlds_filter_inst, NULL, NULL, NULL, NULL, MLDSnoopingFilterParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMOBJ IGMPSnoopingCLientGroupObj[] = {
-{"AssociatedDevice", &DMREAD, NULL, NULL, NULL, browse_igmps_cgrp_assoc_dev_inst, NULL, NULL, NULL, NULL, IGMPSnoopingClientGroupAssociatedDeviceParams, NULL, BBFDM_BOTH},
-{"ClientGroupStats", &DMREAD, NULL, NULL, NULL, browse_igmps_cgrp_stats_inst, NULL, NULL, NULL, NULL, IGMPSnoopingClientGroupStatsParams, NULL, BBFDM_BOTH},
+DMOBJ MLDSnoopingCLientGroupObj[] = {
+{"AssociatedDevice", &DMREAD, NULL, NULL, NULL, browse_mlds_cgrp_assoc_dev_inst, NULL, NULL, NULL, NULL, MLDSnoopingClientGroupAssociatedDeviceParams, NULL, BBFDM_BOTH},
+{"ClientGroupStats", &DMREAD, NULL, NULL, NULL, browse_mlds_cgrp_stats_inst, NULL, NULL, NULL, NULL, MLDSnoopingClientGroupStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF IGMPSnoopingClientGroupParams[] = {
-{"GroupAddress", &DMREAD, DMT_STRING, get_igmps_cgrp_gaddr, NULL, NULL, NULL, BBFDM_BOTH},
-{"AssociatedDeviceNumberOfEntries", &DMREAD, DMT_UNINT, get_igmps_cgrp_assoc_dev_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+DMLEAF MLDSnoopingClientGroupParams[] = {
+{"GroupAddress", &DMREAD, DMT_STRING, get_mlds_cgrp_gaddr, NULL, NULL, NULL, BBFDM_BOTH},
+{"AssociatedDeviceNumberOfEntries", &DMREAD, DMT_UNINT, get_mlds_cgrp_assoc_dev_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF IGMPSnoopingFilterParams[] = {
-{"Enable", &DMWRITE, DMT_BOOL, get_igmps_filter_enable, set_igmps_filter_enable, NULL, NULL, BBFDM_BOTH},
-{"IPAddress", &DMWRITE, DMT_STRING, get_igmps_filter_address, set_igmps_filter_address, NULL, NULL, BBFDM_BOTH},
+DMLEAF MLDSnoopingFilterParams[] = {
+{"Enable", &DMWRITE, DMT_BOOL, get_mlds_filter_enable, set_mlds_filter_enable, NULL, NULL, BBFDM_BOTH},
+{"IPAddress", &DMWRITE, DMT_STRING, get_mlds_filter_address, set_mlds_filter_address, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF IGMPSnoopingClientGroupAssociatedDeviceParams[] = {
-{"Interface", &DMREAD, DMT_STRING, get_igmps_cgrp_adev_iface, NULL, NULL, NULL, BBFDM_BOTH},
+DMLEAF MLDSnoopingClientGroupAssociatedDeviceParams[] = {
+{"Interface", &DMREAD, DMT_STRING, get_mlds_cgrp_adev_iface, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF IGMPSnoopingClientGroupStatsParams[] = {
-{"ReportsSent", &DMREAD, DMT_UNINT, get_igmps_cgrp_stats_rsent, NULL, NULL, NULL, BBFDM_BOTH},
-{"ReportsReceived", &DMREAD, DMT_UNINT, get_igmps_cgrp_stats_rrcvd, NULL, NULL, NULL, BBFDM_BOTH},
-{"QueriesSent", &DMREAD, DMT_UNINT, get_igmps_cgrp_stats_qsent, NULL, NULL, NULL, BBFDM_BOTH},
-{"QueriesReceived", &DMREAD, DMT_UNINT, get_igmps_cgrp_stats_qrcvd, NULL, NULL, NULL, BBFDM_BOTH},
-{"LeavesSent", &DMREAD, DMT_UNINT, get_igmps_cgrp_stats_lsent, NULL, NULL, NULL, BBFDM_BOTH},
-{"LeavesReceived", &DMREAD, DMT_UNINT, get_igmps_cgrp_stats_lrcvd, NULL, NULL, NULL, BBFDM_BOTH},
+DMLEAF MLDSnoopingClientGroupStatsParams[] = {
+{"ReportsSent", &DMREAD, DMT_UNINT, get_mlds_cgrp_stats_rsent, NULL, NULL, NULL, BBFDM_BOTH},
+{"ReportsReceived", &DMREAD, DMT_UNINT, get_mlds_cgrp_stats_rrcvd, NULL, NULL, NULL, BBFDM_BOTH},
+{"QueriesSent", &DMREAD, DMT_UNINT, get_mlds_cgrp_stats_qsent, NULL, NULL, NULL, BBFDM_BOTH},
+{"QueriesReceived", &DMREAD, DMT_UNINT, get_mlds_cgrp_stats_qrcvd, NULL, NULL, NULL, BBFDM_BOTH},
+{"LeavesSent", &DMREAD, DMT_UNINT, get_mlds_cgrp_stats_lsent, NULL, NULL, NULL, BBFDM_BOTH},
+{"LeavesReceived", &DMREAD, DMT_UNINT, get_mlds_cgrp_stats_lrcvd, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF X_IOPSYS_EU_IGMPSnoopingParams[] = {
-{"Enable", &DMWRITE, DMT_BOOL, get_igmp_snooping_enable, set_igmp_snooping_enable, NULL, NULL, BBFDM_BOTH},
-{"Version", &DMWRITE, DMT_STRING, get_igmp_snooping_version, set_igmp_snooping_version, NULL, NULL, BBFDM_BOTH},
-{"Robustness", &DMWRITE, DMT_UNINT, get_igmp_snooping_robustness, set_igmp_snooping_robustness, NULL, NULL, BBFDM_BOTH},
-{"Aggregation", &DMWRITE, DMT_BOOL, get_igmp_snooping_aggregation, set_igmp_snooping_aggregation, NULL, NULL, BBFDM_BOTH},
-{"Interface", &DMWRITE, DMT_STRING, get_igmp_snooping_interface, set_igmp_snooping_interface, NULL, NULL, BBFDM_BOTH},
-{"FilterNumberOfEntries", &DMREAD, DMT_UNINT, get_igmps_filter_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
-//{"ClientGroupNumberOfEntries", &DMREAD, DMT_UNINT, get_igmpp_cgrps_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+DMLEAF X_IOPSYS_EU_MLDSnoopingParams[] = {
+{"Enable", &DMWRITE, DMT_BOOL, get_mld_snooping_enable, set_mld_snooping_enable, NULL, NULL, BBFDM_BOTH},
+{"Version", &DMWRITE, DMT_STRING, get_mld_snooping_version, set_mld_snooping_version, NULL, NULL, BBFDM_BOTH},
+{"Robustness", &DMWRITE, DMT_UNINT, get_mld_snooping_robustness, set_mld_snooping_robustness, NULL, NULL, BBFDM_BOTH},
+{"Aggregation", &DMWRITE, DMT_BOOL, get_mld_snooping_aggregation, set_mld_snooping_aggregation, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMWRITE, DMT_STRING, get_mld_snooping_interface, set_mld_snooping_interface, NULL, NULL, BBFDM_BOTH},
+{"FilterNumberOfEntries", &DMREAD, DMT_UNINT, get_mlds_filter_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+//{"ClientGroupNumberOfEntries", &DMREAD, DMT_UNINT, get_mldp_cgrps_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMOBJ X_IOPSYS_EU_IGMPProxyObj[] = {
-{"Interface", &DMWRITE, add_igmpp_interface_obj, del_igmpp_interface_obj, NULL, browse_igmpp_interface_inst, NULL, NULL, NULL, NULL, IGMPProxyInterfaceParams, NULL, BBFDM_BOTH},
-//{"ClientGroup", &DMREAD, NULL, NULL, NULL, browse_igmpp_cgrp_inst, NULL, NULL, NULL, IGMPProxyCLientGroupObj, IGMPProxyClientGroupParams, NULL, BBFDM_BOTH},
-{"Filter", &DMWRITE, add_igmpp_filter_obj, del_igmpp_filter_obj, NULL, browse_igmpp_filter_inst, NULL, NULL, NULL, NULL, IGMPProxyFilterParams, NULL, BBFDM_BOTH},
+DMOBJ X_IOPSYS_EU_MLDProxyObj[] = {
+{"Interface", &DMWRITE, add_mldp_interface_obj, del_mldp_interface_obj, NULL, browse_mldp_interface_inst, NULL, NULL, NULL, NULL, MLDProxyInterfaceParams, NULL, BBFDM_BOTH},
+//{"ClientGroup", &DMREAD, NULL, NULL, NULL, browse_mldp_cgrp_inst, NULL, NULL, NULL, MLDProxyCLientGroupObj, MLDProxyClientGroupParams, NULL, BBFDM_BOTH},
+{"Filter", &DMWRITE, add_mldp_filter_obj, del_mldp_filter_obj, NULL, browse_mldp_filter_inst, NULL, NULL, NULL, NULL, MLDProxyFilterParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMOBJ IGMPProxyCLientGroupObj[] = {
-{"AssociatedDevice", &DMREAD, NULL, NULL, NULL, browse_igmpp_cgrp_assoc_dev_inst, NULL, NULL, NULL, NULL, IGMPProxyClientGroupAssociatedDeviceParams, NULL, BBFDM_BOTH},
-{"ClientGroupStats", &DMREAD, NULL, NULL, NULL, browse_igmpp_cgrp_stats_inst, NULL, NULL, NULL, NULL, IGMPProxyClientGroupStatsParams, NULL, BBFDM_BOTH},
+DMOBJ MLDProxyCLientGroupObj[] = {
+{"AssociatedDevice", &DMREAD, NULL, NULL, NULL, browse_mldp_cgrp_assoc_dev_inst, NULL, NULL, NULL, NULL, MLDProxyClientGroupAssociatedDeviceParams, NULL, BBFDM_BOTH},
+{"ClientGroupStats", &DMREAD, NULL, NULL, NULL, browse_mldp_cgrp_stats_inst, NULL, NULL, NULL, NULL, MLDProxyClientGroupStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF IGMPProxyClientGroupParams[] = {
-{"GroupAddress", &DMREAD, DMT_STRING, get_igmpp_cgrp_gaddr, NULL, NULL, NULL, BBFDM_BOTH},
-{"AssociatedDeviceNumberOfEntries", &DMREAD, DMT_UNINT, get_igmpp_cgrp_assoc_dev_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+DMLEAF MLDProxyClientGroupParams[] = {
+{"GroupAddress", &DMREAD, DMT_STRING, get_mldp_cgrp_gaddr, NULL, NULL, NULL, BBFDM_BOTH},
+{"AssociatedDeviceNumberOfEntries", &DMREAD, DMT_UNINT, get_mldp_cgrp_assoc_dev_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF IGMPProxyFilterParams[] = {
-{"Enable", &DMWRITE, DMT_BOOL, get_igmpp_filter_enable, set_igmpp_filter_enable, NULL, NULL, BBFDM_BOTH},
-{"IPAddress", &DMWRITE, DMT_STRING, get_igmpp_filter_address, set_igmpp_filter_address, NULL, NULL, BBFDM_BOTH},
+DMLEAF MLDProxyFilterParams[] = {
+{"Enable", &DMWRITE, DMT_BOOL, get_mldp_filter_enable, set_mldp_filter_enable, NULL, NULL, BBFDM_BOTH},
+{"IPAddress", &DMWRITE, DMT_STRING, get_mldp_filter_address, set_mldp_filter_address, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF IGMPProxyClientGroupAssociatedDeviceParams[] = {
-{"Interface", &DMREAD, DMT_STRING, get_igmpp_cgrp_adev_iface, NULL, NULL, NULL, BBFDM_BOTH},
+DMLEAF MLDProxyClientGroupAssociatedDeviceParams[] = {
+{"Interface", &DMREAD, DMT_STRING, get_mldp_cgrp_adev_iface, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF IGMPProxyClientGroupStatsParams[] = {
-{"ReportsSent", &DMREAD, DMT_UNINT, get_igmpp_cgrp_stats_rsent, NULL, NULL, NULL, BBFDM_BOTH},
-{"ReportsReceived", &DMREAD, DMT_UNINT, get_igmpp_cgrp_stats_rrcvd, NULL, NULL, NULL, BBFDM_BOTH},
-{"QueriesSent", &DMREAD, DMT_UNINT, get_igmpp_cgrp_stats_qsent, NULL, NULL, NULL, BBFDM_BOTH},
-{"QueriesReceived", &DMREAD, DMT_UNINT, get_igmpp_cgrp_stats_qrcvd, NULL, NULL, NULL, BBFDM_BOTH},
-{"LeavesSent", &DMREAD, DMT_UNINT, get_igmpp_cgrp_stats_lsent, NULL, NULL, NULL, BBFDM_BOTH},
-{"LeavesReceived", &DMREAD, DMT_UNINT, get_igmpp_cgrp_stats_lrcvd, NULL, NULL, NULL, BBFDM_BOTH},
+DMLEAF MLDProxyClientGroupStatsParams[] = {
+{"ReportsSent", &DMREAD, DMT_UNINT, get_mldp_cgrp_stats_rsent, NULL, NULL, NULL, BBFDM_BOTH},
+{"ReportsReceived", &DMREAD, DMT_UNINT, get_mldp_cgrp_stats_rrcvd, NULL, NULL, NULL, BBFDM_BOTH},
+{"QueriesSent", &DMREAD, DMT_UNINT, get_mldp_cgrp_stats_qsent, NULL, NULL, NULL, BBFDM_BOTH},
+{"QueriesReceived", &DMREAD, DMT_UNINT, get_mldp_cgrp_stats_qrcvd, NULL, NULL, NULL, BBFDM_BOTH},
+{"LeavesSent", &DMREAD, DMT_UNINT, get_mldp_cgrp_stats_lsent, NULL, NULL, NULL, BBFDM_BOTH},
+{"LeavesReceived", &DMREAD, DMT_UNINT, get_mldp_cgrp_stats_lrcvd, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF IGMPProxyInterfaceParams[] = {
-{"Interface", &DMWRITE, DMT_STRING, get_igmpp_interface_iface, set_igmpp_interface_iface, NULL, NULL, BBFDM_BOTH},
-{"Upstream", &DMWRITE, DMT_BOOL, get_igmpp_interface_upstream, set_igmpp_interface_upstream, NULL, NULL, BBFDM_BOTH},
-//{"Snooping", &DMWRITE, DMT_STRING, get_igmpp_interface_snooping, set_igmpp_interface_snooping, NULL, NULL, BBFDM_BOTH},
+DMLEAF MLDProxyInterfaceParams[] = {
+{"Interface", &DMWRITE, DMT_STRING, get_mldp_interface_iface, set_mldp_interface_iface, NULL, NULL, BBFDM_BOTH},
+{"Upstream", &DMWRITE, DMT_BOOL, get_mldp_interface_upstream, set_mldp_interface_upstream, NULL, NULL, BBFDM_BOTH},
+//{"Snooping", &DMWRITE, DMT_STRING, get_mldp_interface_snooping, set_mldp_interface_snooping, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
-DMLEAF X_IOPSYS_EU_IGMPProxyParams[] = {
-{"Enable", &DMWRITE, DMT_BOOL, get_igmp_proxy_enable, set_igmp_proxy_enable, NULL, NULL, BBFDM_BOTH},
-{"Version", &DMWRITE, DMT_STRING, get_igmp_proxy_version, set_igmp_proxy_version, NULL, NULL, BBFDM_BOTH},
-{"QueryInterval",&DMWRITE, DMT_UNINT, get_igmpp_query_interval, set_igmpp_query_interval, NULL, NULL, BBFDM_BOTH},
-{"QueryResponseInterval",&DMWRITE, DMT_UNINT, get_igmpp_q_response_interval, set_igmpp_q_response_interval, NULL, NULL, BBFDM_BOTH},
-{"LastMemberQueryInterval",&DMWRITE, DMT_UNINT, get_igmpp_last_mq_interval, set_igmpp_last_mq_interval, NULL, NULL, BBFDM_BOTH},
-{"ImmediateLeave", &DMWRITE, DMT_BOOL, get_igmp_proxy_fast_leave, set_igmp_proxy_fast_leave, NULL, NULL, BBFDM_BOTH},
-{"Robustness", &DMWRITE, DMT_UNINT, get_igmp_proxy_robustness, set_igmp_proxy_robustness, NULL, NULL, BBFDM_BOTH},
-{"Aggregation", &DMWRITE, DMT_BOOL, get_igmp_proxy_aggregation, set_igmp_proxy_aggregation, NULL, NULL, BBFDM_BOTH},
-{"FilterNumberOfEntries", &DMREAD, DMT_UNINT, get_igmpp_filter_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
-{"InterfaceNumberOfEntries", &DMREAD, DMT_UNINT, get_igmpp_interface_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+DMLEAF X_IOPSYS_EU_MLDProxyParams[] = {
+{"Enable", &DMWRITE, DMT_BOOL, get_mld_proxy_enable, set_mld_proxy_enable, NULL, NULL, BBFDM_BOTH},
+{"Version", &DMWRITE, DMT_STRING, get_mld_proxy_version, set_mld_proxy_version, NULL, NULL, BBFDM_BOTH},
+{"QueryInterval",&DMWRITE, DMT_UNINT, get_mldp_query_interval, set_mldp_query_interval, NULL, NULL, BBFDM_BOTH},
+{"QueryResponseInterval",&DMWRITE, DMT_UNINT, get_mldp_q_response_interval, set_mldp_q_response_interval, NULL, NULL, BBFDM_BOTH},
+{"LastMemberQueryInterval",&DMWRITE, DMT_UNINT, get_mldp_last_mq_interval, set_mldp_last_mq_interval, NULL, NULL, BBFDM_BOTH},
+{"ImmediateLeave", &DMWRITE, DMT_BOOL, get_mld_proxy_fast_leave, set_mld_proxy_fast_leave, NULL, NULL, BBFDM_BOTH},
+{"Robustness", &DMWRITE, DMT_UNINT, get_mld_proxy_robustness, set_mld_proxy_robustness, NULL, NULL, BBFDM_BOTH},
+{"Aggregation", &DMWRITE, DMT_BOOL, get_mld_proxy_aggregation, set_mld_proxy_aggregation, NULL, NULL, BBFDM_BOTH},
+{"FilterNumberOfEntries", &DMREAD, DMT_UNINT, get_mldp_filter_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{"InterfaceNumberOfEntries", &DMREAD, DMT_UNINT, get_mldp_interface_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };

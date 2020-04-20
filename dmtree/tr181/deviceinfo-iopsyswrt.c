@@ -2,7 +2,7 @@
 
 #include <libbbf_api/dmcommon.h>
 
-/*#Device.DeviceInfo.Manufacturer!UCI:cwmp/cwmp,cpe/manufacturer*/
+/*#Device.DeviceInfo.Manufacturer!UCI:cwmp/cpe,cpe/manufacturer*/
 char * os__get_deviceid_manufacturer()
 {
 	char *v;
@@ -14,7 +14,7 @@ char * os__get_deviceid_manufacturer()
 	return v;
 }
 
-/*#Device.DeviceInfo.ProductClass!UCI:cwmp/cwmp,cpe/product_class*/
+/*#Device.DeviceInfo.ProductClass!UCI:cwmp/cpe,cpe/product_class*/
 char * os__get_deviceid_productclass()
 {
 	char *v;
@@ -46,7 +46,7 @@ int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-/*#Device.DeviceInfo.ManufacturerOUI!UCI:cwmp/cwmp,cpe/model_name*/
+/*#Device.DeviceInfo.ModelName!UCI:cwmp/cpe,cpe/model_name*/
 int os__get_device_routermodel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "model_name", value);
@@ -55,7 +55,7 @@ int os__get_device_routermodel(char *refparam, struct dmctx *ctx, void *data, ch
 	return 0;
 }
 
-/*#Device.DeviceInfo.ManufacturerOUI!UCI:cwmp/cwmp,cpe/manufacturer_oui*/
+/*#Device.DeviceInfo.ManufacturerOUI!UCI:cwmp/cpe,cpe/manufacturer_oui*/
 char * os__get_deviceid_manufactureroui()
 {
 	char *v, *mac = NULL, str[16];

@@ -96,7 +96,7 @@ static int get_device_info_uptime(char *refparam, struct dmctx *ctx, void *data,
 	return 0;
 }
 
-/*#Device.DeviceInfo.ProvisioningCode!UCI:cwmp/cwmp,cpe/provisioning_code*/
+/*#Device.DeviceInfo.ProvisioningCode!UCI:cwmp/cpe,cpe/provisioning_code*/
 static int get_device_provisioningcode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "provisioning_code", value);

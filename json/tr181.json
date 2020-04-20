@@ -301,7 +301,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "cpe", 
 								"name": "cpe"
 							}, 
 							"option": {
@@ -335,7 +335,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "cpe", 
 								"name": "cpe"
 							}, 
 							"option": {
@@ -367,6 +367,21 @@
 					{
 						"max": 64
 					}
+				], 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "cwmp", 
+							"section": {
+								"type": "cpe", 
+								"name": "cpe"
+							}, 
+							"option": {
+								"name": "model_name"
+							}
+						}
+					}
 				]
 			}, 
 			"ModelNumber": {
@@ -381,21 +396,6 @@
 				"range": [
 					{
 						"max": 64
-					}
-				],
-				"mapping": [
-					{
-						"type": "uci",
-						"uci": {
-							"file": "cwmp",
-							"section": {
-								"type": "cwmp",
-								"name": "cpe"
-							},
-							"option": {
-								"name": "model_name"
-							}
-						}
 					}
 				]
 			}, 
@@ -434,7 +434,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "cpe", 
 								"name": "cpe"
 							}, 
 							"option": {
@@ -555,7 +555,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "cpe", 
 								"name": "cpe"
 							}, 
 							"option": {
@@ -2074,7 +2074,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2103,7 +2103,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2132,7 +2132,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2180,7 +2180,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2210,7 +2210,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2234,7 +2234,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2263,7 +2263,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2292,7 +2292,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "cpe", 
 								"name": "cpe"
 							}, 
 							"option": {
@@ -2321,7 +2321,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "cpe", 
 								"name": "cpe"
 							}, 
 							"option": {
@@ -2350,7 +2350,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "cpe", 
 								"name": "cpe"
 							}, 
 							"option": {
@@ -2428,7 +2428,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2458,7 +2458,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2725,7 +2725,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "cpe", 
 								"name": "cpe"
 							}, 
 							"option": {
@@ -2753,7 +2753,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "cpe", 
 								"name": "cpe"
 							}, 
 							"option": {
@@ -2906,7 +2906,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "acs", 
 								"name": "acs"
 							}, 
 							"option": {
@@ -2946,7 +2946,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "lwn", 
 								"name": "lwn"
 							}, 
 							"option": {
@@ -2999,7 +2999,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "lwn", 
 								"name": "lwn"
 							}, 
 							"option": {
@@ -3023,7 +3023,7 @@
 						"uci": {
 							"file": "cwmp", 
 							"section": {
-								"type": "cwmp", 
+								"type": "lwn", 
 								"name": "lwn"
 							}, 
 							"option": {
@@ -17213,19 +17213,6 @@
 						"NotPresent", 
 						"LowerLayerDown", 
 						"Error"
-					], 
-					"mapping": [
-						{
-							"type": "ubus", 
-							"ubus": {
-								"object": "network.device", 
-								"method": "status", 
-								"args": {
-									"name": "@Name"
-								}, 
-								"key": "carrier"
-							}
-						}
 					]
 				}, 
 				"Alias": {
@@ -18023,7 +18010,7 @@
 					"uci": {
 						"file": "network", 
 						"section": {
-							"type": "interface"
+							"type": "device"
 						}, 
 						"dmmapfile": "dmmap_network"
 					}
@@ -18137,6 +18124,21 @@
 						{
 							"min": 1, 
 							"max": 4094
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "network", 
+								"section": {
+									"type": "device", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "vid"
+								}
+							}
 						}
 					]
 				}, 
@@ -30372,7 +30374,7 @@
 						{
 							"type": "ubus", 
 							"ubus": {
-								"object": "network.device",
+								"object": "network.device", 
 								"method": "status", 
 								"args": {
 									"name": "@Name"
@@ -35166,20 +35168,7 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "boolean", 
-						"mapping": [
-							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "speed"
-								}
-							}
-						]
+						"datatype": "boolean"
 					}, 
 					"Status": {
 						"type": "string", 
@@ -35198,19 +35187,6 @@
 							"NotPresent", 
 							"LowerLayerDown", 
 							"Error"
-						], 
-						"mapping": [
-							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "speed"
-								}
-							}
 						]
 					}, 
 					"Alias": {
@@ -51375,6 +51351,21 @@
 					"range": [
 						{
 							"min": 1
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "qos", 
+								"section": {
+									"type": "queue", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "precedence"
+								}
+							}
 						}
 					]
 				}, 

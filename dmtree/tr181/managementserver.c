@@ -12,7 +12,7 @@
 
 #include "managementserver.h"
 
-/*#Device.ManagementServer.URL!UCI:cwmp/cwmp,acs/url*/
+/*#Device.ManagementServer.URL!UCI:cwmp/acs,acs/url*/
 static int get_management_server_url(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *dhcp = NULL, *url = NULL, *provisioning_value = NULL;
@@ -46,7 +46,7 @@ static int set_management_server_url(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-/*#Device.ManagementServer.Username!UCI:cwmp/cwmp,acs/userid*/
+/*#Device.ManagementServer.Username!UCI:cwmp/acs,acs/userid*/
 static int get_management_server_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "acs", "userid", value);
@@ -68,7 +68,7 @@ static int set_management_server_username(char *refparam, struct dmctx *ctx, voi
 	return 0;	
 }
 
-/*#Device.ManagementServer.Password!UCI:cwmp/cwmp,acs/passwd*/
+/*#Device.ManagementServer.Password!UCI:cwmp/acs,acs/passwd*/
 static int set_management_server_passwd(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
@@ -84,14 +84,14 @@ static int set_management_server_passwd(char *refparam, struct dmctx *ctx, void 
 	return 0;	
 }
 
-/*#Device.ManagementServer.ParameterKey!UCI:cwmp/cwmp,acs/ParameterKey*/
+/*#Device.ManagementServer.ParameterKey!UCI:cwmp/acs,acs/ParameterKey*/
 static int get_management_server_key(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "acs", "ParameterKey", value);
 	return 0;	
 }
 
-/*#Device.ManagementServer.PeriodicInformEnable!UCI:cwmp/cwmp,acs/periodic_inform_enable*/
+/*#Device.ManagementServer.PeriodicInformEnable!UCI:cwmp/acs,acs/periodic_inform_enable*/
 static int get_management_server_periodic_inform_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "acs", "periodic_inform_enable", value);
@@ -116,7 +116,7 @@ static int set_management_server_periodic_inform_enable(char *refparam, struct d
 	return 0;	
 }
 
-/*#Device.ManagementServer.PeriodicInformInterval!UCI:cwmp/cwmp,acs/periodic_inform_interval*/
+/*#Device.ManagementServer.PeriodicInformInterval!UCI:cwmp/acs,acs/periodic_inform_interval*/
 static int get_management_server_periodic_inform_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "acs", "periodic_inform_interval", value);
@@ -138,7 +138,7 @@ static int set_management_server_periodic_inform_interval(char *refparam, struct
 	return 0;
 }
 
-/*#Device.ManagementServer.PeriodicInformTime!UCI:cwmp/cwmp,acs/periodic_inform_time*/
+/*#Device.ManagementServer.PeriodicInformTime!UCI:cwmp/acs,acs/periodic_inform_time*/
 static int get_management_server_periodic_inform_time(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	time_t time_value;
@@ -175,7 +175,7 @@ static int set_management_server_periodic_inform_time(char *refparam, struct dmc
 	return 0;	
 }
 
-/*#Device.ManagementServer.ConnectionRequestURL!UCI:cwmp/cwmp,cpe/port*/
+/*#Device.ManagementServer.ConnectionRequestURL!UCI:cwmp/cpe,cpe/port*/
 static int get_management_server_connection_request_url(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *ip, *port, *iface;
@@ -191,7 +191,7 @@ static int get_management_server_connection_request_url(char *refparam, struct d
 	return 0;
 }
 
-/*#Device.ManagementServer.ConnectionRequestUsername!UCI:cwmp/cwmp,cpe/userid*/
+/*#Device.ManagementServer.ConnectionRequestUsername!UCI:cwmp/cpe,cpe/userid*/
 static int get_management_server_connection_request_username(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "userid", value);
@@ -213,7 +213,7 @@ static int set_management_server_connection_request_username(char *refparam, str
 	return 0;
 }
 
-/*#Device.ManagementServer.ConnectionRequestPassword!UCI:cwmp/cwmp,cpe/passwd*/
+/*#Device.ManagementServer.ConnectionRequestPassword!UCI:cwmp/cpe,cpe/passwd*/
 static int set_management_server_connection_request_passwd(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action) {
@@ -235,7 +235,7 @@ static int get_lwn_protocol_supported(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-/*#Device.ManagementServer.LightweightNotificationProtocolsUsed!UCI:cwmp/cwmp,lwn/enable*/
+/*#Device.ManagementServer.LightweightNotificationProtocolsUsed!UCI:cwmp/lwn,lwn/enable*/
 static int get_lwn_protocol_used(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	bool b;
@@ -265,7 +265,7 @@ static int set_lwn_protocol_used(char *refparam, struct dmctx *ctx, void *data, 
 	return 0;
 }
 
-/*#Device.ManagementServer.UDPLightweightNotificationHost!UCI:cwmp/cwmp,lwn/hostname*/
+/*#Device.ManagementServer.UDPLightweightNotificationHost!UCI:cwmp/lwn,lwn/hostname*/
 static int get_lwn_host(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {	
 	dmuci_get_option_value_string("cwmp", "lwn", "hostname", value);
@@ -287,7 +287,7 @@ static int set_lwn_host(char *refparam, struct dmctx *ctx, void *data, char *ins
 	return 0;
 }
 
-/*#Device.ManagementServer.UDPLightweightNotificationPort!UCI:cwmp/cwmp,lwn/port*/
+/*#Device.ManagementServer.UDPLightweightNotificationPort!UCI:cwmp/lwn,lwn/port*/
 static int get_lwn_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "lwn", "port", value);
@@ -315,7 +315,7 @@ static int get_management_server_http_compression_supportted(char *refparam, str
 	return 0;
 }
 
-/*#Device.ManagementServer.HTTPCompression!UCI:cwmp/cwmp,acs/compression*/
+/*#Device.ManagementServer.HTTPCompression!UCI:cwmp/acs,acs/compression*/
 static int get_management_server_http_compression(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "acs", "compression", value);
@@ -339,7 +339,7 @@ static int set_management_server_http_compression(char *refparam, struct dmctx *
 	return 0;
 }
 
-/*#Device.ManagementServer.CWMPRetryMinimumWaitInterval!UCI:cwmp/cwmp,acs/retry_min_wait_interval*/
+/*#Device.ManagementServer.CWMPRetryMinimumWaitInterval!UCI:cwmp/acs,acs/retry_min_wait_interval*/
 static int get_management_server_retry_min_wait_interval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "acs", "retry_min_wait_interval", value);
@@ -361,7 +361,7 @@ static int set_management_server_retry_min_wait_interval(char *refparam, struct 
 	return 0;
 }
 
-/*#Device.ManagementServer.CWMPRetryIntervalMultiplier!UCI:cwmp/cwmp,acs/retry_interval_multiplier*/
+/*#Device.ManagementServer.CWMPRetryIntervalMultiplier!UCI:cwmp/acs,acs/retry_interval_multiplier*/
 static int get_management_server_retry_interval_multiplier(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "acs", "retry_interval_multiplier", value);
@@ -383,7 +383,7 @@ static int set_management_server_retry_interval_multiplier(char *refparam, struc
 	return 0;
 }
 
-/*#Device.ManagementServer.AliasBasedAddressing!UCI:cwmp/cwmp,cpe/amd_version*/
+/*#Device.ManagementServer.AliasBasedAddressing!UCI:cwmp/cpe,cpe/amd_version*/
 static int get_alias_based_addressing(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "amd_version", value);
@@ -394,7 +394,7 @@ static int get_alias_based_addressing(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-/*#Device.ManagementServer.InstanceMode!UCI:cwmp/cwmp,cpe/instance_mode*/
+/*#Device.ManagementServer.InstanceMode!UCI:cwmp/cpe,cpe/instance_mode*/
 static int get_instance_mode(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "instance_mode", value);

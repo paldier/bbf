@@ -339,7 +339,7 @@
 								"name": "cpe"
 							}, 
 							"option": {
-								"name": "override_oui"
+								"name": "manufacturer_oui"
 							}
 						}
 					}
@@ -382,6 +382,21 @@
 					{
 						"max": 64
 					}
+				],
+				"mapping": [
+					{
+						"type": "uci",
+						"uci": {
+							"file": "cwmp",
+							"section": {
+								"type": "cwmp",
+								"name": "cpe"
+							},
+							"option": {
+								"name": "model_name"
+							}
+						}
+					}
 				]
 			}, 
 			"Description": {
@@ -423,7 +438,7 @@
 								"name": "cpe"
 							}, 
 							"option": {
-								"name": "override_productclass"
+								"name": "product_class"
 							}
 						}
 					}

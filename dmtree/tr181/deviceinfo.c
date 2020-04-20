@@ -49,21 +49,18 @@ int lookup_vcf_name(char *instance, char **value)
 	return 0;
 }
 
-/*#Device.DeviceInfo.Manufacturer!UCI:cwmp/cwmp,cpe/manufacturer*/
 static int get_device_manufacturer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = get_deviceid_manufacturer();
 	return 0;
 }
 
-/*#Device.DeviceInfo.ManufacturerOUI!UCI:cwmp/cwmp,cpe/override_oui*/
 static int get_device_manufactureroui(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = get_deviceid_manufactureroui();
 	return 0;
 }
 
-/*#Device.DeviceInfo.ProductClass!UCI:cwmp/cwmp,cpe/override_productclass*/
 static int get_device_productclass(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = get_deviceid_productclass();

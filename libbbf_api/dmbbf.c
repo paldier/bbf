@@ -600,7 +600,7 @@ char *update_instance_alias(int action, char **last_inst, void *argv[])
 char *update_instance_without_section(int action, char **last_inst, void *argv[])
 {
 	char *instance, buf[64] = {0};
-	int instnbr = (int) argv[0];
+	int instnbr = (int)(long)argv[0];
 
 	if (action == INSTANCE_MODE_ALIAS) {
 		snprintf(buf, sizeof(buf), "[cpe-%d]", instnbr);

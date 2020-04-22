@@ -276,7 +276,7 @@ static int del_ethernet_link_instance(char *sect_name)
 
 	/* Create untagged upstream interface. */
 	if (intf_tag[0] != '\0')
-		strncat(intf_tag, ".1", 2);
+		strcat(intf_tag, ".1");
 
 	/* Get section from section_name.*/
 	uci_foreach_sections("network", "interface", intf_s) {
@@ -886,7 +886,7 @@ static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 			get_upstream_interface(intf_tag, sizeof(intf_tag));
 
 			if (intf_tag[0] != '\0') {
-				strncat(intf_tag, ".1", 2);
+				strcat(intf_tag, ".1");
 				adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), intf_tag, value);
 				if (*value == NULL)
 					*value = "";
@@ -1089,7 +1089,7 @@ static int set_ethlink_lowerlayer_eth_intf(char *lower_layer, char *instance, ch
 
 	/* Create untagged upstream interface. */
 	if (intf_tag[0] != '\0')
-		strncat(intf_tag, ".1", 2);
+		strcat(intf_tag, ".1");
 
 	char intf[20] = {0};
 	if (strcmp(linker, intf_tag) == 0)
@@ -1284,7 +1284,7 @@ static int get_EthernetVLANTermination_LowerLayers(char *refparam, struct dmctx 
 			char intf_tag[64] = {0};
 			get_upstream_interface(intf_tag, sizeof(intf_tag));
 			if (intf_tag[0] != '\0') {
-				strncat(intf_tag, ".1", 2);
+				strcat(intf_tag, ".1");
 				linker = get_macaddr_from_device(intf_tag);
 			}
 		}

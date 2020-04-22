@@ -1573,9 +1573,9 @@ static int get_DHCPv4Client_IPRouters(char *refparam, struct dmctx *ctx, void *d
 		if (strcmp(v, "0.0.0.0") == 0)
 			continue;
 		if (buf[0] != '\0') {
-			strncat(buf, ",", 1);
+			strcat(buf, ",");
 		} else
-			strncat(buf, v, strlen(v));
+			strcat(buf, v);
 	}
 	*value = dmstrdup(buf);
 

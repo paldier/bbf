@@ -3050,9 +3050,9 @@ static int mobj_upnp_get_instance_numbers(DMOBJECT_ARGS)
 	if (!node->is_instanceobj || !node->matched)
 		return FAULT_UPNP_703;
 	if (*(dmctx->all_instances)) {
-		strncat(dmctx->all_instances, ",", 1);
+		strcat(dmctx->all_instances, ",");
 	}
-	strncat(dmctx->all_instances, instance, strlen(instance));
+	strcat(dmctx->all_instances, instance);
 	return 0;
 }
 

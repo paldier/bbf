@@ -66,15 +66,15 @@ static void ftp_download_per_packet(libtrace_packet_t *packet)
 	else
 		nexthdr = trace_get_payload_from_tcp(tcp, &remaining);
 
-	if (tcp->ecn_ns) strncat(tcp_flag, "ECN_NS ", 7);
-	if (tcp->cwr) strncat(tcp_flag, "CWR ", 4);
-	if (tcp->ece) strncat(tcp_flag, "ECE ", 4);
-	if (tcp->fin) strncat(tcp_flag, "FIN ", 4);
-	if (tcp->syn) strncat(tcp_flag, "SYN ", 4);
-	if (tcp->rst) strncat(tcp_flag, "RST ", 4);
-	if (tcp->psh) strncat(tcp_flag, "PSH ", 4);
-	if (tcp->ack) strncat(tcp_flag, "ACK ", 4);
-	if (tcp->urg) strncat(tcp_flag, "URG ", 4);
+	if (tcp->ecn_ns) strcat(tcp_flag, "ECN_NS ");
+	if (tcp->cwr) strcat(tcp_flag, "CWR ");
+	if (tcp->ece) strcat(tcp_flag, "ECE ");
+	if (tcp->fin) strcat(tcp_flag, "FIN ");
+	if (tcp->syn) strcat(tcp_flag, "SYN ");
+	if (tcp->rst) strcat(tcp_flag, "RST ");
+	if (tcp->psh) strcat(tcp_flag, "PSH ");
+	if (tcp->ack) strcat(tcp_flag, "ACK ");
+	if (tcp->urg) strcat(tcp_flag, "URG ");
 
 	if (strcmp(tcp_flag, "PSH ACK ") == 0 && strlen(nexthdr) > strlen(FTP_SIZE_RESPONSE) && strncmp(nexthdr, FTP_SIZE_RESPONSE, strlen(FTP_SIZE_RESPONSE)) == 0)
 	{
@@ -158,15 +158,15 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 	else
 		nexthdr = trace_get_payload_from_tcp(tcp, &remaining);
 
-	if (tcp->ecn_ns) strncat(tcp_flag, "ECN_NS ", 7);
-	if (tcp->cwr) strncat(tcp_flag, "CWR ", 4);
-	if (tcp->ece) strncat(tcp_flag, "ECE ", 4);
-	if (tcp->fin) strncat(tcp_flag, "FIN ", 4);
-	if (tcp->syn) strncat(tcp_flag, "SYN ", 4);
-	if (tcp->rst) strncat(tcp_flag, "RST ", 4);
-	if (tcp->psh) strncat(tcp_flag, "PSH ", 4);
-	if (tcp->ack) strncat(tcp_flag, "ACK ", 4);
-	if (tcp->urg) strncat(tcp_flag, "URG ", 4);
+	if (tcp->ecn_ns) strcat(tcp_flag, "ECN_NS ");
+	if (tcp->cwr) strcat(tcp_flag, "CWR ");
+	if (tcp->ece) strcat(tcp_flag, "ECE ");
+	if (tcp->fin) strcat(tcp_flag, "FIN ");
+	if (tcp->syn) strcat(tcp_flag, "SYN ");
+	if (tcp->rst) strcat(tcp_flag, "RST ");
+	if (tcp->psh) strcat(tcp_flag, "PSH ");
+	if (tcp->ack) strcat(tcp_flag, "ACK ");
+	if (tcp->urg) strcat(tcp_flag, "URG ");
 
 	if (strcmp(tcp_flag, "SYN ") == 0 && download_stats.random_seq == 0) {
     	ts = trace_get_timeval(packet);
@@ -294,15 +294,15 @@ static void http_upload_per_packet(libtrace_packet_t *packet)
 	else
 		nexthdr = trace_get_payload_from_tcp(tcp, &remaining);
 
-	if (tcp->ecn_ns) strncat(tcp_flag, "ECN_NS ", 7);
-	if (tcp->cwr) strncat(tcp_flag, "CWR ", 4);
-	if (tcp->ece) strncat(tcp_flag, "ECE ", 4);
-	if (tcp->fin) strncat(tcp_flag, "FIN ", 4);
-	if (tcp->syn) strncat(tcp_flag, "SYN ", 4);
-	if (tcp->rst) strncat(tcp_flag, "RST ", 4);
-	if (tcp->psh) strncat(tcp_flag, "PSH ", 4);
-	if (tcp->ack) strncat(tcp_flag, "ACK ", 4);
-	if (tcp->urg) strncat(tcp_flag, "URG ", 4);
+	if (tcp->ecn_ns) strcat(tcp_flag, "ECN_NS ");
+	if (tcp->cwr) strcat(tcp_flag, "CWR ");
+	if (tcp->ece) strcat(tcp_flag, "ECE ");
+	if (tcp->fin) strcat(tcp_flag, "FIN ");
+	if (tcp->syn) strcat(tcp_flag, "SYN ");
+	if (tcp->rst) strcat(tcp_flag, "RST ");
+	if (tcp->psh) strcat(tcp_flag, "PSH ");
+	if (tcp->ack) strcat(tcp_flag, "ACK ");
+	if (tcp->urg) strcat(tcp_flag, "URG ");
 
 	if (strcmp(tcp_flag, "SYN ") == 0 && download_stats.random_seq == 0)
 	{
@@ -395,15 +395,15 @@ static void ftp_upload_per_packet(libtrace_packet_t *packet)
 	else
 		nexthdr = trace_get_payload_from_tcp(tcp, &remaining);
 
-	if (tcp->ecn_ns) strncat(tcp_flag, "ECN_NS ", 7);
-	if (tcp->cwr) strncat(tcp_flag, "CWR ", 4);
-	if (tcp->ece) strncat(tcp_flag, "ECE ", 4);
-	if (tcp->fin) strncat(tcp_flag, "FIN ", 4);
-	if (tcp->syn) strncat(tcp_flag, "SYN ", 4);
-	if (tcp->rst) strncat(tcp_flag, "RST ", 4);
-	if (tcp->psh) strncat(tcp_flag, "PSH ", 4);
-	if (tcp->ack) strncat(tcp_flag, "ACK ", 4);
-	if (tcp->urg) strncat(tcp_flag, "URG ", 4);
+	if (tcp->ecn_ns) strcat(tcp_flag, "ECN_NS ");
+	if (tcp->cwr) strcat(tcp_flag, "CWR ");
+	if (tcp->ece) strcat(tcp_flag, "ECE ");
+	if (tcp->fin) strcat(tcp_flag, "FIN ");
+	if (tcp->syn) strcat(tcp_flag, "SYN ");
+	if (tcp->rst) strcat(tcp_flag, "RST ");
+	if (tcp->psh) strcat(tcp_flag, "PSH ");
+	if (tcp->ack) strcat(tcp_flag, "ACK ");
+	if (tcp->urg) strcat(tcp_flag, "URG ");
 
 	if(strcmp(tcp_flag, "PSH ACK ") == 0 && strlen(nexthdr) > strlen(FTP_PASV_RESPONSE) && strncmp(nexthdr, FTP_PASV_RESPONSE, strlen(FTP_PASV_RESPONSE)) == 0)
 	{

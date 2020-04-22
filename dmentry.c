@@ -956,35 +956,35 @@ int cli_output_dm_result(struct dmctx *dmctx, int fault, int cmd, int out)
 			char bwrite[64] = "";
 			char bfac[32] = "";
 			if (n->flags & DM_PUBLIC_LIST) {
-				stnrcat(blist, "Public ", 7);
+				strcat(blist, "Public ");
 			}
 			if (n->flags & DM_BASIC_LIST) {
-				strncat(blist, "Basic ", 6);
+				strcat(blist, "Basic ");
 			}
 			if (n->flags & DM_XXXADMIN_LIST) {
-				strncat(blist, "xxxAdmin ", 9);
+				strcat(blist, "xxxAdmin ");
 			}
 			if (*blist)
 				blist[strlen(blist) - 1] = '\0';
 			if (n->flags & DM_PUBLIC_READ) {
-				strncat(bread, "Public ", 7);
+				strcat(bread, "Public ");
 			}
 			if (n->flags & DM_BASIC_READ) {
-				strncat(bread, "Basic ", 6);
+				strcat(bread, "Basic ");
 			}
 			if (n->flags & DM_XXXADMIN_READ) {
-				strncat(bread, "xxxAdmin ", 9);
+				strcat(bread, "xxxAdmin ");
 			}
 			if (*bread)
 				bread[strlen(bread) - 1] = '\0';
 			if (n->flags & DM_PUBLIC_WRITE) {
-				strncat(bwrite, "Public ", 7);
+				strcat(bwrite, "Public ");
 			}
 			if (n->flags & DM_BASIC_WRITE) {
-				strncat(bwrite, "Basic ", 6);
+				strcat(bwrite, "Basic ");
 			}
 			if (n->flags & DM_XXXADMIN_WRITE) {
-				strncat(bwrite, "xxxAdmin ", 9);
+				strcat(bwrite, "xxxAdmin ");
 			}
 			if (*bwrite)
 				bwrite[strlen(bwrite) - 1] = '\0';

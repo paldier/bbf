@@ -2101,6 +2101,9 @@ int is_string_exist_in_str_array(char **cert_paths, int length, char *dirpath, c
 
 int is_regular_file(const char *path)
 {
+	if (path == NULL || strlen(path) == 0)
+		return 0;
+
 	if (access(path, F_OK) != 0)
 		return 1;
 
@@ -2112,20 +2115,20 @@ int is_regular_file(const char *path)
 char *get_cert_directory_path_from_uci(char *ucipath)
 {
 	char **uci_elts = NULL, **dirs = NULL;
-	char *pth = NULL;
+	char *path = NULL;
 	size_t length;
 
 	uci_elts = strsplit(ucipath, ".", &length);
-	dmuci_get_option_value_string(uci_elts[0], uci_elts[1], uci_elts[2], &pth);
-	if(is_regular_file(pth)) {
-		dirs = strsplit(pth, "/", &length);
-		char *filenamepos = strstr(pth, dirs[length - 1]);
-		char *dirpath = (char *)dmmalloc((filenamepos - pth + 1)*sizeof(char));
-		memcpy(dirpath, pth, filenamepos - pth);
-		dirpath[filenamepos - pth] = '\0';
+	dmuci_get_option_value_string(uci_elts[0], uci_elts[1], uci_elts[2], &path);
+	if(path && is_regular_file(path)) {
+		dirs = strsplit(path, "/", &length);
+		char *filenamepos = strstr(path, dirs[length - 1]);
+		char *dirpath = (char *)dmmalloc((filenamepos - path + 1)*sizeof(char));
+		memcpy(dirpath, path, filenamepos - path);
+		dirpath[filenamepos - path] = '\0';
 		return dirpath;
 	}
-	return pth;
+	return path;
 }
 
 char **get_all_iop_certificates(int *length)

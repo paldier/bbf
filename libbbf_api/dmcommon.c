@@ -540,14 +540,13 @@ void update_section_list_bbfdm(char *config, char *section, char *option, int nu
 	}
 }
 
-void update_section_list(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1,  char *option2, char *val2)
+void update_section_list(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1, char *option2, char *val2)
 {
 	char *add_value;
 	struct uci_section *s = NULL;
 	int i = 0;
 
-	if (strcmp(config, DMMAP) == 0)
-	{
+	if (strncmp(config, DMMAP, 5) == 0) {
 		if (option) {
 			uci_path_foreach_option_eq(bbfdm, config, section, option, filter, s) {
 				return;
@@ -564,9 +563,7 @@ void update_section_list(char *config, char *section, char *option, int number, 
 			if (option2)DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, option2, val2);
 			i++;
 		}
-	}
-	else
-	{
+	} else {
 		if (option) {
 			uci_foreach_option_eq(config, section, option, filter, s) {
 				return;
@@ -779,68 +776,6 @@ struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* secti
 			return s;
 	}
 	return NULL;
-}
-
-void synchronize_specific_config_sections_with_dmmap_vlan(char *package, char *section_type, char *dmmap_package, char *ifname, struct list_head *dup_list, int *count, char *id)
-{
-	struct uci_section *s, *stmp, *dmmap_sect;
-	char *v;
-
-	dmmap_file_path_get(dmmap_package);
-
-	uci_foreach_sections(package, section_type, s) {
-		/*
-		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
-		 */
-		if ((dmmap_sect = get_dup_section_in_dmmap(dmmap_package, section_type, section_name(s))) == NULL) {
-			dmuci_add_section_bbfdm(dmmap_package, section_type, &dmmap_sect, &v);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
-		}
-
-		/* Entry for only VLANS. */
-		if (strcmp(package, "network") == 0  && strcmp(section_type, "interface") == 0 && strcmp(dmmap_package, "dmmap_network") == 0) {
-			char *type, *intf;
-			dmuci_get_value_by_section_string(s, "type", &type);
-			dmuci_get_value_by_section_string(s, "ifname", &intf);
-			if (strcmp(type, "bridge") != 0 || strcmp(intf, ifname) != 0)
-				continue;
-		}
-
-		/* Vlan object should not be created for transparent bridges. */
-		int tag = 0;
-		char name[250] = {0};
-		strncpy(name, ifname, sizeof(name) - 1);
-		char *p = strtok(name, " ");
-		while (p != NULL) {
-			char intf[250] = {0};
-			strncpy(intf, p, sizeof(intf) - 1);
-			char *find = strstr(intf, ".");
-			if (find) {
-				tag = 1;
-				*id = find[strlen(find) - 1];
-				break;
-			}
-			p = strtok(NULL, " ");
-		}
-
-		if (tag == 0)
-			continue;
-
-		/*
-		 * Add system and dmmap sections to the list
-		 */
-		add_sectons_list_paramameter(dup_list, s, dmmap_sect, NULL);
-		*count = *count + 1;
-	}
-
-	/*
-	 * Delete unused dmmap sections
-	 */
-	uci_path_foreach_sections_safe(bbfdm, dmmap_package, section_type, stmp, s) {
-		dmuci_get_value_by_section_string(s, "section_name", &v);
-		if (get_origin_section_from_config(package, section_type, v) == NULL)
-			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
-	}
 }
 
 void synchronize_specific_config_sections_with_dmmap(char *package, char *section_type, char *dmmap_package, struct list_head *dup_list)

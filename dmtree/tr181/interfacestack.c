@@ -64,11 +64,10 @@ static struct uci_section *create_dmmap_interface_stack_section(char *curr_inst)
 int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct interfacestack_data ifdata = {0};
-	struct uci_section *s = NULL, *sd = NULL, *port, *port_s, *ss, *dmmap_s = NULL;
+	struct uci_section *s = NULL, *port = NULL, *port_s = NULL, *ss = NULL, *dmmap_s = NULL;
 	char *proto, *type, *pch, *layer_inst, *vb, *higheralias, *ifname, *br_inst, *mg, *value, *device, *name, *bridge_port_inst;
-	char *v = "";
-	char *loweralias = "";
-	char *interface_stack_int = NULL, *interface_stack_int_last = NULL, *wanifname, *wanlinker, *mac, *sectionname, *package, *section;
+	char *loweralias = "", *v = "";
+	char *interface_stack_int = NULL, *interface_stack_int_last = NULL, *wanifname, *mac;
 	char buf_lowerlayer[128] = {0};
 	char buf_higherlayer[128] = {0};
 	char buf_higheralias[64] = {0};
@@ -258,7 +257,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
 				dmuci_get_value_by_section_string(port, "mg_port", &mg);
 				if (strcmp(mg, "true") == 0) {
-					snprintf(linker, sizeof(linker), "%s+", section_name(port));
+					snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
 					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &v);
 					dmuci_get_value_by_section_string(port, "bridge_port_alias", &loweralias);
 					dmuci_get_value_by_section_string(port, "bridge_port_instance", &layer_inst);
@@ -269,9 +268,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			uci_foreach_option_eq("ports", "ethport", "name", "WAN", port_s) {
 				dmuci_get_value_by_section_string(port_s, "ifname", &wanifname);
 				if(strstr(ifname, wanifname)) {
-					dmasprintf(&wanlinker, "%s.1", wanifname);
-					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), wanlinker, &v);
-					dmfree(wanlinker);
+					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), wanifname, &v);
 					loweralias = get_alias_by_section("dmmap_ports", "ethport", port_s, "eth_port_alias");
 					layer_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_ports", "ethport", port_s, "eth_port_instance", "eth_port_alias");
 					break;
@@ -306,7 +303,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
 			dmuci_get_value_by_section_string(port, "mg_port", &mg);
 			if (strcmp(mg, "true") == 0) {
-				snprintf(linker, sizeof(linker), "%s+", section_name(port));
+				snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
 				adm_entry_get_linker_param(dmctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &pch);
 				dmuci_get_value_by_section_string(port, "bridge_port_alias", &higheralias);
 				dmuci_get_value_by_section_string(port, "bridge_port_instance", &bridge_port_inst);
@@ -320,11 +317,13 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			}
 		}
 
+		struct uci_section *sd = NULL;
 		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, sd) {
 			dmuci_get_value_by_section_string(sd, "mg_port", &mg);
 			if (strcmp(mg, "true") == 0)
 				continue;
 
+			char *sectionname, *package, *section;
 			dmuci_get_value_by_section_string(sd, "section_name", &sectionname);
 			dmuci_get_value_by_section_string(sd, "package", &package);
 			dmuci_get_value_by_section_string(sd, "section", &section);
@@ -336,10 +335,11 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 					break;
 				}
 			}
+
 			if(strcmp(package, "network") == 0 && strcmp(section, "device") == 0)
-				snprintf(linker, sizeof(linker), "%s+%s", sectionname, name);
+				snprintf(linker, sizeof(linker), "br_%s:%s+%s", br_inst, sectionname, name);
 			else
-				snprintf(linker, sizeof(linker), "%s+%s", sectionname, ifname);
+				snprintf(linker, sizeof(linker), "br_%s:%s+%s", br_inst, sectionname, ifname);
 			adm_entry_get_linker_param(dmctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &vb);
 			if (vb == NULL)
 				vb = "";
@@ -392,7 +392,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 						}
 					}
 				} else {
-					snprintf(linker, sizeof(linker), "%s.1", ifname);
+					snprintf(linker, sizeof(linker), "%s", ifname);
 					adm_entry_get_linker_param(dmctx,dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &v);
 					loweralias = get_alias_by_section("dmmap_ports", "ethport", port_s, "eth_port_alias");
 					bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_ports", "ethport", port_s, "eth_port_instance", "eth_port_alias");

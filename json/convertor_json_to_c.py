@@ -656,7 +656,7 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 		print >> fp, "}"
 		print >> fp, ""
 		if setvalue != "NULL":
-			print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)" % setvalue
+			print >> fp, "static int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)" % setvalue
 			print >> fp, "{"
 			print >> fp, "	switch (action)	{"
 			print >> fp, "		case VALUECHECK:"

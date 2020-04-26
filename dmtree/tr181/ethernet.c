@@ -223,15 +223,9 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 **************************************************************/
 static int get_linker_interface(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct eth_port_args *)data)->ifname) {
-		char *wan_ifname = NULL;
-		dmuci_get_option_value_string("ports", "WAN", "ifname", &wan_ifname);
-		if (strcmp(((struct eth_port_args *)data)->ifname, wan_ifname) == 0) {
-			if(strchr(((struct eth_port_args *)data)->ifname, '.') == NULL)
-				dmasprintf(linker, "%s.1", wan_ifname);
-		} else
-			*linker = ((struct eth_port_args *)data)->ifname;
-	} else
+	if (data && ((struct eth_port_args *)data)->ifname)
+		*linker = ((struct eth_port_args *)data)->ifname;
+	else
 		*linker = "";
 	return 0;
 }
@@ -872,7 +866,7 @@ static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 				uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
 					dmuci_get_value_by_section_string(port, "mg_port", &mg);
 					if (strcmp(mg, "true") == 0)
-						snprintf(linker, sizeof(linker), "%s+", section_name(port));
+						snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
 					adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
 					if (*value == NULL)
 						*value = "";
@@ -886,7 +880,6 @@ static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 			get_upstream_interface(intf_tag, sizeof(intf_tag));
 
 			if (intf_tag[0] != '\0') {
-				strcat(intf_tag, ".1");
 				adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), intf_tag, value);
 				if (*value == NULL)
 					*value = "";

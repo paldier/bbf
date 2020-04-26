@@ -2162,7 +2162,7 @@ static int get_ap_ssid_ref(char *refparam, struct dmctx *ctx, void *data, char *
 **************************************************************/
 static int add_wifi_ssid(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
-	char *value, *v, *inst, ssid[16] = {0};
+	char *value, *v, *inst, ssid[32] = {0};
 	struct uci_section *s = NULL, *dmmap_wifi = NULL;
 
 	check_create_dmmap_package("dmmap_wireless");

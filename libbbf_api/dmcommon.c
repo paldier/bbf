@@ -1369,7 +1369,7 @@ char **strsplit_by_str(const char str[], char *delim)
 		if (substr == NULL) {
 			substr = strdup(strparse);
 			tokens[tokens_used] = dmcalloc(strlen(substr)+1, sizeof(char));
-			strncpy(tokens[tokens_used], strparse, strlen(strparse));
+			strcpy(tokens[tokens_used], strparse);
 			FREE(strparse);
 			break;
 		}
@@ -2161,7 +2161,7 @@ int get_upstream_interface(char *intf_tag, int len)
 	return 0;
 }
 
-int create_mac_addr_upstream_intf(char *mac_addr, char *mac, int len)
+int create_mac_addr_upstream_intf(char *mac_addr, char *mac, int mac_len)
 {
 	int  num = 0;
 	char macaddr[25] = {0};
@@ -2177,7 +2177,7 @@ int create_mac_addr_upstream_intf(char *mac_addr, char *mac, int len)
 		}
 
 		if (macaddr[0] != '\0') {
-			strncpy(mac_addr, macaddr, len);
+			strncpy(mac_addr, macaddr, mac_len);
 			return 0;
 		}
 	}

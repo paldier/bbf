@@ -29,7 +29,7 @@ extern struct op_cmd *dynamic_operate;
 struct wifi_security_params {
 	char node[255];
 	char *param;
-	char value[255];
+	char value[256];
 };
 
 struct file_server {

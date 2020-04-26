@@ -1469,7 +1469,7 @@ static char *get_last_instance_cond(char* dmmap_package, char *package, char *se
 static int add_ip_interface(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	char *last_inst, *v;
-	char ip_name[32], ib[8];
+	char ip_name[32], ib[16];
 	char *p = ip_name;
 	struct uci_section *dmmap_ip_interface;
 

@@ -19,7 +19,7 @@
 **************************************************************/
 static int add_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
-	char *value, *v, *inst, name[16];
+	char *value, *v, *inst, name[32];
 	struct uci_section *s = NULL, *dmmap_firewall = NULL;
 
 	check_create_dmmap_package("dmmap_firewall");
@@ -74,7 +74,7 @@ static int delete_NAT_InterfaceSetting(char *refparam, struct dmctx *ctx, void *
 
 static int add_NAT_PortMapping(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
-	char *value, *v, *inst, name[16];
+	char *value, *v, *inst, name[32];
 	struct uci_section *s = NULL, *dmmap_firewall = NULL;
 
 	check_create_dmmap_package("dmmap_firewall");

@@ -160,7 +160,7 @@ static int set_atm_link_type(char *refparam, struct dmctx *ctx, void *data, char
 
 static int get_atm_lower_layer(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char linker[16];
+	char linker[32];
 	snprintf(linker, sizeof(linker), "channel_%d", atoi(instance)-1);
 	adm_entry_get_linker_param(ctx, dm_print_path("%s%cDSL%cChannel%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value); // MEM WILL BE FREED IN DMMEMCLEAN
 	if (*value == NULL)

@@ -197,7 +197,7 @@ static void wait_voice_service_up(void)
 static inline int init_allowed_sip_codecs()
 {
 	json_object *res = NULL;
-	char id[8], priority[24], ptime[24];
+	char id[16], priority[24], ptime[24];
 	int i;
 	available_sip_codecs = 0;
 	dmubus_call("voice.asterisk", "codecs", UBUS_ARGS{}, 0, &res);
@@ -1556,7 +1556,7 @@ static int set_line_tel_line(char *refparam, struct dmctx *ctx, void *data, char
 			return 0;
 		case VALUESET:
 			memset(line_name, '\0', sizeof(line_name));
-			strncpy(line_name, section_name(telargs->tel_section), strlen(section_name(telargs->tel_section)) - 1);
+			strcpy(line_name, section_name(telargs->tel_section));
 			snprintf(bname, sizeof(bname), "%s%s", line_name, value);
 			error = dmuci_get_section_type("voice_client", bname, &stype);
 			if(error)

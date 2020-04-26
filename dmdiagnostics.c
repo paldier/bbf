@@ -56,7 +56,7 @@ static void ftp_download_per_packet(libtrace_packet_t *packet)
 	libtrace_tcp_t *tcp;
 	char tcp_flag[16] = "";
 	char *nexthdr;
-	char s_now[default_date_size];
+	char s_now[20];
 	uint8_t proto;
 	uint32_t remaining;
 
@@ -148,7 +148,7 @@ static void http_download_per_packet(libtrace_packet_t *packet)
 	struct tm lt;
 	struct timeval ts;
 	libtrace_tcp_t *tcp;
-	char *nexthdr, tcp_flag[16] = "", s_now[default_date_size];
+	char *nexthdr, tcp_flag[16] = "", s_now[20];
 	uint8_t proto;
 	uint32_t remaining;
 
@@ -284,7 +284,7 @@ static void http_upload_per_packet(libtrace_packet_t *packet)
 	libtrace_tcp_t *tcp;
 	char tcp_flag[16] = "";
 	char *nexthdr;
-	char s_now[default_date_size];
+	char s_now[20];
 	uint8_t proto;
 	uint32_t remaining;
 
@@ -387,7 +387,7 @@ static void ftp_upload_per_packet(libtrace_packet_t *packet)
 	uint32_t remaining;
 	char tcp_flag[16] = "";
 	char *nexthdr;
-	char s_now[default_date_size];
+	char s_now[20];
 
 	tcp = trace_get_transport(packet, &proto, &remaining);
 	if (tcp == NULL)

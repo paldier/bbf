@@ -1997,13 +1997,36 @@ int dm_validate_unsignedInt_list(char *value, int min_item, int max_item, int ma
 	return 0;
 }
 
+bool file_exists(const char* path)
+{
+	struct stat buffer;
+
+	if(stat(path, &buffer) == 0)
+		return true;
+	else
+		return false;
+}
+
+int is_regular_file(const char *path)
+{
+	if (path == NULL || strlen(path) == 0)
+		return 0;
+
+	if (access(path, F_OK) != 0)
+		return 1;
+
+	struct stat path_stat;
+	stat(path, &path_stat);
+	return S_ISREG(path_stat.st_mode);
+}
+
 int get_base64char_value(char b64)
 {
 	char *base64C = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	int i;
 	for (i = 0; i < 64; i++)
 		if (base64C[i] == b64)
-			return i;
+		return i;
 	return -1;
 }
 
@@ -2023,102 +2046,29 @@ char *decode64(char *enc)
 	return dec;
 }
 
-int is_string_exist_in_str_array(char **cert_paths, int length, char *dirpath, char *filename)
-{
-	int i;
-
-	for (i = 0; i < length; i++) {
-		if (strncmp(cert_paths[i], dirpath, strlen(dirpath)) == 0 && strstr(cert_paths[i], filename))
-			return 1;
-	}
-	return 0;
-}
-
-int is_regular_file(const char *path)
-{
-	if (path == NULL || strlen(path) == 0)
-		return 0;
-
-	if (access(path, F_OK) != 0)
-		return 1;
-
-    struct stat path_stat;
-    stat(path, &path_stat);
-    return S_ISREG(path_stat.st_mode);
-}
-
-char *get_cert_directory_path_from_uci(char *ucipath)
-{
-	char **uci_elts = NULL, **dirs = NULL;
-	char *path = NULL;
-	size_t length;
-
-	uci_elts = strsplit(ucipath, ".", &length);
-	dmuci_get_option_value_string(uci_elts[0], uci_elts[1], uci_elts[2], &path);
-	if(path && is_regular_file(path)) {
-		dirs = strsplit(path, "/", &length);
-		char *filenamepos = strstr(path, dirs[length - 1]);
-		char *dirpath = (char *)dmmalloc((filenamepos - path + 1)*sizeof(char));
-		memcpy(dirpath, path, filenamepos - path);
-		dirpath[filenamepos - path] = '\0';
-		return dirpath;
-	}
-	return path;
-}
-
-char **get_all_iop_certificates(int *length)
-{
-	char *certs_uci[] = {"openvpn.sample_server.cert", "openvpn.sample_client.cert", "owsd.ubusproxy.peer_cert", "owsd.wan_https.cert"};
-	int i, j = 0;
-	char *dirpath = NULL, **certificates_paths = NULL;
-	int number_certs_dirs = ARRAY_SIZE(certs_uci);
-
-	certificates_paths = (char **)dmmalloc(1024 * sizeof(char *));
-
-	for (i = 0; i < number_certs_dirs; i++) {
-		dirpath = get_cert_directory_path_from_uci(certs_uci[i]);
-		if (dirpath && strlen(dirpath) > 0) {
-			DIR *dir;
-			struct dirent *ent;
-			if ((dir = opendir(dirpath)) == NULL)
-				continue;
-			while ((ent = readdir (dir)) != NULL) {
-				if (ent->d_name[0] == '.' || is_string_exist_in_str_array(certificates_paths, j, dirpath, ent->d_name))
-					continue;
-				dmasprintf(&certificates_paths[j],"%s%s", dirpath, ent->d_name);
-				j++;
-			}
-			closedir(dir);
-			dmfree(dirpath);
-			dirpath = NULL;
-		}
-	}
-	*length = j;
-	return certificates_paths;
-}
-
 char *stringToHex(char *text, int length)
 {
-  char *hex = NULL;
-  int i, j;
-  hex = (char *)dmcalloc(100, sizeof(char));
+	char *hex = NULL;
+	int i, j;
 
-  for (i = 0, j = 0; i < length; ++i, j += 3) {
-    sprintf(hex + j, "%02x", text[i] & 0xff);
-    if (i < length-1)
-    	sprintf(hex + j + 2, "%c", ':');
-  }
-  return hex;
+	hex = (char *)dmcalloc(100, sizeof(char));
+
+	for (i = 0, j = 0; i < length; ++i, j += 3) {
+		sprintf(hex + j, "%02x", text[i] & 0xff);
+		if (i < length-1)
+			sprintf(hex + j + 2, "%c", ':');
+	}
+	return hex;
 }
 
 char *replace_char(char *str, char find, char replace)
 {
-    char *current_pos = strchr(str, find);
-    while (current_pos) {
-        *current_pos = replace;
-        current_pos = strchr(current_pos, find);
-    }
-    return str;
+	char *current_pos = strchr(str, find);
+	while (current_pos) {
+		*current_pos = replace;
+		current_pos = strchr(current_pos, find);
+	}
+	return str;
 }
 
 int is_vlan_termination_section(char *name)

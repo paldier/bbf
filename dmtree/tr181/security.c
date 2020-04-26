@@ -11,6 +11,9 @@
 #include "security.h"
 
 #define DATE_LEN 128
+#define MAX_CERT 32
+
+static char certifcates_paths[MAX_CERT][256];
 
 struct certificate_profile {
 	char *path;
@@ -152,19 +155,72 @@ static char *get_certificate_pk(mbedtls_pk_type_t sig_pk)
 /*************************************************************
 * ENTRY METHOD
 **************************************************************/
+
+static void get_certificate_paths(void)
+{
+	struct uci_section *s;
+	int cidx;
+
+	for (cidx=0; cidx<MAX_CERT; cidx++)
+		memset(certifcates_paths[cidx], '\0', 256);
+
+	cidx = 0;
+
+	uci_foreach_sections("owsd", "owsd-listen", s) {
+		char *cert;
+		dmuci_get_value_by_section_string(s, "cert", &cert);
+		if (*cert == '\0')
+			continue;
+		if (cidx >= MAX_CERT)
+			break;
+		if(!file_exists(cert) && is_regular_file(cert))
+			continue;
+		strncpy(certifcates_paths[cidx], cert, 256);
+		cidx++;
+	}
+
+	uci_foreach_sections("openvpn", "openvpn", s) {
+		char *cert;
+		dmuci_get_value_by_section_string(s, "cert", &cert);
+		if (*cert == '\0')
+			continue;
+		if (cidx >= MAX_CERT)
+			break;
+		if(!file_exists(cert) && is_regular_file(cert))
+			continue;
+		strncpy(certifcates_paths[cidx], cert, 256);
+		cidx++;
+	}
+
+	uci_foreach_sections("obuspa", "obuspa", s) {
+		char *cert;
+		dmuci_get_value_by_section_string(s, "cert", &cert);
+		if (*cert == '\0')
+			continue;
+		if (cidx >= MAX_CERT)
+			break;
+		if(!file_exists(cert) && is_regular_file(cert))
+			continue;
+		strncpy(certifcates_paths[cidx], cert, 256);
+		cidx++;
+	}
+}
+
 static int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 #if defined(LOPENSSL) || defined(LMBEDTLS)
-	char **certifcates_paths;
-	int length, i;
 	char *cert_inst= NULL, *cert_inst_last= NULL, *v = NULL;
 	struct uci_section *dmmap_sect = NULL;
 	struct certificate_profile certificateprofile = {};
 
-	certifcates_paths = get_all_iop_certificates(&length);
 	check_create_dmmap_package("dmmap_security");
 
-	for (i=0; i<length; i++) {
+	get_certificate_paths();
+
+	int i;
+	for (i=0; i < MAX_CERT; i++) {
+		if(!strlen(certifcates_paths[i]))
+			break;
 #ifdef LOPENSSL
 		FILE *fp = NULL;
 		fp = fopen(certifcates_paths[i], "r");
@@ -198,7 +254,7 @@ static int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_nod
 			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "path", certifcates_paths[i]);
 		}
 		init_certificate(certifcates_paths[i], cacert, dmmap_sect, &certificateprofile);
-        cert_inst = handle_update_instance(1, dmctx, &cert_inst_last, update_instance_alias, 3, dmmap_sect, "security_certificate_instance", "security_certificate_alias");
+		cert_inst = handle_update_instance(1, dmctx, &cert_inst_last, update_instance_alias, 3, dmmap_sect, "security_certificate_instance", "security_certificate_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&certificateprofile, cert_inst) == DM_STOP)
 			break;
 #endif
@@ -215,20 +271,22 @@ static int get_Security_CertificateNumberOfEntries(char *refparam, struct dmctx 
 	int number = 0;
 
 #if defined(LOPENSSL) || defined(LMBEDTLS)
-	int length, i;
-	char **certifcates_paths = NULL;
-	certifcates_paths = get_all_iop_certificates(&length);
 
-	for (i=0; i<length; i++) {
+	get_certificate_paths();
+
+	int i;
+	for (i=0; i < MAX_CERT; i++) {
+		if(!strlen(certifcates_paths[i]))
+			break;
 #ifdef LOPENSSL
 		FILE *fp = NULL;
 		fp = fopen(certifcates_paths[i], "r");
-        X509 *cert = PEM_read_X509(fp, NULL, NULL, NULL);
-        if (!cert) {
-        	fclose(fp);
-        	continue;
-        }
-        number++;
+		X509 *cert = PEM_read_X509(fp, NULL, NULL, NULL);
+		if (!cert) {
+			fclose(fp);
+			continue;
+		}
+		number++;
 		X509_free(cert);
 		cert = NULL;
 		fclose(fp);

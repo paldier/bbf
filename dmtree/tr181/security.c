@@ -173,7 +173,7 @@ static void get_certificate_paths(void)
 			continue;
 		if (cidx >= MAX_CERT)
 			break;
-		if(!file_exists(cert) && is_regular_file(cert))
+		if(!file_exists(cert) || !is_regular_file(cert))
 			continue;
 		strncpy(certifcates_paths[cidx], cert, 256);
 		cidx++;
@@ -186,7 +186,7 @@ static void get_certificate_paths(void)
 			continue;
 		if (cidx >= MAX_CERT)
 			break;
-		if(!file_exists(cert) && is_regular_file(cert))
+		if(!file_exists(cert) || !is_regular_file(cert))
 			continue;
 		strncpy(certifcates_paths[cidx], cert, 256);
 		cidx++;
@@ -199,7 +199,7 @@ static void get_certificate_paths(void)
 			continue;
 		if (cidx >= MAX_CERT)
 			break;
-		if(!file_exists(cert) && is_regular_file(cert))
+		if(!file_exists(cert) || !is_regular_file(cert))
 			continue;
 		strncpy(certifcates_paths[cidx], cert, 256);
 		cidx++;
@@ -214,9 +214,7 @@ static int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_nod
 	struct certificate_profile certificateprofile = {};
 
 	check_create_dmmap_package("dmmap_security");
-
 	get_certificate_paths();
-
 	int i;
 	for (i=0; i < MAX_CERT; i++) {
 		if(!strlen(certifcates_paths[i]))
@@ -224,6 +222,8 @@ static int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_nod
 #ifdef LOPENSSL
 		FILE *fp = NULL;
 		fp = fopen(certifcates_paths[i], "r");
+		if (fp == NULL)
+			continue;
 		X509 *cert = PEM_read_X509(fp, NULL, NULL, NULL);
 		if (!cert) {
 			fclose(fp);
@@ -245,7 +245,6 @@ static int browseSecurityCertificateInst(struct dmctx *dmctx, DMNODE *parent_nod
 #elif LMBEDTLS
 		mbedtls_x509_crt cacert;
 		mbedtls_x509_crt_init( &cacert );
-
 		int ret = mbedtls_x509_crt_parse_file( &cacert, certifcates_paths[i]);
 		if (ret < 0)
 			continue;
@@ -273,7 +272,6 @@ static int get_Security_CertificateNumberOfEntries(char *refparam, struct dmctx 
 #if defined(LOPENSSL) || defined(LMBEDTLS)
 
 	get_certificate_paths();
-
 	int i;
 	for (i=0; i < MAX_CERT; i++) {
 		if(!strlen(certifcates_paths[i]))
@@ -281,6 +279,8 @@ static int get_Security_CertificateNumberOfEntries(char *refparam, struct dmctx 
 #ifdef LOPENSSL
 		FILE *fp = NULL;
 		fp = fopen(certifcates_paths[i], "r");
+		if (fp == NULL)
+			continue;
 		X509 *cert = PEM_read_X509(fp, NULL, NULL, NULL);
 		if (!cert) {
 			fclose(fp);

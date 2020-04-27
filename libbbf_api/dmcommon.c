@@ -2012,9 +2012,6 @@ int is_regular_file(const char *path)
 	if (path == NULL || strlen(path) == 0)
 		return 0;
 
-	if (access(path, F_OK) != 0)
-		return 1;
-
 	struct stat path_stat;
 	stat(path, &path_stat);
 	return S_ISREG(path_stat.st_mode);

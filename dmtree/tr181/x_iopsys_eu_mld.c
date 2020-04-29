@@ -590,7 +590,7 @@ static int get_mld_snooping_interface(char *refparam, struct dmctx *ctx, void *d
 		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
 			dmuci_get_value_by_section_string(port, "mg_port", &mg);
 			if (strcmp(mg, "true") == 0) {
-				snprintf(linker, sizeof(linker), "%s+", section_name(port));
+				snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
 				adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot,
 							dm_delim, dm_delim, dm_delim), linker, value);
 				break;

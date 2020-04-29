@@ -800,7 +800,7 @@ void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, 
 		if (proxy_iface != NULL) {
 			struct uci_element *e;
 			uci_foreach_element(proxy_iface, e) {
-				char *p_ifname = strdup(e->name);
+				char *p_ifname = dmstrdup(e->name);
 				int found = 0;
 				uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "ifname",
 						p_ifname, d_sec) {
@@ -831,7 +831,7 @@ void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, 
 		if (snooping_iface != NULL) {
 			struct uci_element *e;
 			uci_foreach_element(snooping_iface, e) {
-				char *s_ifname = strdup(e->name);
+				char *s_ifname = dmstrdup(e->name);
 				int found = 0;
 				uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "ifname",
 						s_ifname, d_sec) {
@@ -901,7 +901,7 @@ void synchronize_specific_config_sections_with_dmmap_filter(char *package, char 
 		if (l != NULL) {
 			struct uci_element *e;
 			uci_foreach_element(l, e) {
-				char *ip_addr = strdup(e->name);
+				char *ip_addr = dmstrdup(e->name);
 				int found = 0;
 				uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "ipaddr",
 						ip_addr, d_sec) {

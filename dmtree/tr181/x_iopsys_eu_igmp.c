@@ -587,9 +587,9 @@ static int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *
 	get_dmmap_section_of_config_section("dmmap_network", "interface", sec_name, &dmmap_section);
 	if (dmmap_section != NULL) {
 		dmuci_get_value_by_section_string(dmmap_section, "bridge_instance", &br_inst);
-		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
-			dmuci_get_value_by_section_string(port, "mg_port", &mg);
-			if (strcmp(mg, "true") == 0) {
+		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_inst, port) {
+			dmuci_get_value_by_section_string(port, "management", &mg);
+			if (strcmp(mg, "1") == 0) {
 				snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
 				adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot,
 							dm_delim, dm_delim, dm_delim), linker, value);

@@ -240,12 +240,10 @@ struct sysfs_dmsection {
 	struct uci_section *dm;
 };
 
-void compress_spaces(char *str);
 char *cut_fx(char *str, char *delimiter, int occurence);
 pid_t get_pid(char *pname);
 int check_file(char *path);
 char *cidr2netmask(int bits);
-void remove_substring(char *s, const char *str_remove);
 bool is_strword_in_optionvalue(char *optionvalue, char *str);
 int dmcmd(char *cmd, int n, ...);
 int dmcmd_read(int pipe, char *buffer, int size);
@@ -255,15 +253,8 @@ int ipcalc(char *ip_str, char *mask_str, char *start_str, char *end_str, char *i
 int ipcalc_rev_start(char *ip_str, char *mask_str, char *ipstart_str, char *start_str);
 int ipcalc_rev_end(char *ip_str, char *mask_str, char *start_str, char *ipend_str, char *end_str);
 int network_get_ipaddr(char **value, char *iface);
-void remove_vid_interfaces_from_ifname(char *vid, char *ifname, char *new_ifname);
-void update_section_option_list(char *config, char *section, char *option, char *option_2,char *val, char *val_2, char *name);
-void update_section_list_bbfdm(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1,  char *option2, char *val2);
 void update_section_list(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1,  char *option2, char *val2);
 int wan_remove_dev_interface(struct uci_section *interface_setion, char *dev);
-void remove_vlan_from_bridge_interface(char *bridge_key, struct uci_section *vb);
-void remove_interface_from_ifname(char *iface, char *ifname, char *new_ifname);
-int max_array(int a[], int size);
-int check_ifname_is_vlan(char *ifname);
 void parse_proc_route_line(char *line, struct proc_routing *proute);
 int strstructered(char *str1, char *str2);
 int dmcommon_check_notification_value(char *value);
@@ -277,13 +268,9 @@ void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, 
 					void *data, char *dmmap_package, char *dmmap_sec, char *proto,
 					struct list_head *dup_list);
 void synchronize_specific_config_sections_with_dmmap(char *package, char *section_type, char *dmmap_package, struct list_head *dup_list);
-void synchronize_multi_config_sections_with_dmmap_set(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char *instance, char *br_key);
 void synchronize_specific_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package,char* option_name, char* option_value, struct list_head *dup_list);
 void synchronize_specific_config_sections_with_dmmap_eq_no_delete(char *package, char *section_type, char *dmmap_package,char* option_name, char* option_value, struct list_head *dup_list);
 void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *section_type, char *dmmap_package,char* option_name, char* option_value, struct list_head *dup_list);
-bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list);
-bool synchronize_multi_config_sections_with_dmmap_port(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list, char *br_key);
-bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char* opt_diff_name, char* opt_diff_value, void* additional_attribute, struct list_head *dup_list);
 void add_sysfs_sectons_list_paramameter(struct list_head *dup_list, struct uci_section *dmmap_section, char *file_name, char* filepath);
 int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_package, char *dmmap_section, char *opt_name, char* inst_opt, struct list_head *dup_list);
 void get_dmmap_section_of_config_section(char* dmmap_package, char* section_type, char *section_name, struct uci_section **dmmap_section);
@@ -309,7 +296,6 @@ int is_array_elt_exist(char **str_array, char *str, int length);
 int get_shift_time_time(int shift_time, char *local_time, int size);
 int get_shift_time_shift(char *local_time, char *shift);
 int command_exec_output_to_array(char *cmd, char **output, int *length);
-char* int_period_to_date_time_format(int time);
 int copy_temporary_file_to_original_file(char *f1, char *f2);
 struct uci_section *is_dmmap_section_exist(char* package, char* section);
 struct uci_section *is_dmmap_section_exist_eq(char* package, char* section, char* opt, char* value);

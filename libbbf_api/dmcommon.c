@@ -70,20 +70,6 @@ char *IPPrefix[] = {"^/(3[0-2]|[012]?[0-9])$", "^((25[0-5]|2[0-4][0-9]|[01]?[0-9
 char *IPv4Prefix[] = {"^/(3[0-2]|[012]?[0-9])$", "^((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])/(3[0-2]|[012]?[0-9])$"};
 char *IPv6Prefix[] = {}; //TODO
 
-void compress_spaces(char *str)
-{
-	char *dst = str;
-	for (; *str; ++str) {
-		*dst++ = *str;
-		if (isspace(*str)) {
-			do ++str;
-			while (isspace(*str));
-			--str;
-		}
-	}
-	*dst = '\0';
-}
-
 char *cut_fx(char *str, char *delimiter, int occurence)
 {
 	int i = 1;
@@ -200,14 +186,6 @@ char *cidr2netmask(int bits)
 	mask = htonl(mask);
 	ip_addr.s_addr = mask;
 	return inet_ntoa(ip_addr);
-}
-
-void remove_substring(char *s, const char *str_remove)
-{
-	int len = strlen(str_remove);
-	while (s == strstr(s, str_remove)) {
-		memmove(s, s+len, 1+strlen(s+len));
-    }
 }
 
 bool is_strword_in_optionvalue(char *optionvalue, char *str)
@@ -407,39 +385,6 @@ int network_get_ipaddr(char **value, char *iface)
 	return 0;
 }
 
-void remove_vid_interfaces_from_ifname(char *vid, char *ifname, char *new_ifname)
-{
-	char *pch, *p = new_ifname, *spch;
-	new_ifname[0] = '\0';
-	bool append;
-
-	ifname = dmstrdup(ifname);
-	pch = strtok_r(ifname, " ", &spch);
-	while (pch != NULL) {
-		append = false;
-		char *sv = strchr(pch, '.');
-		if (sv) {
-			sv++;
-			if (strcmp(sv, vid) != 0) {
-				append = true;
-			}
-		} else {
-			append = true;
-		}
-		if (append) {
-			if (p == new_ifname) {
-				dmstrappendstr(p, pch);
-			} else {
-				dmstrappendchr(p, ' ');
-				dmstrappendstr(p, pch);
-			}
-		}
-		pch = strtok_r(NULL, " ", &spch);
-	}
-	dmstrappendend(p);
-	dmfree(ifname);
-}
-
 char *dmmap_file_path_get(const char *dmmap_package)
 {
 	char *path;
@@ -458,86 +403,6 @@ char *dmmap_file_path_get(const char *dmmap_package)
 			fclose(fp);
 	}
 	return path;
-}
-
-void update_section_option_list(char *config, char *section, char *option, char *option_2,char *val, char *val_2, char *name)
-{
-	char *add_value, *baseifname;
-	struct uci_section *prev_s= NULL, *s;
-	bool add_sec = true;
-
-	if (name[0] == '\0') {
-		add_sec = false;
-	}
-	if (strcmp(config, DMMAP) == 0) {
-		uci_path_foreach_option_eq(bbfdm, config, section, option_2, val_2, s) {
-			dmuci_get_value_by_section_string(s, option, &baseifname);
-			if (!strstr(name, baseifname)) {
-				//delete section if baseifname  does not belong to ifname
-				if (prev_s) {
-					DMUCI_DELETE_BY_SECTION(bbfdm, prev_s, NULL, NULL);
-				}
-				prev_s = s;
-			} else if (strstr(name, baseifname) && (strcmp(baseifname,val) ==0)) {
-				//do not add baseifname if exist
-				add_sec = false;
-			}
-		}
-		if (prev_s) {
-			DMUCI_DELETE_BY_SECTION(bbfdm, prev_s, NULL, NULL);
-		}
-		if (add_sec) {
-			DMUCI_ADD_SECTION(bbfdm, config, section, &s, &add_value);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, option, val);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, option_2, val_2);
-		}
-	} else {
-		uci_foreach_option_eq(config, section, option_2, val_2, s) {
-			dmuci_get_value_by_section_string(s, option, &baseifname);
-			if (!strstr(name, baseifname)) {
-				//delete section if baseifname  does not belong to ifname
-				if (prev_s) {
-					dmuci_delete_by_section(prev_s, NULL, NULL);
-				}
-				prev_s = s;
-			} else if (strstr(name, baseifname) && (strcmp(baseifname,val) ==0)) {
-				//do not add baseifname if exist
-				add_sec = false;
-			}
-		}
-		if (prev_s) {
-			dmuci_delete_by_section(prev_s, NULL, NULL);
-		}
-		if (add_sec) {
-			dmuci_add_section_and_rename(config, section, &s, &add_value);
-			dmuci_set_value_by_section(s, option, val);
-			dmuci_set_value_by_section(s, option_2, val_2);
-		}
-	}
-}
-
-void update_section_list_bbfdm(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1,  char *option2, char *val2)
-{
-	char *add_value;
-	struct uci_section *s = NULL;
-	int i = 0;
-
-	if (option) {
-		uci_path_foreach_option_eq(bbfdm, config, section, option, filter, s) {
-			return;
-		}
-	} else {
-		uci_path_foreach_sections(bbfdm, config, section, s) {
-			return;
-		}
-	}
-	while (i < number) {
-		DMUCI_ADD_SECTION(bbfdm, config, section, &s, &add_value);
-		if (option)DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, option, filter);
-		if (option1)DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, option1, val1);
-		if (option2)DMUCI_SET_VALUE_BY_SECTION(bbfdm, s, option2, val2);
-		i++;
-	}
 }
 
 void update_section_list(char *config, char *section, char *option, int number, char *filter, char *option1, char *val1, char *option2, char *val2)
@@ -602,51 +467,6 @@ int wan_remove_dev_interface(struct uci_section *interface_setion, char *dev)
 		dmuci_delete_by_section(interface_setion, NULL, NULL);
 	else
 		dmuci_set_value_by_section(interface_setion, "ifname", new_ifname);
-	return 0;
-}
-
-void remove_interface_from_ifname(char *iface, char *ifname, char *new_ifname)
-{
-	char *pch, *spch, *p = new_ifname;
-	new_ifname[0] = '\0';
-
-	ifname = dmstrdup(ifname);
-	pch = strtok_r(ifname, " ", &spch);
-	while (pch != NULL) {
-		if (strcmp(pch, iface) != 0) {
-			if (p == new_ifname) {
-				dmstrappendstr(p, pch);
-			} else {
-				dmstrappendchr(p, ' ');
-				dmstrappendstr(p, pch);
-			}
-		}
-		pch = strtok_r(NULL, " ", &spch);
-	}
-	dmstrappendend(p);
-	dmfree(ifname);
-}
-
-int max_array(int a[], int size)
-{
-	int i, max = 0;
-	for (i = 0; i < size; i++) {
-		if(a[i] > max )
-		max = a[i];
-	}
-	return max;
-}
-
-int check_ifname_is_vlan(char *ifname)
-{
-	struct uci_section *s;
-	char *type;
-
-	uci_foreach_option_eq("network", "device", "name", ifname, s) {
-		dmuci_get_value_by_section_string(s, "type", &type);
-		if(strcasecmp(type, "untagged") != 0)
-			return 1;
-	}
 	return 0;
 }
 
@@ -1080,189 +900,6 @@ void synchronize_specific_config_sections_with_dmmap_cont(char *package, char *s
 	}
 }
 
-void synchronize_multi_config_sections_with_dmmap_set(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char *instance, char *br_key)
-{
-	struct uci_section *s;
-	char *key;
-
-	dmmap_file_path_get(dmmap_package);
-
-	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
-		/* Check if bridge_port_instance is present in dmmap_bridge_port.*/
-		struct uci_section *sec;
-		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_port_instance", instance, sec) {
-			dmuci_get_value_by_section_string(sec, "bridge_key", &key);
-			char bridge_key[10] = {0};
-			strncpy(bridge_key, br_key, sizeof(bridge_key) - 1);
-
-			char bridge_key_1[10] = {0};
-			strncpy(bridge_key_1, key, sizeof(bridge_key_1) - 1);
-
-			if (strncmp(bridge_key, bridge_key_1, sizeof(bridge_key)) == 0)
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, sec, "section_name", section_name(s));
-		}
-	}
-}
-
-bool synchronize_multi_config_sections_with_dmmap_port(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list, char *br_key)
-{
-	struct uci_section *s, *stmp, *dmmap_sect;
-	char *v, *pack, *sect;
-	bool found = false;
-
-	dmmap_file_path_get(dmmap_package);
-
-	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
-		found = true;
-		/*
-		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
-		 */
-		if ((dmmap_sect = get_dup_section_in_dmmap(dmmap_package, dmmap_section, section_name(s))) == NULL) {
-			dmuci_add_section_bbfdm(dmmap_package, dmmap_section, &dmmap_sect, &v);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
-		} else {
-			/* Get the bridge_key associated with the dmmap section. */
-			char *key;
-			dmuci_get_value_by_section_string(dmmap_sect, "bridge_key", &key);
-			if (strcmp(br_key, key) == 0) {
-				/* Dmmap set for configuring the lower layer of Bridge.Port object. */
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
-			} else {
-				struct uci_section *br_s = NULL;
-				uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_key, br_s) {
-					/* Get the section name. */
-					char *sec_name;
-					dmuci_get_value_by_section_string(br_s, "section_name", &sec_name);
-
-					if (strcmp(sec_name, section_name(s)) == 0) {
-						DMUCI_SET_VALUE_BY_SECTION(bbfdm, br_s, "section_name", section_name(s));
-						DMUCI_SET_VALUE_BY_SECTION(bbfdm, br_s, "package", package);
-						DMUCI_SET_VALUE_BY_SECTION(bbfdm, br_s, "section", section_type);
-					}
-				}
-			}
-		}
-
-		/*
-		 * Add system and dmmap sections to the list
-		 */
-		add_sectons_list_paramameter(dup_list, s, dmmap_sect, additional_attribute);
-	}
-
-	/*
-	 * Delete unused dmmap sections
-	 */
-	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
-		dmuci_get_value_by_section_string(s, "section_name", &v);
-		dmuci_get_value_by_section_string(s, "package", &pack);
-		dmuci_get_value_by_section_string(s, "section", &sect);
-		if (v != NULL && strlen(v) > 0 && strcmp(package, pack) == 0 && strcmp(section_type, sect) == 0) {
-			if(get_origin_section_from_config(package, section_type, v) == NULL){
-				dmuci_delete_by_section(s, NULL, NULL);
-			}
-		}
-	}
-
-	return found;
-}
-
-
-bool synchronize_multi_config_sections_with_dmmap_eq(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, void* additional_attribute, struct list_head *dup_list)
-{
-	struct uci_section *s, *stmp, *dmmap_sect;
-	char *v, *pack, *sect;
-	bool found = false;
-
-	dmmap_file_path_get(dmmap_package);
-
-	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
-		found = true;
-		/*
-		 * create/update corresponding dmmap section that have same config_section link and using param_value_array
-		 */
-		if ((dmmap_sect = get_dup_section_in_dmmap(dmmap_package, dmmap_section, section_name(s))) == NULL) {
-			dmuci_add_section_bbfdm(dmmap_package, dmmap_section, &dmmap_sect, &v);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
-		} else {
-			/* Fix : Dmmap set for configuring the lower layer of Bridge.Port object. */
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
-			DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
-		}
-
-		/*
-		 * Add system and dmmap sections to the list
-		 */
-		add_sectons_list_paramameter(dup_list, s, dmmap_sect, additional_attribute);
-	}
-
-	/*
-	 * Delete unused dmmap sections
-	 */
-	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
-		dmuci_get_value_by_section_string(s, "section_name", &v);
-		dmuci_get_value_by_section_string(s, "package", &pack);
-		dmuci_get_value_by_section_string(s, "section", &sect);
-		if (v!=NULL && strlen(v)>0 && strcmp(package, pack)==0 && strcmp(section_type, sect)== 0) {
-			if (get_origin_section_from_config(package, section_type, v) == NULL)
-				dmuci_delete_by_section(s, NULL, NULL);
-		}
-	}
-
-	return found;
-}
-
-bool synchronize_multi_config_sections_with_dmmap_eq_diff(char *package, char *section_type, char *dmmap_package, char* dmmap_section, char* option_name, char* option_value, char* opt_diff_name, char* opt_diff_value, void* additional_attribute, struct list_head *dup_list)
-{
-	struct uci_section *s, *stmp, *dmmap_sect;
-	char *v, *pack, *sect, *optval;
-	bool found = false;
-
-	dmmap_file_path_get(dmmap_package);
-
-	uci_foreach_option_eq(package, section_type, option_name, option_value, s) {
-		found = true;
-		dmuci_get_value_by_section_string(s, opt_diff_name, &optval);
-		if (strcmp(optval, opt_diff_value) != 0) {
-			/*
-			 * create/update corresponding dmmap section that have same config_section link and using param_value_array
-			 */
-			if ((dmmap_sect = get_dup_section_in_dmmap(dmmap_package, dmmap_section, section_name(s))) == NULL) {
-				dmuci_add_section_bbfdm(dmmap_package, dmmap_section, &dmmap_sect, &v);
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section_name", section_name(s));
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "package", package);
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dmmap_sect, "section", section_type);
-			}
-
-			/*
-			 * Add system and dmmap sections to the list
-			 */
-			add_sectons_list_paramameter(dup_list, s, dmmap_sect, additional_attribute);
-		}
-	}
-
-	/*
-	 * Delete unused dmmap sections
-	 */
-	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
-		dmuci_get_value_by_section_string(s, "section_name", &v);
-		dmuci_get_value_by_section_string(s, "package", &pack);
-		dmuci_get_value_by_section_string(s, "section", &sect);
-		if (v != NULL && strlen(v) > 0 && strcmp(package, pack) == 0 && strcmp(section_type, sect) == 0) {
-			if (get_origin_section_from_config(package, section_type, v) == NULL)
-				dmuci_delete_by_section(s, NULL, NULL);
-		}
-	}
-
-	return found;
-}
-
 void add_sysfs_sectons_list_paramameter(struct list_head *dup_list, struct uci_section *dmmap_section, char *file_name, char* filepath)
 {
 	struct sysfs_dmsection *dmmap_sysfs;
@@ -1472,6 +1109,7 @@ static inline int isword_delim(char c)
 {
 	if (c == ' ' ||
 		c == ',' ||
+		c == '.' ||
 		c == '\t' ||
 		c == '\v' ||
 		c == '\r' ||
@@ -1484,10 +1122,9 @@ static inline int isword_delim(char c)
 char *dm_strword(char *src, char *str)
 {
 	char *ret = src;
-	int len;
 	if (src[0] == '\0')
 		return NULL;
-	len = strlen(str);
+	int len = strlen(str);
 	while ((ret = strstr(ret, str)) != NULL) {
 		if ((ret == src && isword_delim(ret[len])) ||
 			(ret != src && isword_delim(ret[len]) && isword_delim(*(ret - 1))))
@@ -1755,20 +1392,6 @@ int command_exec_output_to_array(char *cmd, char **output, int *length)
 	pclose(fp);
 
 	return 0;
-}
-
-char* int_period_to_date_time_format(int time)
-{
-	char *datetime;
-	int seconds, minutes, hours, days;
-	minutes = time/60;
-	seconds = time%60;
-	hours = minutes/60;
-	minutes = minutes%60;
-    days = hours/24;
-    hours = hours%24;
-    dmasprintf(&datetime, "%dT%d:%d:%d", days, hours, minutes, seconds);
-	return datetime;
 }
 
 int isfolderexist(char *folderpath)

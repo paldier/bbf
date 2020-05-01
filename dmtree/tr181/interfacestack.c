@@ -254,9 +254,9 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			snprintf(buf_higheralias, sizeof(buf_higheralias), "%s", higheralias);
 		if (strcmp(type, "bridge") == 0) {
 			br_inst = get_alias_by_section("dmmap_network", "interface", s, "bridge_instance");
-			uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
-				dmuci_get_value_by_section_string(port, "mg_port", &mg);
-				if (strcmp(mg, "true") == 0) {
+			uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_inst, port) {
+				dmuci_get_value_by_section_string(port, "management", &mg);
+				if (strcmp(mg, "1") == 0) {
 					snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
 					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &v);
 					dmuci_get_value_by_section_string(port, "bridge_port_alias", &loweralias);
@@ -300,9 +300,9 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		br_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_network", "interface", s, "bridge_instance", "bridge_alias");
 		if (*br_inst == '\0')
 			continue;
-		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, port) {
-			dmuci_get_value_by_section_string(port, "mg_port", &mg);
-			if (strcmp(mg, "true") == 0) {
+		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_inst, port) {
+			dmuci_get_value_by_section_string(port, "management", &mg);
+			if (strcmp(mg, "1") == 0) {
 				snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
 				adm_entry_get_linker_param(dmctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &pch);
 				dmuci_get_value_by_section_string(port, "bridge_port_alias", &higheralias);
@@ -318,9 +318,9 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		}
 
 		struct uci_section *sd = NULL;
-		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "bridge_key", br_inst, sd) {
-			dmuci_get_value_by_section_string(sd, "mg_port", &mg);
-			if (strcmp(mg, "true") == 0)
+		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_inst, sd) {
+			dmuci_get_value_by_section_string(sd, "management", &mg);
+			if (strcmp(mg, "1") == 0)
 				continue;
 
 			char *sectionname, *package, *section;

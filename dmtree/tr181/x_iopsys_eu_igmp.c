@@ -559,7 +559,7 @@ static int set_igmp_snooping_aggregation(char *refparam, struct dmctx *ctx, void
 
 static int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char val[16], sec_name[16]; // taking 16 here is same as that is size of linux names usually supported
+	char val[16] = {0}, sec_name[16] = {0}; // taking 16 here is same as that is size of linux names usually supported
 	char *val1;
 
 	dmuci_get_value_by_section_string((struct uci_section *)data, "interface", &val1);
@@ -568,7 +568,7 @@ static int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *
 	// section would be wan, so extract wan from br-wan
 	char *tok, *end;
 
-	strncpy(val, val1, sizeof(val));
+	strncpy(val, val1, sizeof(val) - 1);
 	tok = strtok_r(val, "-", &end);
 	if ((tok == NULL) || (end == NULL)) {
 		return 0;
@@ -578,7 +578,7 @@ static int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *
 		return 0;
 	}
 
-	strncpy(sec_name, end, sizeof(sec_name));
+	strncpy(sec_name, end, sizeof(sec_name) - 1);
 	// In the dmmap_network file, the details related to the instance id etc. associated with this bridge
 	// is stored, we now switch our focus to it to extract the necessary information.
 	struct uci_section *dmmap_section, *port;
@@ -1359,7 +1359,7 @@ static int get_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 {
 	struct uci_section *d_sec, *s;
 	char *ifname, *f_inst;
-	char sec_name[16];
+	char sec_name[16] = {0};
 	int found = 0;
 
 	uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "proxy_interface",
@@ -1380,12 +1380,12 @@ static int get_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 	// Check if this is bridge type interface
 	if (strstr(ifname, "br-")) {
 		// Interface is bridge type, convert to network uci file section name
-		char val[16];
-		strncpy(val, ifname, sizeof(val));
+		char val[16] = {0};
+		strncpy(val, ifname, sizeof(val) - 1);
 		char *tok, *end;
 		tok = strtok_r(val, "-", &end);
 		if (strcmp(tok, "br") == 0) {
-			strncpy(sec_name, end, sizeof(sec_name));
+			strncpy(sec_name, end, sizeof(sec_name) - 1);
 		} else {
 			goto end;
 		}

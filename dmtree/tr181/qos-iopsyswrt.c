@@ -9,11 +9,6 @@
  *	Author: Rohit Topno <r.topno@gxgroup.eu>
  */
 
-#include <libbbf_api/dmbbf.h>
-#include <libbbf_api/dmcommon.h>
-#include <libbbf_api/dmuci.h>
-#include <libbbf_api/dmubus.h>
-#include <libbbf_api/dmjson.h>
 #include "dmentry.h"
 #include "qos.h"
 
@@ -2763,10 +2758,7 @@ static int get_QoSPolicer_NonConformingCountedBytes(char *refparam, struct dmctx
 static int get_QoSQueue_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
-	if(*value[0] == '\0' || *value[0] == '0')
-		*value = "0";
-	else
-		*value = "1";
+	*value = (*value[0] == '1') ? "1" : "0";
 	return 0;
 }
 
@@ -2780,10 +2772,7 @@ static int set_QoSQueue_Enable(char *refparam, struct dmctx *ctx, void *data, ch
 			break;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value_by_section((struct uci_section *)data, "enable", "1");
-			else
-				dmuci_set_value_by_section((struct uci_section *)data, "enable", "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "enable", b ? "1" : "0");
 			break;
 	}
 	return 0;
@@ -2792,11 +2781,7 @@ static int set_QoSQueue_Enable(char *refparam, struct dmctx *ctx, void *data, ch
 static int get_QoSQueue_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
-	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
-	if(*value[0] == '\0' || *value[0] == '0')
-		*value = "Disabled";
-	else
-		*value = "Enabled";
+	*value = (*value[0] == '1') ? "Enabled" : "Disabled";
 	return 0;
 }
 
@@ -2873,7 +2858,8 @@ static int set_QoSQueue_Interface(char *refparam, struct dmctx *ctx, void *data,
 			break;
 		case VALUESET:
 			adm_entry_get_linker_value(ctx, value, &interface_linker);
-			dmuci_set_value_by_section((struct uci_section *)data, "ifname", interface_linker);
+			if (interface_linker)
+				dmuci_set_value_by_section((struct uci_section *)data, "ifname", interface_linker);
 			break;
 	}
 	return 0;
@@ -3042,8 +3028,7 @@ static int set_QoSQueue_SchedulerAlgorithm(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-
-/*#Device.QoS.Queue.{i}.ShapingRate!UCI:qos/class,@i-1/limitrate*/
+/*#Device.QoS.Queue.{i}.ShapingRate!UCI:qos/class,@i-1/rate*/
 static int get_QoSQueue_ShapingRate(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "rate", value);
@@ -3075,10 +3060,10 @@ static int set_QoSQueue_ShapingBurstSize(char *refparam, struct dmctx *ctx, void
 {
 	switch (action)	{
 		case VALUECHECK:
-			break;
-		case VALUESET:
 			if (dm_validate_unsignedInt(value, RANGE_ARGS{{NULL,NULL}}, 1))
 				return FAULT_9007;
+			break;
+		case VALUESET:
 			dmuci_set_value_by_section((struct uci_section *)data, "burst_size", value);
 			break;
 	}
@@ -3202,10 +3187,7 @@ static int get_QoSQueueStats_QueueOccupancyPercentage(char *refparam, struct dmc
 static int get_QoSShaper_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
-	if(*value[0] == '\0' || *value[0] == '0')
-		*value = "0";
-	else
-		*value = "1";
+	*value = (*value[0] == '1') ? "1" : "0";
 	return 0;
 }
 
@@ -3219,10 +3201,7 @@ static int set_QoSShaper_Enable(char *refparam, struct dmctx *ctx, void *data, c
 			break;
 		case VALUESET:
 			string_to_bool(value, &b);
-			if(b)
-				dmuci_set_value_by_section((struct uci_section *)data, "enable", "1");
-			else
-				dmuci_set_value_by_section((struct uci_section *)data, "enable", "0");
+			dmuci_set_value_by_section((struct uci_section *)data, "enable", b ? "1" : "0");
 			break;
 	}
 	return 0;
@@ -3231,10 +3210,7 @@ static int set_QoSShaper_Enable(char *refparam, struct dmctx *ctx, void *data, c
 static int get_QoSShaper_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
-	if(*value[0] == '\0' || *value[0] == '0')
-		*value = "Disabled";
-	else
-		*value = "Enabled";
+	*value = (*value[0] == '1') ? "Enabled" : "Disabled";
 	return 0;
 }
 
@@ -3338,6 +3314,7 @@ static int set_QoSShaper_ShapingBurstSize(char *refparam, struct dmctx *ctx, voi
 	}
 	return 0;
 }
+
 /* *** Device.QoS. *** */
 DMOBJ tQoSObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
@@ -3580,5 +3557,3 @@ DMLEAF tQoSShaperParams[] = {
 {"ShapingBurstSize", &DMWRITE, DMT_UNINT, get_QoSShaper_ShapingBurstSize, set_QoSShaper_ShapingBurstSize, NULL, NULL, BBFDM_BOTH},
 {0}
 };
-
-

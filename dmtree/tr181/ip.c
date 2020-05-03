@@ -677,6 +677,7 @@ static int get_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *
 static int set_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker = NULL, *newvalue = NULL;
+	char lower_layer[256] = {0};
 
 	switch (action) {
 		case VALUECHECK:
@@ -684,17 +685,27 @@ static int set_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-			if (value[strlen(value)-1] != '.') {
-				dmasprintf(&newvalue, "%s.", value);
-				adm_entry_get_linker_value(ctx, newvalue, &linker);
-			} else
-				adm_entry_get_linker_value(ctx, value, &linker);
 
-			if (linker)
-				dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ifname", linker);
+			if (value[strlen(value)-1] != '.')
+				snprintf(lower_layer, sizeof(lower_layer), "%s.", value);
 			else
-				return FAULT_9005;
+				strncpy(lower_layer, value, sizeof(lower_layer) - 1);
 
+			if (strncmp(lower_layer, "Device.Ethernet.VLANTermination.", 32) == 0) {
+				adm_entry_get_linker_value(ctx, lower_layer, &linker);
+				if (linker) {
+					// Check if there is an interface that has the same ifname
+					// if yes, remove it
+					struct uci_section *s = NULL, *stmp = NULL;
+					uci_foreach_option_eq_safe("network", "interface", "ifname", linker, stmp, s) {
+						dmuci_delete_by_section(s, NULL, NULL);
+					}
+
+					// Update ifname list
+					dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ifname", linker);
+				}
+			} else
+				return FAULT_9005;
 			return 0;
 	}
 	return 0;

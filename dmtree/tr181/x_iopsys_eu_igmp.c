@@ -582,15 +582,17 @@ static int get_igmp_snooping_interface(char *refparam, struct dmctx *ctx, void *
 	// In the dmmap_network file, the details related to the instance id etc. associated with this bridge
 	// is stored, we now switch our focus to it to extract the necessary information.
 	struct uci_section *dmmap_section, *port;
-	char *br_inst, *mg, linker[64] = "";
 
 	get_dmmap_section_of_config_section("dmmap_network", "interface", sec_name, &dmmap_section);
 	if (dmmap_section != NULL) {
+		char *br_inst, *mg;
 		dmuci_get_value_by_section_string(dmmap_section, "bridge_instance", &br_inst);
 		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_inst, port) {
 			dmuci_get_value_by_section_string(port, "management", &mg);
 			if (strcmp(mg, "1") == 0) {
-				snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
+				char *device, linker[512] = "";
+				dmuci_get_value_by_section_string(port, "device", &device);
+				snprintf(linker, sizeof(linker), "br_%s:%s+%s", br_inst, section_name(port), device);
 				adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot,
 							dm_delim, dm_delim, dm_delim), linker, value);
 				break;

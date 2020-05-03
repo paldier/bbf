@@ -841,8 +841,7 @@ static int get_EthernetLink_LastChange(char *refparam, struct dmctx *ctx, void *
 static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s = NULL;
-	char *link_mac, *proto, *type, *ifname, *mac, *br_inst, *mg, linker[64] = "";
-	struct uci_section *dmmap_section, *port;
+	char *link_mac, *proto, *type, *ifname, *mac;
 
 	dmuci_get_value_by_section_string(((struct dm_args *)data)->section, "mac", &link_mac);
 	uci_foreach_sections("network", "interface", s) {
@@ -860,16 +859,22 @@ static int get_EthernetLink_LowerLayers(char *refparam, struct dmctx *ctx, void 
 
 		dmuci_get_value_by_section_string(s, "type", &type);
 		if (strcmp(type, "bridge") == 0) {
+			struct uci_section *dmmap_section, *port;
 			get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(s), &dmmap_section);
 			if (dmmap_section != NULL) {
+				char *br_inst, *mg;
 				dmuci_get_value_by_section_string(dmmap_section, "bridge_instance", &br_inst);
 				uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_inst, port) {
 					dmuci_get_value_by_section_string(port, "management", &mg);
-					if (strcmp(mg, "1") == 0)
-						snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
-					adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
-					if (*value == NULL)
-						*value = "";
+					if (strcmp(mg, "1") == 0) {
+						char *device, linker[512] = "";
+						dmuci_get_value_by_section_string(port, "device", &device);
+						snprintf(linker, sizeof(linker), "br_%s:%s+%s", br_inst, section_name(port), device);
+						adm_entry_get_linker_param(ctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+						if (*value == NULL)
+							*value = "";
+						break;
+					}
 				}
 			}
 		} else {

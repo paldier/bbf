@@ -73,7 +73,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 	char buf_higheralias[64] = {0};
 	char buf_loweralias[64] = {0};
 	char buf_instance[32] = {0};
-	char linker[64] = {0};
+	char linker[512] = {0};
 	char buf_tmp[64] = {0};
 	int instance = 0, found = 0;
 
@@ -257,7 +257,8 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 			uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_inst, port) {
 				dmuci_get_value_by_section_string(port, "management", &mg);
 				if (strcmp(mg, "1") == 0) {
-					snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
+					dmuci_get_value_by_section_string(port, "device", &device);
+					snprintf(linker, sizeof(linker), "br_%s:%s+%s", br_inst, section_name(port), device);
 					adm_entry_get_linker_param(dmctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &v);
 					dmuci_get_value_by_section_string(port, "bridge_port_alias", &loweralias);
 					dmuci_get_value_by_section_string(port, "bridge_port_instance", &layer_inst);
@@ -303,7 +304,8 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 		uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_inst, port) {
 			dmuci_get_value_by_section_string(port, "management", &mg);
 			if (strcmp(mg, "1") == 0) {
-				snprintf(linker, sizeof(linker), "br_%s:%s+", br_inst, section_name(port));
+				dmuci_get_value_by_section_string(port, "device", &device);
+				snprintf(linker, sizeof(linker), "br_%s:%s+%s", br_inst, section_name(port), device);
 				adm_entry_get_linker_param(dmctx, dm_print_path("%s%cBridging%cBridge%c", dmroot, dm_delim, dm_delim, dm_delim), linker, &pch);
 				dmuci_get_value_by_section_string(port, "bridge_port_alias", &higheralias);
 				dmuci_get_value_by_section_string(port, "bridge_port_instance", &bridge_port_inst);

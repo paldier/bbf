@@ -676,7 +676,7 @@ static int get_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *
 
 static int set_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *linker = NULL, *newvalue = NULL;
+	char *linker = NULL;
 	char lower_layer[256] = {0};
 
 	switch (action) {
@@ -1504,9 +1504,11 @@ static int delete_ip_interface(char *refparam, struct dmctx *ctx, void *data, ch
 
 	switch (del_action) {
 	case DEL_INST:
-		dmuci_delete_by_section(((struct ip_args *)data)->ip_sec, NULL, NULL);
+		dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "proto", "");
+		dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ifname", "");
 		get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct ip_args *)data)->ip_sec), &dmmap_section);
-		if(dmmap_section) dmuci_delete_by_section(dmmap_section, NULL, NULL);
+		dmuci_set_value_by_section(dmmap_section, "ip_int_instance", "");
+		dmuci_set_value_by_section(dmmap_section, "ipv4_instance", "");
 		break;
 	case DEL_ALL:
 		return FAULT_9005;

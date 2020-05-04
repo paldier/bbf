@@ -41,7 +41,7 @@ int bbf_set_ip_version(int ipversion)
 
 int set_bbf_end_session_flag(int flag)
 {
-	return (end_session_flag &= flag);
+	return (end_session_flag & flag);
 }
 
 int reset_bbf_end_session_flag(void)

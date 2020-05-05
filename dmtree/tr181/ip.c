@@ -1501,14 +1501,30 @@ static int add_ip_interface(char *refparam, struct dmctx *ctx, void *data, char 
 static int delete_ip_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *dmmap_section = NULL;
+	char *type;
 
 	switch (del_action) {
 	case DEL_INST:
-		dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "proto", "");
-		dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ifname", "");
+		// Get dmmap section related to this interface section
 		get_dmmap_section_of_config_section("dmmap_network", "interface", section_name(((struct ip_args *)data)->ip_sec), &dmmap_section);
-		dmuci_set_value_by_section(dmmap_section, "ip_int_instance", "");
-		dmuci_set_value_by_section(dmmap_section, "ipv4_instance", "");
+
+		// Read the type option from interface section
+		dmuci_get_value_by_section_string(((struct ip_args *)data)->ip_sec, "type", &type);
+
+		// Check the type value ==> if bridge : there is a Bridging.Bridge. object mapped to this interface, remove only proto option from the section
+		// Check the type value ==> else : there is no Bridging.Bridge. object mapped to this interface, remove the section
+		if (strcmp(type, "bridge") == 0) {
+			/* type is bridge ==> remove only proto option from the interface section and ip instance option from dmmap section */
+
+			dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "proto", "");
+			dmuci_set_value_by_section(dmmap_section, "ip_int_instance", "");
+			dmuci_set_value_by_section(dmmap_section, "ipv4_instance", "");
+		} else {
+			/* type is not bridge ==> remove interface and dmmap section */
+
+			dmuci_delete_by_section(((struct ip_args *)data)->ip_sec, NULL, NULL);
+			dmuci_delete_by_section(dmmap_section, NULL, NULL);
+		}
 		break;
 	case DEL_ALL:
 		return FAULT_9005;

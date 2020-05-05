@@ -401,6 +401,7 @@ int dmuci_change_packages(struct list_head *clist)
 			continue;
 		add_list_package_change(clist, *p);
 	}
+	free(configs);
 	return 0;
 }
 

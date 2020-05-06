@@ -1868,11 +1868,6 @@ int is_vlan_termination_section(char *name)
 	struct uci_section *s;
 
 	uci_foreach_sections("network", "interface", s) {
-		// check proto is not empty
-		char *proto;
-		dmuci_get_value_by_section_string(s, "proto", &proto);
-		if (*proto == '\0')
-			continue;
 
 		// check ifname is not empty
 		char *ifname;
@@ -1880,11 +1875,20 @@ int is_vlan_termination_section(char *name)
 		if (*ifname == '\0')
 			continue;
 
-		// check if name exist in the list ifname
-		if (strcmp(ifname, name) == 0)
-			return 1;
+		// check if ifname list contains the device name
+		if (strstr(ifname, name)) {
+			char *type, *proto;
+			dmuci_get_value_by_section_string(s, "type", &type);
+			dmuci_get_value_by_section_string(s, "proto", &proto);
+
+			// check type is not bridge and proto is not empty
+			if (strcmp(type, "bridge") == 0 || *proto == '\0')
+				return 0;
+
+			break;
+		}
 	}
-	return 0;
+	return 1;
 }
 
 int get_upstream_interface(char *intf_tag, int len)

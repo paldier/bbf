@@ -326,7 +326,8 @@ DMLEAF tDeviceInfoParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Manufacturer", &DMREAD, DMT_STRING, get_device_manufacturer, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"ManufacturerOUI", &DMREAD, DMT_STRING, get_device_manufactureroui, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
-{"ModelName", &DMREAD, DMT_STRING, os__get_device_routermodel, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
+{"ModelName", &DMREAD, DMT_STRING, os__get_device_modelname, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
+{"Description", &DMREAD, DMT_STRING, os__get_device_description, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"ProductClass", &DMREAD, DMT_STRING, get_device_productclass, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"SerialNumber", &DMREAD, DMT_STRING, get_device_serialnumber, NULL,  &DMFINFRM, NULL, BBFDM_BOTH},
 {"HardwareVersion", &DMREAD, DMT_STRING, os__get_device_hardwareversion, NULL, &DMFINFRM, NULL, BBFDM_BOTH},

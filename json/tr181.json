@@ -412,6 +412,21 @@
 					{
 						"max": 256
 					}
+				],
+				"mapping": [
+					{
+						"type": "uci",
+						"uci": {
+							"file": "cwmp",
+							"section": {
+								"type": "cpe",
+								"name": "cpe"
+							},
+							"option": {
+								"name": "description"
+							}
+						}
+					}
 				]
 			}, 
 			"ProductClass": {
@@ -2367,7 +2382,22 @@
 				"protocols": [
 					"cwmp"
 				], 
-				"datatype": "boolean"
+				"datatype": "boolean",
+				"mapping": [
+					{
+						"type": "uci",
+						"uci": {
+							"file": "cwmp",
+							"section": {
+								"type": "cpe",
+								"name": "cpe"
+							},
+							"option": {
+								"name": "upgrades_managed"
+							}
+						}
+					}
+				]
 			}, 
 			"KickURL": {
 				"type": "string", 

@@ -229,6 +229,28 @@ static int set_management_server_connection_request_passwd(char *refparam, struc
 	return 0;
 }
 
+/*#Device.ManagementServer.ConnectionRequestPassword!UCI:cwmp/cpe,cpe/upgrades_managed*/
+static int get_upgrades_managed(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	dmuci_get_option_value_string("cwmp", "cpe", "upgrades_managed", value);
+	return 0;
+}
+
+static int set_upgrades_managed(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	switch (action) {
+		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
+			return 0;
+		case VALUESET:
+			dmuci_set_value("cwmp", "cpe", "upgrades_managed", value);
+			cwmp_set_end_session(END_SESSION_RELOAD);
+			return 0;
+	}
+	return 0;
+}
+
 static int get_lwn_protocol_supported(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = "UDP";
@@ -695,13 +717,23 @@ DMLEAF tManagementServerParams[] = {
 {"URL", &DMWRITE, DMT_STRING, get_management_server_url, set_management_server_url, NULL, NULL, BBFDM_CWMP},
 {"Username", &DMWRITE, DMT_STRING, get_management_server_username, set_management_server_username, NULL, NULL, BBFDM_CWMP},
 {"Password", &DMWRITE, DMT_STRING, get_empty, set_management_server_passwd, NULL, NULL, BBFDM_CWMP},
-{"ParameterKey", &DMREAD, DMT_STRING, get_management_server_key, NULL, &DMFINFRM, &DMNONE, BBFDM_CWMP},
 {"PeriodicInformEnable", &DMWRITE, DMT_BOOL, get_management_server_periodic_inform_enable, set_management_server_periodic_inform_enable,  NULL, NULL, BBFDM_CWMP},
 {"PeriodicInformInterval", &DMWRITE, DMT_UNINT, get_management_server_periodic_inform_interval, set_management_server_periodic_inform_interval, NULL, NULL, BBFDM_CWMP},
 {"PeriodicInformTime", &DMWRITE, DMT_TIME, get_management_server_periodic_inform_time, set_management_server_periodic_inform_time, NULL, NULL, BBFDM_CWMP},
+{"ParameterKey", &DMREAD, DMT_STRING, get_management_server_key, NULL, &DMFINFRM, &DMNONE, BBFDM_CWMP},
 {"ConnectionRequestURL", &DMREAD, DMT_STRING, get_management_server_connection_request_url, NULL, &DMFINFRM, &DMACTIVE, BBFDM_CWMP},
 {"ConnectionRequestUsername", &DMWRITE, DMT_STRING, get_management_server_connection_request_username, set_management_server_connection_request_username, NULL, NULL, BBFDM_CWMP},
 {"ConnectionRequestPassword", &DMWRITE, DMT_STRING, get_empty, set_management_server_connection_request_passwd,  NULL, NULL, BBFDM_CWMP},
+{"UpgradesManaged", &DMWRITE, DMT_BOOL, get_upgrades_managed, set_upgrades_managed, NULL, NULL, BBFDM_CWMP},
+{"UDPConnectionRequestAddress", &DMREAD, DMT_STRING, get_upd_cr_address, NULL, NULL, &DMACTIVE, BBFDM_CWMP},
+{"STUNEnable", &DMWRITE, DMT_BOOL, get_stun_enable, set_stun_enable, NULL, NULL, BBFDM_CWMP},
+{"STUNServerAddress", &DMWRITE, DMT_STRING, get_stun_server_address, set_stun_server_address, NULL, NULL, BBFDM_CWMP},
+{"STUNServerPort", &DMWRITE, DMT_UNINT, get_stun_server_port, set_stun_server_port, NULL, NULL, BBFDM_CWMP},
+{"STUNUsername", &DMWRITE, DMT_STRING, get_stun_username, set_stun_username, NULL, NULL, BBFDM_CWMP},
+{"STUNPassword", &DMWRITE, DMT_STRING, get_stun_password, set_stun_password, NULL, NULL, BBFDM_CWMP},
+{"STUNMaximumKeepAlivePeriod", &DMWRITE, DMT_INT, get_stun_maximum_keepalive_period, set_stun_maximum_keepalive_period, NULL, NULL, BBFDM_CWMP},
+{"STUNMinimumKeepAlivePeriod", &DMWRITE, DMT_UNINT, get_stun_minimum_keepalive_period, set_stun_minimum_keepalive_period, NULL, NULL, BBFDM_CWMP},
+{"NATDetected", &DMREAD, DMT_BOOL, get_nat_detected, NULL, NULL, NULL, BBFDM_CWMP},
 {"HTTPCompressionSupported", &DMREAD, DMT_STRING, get_management_server_http_compression_supportted, NULL, NULL, NULL, BBFDM_CWMP},
 {"HTTPCompression", &DMWRITE, DMT_STRING, get_management_server_http_compression, set_management_server_http_compression, NULL, NULL, BBFDM_CWMP},
 {"LightweightNotificationProtocolsSupported", &DMREAD, DMT_STRING, get_lwn_protocol_supported, NULL, NULL, NULL, BBFDM_CWMP},
@@ -716,14 +748,5 @@ DMLEAF tManagementServerParams[] = {
 {"ConnReqJabberID", &DMREAD, DMT_STRING, get_management_server_conn_req_jabber_id, NULL, &DMFINFRM, &DMACTIVE, BBFDM_CWMP},
 {"ConnReqXMPPConnection", &DMWRITE, DMT_STRING, get_management_server_conn_req_xmpp_connection, set_management_server_conn_req_xmpp_connection, &DMFINFRM, NULL, BBFDM_CWMP},
 {"SupportedConnReqMethods", &DMREAD, DMT_STRING, get_management_server_supported_conn_req_methods, NULL, NULL, NULL, BBFDM_CWMP},
-{"UDPConnectionRequestAddress", &DMREAD, DMT_STRING, get_upd_cr_address, NULL, NULL, &DMACTIVE, BBFDM_CWMP},
-{"STUNEnable", &DMWRITE, DMT_BOOL, get_stun_enable, set_stun_enable, NULL, NULL, BBFDM_CWMP},
-{"STUNServerAddress", &DMWRITE, DMT_STRING, get_stun_server_address, set_stun_server_address, NULL, NULL, BBFDM_CWMP},
-{"STUNServerPort", &DMWRITE, DMT_UNINT, get_stun_server_port, set_stun_server_port, NULL, NULL, BBFDM_CWMP},
-{"STUNUsername", &DMWRITE, DMT_STRING, get_stun_username, set_stun_username, NULL, NULL, BBFDM_CWMP},
-{"STUNPassword", &DMWRITE, DMT_STRING, get_stun_password, set_stun_password, NULL, NULL, BBFDM_CWMP},
-{"STUNMaximumKeepAlivePeriod", &DMWRITE, DMT_INT, get_stun_maximum_keepalive_period, set_stun_maximum_keepalive_period, NULL, NULL, BBFDM_CWMP},
-{"STUNMinimumKeepAlivePeriod", &DMWRITE, DMT_UNINT, get_stun_minimum_keepalive_period, set_stun_minimum_keepalive_period, NULL, NULL, BBFDM_CWMP},
-{"NATDetected", &DMREAD, DMT_BOOL, get_nat_detected, NULL, NULL, NULL, BBFDM_CWMP},
 {0}
 };

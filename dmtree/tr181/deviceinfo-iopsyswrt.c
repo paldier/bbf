@@ -47,11 +47,20 @@ int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data
 }
 
 /*#Device.DeviceInfo.ModelName!UCI:cwmp/cpe,cpe/model_name*/
-int os__get_device_routermodel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os__get_device_modelname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "model_name", value);
 	if (*value[0] == '\0')
 		db_get_value_string("hw", "board", "model_name", value);
+	return 0;
+}
+
+/*#Device.DeviceInfo.Description!UCI:cwmp/cpe,cpe/description*/
+int os__get_device_description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	dmuci_get_option_value_string("cwmp", "cpe", "description", value);
+	if (*value[0] == '\0')
+		db_get_value_string("hw", "board", "description", value);
 	return 0;
 }
 

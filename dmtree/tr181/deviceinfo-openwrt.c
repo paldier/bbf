@@ -38,9 +38,15 @@ int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-int os__get_device_routermodel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os__get_device_modelname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = get_uci_deviceinfo("ModelName");
+	return 0;
+}
+
+int os__get_device_description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = get_uci_deviceinfo("Description");
 	return 0;
 }
 

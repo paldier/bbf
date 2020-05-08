@@ -85,6 +85,7 @@ static int add_NAT_PortMapping(char *refparam, struct dmctx *ctx, void *data, ch
 	dmuci_set_value_by_section(s, "src", "wan");
 	dmuci_set_value_by_section(s, "target", "DNAT");
 	dmuci_set_value_by_section(s, "dest", "lan");
+	dmuci_set_value_by_section(s, "enabled", "0");
 
 	dmuci_add_section_bbfdm("dmmap_firewall", "redirect", &dmmap_firewall, &v);
 	dmuci_set_value_by_section(dmmap_firewall, "section_name", section_name(s));

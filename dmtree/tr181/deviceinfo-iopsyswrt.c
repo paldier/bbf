@@ -36,7 +36,7 @@ char * os__get_deviceid_serialnumber()
 char * os__get_softwareversion()
 {
 	char *v;
-	db_get_value_string("hw", "board", "iopVersion", &v);
+	db_get_value_string("hw", "board", "iopVerTag", &v);
 	return v;
 }
 

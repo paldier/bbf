@@ -8,7 +8,7 @@ char * os__get_deviceid_manufacturer()
 	char *v;
 	dmuci_get_option_value_string("cwmp","cpe","manufacturer", &v);
 	if (v[0] == '\0') {
-		db_get_value_string("hw", "board", "manufacturer", &v);
+		db_get_value_string("device", "deviceinfo", "Manufacturer", &v);
 		return v;
 	}
 	return v;
@@ -20,7 +20,7 @@ char * os__get_deviceid_productclass()
 	char *v;
 	dmuci_get_option_value_string("cwmp", "cpe", "product_class", &v);
 	if (v[0] == '\0') {
-		db_get_value_string("hw", "board", "iopVerFam", &v);
+		db_get_value_string("device", "deviceinfo", "ProductClass", &v);
 		return v;
 	}
 	return v;
@@ -29,20 +29,20 @@ char * os__get_deviceid_productclass()
 char * os__get_deviceid_serialnumber()
 {
 	char *v;
-	db_get_value_string("hw", "board", "serial_number", &v);
+	db_get_value_string("device", "deviceinfo", "SerialNumber", &v);
 	return v;
 }
 
 char * os__get_softwareversion()
 {
 	char *v;
-	db_get_value_string("hw", "board", "iopVerTag", &v);
+	db_get_value_string("device", "deviceinfo", "SoftwareVersion", &v);
 	return v;
 }
 
 int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	db_get_value_string("hw", "board", "model_name", value);
+	db_get_value_string("device", "deviceinfo", "HardwareVersion", value);
 	return 0;
 }
 
@@ -51,7 +51,7 @@ int os__get_device_modelname(char *refparam, struct dmctx *ctx, void *data, char
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "model_name", value);
 	if (*value[0] == '\0')
-		db_get_value_string("hw", "board", "model_name", value);
+		db_get_value_string("device", "deviceinfo", "ModelName", value);
 	return 0;
 }
 
@@ -60,45 +60,25 @@ int os__get_device_description(char *refparam, struct dmctx *ctx, void *data, ch
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "description", value);
 	if (*value[0] == '\0')
-		db_get_value_string("hw", "board", "description", value);
+		db_get_value_string("device", "deviceinfo", "Description", value);
 	return 0;
 }
 
 /*#Device.DeviceInfo.ManufacturerOUI!UCI:cwmp/cpe,cpe/manufacturer_oui*/
 char * os__get_deviceid_manufactureroui()
 {
-	char *v, *mac = NULL, str[16];
-	json_object *res;
-
+	char *v;
 	dmuci_get_option_value_string("cwmp", "cpe", "manufacturer_oui", &v);
-	if (v[0])
-		return v;
-
-	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
-	if (!(res))
-		db_get_value_string("hw", "board", "basemac", &mac);
-	else
-		mac = dmjson_get_value(res, 1, "basemac");
-
-	if(mac) {
-		size_t ln = strlen(mac);
-		if (ln < 17) goto not_found;
-		sscanf (mac,"%2c:%2c:%2c",str,str+2,str+4);
-		str[6] = '\0';
-		v = dmstrdup(str); // MEM WILL BE FREED IN DMMEMCLEAN
+	if (v[0] == '\0') {
+		db_get_value_string("device", "deviceinfo", "ManufacturerOUI", &v);
 		return v;
 	}
-
-not_found:
-	return "";
+	return v;
 }
 
 int os__get_base_mac_addr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
-	dmubus_call("router.system", "info", UBUS_ARGS{{}}, 0, &res);
-	DM_ASSERT(res, *value = "");
-	*value = dmjson_get_value(res, 1, "basemac");
+	db_get_value_string("device", "deviceinfo", "BaseMACAddress", value);
 	return 0;
 }
 

@@ -246,8 +246,8 @@ def getparammapping(dmobject, dmparam):
 	for value in listmapping:
 		if param in value:
 			hasmapping = 1
-			comment = value.split("!")
-			mapping = comment[1]
+			config_type = value.split("!")
+			mapping = config_type[1]
 			mapping = mapping.replace("*/\n", "")
 			break
 
@@ -261,12 +261,12 @@ def getobjmapping(dmobject):
 	else:
 		obj = dmobject.get('name')
 	for value in listmapping:
-		comment = value.split("!")
-		mapping = comment[0]
+		config_type = value.split("!")
+		mapping = config_type[0]
 		mapping = mapping.replace("/*#", "")
 		if obj == mapping:
 			hasmapping = 1
-			mapping = comment[1]
+			mapping = config_type[1]
 			mapping = mapping.replace("*/\n", "")
 			break
 
@@ -312,46 +312,56 @@ def printclosefile ():
 
 def printOBJMaPPING (mapping):
 	fp = open('./.json_tmp', 'a')
-	comment = mapping.split(":")
-	config = comment[1].split("/")
-	if comment[0] == "UCI":
-		type = "uci"
-	elif comment[0] == "UBUS":
-		type = "ubus"
-	else:
-		type = "cli"
+	config_type = mapping.split(":")
+	config = config_type[1].split("/")
 	print >> fp, "\"mapping\": {"
-	print >> fp, "\"type\": \"%s\"," % type
-	print >> fp, "\"%s\": {" % type
-	if comment[0] == "UCI":
+	print >> fp, "\"type\": \"%s\"," % config_type[0].lower()
+	print >> fp, "\"%s\": {" % config_type[0].lower()
+	
+	# UCI
+	if config_type[0] == "UCI":
 		print >> fp, "\"file\": \"%s\"," % config[0]
 		print >> fp, "\"section\": {"
 		print >> fp, "\"type\": \"%s\"" % config[1]
 		print >> fp, "},"
 		print >> fp, "\"dmmapfile\": \"%s\"" % config[2]
+
+	# UBUS
+	elif config_type[0] == "UBUS":
+		print >> fp, "\"object\": \"%s\"," % config[0]
+		print >> fp, "\"method\": \"%s\"," % config[1]
+		print >> fp, "\"args\": {"
+		if config[2] != "":
+			args = config[2].split(",")
+			print >> fp, "\"%s\": \"%s\"" % (args[0], args[1])
 	print >> fp, "}"
-	print >> fp, "}"
+		print >> fp, "\"key\": \"%s\"" % config[3]
+
+	print >> fp, "}\n}"
 	fp.close()
 
 def printPARAMMaPPING (mapping):
 	fp = open('./.json_tmp', 'a')
 	lst = mapping.split("&")
-	count = len(lst)
 	print >> fp, "\"mapping\": ["
-	for i in range(count):
-		comment = lst[i].split(":")
-		config = comment[1].split("/")
-		if comment[0] == "UCI":
-			type = "uci"
-		elif comment[0] == "UBUS":
-			type = "ubus"
-		else:
-			type = "cli"
-		print >> fp, "{"
-		print >> fp, "\"type\": \"%s\"," % type
-		print >> fp, "\"%s\": {" % type
+	for i in range(len(lst)):
+		config_type = lst[i].split(":")
+		config = config_type[1].split("/")
 
-		if comment[0] == "UCI":
+		print >> fp, "{"
+		print >> fp, "\"type\": \"%s\"," % config_type[0].lower()
+
+		# SYSFS || PROCFS
+		if config_type[0] == "SYSFS" or config_type[0] == "PROCFS":
+			print >> fp, "\"file\": \"%s\"" % config_type[1]
+		
+		# UCI, UBUS, CLI
+		else:
+			# Only for UCI, UBUS, CLI
+			print >> fp, "\"%s\": {" % config_type[0].lower()
+	
+			# UCI
+			if config_type[0] == "UCI":
 			print >> fp, "\"file\": \"%s\"," % config[0]
 			print >> fp, "\"section\": {"
 			var = config[1].split(",")
@@ -368,7 +378,9 @@ def printPARAMMaPPING (mapping):
 				print >> fp, "\"option\": {"
 				print >> fp, "\"name\": \"%s\"" % config[2]
 				print >> fp, "}"
-		elif comment[0] == "UBUS":
+			
+			# UBUS
+			elif config_type[0] == "UBUS":
 			print >> fp, "\"object\": \"%s\"," % config[0]
 			print >> fp, "\"method\": \"%s\"," % config[1]
 			print >> fp, "\"args\": {"
@@ -377,14 +389,16 @@ def printPARAMMaPPING (mapping):
 				print >> fp, "\"%s\": \"%s\"" % (args[0], args[1])
 			print >> fp, "}"
 			print >> fp, "\"key\": \"%s\"" % config[3]
-		else:
+	
+			# CLI
+			elif config_type[0] == "CLI":
 			print >> fp, "\"command\": \"%s\"," % config[0]
 			print >> fp, "\"args\": \"%s\"" % config[1]
 
 		print >> fp, "}"
+			
 		print >> fp, "}"
-	print >> fp, "]"
-	print >> fp, "}"
+	print >> fp, "]\n}"
 	fp.close()
 
 def removelastline ():

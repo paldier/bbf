@@ -112,6 +112,7 @@ int os__get_process_cpu_usage(char* refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
+/*#Device.DeviceInfo.ProcessStatus.ProcessNumberOfEntries!UBUS:router.system/processes//processes*/
 int os__get_process_number_of_entries(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *processes = NULL;
@@ -127,42 +128,49 @@ int os__get_process_number_of_entries(char* refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
+/*#Device.DeviceInfo.ProcessStatus.Process.{i}.PID!UBUS:router.system/processes//processes[@i-1].pid*/
 int os__get_process_pid(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "pid");
 	return 0;
 }
 
+/*#Device.DeviceInfo.ProcessStatus.Process.{i}.Command!UBUS:router.system/processes//processes[@i-1].command*/
 int os__get_process_command(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "command");
 	return 0;
 }
 
+/*#Device.DeviceInfo.ProcessStatus.Process.{i}.Size!UBUS:router.system/processes//processes[@i-1].vsz*/
 int os__get_process_size(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "vsz");
 	return 0;
 }
 
+/*#Device.DeviceInfo.ProcessStatus.Process.{i}.Priority!UBUS:router.system/processes//processes[@i-1].priority*/
 int os__get_process_priority(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "priority");
 	return 0;
 }
 
+/*#Device.DeviceInfo.ProcessStatus.Process.{i}.CPUTime!UBUS:router.system/processes//processes[@i-1].cputime*/
 int os__get_process_cpu_time(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "cputime");
 	return 0;
 }
 
+/*#Device.DeviceInfo.ProcessStatus.Process.{i}.State!UBUS:router.system/processes//processes[@i-1].state*/
 int os__get_process_state(char* refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "state");
 	return 0;
 }
 
+/*#Device.DeviceInfo.ProcessStatus.Process.{i}.!UBUS:router.system/processes//processes*/
 int os__browseProcessEntriesInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL, *processes = NULL, *arrobj = NULL;

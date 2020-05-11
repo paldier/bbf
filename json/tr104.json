@@ -1958,7 +1958,32 @@
 							"max": 999
 						}
 					]
+				},
+				"X_IOPSYS_EU_CallLines": {
+					"type": "string", 
+					"read": true, 
+					"write": true, 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"datatype": "string",  
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "sip_advanced", 
+									"name": "SIP"
 				}, 
+								"option": {
+									"name": "call_lines"
+								}
+							}
+						}
+					]
+				},
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.EventSubscribe.{i}.": {
 					"type": "object", 
 					"protocols": [
@@ -3777,6 +3802,21 @@
 						"Disabled", 
 						"Quiescent", 
 						"Enabled"
+					],
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "tel_line", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "enabled"
+								}
+							}
+						}
 					]
 				}, 
 				"Alias": {
@@ -3806,6 +3846,21 @@
 					"range": [
 						{
 							"max": 32
+						}
+					],
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "tel_line", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "extension"
+								}
+							}
 						}
 					]
 				}, 
@@ -3887,6 +3942,55 @@
 						}
 					]
 				}, 
+
+				"X_IOPSYS_EU_LineProfile": {
+					"type": "string", 
+					"read": true, 
+					"write": true, 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"datatype": "string", 
+					"mapping": [
+					]
+				},
+				"X_IOPSYS_EU_TELLine": {
+					"type": "string", 
+					"read": true, 
+					"write": true, 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"datatype": "string", 
+					"mapping": [
+					]
+				},
+				"X_IOPSYS_EU_ComfortNoiseEnable": {
+					"type": "boolean", 
+					"read": true, 
+					"write": true, 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					],
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "voice_client", 
+								"section": {
+									"type": "tel_line", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "noise"
+								}
+							}
+						}
+					]
+				},
 				"Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.SIP.": {
 					"type": "object", 
 					"protocols": [

@@ -24,11 +24,10 @@ struct ptm_args
 ***************************************************************************/
 static int get_ptm_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct ptm_args *)data)->ifname) {
+	if (data && ((struct ptm_args *)data)->ifname)
 		*linker = ((struct ptm_args *)data)->ifname;
-		return 0;
-	}
-	*linker = "" ;
+	else
+		*linker = "" ;
 	return 0;
 }
 

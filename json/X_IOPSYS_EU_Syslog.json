@@ -1,0 +1,79 @@
+{
+	"Device.X_IOPSYS_EU_Syslog.": {
+		"type": "object", 
+		"protocols": [
+			"cwmp", 
+			"usp"
+		], 
+		"array": false,  
+		"ServerIPAddress": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "system", 
+						"section": {
+							"name": "@system[0]"
+						}, 
+						"option": {
+							"name": "log_ip"
+						}
+					}
+				}
+			]
+		},
+		"ServerPort": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true,
+			"mapping": [ 
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "system", 
+						"section": {
+							"name": "@system[0]"
+						}, 
+						"option": {
+							"name": "log_port"
+						}
+					}
+				}
+			]
+		},
+		"ConsoleLogLevel": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true,
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "system", 
+						"section": {
+							"name": "@system[0]"
+						}, 
+						"option": {
+							"name": "conloglevel"
+						}
+					}
+				}
+			]
+		}
+	}
+}

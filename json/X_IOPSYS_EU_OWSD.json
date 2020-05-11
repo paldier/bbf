@@ -1,0 +1,417 @@
+{
+	"Device.X_IOPSYS_EU_OWSD.": {
+		"type": "object", 
+		"protocols": [
+			"cwmp", 
+			"usp"
+		], 
+		"array": false,  
+		"UnixSocket": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "owsd", 
+						"section": {
+							"name": "global"
+						}, 
+						"option": {
+							"name": "sock"
+						}
+					}
+				}
+			]
+		},
+		"URLRedirect": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "owsd", 
+						"section": {
+							"name": "global"
+						}, 
+						"option": {
+							"name": "redirect"
+						}
+					}
+				}
+			]
+		},
+		"Device.X_IOPSYS_EU_OWSD.UbusProxy.": {
+			"type": "object", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"array": false, 
+			"Enable": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"name": "ubusproxy"
+							}, 
+							"option": {
+								"name": "enable"
+							}
+						}
+					}
+				]
+
+			},
+			"PeerCertificate": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"name": "ubusproxy"
+							}, 
+							"option": {
+								"name": "peer_cert"
+							}
+						}
+					}
+				]
+			},
+			"PeerKey": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"name": "ubusproxy"
+							}, 
+							"option": {
+								"name": "peer_key"
+							}
+						}
+					}
+				]
+			},
+			"PeerCA": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"name": "ubusproxy"
+							}, 
+							"option": {
+								"name": "peer_ca"
+							}
+						}
+					}
+				]
+			}
+		},
+		"Device.X_IOPSYS_EU_OWSD.VirtualHost.{i}.": {
+			"type": "object", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"array": true,
+			"mapping": {
+				"type": "uci", 
+				"uci": {
+					"file": "owsd", 
+					"section": {
+						"type": "owsd-listen"
+					}, 
+					"dmmapfile": "dmmap_owsd"
+				}
+			}, 
+			"Alias": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "dmmap_owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "olistenalias"
+							},
+							"path":"/etc/bbfdm",
+						}
+					}
+				]
+			},
+			"Interface": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "interface"
+							},
+							"ref": "Device.IP.Interface"
+						}
+					}
+				]
+			},
+			"Port": {
+				"type": "unsignedInt", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "port"
+							}
+						}
+					}
+				]
+			},
+			"IPv6Enable": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "ipv6"
+							}
+						}
+					}
+				]
+			},
+			"AllowInterfaceIPAddressAsOrigin": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "whitelist_interface_as_origin"
+							}
+						}
+					}
+				]
+			},
+			"AllowDHCPDomainsAsOrigin": {
+				"type": "boolean", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "whitelist_dhcp_domains"
+							}
+						}
+					}
+				]
+			},
+			"AllowedOrigins": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "origin"
+							}
+						}
+					}
+				]
+			},
+			"Certificate": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "cert"
+							}
+						}
+					}
+				]
+			},
+			"Key": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "key"
+							}
+						}
+					}
+				]
+			},
+			"CA": {
+				"type": "string", 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"read": true, 
+				"write": true, 
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "owsd", 
+							"section": {
+								"type": "owsd-listen", 
+								"index": "@i-1"
+							}, 
+							"option": {
+								"name": "ca"
+							}
+						}
+					}
+				]
+			}
+		}
+	}
+}

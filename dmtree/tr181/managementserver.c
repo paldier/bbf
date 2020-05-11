@@ -229,7 +229,7 @@ static int set_management_server_connection_request_passwd(char *refparam, struc
 	return 0;
 }
 
-/*#Device.ManagementServer.ConnectionRequestPassword!UCI:cwmp/cpe,cpe/upgrades_managed*/
+/*#Device.ManagementServer.UpgradesManaged!UCI:cwmp/cpe,cpe/upgrades_managed*/
 static int get_upgrades_managed(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "upgrades_managed", value);

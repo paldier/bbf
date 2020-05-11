@@ -59,41 +59,37 @@ struct upnp_description_file_info {
 ***************************************************************************/
 static int get_root_device_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct upnpdiscovery *)data)->uuid) {
+	if (data && ((struct upnpdiscovery *)data)->uuid)
 		dmasprintf(linker, "%s", ((struct upnpdiscovery *)data)->uuid);
-		return 0;
-	}
-	*linker = "" ;
+	else
+		*linker = "" ;
 	return 0;
 }
 
 static int get_device_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct upnpdiscovery *)data)->uuid){
+	if (data && ((struct upnpdiscovery *)data)->uuid)
 		dmasprintf(linker, "%s", ((struct upnpdiscovery *)data)->uuid);
-		return 0;
-	}
-	*linker = "" ;
+	else
+		*linker = "" ;
 	return 0;
 }
 
 static int get_device_instance_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct upnp_device_inst *)data)->udn){
+	if (data && ((struct upnp_device_inst *)data)->udn)
 		dmasprintf(linker, "%s", ((struct upnp_device_inst *)data)->udn);
-		return 0;
-	}
-	*linker = "" ;
+	else
+		*linker = "" ;
 	return 0;
 }
 
 static int get_service_linker(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct upnpdiscovery *)data)->usn){
+	if (data && ((struct upnpdiscovery *)data)->usn)
 		dmasprintf(linker, "%s", ((struct upnpdiscovery *)data)->usn);
-		return 0;
-	}
-	*linker = "" ;
+	else
+		*linker = "" ;
 	return 0;
 }
 

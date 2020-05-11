@@ -589,7 +589,13 @@
 					"usp"
 				], 
 				"datatype": "unsignedInt", 
-				"unit": "seconds"
+				"unit": "seconds", 
+				"mapping": [
+					{
+						"type": "procfs", 
+						"file": "/proc/uptime"
+					}
+				]
 			}, 
 			"FirstUseDate": {
 				"type": "dateTime", 
@@ -707,6 +713,26 @@
 					}
 				]
 			}, 
+			"X_IOPSYS_EU_BaseMACAddress": {
+				"type": "string", 
+				"read": true, 
+				"write": false, 
+				"protocols": [
+					"usp"
+				], 
+				"datatype": "string", 
+				"mapping": [
+					{
+						"type": "ubus", 
+						"ubus": {
+							"object": "router.system", 
+							"method": "info", 
+							"args": {}, 
+							"key": "basemac"
+						}
+					}
+				]
+			},
 			"Device.DeviceInfo.VendorConfigFile.{i}.": {
 				"type": "object", 
 				"protocols": [
@@ -1040,7 +1066,18 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "unsignedInt"
+					"datatype": "unsignedInt", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.system", 
+								"method": "processes", 
+								"args": {}, 
+								"key": "processes"
+							}
+						}
+					]
 				}, 
 				"Device.DeviceInfo.ProcessStatus.Process.{i}.": {
 					"type": "object", 
@@ -1050,6 +1087,15 @@
 					], 
 					"access": false, 
 					"array": true, 
+					"mapping": {
+						"type": "ubus", 
+						"ubus": {
+							"object": "router.system", 
+							"method": "processes", 
+							"args": {}, 
+							"key": "processes"
+						}
+					}, 
 					"PID": {
 						"type": "unsignedInt", 
 						"read": true, 
@@ -1058,7 +1104,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.system", 
+									"method": "processes", 
+									"args": {}, 
+									"key": "processes[@i-1].pid"
+								}
+							}
+						]
 					}, 
 					"Command": {
 						"type": "string", 
@@ -1073,6 +1130,17 @@
 							{
 								"max": 256
 							}
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.system", 
+									"method": "processes", 
+									"args": {}, 
+									"key": "processes[@i-1].command"
+								}
+							}
 						]
 					}, 
 					"Size": {
@@ -1084,7 +1152,18 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"unit": "kilobytes"
+						"unit": "kilobytes", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.system", 
+									"method": "processes", 
+									"args": {}, 
+									"key": "processes[@i-1].vsz"
+								}
+							}
+						]
 					}, 
 					"Priority": {
 						"type": "unsignedInt", 
@@ -1099,6 +1178,17 @@
 							{
 								"max": 99
 							}
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.system", 
+									"method": "processes", 
+									"args": {}, 
+									"key": "processes[@i-1].priority"
+								}
+							}
 						]
 					}, 
 					"CPUTime": {
@@ -1110,7 +1200,18 @@
 							"usp"
 						], 
 						"datatype": "unsignedInt", 
-						"unit": "milliseconds"
+						"unit": "milliseconds", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.system", 
+									"method": "processes", 
+									"args": {}, 
+									"key": "processes[@i-1].cputime"
+								}
+							}
+						]
 					}, 
 					"State": {
 						"type": "string", 
@@ -1128,6 +1229,17 @@
 							"Idle", 
 							"Uninterruptible", 
 							"Zombie"
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.system", 
+									"method": "processes", 
+									"args": {}, 
+									"key": "processes[@i-1].state"
+								}
+							}
 						]
 					}
 				}
@@ -6287,6 +6399,58 @@
 					{
 						"max": 256
 					}
+				],
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "system", 
+							"section": {
+								"type": "system", 
+								"name": "@system[0]"
+							}, 
+							"option": {
+								"name": "timezone"
+							}
+						}
+					}
+				]
+			},
+			"X_IOPSYS_EU_LocalTimeZoneName": {
+				"type": "string", 
+				"read": true, 
+				"write": false, 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"datatype": "string",
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "system", 
+							"section": {
+								"type": "system", 
+								"name": "@system[0]"
+							}, 
+							"option": {
+								"name": "zonename"
+							}
+						}
+					}
+				]
+			},
+			"X_IOPSYS_EU_SourceInterface": {
+				"type": "string", 
+				"read": true, 
+				"write": true, 
+				"protocols": [
+					"cwmp", 
+					"usp"
+				], 
+				"datatype": "string",
+				"mapping": [
 				]
 			}
 		}, 
@@ -16098,6 +16262,19 @@
 									"name": "vpi"
 								}
 							}
+						}, 
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dsl", 
+								"section": {
+									"type": "atm-device", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "vci"
+								}
+							}
 						}
 					]
 				}, 
@@ -17243,6 +17420,12 @@
 						"NotPresent", 
 						"LowerLayerDown", 
 						"Error"
+					], 
+					"mapping": [
+						{
+							"type": "sysfs", 
+							"file": "/sys/class/net/@Name/operstate"
+						}
 					]
 				}, 
 				"Alias": {
@@ -17335,7 +17518,22 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "boolean"
+					"datatype": "boolean", 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ports", 
+								"section": {
+									"type": "ethport", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "uplink"
+								}
+							}
+						}
+					]
 				}, 
 				"MACAddress": {
 					"type": "string", 
@@ -17356,15 +17554,8 @@
 					], 
 					"mapping": [
 						{
-							"type": "ubus", 
-							"ubus": {
-								"object": "network.device", 
-								"method": "status", 
-								"args": {
-									"name": "@Name"
-								}, 
-								"key": "macaddr"
-							}
+							"type": "sysfs", 
+							"file": "/sys/class/net/@Name/address"
 						}
 					]
 				}, 
@@ -17503,15 +17694,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_bytes"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_bytes"
 							}
 						]
 					}, 
@@ -17526,15 +17710,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_bytes"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_bytes"
 							}
 						]
 					}, 
@@ -17549,15 +17726,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_packets"
 							}
 						]
 					}, 
@@ -17572,15 +17742,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_packets"
 							}
 						]
 					}, 
@@ -17595,15 +17758,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_errors"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_errors"
 							}
 						]
 					}, 
@@ -17618,15 +17774,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_errors"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_errors"
 							}
 						]
 					}, 
@@ -17661,15 +17810,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_dropped"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_dropped"
 							}
 						]
 					}, 
@@ -17684,15 +17826,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_dropped"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_dropped"
 							}
 						]
 					}, 
@@ -18216,15 +18351,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_bytes"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_bytes"
 							}
 						]
 					}, 
@@ -18239,15 +18367,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_bytes"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_bytes"
 							}
 						]
 					}, 
@@ -18262,15 +18383,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_packets"
 							}
 						]
 					}, 
@@ -18285,15 +18399,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_packets"
 							}
 						]
 					}, 
@@ -18308,15 +18415,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_errors"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_errors"
 							}
 						]
 					}, 
@@ -18331,15 +18431,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_errors"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_errors"
 							}
 						]
 					}, 
@@ -18374,15 +18467,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_dropped"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_dropped"
 							}
 						]
 					}, 
@@ -18397,15 +18483,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_dropped"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_dropped"
 							}
 						]
 					}, 
@@ -18427,7 +18506,13 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/multicast"
+							}
+						]
 					}, 
 					"BroadcastPacketsSent": {
 						"type": "unsignedLong", 
@@ -29632,6 +29717,56 @@
 						"datatype": "string"
 					}
 				}, 
+				"X_IOPSYS_EU_MaxAllowedAssociations": {
+					"type": "string", 
+					"read": true, 
+					"write": true, 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"datatype": "string", 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "wireless", 
+								"section": {
+									"type": "wifi-device", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "maxassoc"
+								}
+							}
+						}
+					]
+				},
+				"X_IOPSYS_EU_DFSEnable": {
+					"type": "boolean", 
+					"read": true, 
+					"write": true, 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"datatype": "boolean",  
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "wireless", 
+								"section": {
+									"type": "wifi-device", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "dfsc"
+								}
+							}
+						}
+					]
+				},
 				"Device.WiFi.Radio.{i}.Stats.": {
 					"type": "object", 
 					"protocols": [
@@ -30931,7 +31066,22 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "boolean"
+					"datatype": "boolean", 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "wireless", 
+								"section": {
+									"type": "wifi-iface", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "disabled"
+								}
+							}
+						}
+					]
 				}, 
 				"Status": {
 					"type": "string", 
@@ -31189,7 +31339,22 @@
 						"pattern": [
 							"([0-9A-Fa-f][0-9A-Fa-f]:){5}([0-9A-Fa-f][0-9A-Fa-f])"
 						]
-					}
+					}, 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "wireless", 
+								"section": {
+									"type": "wifi-iface", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "maclist"
+								}
+							}
+						}
+					]
 				}, 
 				"MaxAllowedAssociations": {
 					"type": "unsignedInt", 
@@ -31258,7 +31423,35 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "string"
+						"datatype": "string", 
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "wireless", 
+									"section": {
+										"type": "wifi-iface", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "encryption"
+									}
+								}
+							}, 
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "wireless", 
+									"section": {
+										"type": "wifi-iface", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "cipher"
+									}
+								}
+							}
+						]
 					}, 
 					"WEPKey": {
 						"type": "hexBinary", 
@@ -31485,6 +31678,31 @@
 							"cwmp"
 						], 
 						"datatype": "boolean"
+					}, 
+					"X_IOPSYS_EU_WEPKeyIndex": {
+						"type": "unsignedInt", 
+						"read": true, 
+						"write": true, 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "wireless", 
+									"section": {
+										"type": "wifi-iface", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "key_index"
+									}
+								}
+							}
+						]
 					}, 
 					"Reset()": {
 						"type": "command", 
@@ -32444,6 +32662,40 @@
 							}
 						], 
 						"unit": "seconds"
+					}
+				},
+				"Device.WiFi.AccessPoint.{i}.X_IOPSYS_EU_IEEE80211r.": {
+					"type": "object", 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"access": false, 
+					"array": false, 
+					"Enable": {
+						"type": "boolean", 
+						"read": true, 
+						"write": true, 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"datatype": "boolean",
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "wireless", 
+									"section": {
+										"type": "wifi-iface", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "disabled"
+									}
+								}
+							}
+						]
 					}
 				}
 			}, 
@@ -35871,6 +36123,18 @@
 								"max": 4094
 							}
 						]
+					},
+					"X_IOPSYS_EU_VLANPriority": {
+						"type": "string", 
+						"read": true, 
+						"write": true, 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"datatype": "string", 
+						"mapping": [
+						]
 					}
 				}, 
 				"Device.Bridging.Bridge.{i}.VLANPort.{i}.": {
@@ -37360,15 +37624,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_bytes"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_bytes"
 							}
 						]
 					}, 
@@ -37383,15 +37640,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_bytes"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_bytes"
 							}
 						]
 					}, 
@@ -37406,15 +37656,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_packets"
 							}
 						]
 					}, 
@@ -37429,15 +37672,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_packets"
 							}
 						]
 					}, 
@@ -37452,15 +37688,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_errors"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_errors"
 							}
 						]
 					}, 
@@ -37475,15 +37704,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_errors"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_errors"
 							}
 						]
 					}, 
@@ -37518,15 +37740,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.tx_dropped"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_dropped"
 							}
 						]
 					}, 
@@ -37541,15 +37756,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "network.device", 
-									"method": "status", 
-									"args": {
-										"name": "@Name"
-									}, 
-									"key": "statistics.rx_dropped"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_dropped"
 							}
 						]
 					}, 
@@ -37571,7 +37779,13 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/multicast"
+							}
+						]
 					}, 
 					"BroadcastPacketsSent": {
 						"type": "unsignedLong", 
@@ -38200,7 +38414,19 @@
 								}
 							}
 						]
-					}
+					},
+					"X_IOPSYS_EU_FirewallEnabled": {
+						"type": "boolean", 
+						"read": true, 
+						"write": true, 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"datatype": "boolean", 
+						"mapping": [
+						]
+					}, 
 				}, 
 				"Device.IP.Interface.{i}.Stats.": {
 					"type": "object", 
@@ -58705,6 +58931,18 @@
 					], 
 					"datatype": "boolean"
 				}, 
+				"X_IOPSYS_EU_Status": {
+					"type": "string", 
+					"read": true, 
+					"write": false, 
+					"protocols": [
+						"cwmp", 
+						"usp"
+					], 
+					"datatype": "string",
+					"mapping": [
+					]
+				}, 
 				"Device.UPnP.Device.Capabilities.": {
 					"type": "object", 
 					"protocols": [
@@ -61064,7 +61302,152 @@
 							"usp"
 						], 
 						"datatype": "boolean"
+					},
+					"X_IOPSYS_EU_ICMPType": {
+						"type": "string", 
+						"read": true, 
+						"write": true, 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"datatype": "string",
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "firewall", 
+									"section": {
+										"type": "rule", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "icmp_type"
 					}
+								}
+							}
+						]
+					},
+					"X_IOPSYS_EU_SourceMACAddress": {
+						"type": "string", 
+						"read": true, 
+						"write": true, 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"datatype": "string",
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "firewall", 
+									"section": {
+										"type": "rule", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "src_mac"
+									}
+								}
+							}
+						]
+					},
+					"Device.Firewall.Chain.{i}.Rule.{i}.X_IOPSYS_EU_TimeSpan.": {
+						"type": "object", 
+						"protocols": [
+							"cwmp", 
+							"usp"
+						], 
+						"access": false, 
+						"array": false, 
+						"SupportedDays": {
+							"type": "string", 
+							"read": true, 
+							"write": true, 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"datatype": "string"
+						}, 
+						"Days": {
+							"type": "string", 
+							"read": true, 
+							"write": true, 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"datatype": "string",
+							"mapping": [
+								{
+									"type": "uci", 
+									"uci": {
+										"file": "firewall", 
+										"section": {
+											"type": "rule", 
+											"index": "@i-1"
+										}, 
+										"option": {
+											"name": "weekdays"
+										}
+									}
+								}
+							]
+						},
+						"StartTime": {
+							"type": "string", 
+							"read": true, 
+							"write": true, 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"datatype": "string",
+							"mapping": [
+								{
+									"type": "uci", 
+									"uci": {
+										"file": "firewall", 
+										"section": {
+											"type": "rule", 
+											"index": "@i-1"
+										}, 
+										"option": {
+											"name": "start_time"
+										}
+									}
+								}
+							]
+						}, 
+						"StopTime": {
+							"type": "string", 
+							"read": true, 
+							"write": true, 
+							"protocols": [
+								"cwmp", 
+								"usp"
+							], 
+							"datatype": "string",
+							"mapping": [
+								{
+									"type": "uci", 
+									"uci": {
+										"file": "firewall", 
+										"section": {
+											"type": "rule", 
+											"index": "@i-1"
+										}, 
+										"option": {
+											"name": "stop_time"
+										}
+									}
+								}
+							]
+						}
+					}
+
 				}
 			}
 		}, 

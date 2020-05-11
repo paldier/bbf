@@ -1,0 +1,213 @@
+{
+	"Device.X_IOPSYS_EU_Buttons.": {
+		"type": "object", 
+		"protocols": [
+			"cwmp", 
+			"usp"
+		], 
+		"array": true,
+		"mapping": {
+			"type": "uci", 
+			"uci": {
+				"file": "buttons", 
+				"section": {
+					"type": "button"
+				}, 
+				"dmmapfile": "dmmap_buttons"
+			}
+		},
+		"Alias": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true,
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dmmap_buttons", 
+						"section": {
+							"type": "button", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "buttonalias"
+						},
+						"path": "/etc/bbfdm"
+					}
+				}
+			]
+		},
+		"Enable": {
+			"type": "boolean", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "buttons", 
+						"section": {
+							"type": "button", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "enable"
+						}
+					}
+				}
+			]
+		},
+		"Name": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true,
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "buttons", 
+						"section": {
+							"type": "button", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "@Name"
+						}
+					}
+				}
+			]
+		},
+		"GPIOButton": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": false,
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "buttons", 
+						"section": {
+							"type": "button", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "button"
+						}
+					}
+				}
+			]
+		},
+		"HotplugInterface": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": false, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "buttons", 
+						"section": {
+							"type": "button", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "hotplug"
+						}
+					}
+				}
+			]
+		},
+		"HotplugInterfaceForLongPress": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": false, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "buttons", 
+						"section": {
+							"type": "button", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "hotplug_long"
+						}
+					}
+				}
+			]
+		},
+		"MinPressTime": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "buttons", 
+						"section": {
+							"type": "button", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "minpress"
+						}
+					}
+				}
+			]
+		},
+		"LongPressTime": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "buttons", 
+						"section": {
+							"type": "button", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "longpress"
+						}
+					}
+				}
+			]
+		}
+	}
+}

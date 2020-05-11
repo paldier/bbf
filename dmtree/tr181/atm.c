@@ -44,7 +44,7 @@ static inline int init_atm_link(struct atm_args *args, struct uci_section *s, ch
 /**************************************************************************
 * SET & GET DSL LINK PARAMETERS
 ***************************************************************************/
-/*#Device.ATM.Link.{i}.DestinationAddress!UCI:dsl/atm-device,@i-1/vpi*/
+/*#Device.ATM.Link.{i}.DestinationAddress!UCI:dsl/atm-device,@i-1/vpi&UCI:dsl/atm-device,@i-1/vci*/
 static int get_atm_destination_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *vpi, *vci;

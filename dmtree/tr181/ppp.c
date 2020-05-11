@@ -80,16 +80,13 @@ static int set_ppp_enable(char *refparam, struct dmctx *ctx, void *data, char *i
 /*#Device.PPP.Interface.{i}.Status!UBUS:network.interface/status/interface,@Name/up*/
 static int get_PPPInterface_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
+	json_object *res = NULL;
 	char *status;
 
 	dmubus_call("network.interface", "status", UBUS_ARGS{{"interface", section_name(((struct uci_section *)data)), String}}, 1, &res);
 	DM_ASSERT(res, *value = "Down");
 	status = dmjson_get_value(res, 1, "up");
-	if (strcmp(status, "true") == 0)
-		*value= "Up";
-	else
-		*value= "Down";
+	*value = (strcmp(status, "true") == 0) ? "Up" : "Down";
 	return 0;
 }
 
@@ -208,64 +205,63 @@ static int ppp_read_sysfs(struct uci_section *sect, const char *name, char **val
 	int rc = 0;
 
 	dmuci_get_value_by_section_string(sect, "proto", &proto);
-
 	if (!strcmp(proto, "pppoe")) {
 		char *ifname;
-
 		dmuci_get_value_by_section_string(sect, "ifname", &ifname);
 		rc = get_net_device_sysfs(ifname, name, value);
 	}
 	return rc;
 }
 
-/*#Device.PPP.Interface.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
+/*#Device.PPP.Interface.{i}.Stats.BytesReceived!SYSFS:/sys/class/net/@Name/statistics/rx_bytes*/
 static int get_ppp_eth_bytes_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/rx_bytes", value);
 }
 
-/*#Device.PPP.Interface.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
+/*#Device.PPP.Interface.{i}.Stats.BytesSent!SYSFS:/sys/class/net/@Name/statistics/tx_bytes*/
 static int get_ppp_eth_bytes_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/tx_bytes", value);
 }
 
-/*#Device.PPP.Interface.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
+/*#Device.PPP.Interface.{i}.Stats.PacketsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_packets*/
 static int get_ppp_eth_pack_received(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/rx_packets", value);
 }
 
-/*#Device.PPP.Interface.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
+/*#Device.PPP.Interface.{i}.Stats.PacketsSent!SYSFS:/sys/class/net/@Name/statistics/tx_packets*/
 static int get_ppp_eth_pack_sent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/tx_packets", value);
 }
 
-/*#Device.PPP.Interface.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
+/*#Device.PPP.Interface.{i}.Stats.ErrorsSent!SYSFS:/sys/class/net/@Name/statistics/tx_errors*/
 static int get_PPPInterfaceStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/tx_errors", value);
 }
 
-/*#Device.PPP.Interface.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
+/*#Device.PPP.Interface.{i}.Stats.ErrorsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_errors*/
 static int get_PPPInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/rx_errors", value);
 }
 
-/*#Device.PPP.Interface.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
+/*#Device.PPP.Interface.{i}.Stats.DiscardPacketsSent!SYSFS:/sys/class/net/@Name/statistics/tx_dropped*/
 static int get_PPPInterfaceStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/tx_dropped", value);
 }
 
-/*#Device.PPP.Interface.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
+/*#Device.PPP.Interface.{i}.Stats.DiscardPacketsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_dropped*/
 static int get_PPPInterfaceStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/rx_dropped", value);
 }
 
+/*#Device.PPP.Interface.{i}.Stats.MulticastPacketsReceived!SYSFS:/sys/class/net/@Name/statistics/multicast*/
 static int get_PPPInterfaceStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return ppp_read_sysfs(data, "statistics/multicast", value);
@@ -396,11 +392,10 @@ static int set_PPPInterfacePPPoE_ServiceName(char *refparam, struct dmctx *ctx, 
 ***************************************************************************/
 static int get_linker_ppp_interface(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker) {
 
-	if(((struct uci_section *)data)) {
+	if(((struct uci_section *)data))
 		dmasprintf(linker, "%s", section_name(((struct uci_section *)data)));
-		return 0;
-	}
-	*linker = "";
+	else
+		*linker = "";
 	return 0;
 }
 

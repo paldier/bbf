@@ -1080,7 +1080,6 @@ static int set_sip_re_invite_expires(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-
 static int get_sip_call_lines(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct sip_args *sipargs = (struct sip_args *)data;
@@ -1381,6 +1380,7 @@ static int set_voice_service_vp_rtp_srtp_enable(char *refparam, struct dmctx *ct
 }
 
 /*******************LINE **********************************/
+/*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Enable!UCI:voice_client/tel_line,@i-1/enabled*/
 static int get_voice_profile_line_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *tmp;
@@ -1413,6 +1413,7 @@ static int set_voice_profile_line_enable(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
+/*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.DirectoryNumber!UCI:voice_client/tel_line,@i-1/extension*/
 static int get_line_directory_number(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct tel_args *telargs = (struct tel_args *)data;

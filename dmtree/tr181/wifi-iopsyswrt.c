@@ -275,10 +275,8 @@ int os_get_wifi_access_point_status (char *refparam, struct dmctx *ctx, void *da
 	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "device", &iface);
 	snprintf(object, sizeof(object), "wifi.ap.%s", iface);
 	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
-
 	DM_ASSERT(res, status = "");
 	status = dmjson_get_value(res, 1, "status");
-
 
 	if (strcmp(status, "running") == 0 || strcmp(status, "up") == 0)
 		*value = "Enabled";

@@ -22,31 +22,28 @@
 ***************************************************************************/
 static int get_linker_Wifi_Radio(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct wifi_radio_args *)data)->wifi_radio_sec) {
+	if (data && ((struct wifi_radio_args *)data)->wifi_radio_sec)
 		*linker = section_name(((struct wifi_radio_args *)data)->wifi_radio_sec);
-		return 0;
-	}
-	*linker = "";
+	else
+		*linker = "";
 	return 0;
 }
 
 static int get_linker_Wifi_Ssid(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data && ((struct wifi_ssid_args *)data)->ifname) {
+	if (data && ((struct wifi_ssid_args *)data)->ifname)
 		*linker = ((struct wifi_ssid_args *)data)->ifname;
-		return 0;
-	}
-	*linker = "";
+	else
+		*linker = "";
 	return 0;
 }
 
 static int get_linker_associated_device(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
 {
-	if (data) {
+	if (data)
 		*linker = dmjson_get_value((json_object *)data, 1, "macaddr");
-		return 0;
-	}
-	*linker = "";
+	else
+		*linker = "";
 	return 0;
 }
 /**************************************************************************
@@ -112,12 +109,12 @@ static int get_WiFi_SSIDNumberOfEntries(char *refparam, struct dmctx *ctx, void 
 static int get_WiFi_AccessPointNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *s;
-	int nbre= 0;
-	char *mode= NULL;
+	int nbre = 0;
+	char *mode = NULL;
 
 	uci_foreach_sections("wireless", "wifi-iface", s) {
 		dmuci_get_value_by_section_string(s, "mode", &mode);
-		if ((strlen(mode)>0 || mode[0] != '\0') && strcmp(mode, "ap") != 0)
+		if ((strlen(mode) > 0 || mode[0] != '\0') && strcmp(mode, "ap") != 0)
 			continue;
 		nbre++;
 	}
@@ -142,15 +139,11 @@ static int get_WiFi_EndPointNumberOfEntries(char *refparam, struct dmctx *ctx, v
 }
 
 /*#Device.WiFi.SSID.{i}.Enable!UCI:wireless/wifi-iface,@i-1/disabled*/
+/*#Device.WiFi.AccessPoint.{i}.Enable!UCI:wireless/wifi-iface,@i-1/disabled*/
 static int get_wifi_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *val;
-
-	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "disabled", &val);
-	if ((val[0] == '\0') || (val[0] == '0'))
-		*value = "1";
-	else
-		*value = "0";
+	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "disabled", value);
+	*value = ((*value)[0] == '1') ? "0" : "1";
 	return 0;
 }
 
@@ -175,10 +168,7 @@ static int set_wifi_enable(char *refparam, struct dmctx *ctx, void *data, char *
 static int get_wifi_status (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "disabled", value);
-	if ((*value)[0] == '\0' || (*value)[0] == '0')
-		*value = "Up";
-	else
-		*value = "Down";
+	*value = ((*value)[0] == '1') ? "Down" : "Up";
 	return 0;
 }
 
@@ -207,9 +197,8 @@ static int set_wlan_ssid(char *refparam, struct dmctx *ctx, void *data, char *in
 /*#Device.WiFi.SSID.{i}.MACAddress!UBUS:network.device/status/name,@Name/macaddr*/
 static int get_WiFiSSID_MACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	json_object *res;
+	json_object *res = NULL;
 	dmubus_call("network.device", "status", UBUS_ARGS{{"name", ((struct wifi_ssid_args *)data)->ifname, String}}, 1, &res);
-
 	DM_ASSERT(res, *value = "");
 	*value = dmjson_get_value(res, 1, "macaddr");
 	return 0;
@@ -218,13 +207,8 @@ static int get_WiFiSSID_MACAddress(char *refparam, struct dmctx *ctx, void *data
 /*#Device.WiFi.Radio.{i}.Enable!UCI:wireless/wifi-device,@i-1/disabled*/
 static int get_radio_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *val;
-	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "disabled", &val);
-
-	if (val[0] == '1')
-		*value = "0";
-	else
-		*value = "1";
+	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "disabled", value);
+	*value = ((*value)[0] == '1') ? "0" : "1";
 	return 0;
 }
 
@@ -249,10 +233,7 @@ static int set_radio_enable(char *refparam, struct dmctx *ctx, void *data, char 
 static int get_radio_status (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "disabled", value);
-	if ((*value)[0] == '1')
-		*value = "Down";
-	else
-		*value = "Up";
+	*value = ((*value)[0] == '1') ? "Down" : "Up";
 	return 0;
 }
 
@@ -281,6 +262,7 @@ static int get_WiFiRadio_Name(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
+/*#Device.WiFi.Radio.{i}.X_IOPSYS_EU_MaxAllowedAssociations!UCI:wireless/wifi-device,@i-1/maxassoc*/
 static int get_radio_maxassoc(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "maxassoc", value);
@@ -300,6 +282,7 @@ static int set_radio_maxassoc(char *refparam, struct dmctx *ctx, void *data, cha
 	return 0;
 }
 
+/*#Device.WiFi.Radio.{i}.X_IOPSYS_EU_DFSEnable!UCI:wireless/wifi-device,@i-1/dfsc*/
 static int get_radio_dfsenable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *val;
@@ -515,13 +498,8 @@ static int set_WiFiRadio_OperatingChannelBandwidth(char *refparam, struct dmctx 
 /*#Device.WiFi.Radio.{i}.PreambleType!UCI:wireless/wifi-device,@i-1/short_preamble*/
 static int get_WiFiRadio_PreambleType(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *preamble = NULL;
-
-	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "short_preamble", &preamble);
-	if (preamble[0] == '\0' || strlen(preamble) == 0 || strcmp(preamble, "1") != 0)
-		*value = "long";
-	else
-		*value = "short";
+	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "short_preamble", value);
+	*value = ((*value)[0] == '0') ? "short" : "long";
 	return 0;
 }
 
@@ -533,10 +511,7 @@ static int set_WiFiRadio_PreambleType(char *refparam, struct dmctx *ctx, void *d
 				return FAULT_9007;
 			break;
 		case VALUESET:
-			if(strcmp(value, "short") == 0)
-				dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "short_preamble", "1");
-			else
-				dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "short_preamble", "0");
+			dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "short_preamble", (strcmp(value, "short") == 0) ? "1" : "0");
 			break;
 	}
 	return 0;
@@ -600,11 +575,8 @@ static int get_WiFiRadio_RegulatoryDomain(char *refparam, struct dmctx *ctx, voi
 
 	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "country", &country);
 	arr = strsplit(country, "/", &length);
-	if(arr && arr[0])
+	if (arr && arr[0])
 		dmasprintf(value, "%s ", arr[0]);
-	else
-		*value= "";
-
 	return 0;
 }
 
@@ -684,12 +656,8 @@ static int set_radio_auto_channel_enable(char *refparam, struct dmctx *ctx, void
 /*#Device.WiFi.SSID.{i}.SSIDAdvertisementEnabled!UCI:wireless/wifi-iface,@i-1/hidden*/
 static int get_wlan_ssid_advertisement_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *hidden;
-	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "hidden", &hidden);
-	if (hidden[0] == '1' && hidden[1] == '\0')
-		*value = "0";
-	else
-		*value = "1";
+	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "hidden", value);
+	*value = ((*value)[0] == '1') ? "0" : "1";
 	return 0;
 }
 
@@ -704,7 +672,7 @@ static int set_wlan_ssid_advertisement_enable(char *refparam, struct dmctx *ctx,
 			return 0;
 		case VALUESET:
 			string_to_bool(value, &b);
-			dmuci_set_value_by_section(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "hidden", b ? "" : "1");
+			dmuci_set_value_by_section(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "hidden", b ? "0" : "1");
 			return 0;
 
 	}
@@ -714,11 +682,8 @@ static int set_wlan_ssid_advertisement_enable(char *refparam, struct dmctx *ctx,
 /*#Device.WiFi.AccessPoint.{i}.WMMEnable!UCI:wireless/wifi-device,@i-1/wmm*/
 static int get_wmm_enabled(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	bool b;
 	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "device", value);
 	dmuci_get_option_value_string("wireless", *value, "wmm", value);
-	string_to_bool(*value, &b);
-	*value = (b) ? "true" : "false";
 	return 0;
 }
 
@@ -735,15 +700,9 @@ static int set_wmm_enabled(char *refparam, struct dmctx *ctx, void *data, char *
 		case VALUESET:
 			string_to_bool(value, &b);
 			dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "device", &device);
-			if (b) {
-				dmuci_set_value("wireless", device, "wmm", "1");
-				dmuci_set_value("wireless", device, "wmm_noack", "1");
-				dmuci_set_value("wireless", device, "wmm_apsd", "1");
-			} else {
-				dmuci_set_value("wireless", device, "wmm", "0");
-				dmuci_set_value("wireless", device, "wmm_noack", "");
-				dmuci_set_value("wireless", device, "wmm_apsd", "");
-			}
+			dmuci_set_value("wireless", device, "wmm", b ? "1" : "0");
+			dmuci_set_value("wireless", device, "wmm_noack", b ? "1" : "");
+			dmuci_set_value("wireless", device, "wmm_apsd", b ? "1" : "");
 			return 0;
 	}
 	return 0;
@@ -752,9 +711,8 @@ static int set_wmm_enabled(char *refparam, struct dmctx *ctx, void *data, char *
 /*#Device.WiFi.AccessPoint.{i}.MaxAssociatedDevices!UCI:wireless/wifi-iface,@i-1/maxassoc*/
 static int get_access_point_maxassoc(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *device;
-	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "device", &device);
-	dmuci_get_option_value_string("wireless", device, "maxassoc", value);
+	dmuci_get_value_by_section_string(((struct wifi_ssid_args *)data)->wifi_ssid_sec, "device", value);
+	dmuci_get_option_value_string("wireless", *value, "maxassoc", value);
 	return 0;
 }
 
@@ -797,10 +755,8 @@ static int get_WiFiAccessPoint_WMMCapability(char *refparam, struct dmctx *ctx, 
 /*#Device.WiFi.AccessPoint.{i}.MaxAllowedAssociations!UCI:wireless/wifi-iface,@i-1/maxassoc*/
 static int get_WiFiAccessPoint_MaxAllowedAssociations(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *device;
-
-	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "device", &device);
-	dmuci_get_option_value_string("wireless", device, "maxassoc", value);
+	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "device", value);
+	dmuci_get_option_value_string("wireless", *value, "maxassoc", value);
 	return 0;
 }
 
@@ -847,14 +803,13 @@ static int set_WiFiAccessPoint_IsolationEnable(char *refparam, struct dmctx *ctx
 	return 0;
 }
 
+/*#Device.WiFi.AccessPoint.{i}.AllowedMACAddress!UCI:wireless/wifi-iface,@i-1/maclist*/
 static int get_WiFiAccessPoint_AllowedMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_list *val;
 	dmuci_get_value_by_section_list(((struct wifi_acp_args *)data)->wifi_acp_sec, "maclist", &val);
 	if (val)
 		*value = dmuci_list_to_string(val, " ");
-	else
-		*value = "";
 	return 0;
 }
 
@@ -870,10 +825,9 @@ static int set_WiFiAccessPoint_AllowedMACAddress(char *refparam, struct dmctx *c
 				return FAULT_9007;
 			break;
 		case VALUESET:
-			arr= strsplit(value, " ", &length);
-			for (i = 0; i < length; i++){
+			arr = strsplit(value, " ", &length);
+			for (i = 0; i < length; i++)
 				dmuci_add_list_value_by_section(((struct wifi_acp_args *)data)->wifi_acp_sec, "maclist", arr[i]);
-			}
 			break;
 	}
 	return 0;
@@ -972,6 +926,7 @@ static int reset_wlan(struct uci_section *s)
 	return 0;
 }
 
+/*#Device.WiFi.AccessPoint.{i}.Security.ModeEnabled!UCI:wireless/wifi-iface,@i-1/encryption&UCI:wireless/wifi-iface,@i-1/cipher*/
 static int get_access_point_security_modes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *encryption, *cipher;
@@ -1092,15 +1047,13 @@ static int set_access_point_security_wepkey(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
+/*#Device.WiFi.AccessPoint.{i}.Security.X_IOPSYS_EU_WEPKeyInde!UCI:wireless/wifi-iface,@i-1/key_index*/
 static int get_access_point_security_wepkey_index(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *key_index;
 
 	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "key_index", &key_index);
-	if (*key_index == '\0')
-		*value = "1";
-	else
-		*value = key_index;
+	*value = (*key_index == '\0') ? "1" : key_index;
 	return 0;
 }
 
@@ -1111,9 +1064,8 @@ static int set_access_point_security_wepkey_index(char *refparam, struct dmctx *
 			//TODO
 			return 0;
 		case VALUESET:
-			if (atoi(value)>=1 && atoi(value)<=4) {
+			if (atoi(value) >= 1 && atoi(value) <= 4)
 				dmuci_set_value_by_section(((struct wifi_acp_args *)data)->wifi_acp_sec, "key_index", value);
-			}
 			return 0;
 	}
 	return 0;
@@ -1122,6 +1074,7 @@ static int set_access_point_security_wepkey_index(char *refparam, struct dmctx *
 static int set_access_point_security_shared_key(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *encryption;
+
 	switch (action) {
 		case VALUECHECK:
 			if (dm_validate_hexBinary(value, RANGE_ARGS{{NULL,"32"}}, 1))
@@ -1129,9 +1082,8 @@ static int set_access_point_security_shared_key(char *refparam, struct dmctx *ct
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "encryption", &encryption);
-			if (strcmp(encryption, "psk") == 0 || strcmp(encryption, "psk2") == 0 || strcmp(encryption, "mixed-psk") == 0 ) {
+			if (strcmp(encryption, "psk") == 0 || strcmp(encryption, "psk2") == 0 || strcmp(encryption, "mixed-psk") == 0 )
 				dmuci_set_value_by_section(((struct wifi_acp_args *)data)->wifi_acp_sec, "key", value);
-			}
 			return 0;
 	}
 	return 0;
@@ -1148,9 +1100,8 @@ static int set_access_point_security_passphrase(char *refparam, struct dmctx *ct
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "encryption", &encryption);
-			if (strcmp(encryption, "psk") == 0 || strcmp(encryption, "psk2") == 0 || strcmp(encryption, "mixed-psk") == 0 ) {
+			if (strcmp(encryption, "psk") == 0 || strcmp(encryption, "psk2") == 0 || strcmp(encryption, "mixed-psk") == 0 )
 				set_access_point_security_shared_key(refparam, ctx, data, instance, value, action);
-			}
 			return 0;
 	}
 	return 0;
@@ -1176,11 +1127,8 @@ static int set_access_point_security_rekey_interval(char *refparam, struct dmctx
 			return 0;
 		case VALUESET:
 			dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "encryption", &encryption);
-			if (strcmp(encryption, "wep-open") == 0 || strcmp(encryption, "wep-shared") == 0 || strcmp(encryption, "none") == 0)
-				return 0;
-			else {
+			if (strcmp(encryption, "wep-open") != 0 && strcmp(encryption, "wep-shared") != 0 && strcmp(encryption, "none") != 0)
 				dmuci_set_value_by_section(((struct wifi_acp_args *)data)->wifi_acp_sec, "gtk_rekey", value);
-			}
 			return 0;
 	}
 	return 0;
@@ -1719,7 +1667,7 @@ static int set_WiFiEndPointProfile_SSID(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-/*#Device.WiFi.EndPoint.{i}.Profile.{i}.Security.SSID!UCI:wireless/wifi-iface,@i-1/encryption*/
+/*#Device.WiFi.EndPoint.{i}.Profile.{i}.Security.SSID!UCI:wireless/wifi-iface,@i-1/encryption&UCI:wireless/wifi-iface,@i-1/cipher*/
 static int get_WiFiEndPointProfileSecurity_ModeEnabled(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *encryption, *cipher;

@@ -462,6 +462,7 @@ static int set_EthernetInterface_Enable(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
+/*#Device.Ethernet.Interface.{i}.Status!SYSFS:/sys/class/net/@Name/operstate*/
 static int get_EthernetInterface_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	get_net_device_sysfs(((struct eth_port_args *)data)->ifname, "operstate", value);
@@ -552,6 +553,7 @@ static int set_EthernetInterface_LowerLayers(char *refparam, struct dmctx *ctx, 
 	return 0;
 }
 
+/*#Device.Ethernet.Interface.{i}.Upstream!UCI:ports/ethport,@i-1/uplink*/
 static int get_EthernetInterface_Upstream(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "uplink", value);
@@ -560,7 +562,7 @@ static int get_EthernetInterface_Upstream(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-/*#Device.Ethernet.Interface.{i}.MACAddress!UBUS:network.device/status/name,@Name/macaddr*/
+/*#Device.Ethernet.Interface.{i}.MACAddress!SYSFS:/sys/class/net/@Name/address*/
 static int get_EthernetInterface_MACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "address", value);
@@ -693,54 +695,55 @@ static int set_EthernetInterface_EEEEnable(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
+/*#Device.Ethernet.Interface.{i}.Stats.BytesSent!SYSFS:/sys/class/net/@Name/statistics/tx_bytes*/
 static int get_EthernetInterfaceStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "statistics/tx_bytes", value);
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
+/*#Device.Ethernet.Interface.{i}.Stats.BytesReceived!SYSFS:/sys/class/net/@Name/statistics/rx_bytes*/
 static int get_EthernetInterfaceStats_BytesReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "statistics/rx_bytes", value);
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
+/*#Device.Ethernet.Interface.{i}.Stats.PacketsSent!SYSFS:/sys/class/net/@Name/statistics/tx_packets*/
 static int get_EthernetInterfaceStats_PacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "statistics/tx_packets", value);
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
+/*#Device.Ethernet.Interface.{i}.Stats.PacketsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_packets*/
 static int get_EthernetInterfaceStats_PacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "statistics/rx_packets", value);
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
+/*#Device.Ethernet.Interface.{i}.Stats.ErrorsSent!SYSFS:/sys/class/net/@Name/statistics/tx_errors*/
 static int get_EthernetInterfaceStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "statistics/tx_errors", value);
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
+/*#Device.Ethernet.Interface.{i}.Stats.ErrorsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_errors*/
 static int get_EthernetInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "statistics/rx_errors", value);
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
+/*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsSent!SYSFS:/sys/class/net/@Name/statistics/tx_dropped*/
 static int get_EthernetInterfaceStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "statistics/tx_dropped", value);
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
+/*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_dropped*/
 static int get_EthernetInterfaceStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "statistics/rx_dropped", value);
 }
 
+/*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsReceived!SYSFS:/sys/class/net/@Name/statistics/multicast*/
 static int get_EthernetInterfaceStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_port_sysfs(data, "statistics/multicast", value);
@@ -1394,54 +1397,55 @@ static int set_EthernetVLANTermination_TPID(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
-/*#Device.Ethernet.VLANTermination.{i}.Stats.BytesSent!UBUS:network.device/status/name,@Name/statistics.tx_bytes*/
+/*#Device.Ethernet.VLANTermination.{i}.Stats.BytesSent!SYSFS:/sys/class/net/@Name/statistics/tx_bytes*/
 static int get_EthernetVLANTerminationStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_iface_sysfs(data, "statistics/tx_bytes", value);
 }
 
-/*#Device.Ethernet.VLANTermination.{i}.Stats.BytesReceived!UBUS:network.device/status/name,@Name/statistics.rx_bytes*/
+/*#Device.Ethernet.VLANTermination.{i}.Stats.BytesReceived!SYSFS:/sys/class/net/@Name/statistics/rx_bytes*/
 static int get_EthernetVLANTerminationStats_BytesReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_iface_sysfs(data, "statistics/rx_bytes", value);
 }
 
-/*#Device.Ethernet.VLANTermination.{i}.Stats.PacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_packets*/
+/*#Device.Ethernet.VLANTermination.{i}.Stats.PacketsSent!SYSFS:/sys/class/net/@Name/statistics/tx_packets*/
 static int get_EthernetVLANTerminationStats_PacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_iface_sysfs(data, "statistics/tx_packets", value);
 }
 
-/*#Device.Ethernet.VLANTermination.{i}.Stats.PacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_packets*/
+/*#Device.Ethernet.VLANTermination.{i}.Stats.PacketsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_packets*/
 static int get_EthernetVLANTerminationStats_PacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_iface_sysfs(data, "statistics/rx_packets", value);
 }
 
-/*#Device.Ethernet.VLANTermination.{i}.Stats.ErrorsSent!UBUS:network.device/status/name,@Name/statistics.tx_errors*/
+/*#Device.Ethernet.VLANTermination.{i}.Stats.ErrorsSent!SYSFS:/sys/class/net/@Name/statistics/tx_errors*/
 static int get_EthernetVLANTerminationStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_iface_sysfs(data, "statistics/tx_errors", value);
 }
 
-/*#Device.Ethernet.VLANTermination.{i}.Stats.ErrorsReceived!UBUS:network.device/status/name,@Name/statistics.rx_errors*/
+/*#Device.Ethernet.VLANTermination.{i}.Stats.ErrorsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_errors*/
 static int get_EthernetVLANTerminationStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_iface_sysfs(data, "statistics/rx_errors", value);
 }
 
-/*#Device.Ethernet.VLANTermination.{i}.Stats.DiscardPacketsSent!UBUS:network.device/status/name,@Name/statistics.tx_dropped*/
+/*#Device.Ethernet.VLANTermination.{i}.Stats.DiscardPacketsSent!SYSFS:/sys/class/net/@Name/statistics/tx_dropped*/
 static int get_EthernetVLANTerminationStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_iface_sysfs(data, "statistics/tx_dropped", value);
 }
 
-/*#Device.Ethernet.VLANTermination.{i}.Stats.DiscardPacketsReceived!UBUS:network.device/status/name,@Name/statistics.rx_dropped*/
+/*#Device.Ethernet.VLANTermination.{i}.Stats.DiscardPacketsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_dropped*/
 static int get_EthernetVLANTerminationStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_iface_sysfs(data, "statistics/rx_dropped", value);
 }
 
+/*#Device.Ethernet.VLANTermination.{i}.Stats.MulticastPacketsReceived!SYSFS:/sys/class/net/@Name/statistics/multicast*/
 static int get_EthernetVLANTerminationStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return eth_iface_sysfs(data, "statistics/multicast", value);

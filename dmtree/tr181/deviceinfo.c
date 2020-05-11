@@ -79,6 +79,7 @@ static int get_device_softwareversion(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
+/*#Device.DeviceInfo.UpTime!PROCFS:/proc/uptime*/
 static int get_device_info_uptime(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	FILE *fp = NULL;
@@ -278,7 +279,6 @@ static int browseVcfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_da
 	return 0;
 }
 
-//Browse VendorLogFile instances
 static int browseVlfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct uci_section *sys_log_sec, *dm_sec;

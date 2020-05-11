@@ -1,0 +1,333 @@
+{
+	"Device.X_IOPSYS_EU_Dropbear.": {
+		"type": "object", 
+		"protocols": [
+			"cwmp", 
+			"usp"
+		], 
+		"array": true,
+		"mapping": {
+			"type": "uci", 
+			"uci": {
+				"file": "dropbear", 
+				"section": {
+					"type": "dropbear"
+				}, 
+				"dmmapfile": "dmmap_dropbear"
+			}
+		},
+		"Alias": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true,
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dmmap_dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "dropbearalias"
+						},
+						"path":"/etc/bbfdm",
+					}
+				}
+			]
+		},
+		"PasswordAuth": {
+			"type": "boolean", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "PasswordAuth"
+						}
+					}
+				}
+			]
+		},
+		"RootPasswordAuth": {
+			"type": "boolean", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "RootPasswordAuth"
+						}
+					}
+				}
+			]
+		},
+		"Port": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "Port"
+						}
+					}
+				}
+			]
+		},
+		"RootLogin": {
+			"type": "boolean", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "RootLogin"
+						}
+					}
+				}
+			]
+		},
+		"GatewayPorts": {
+			"type": "boolean", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "GatewayPorts"
+						}
+					}
+				}
+			]
+		},
+		"Interface": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "Interface"
+						}
+					}
+				}
+			]
+		},
+		"RSAKeyFile": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "rsakeyfile"
+						}
+					}
+				}
+			]
+		},
+		"DSSKeyFile": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "dsskeyfile"
+						}
+					}
+				}
+			]
+		},
+		"SSHKeepAlive": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "SSHKeepAlive"
+						}
+					}
+				}
+			]
+		},
+		"IdleTimeout": {
+			"type": "unsignedInt", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "IdleTimeout"
+						}
+					}
+				}
+			]
+		},
+		"Verbose": {
+			"type": "boolean", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "verbose"
+						}
+					}
+				}
+			]
+		},
+		"BannerFile": {
+			"type": "string", 
+			"protocols": [
+				"cwmp", 
+				"usp"
+			], 
+			"read": true, 
+			"write": true, 
+			"mapping": [
+				{
+					"type": "uci", 
+					"uci": {
+						"file": "dropbear", 
+						"section": {
+							"type": "dropbear", 
+							"index": "@i-1"
+						}, 
+						"option": {
+							"name": "BannerFile"
+						}
+					}
+				}
+			]
+		}
+	}
+}

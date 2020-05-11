@@ -334,7 +334,7 @@ def printOBJMaPPING (mapping):
 		if config[2] != "":
 			args = config[2].split(",")
 			print >> fp, "\"%s\": \"%s\"" % (args[0], args[1])
-	print >> fp, "}"
+		print >> fp, "}"
 		print >> fp, "\"key\": \"%s\"" % config[3]
 
 	print >> fp, "}\n}"
@@ -350,7 +350,7 @@ def printPARAMMaPPING (mapping):
 
 		print >> fp, "{"
 		print >> fp, "\"type\": \"%s\"," % config_type[0].lower()
-
+		
 		# SYSFS || PROCFS
 		if config_type[0] == "SYSFS" or config_type[0] == "PROCFS":
 			print >> fp, "\"file\": \"%s\"" % config_type[1]
@@ -362,40 +362,40 @@ def printPARAMMaPPING (mapping):
 	
 			# UCI
 			if config_type[0] == "UCI":
-			print >> fp, "\"file\": \"%s\"," % config[0]
-			print >> fp, "\"section\": {"
-			var = config[1].split(",")
-			if len(var) == 1:
-				print >> fp, "\"type\": \"%s\"" % var[0]
-			elif len(var) > 1 and "@i" in var[1]:
-				print >> fp, "\"type\": \"%s\"," % var[0]
-				print >> fp, "\"index\": \"%s\"" % var[1]
-			elif len(var) > 1:
-				print >> fp, "\"type\": \"%s\"," % var[0]
-				print >> fp, "\"name\": \"%s\"" % var[1]	
-			print >> fp, "}"
-			if len(var) > 1:
-				print >> fp, "\"option\": {"
-				print >> fp, "\"name\": \"%s\"" % config[2]
+				print >> fp, "\"file\": \"%s\"," % config[0]
+				print >> fp, "\"section\": {"
+				var = config[1].split(",")
+				if len(var) == 1:
+					print >> fp, "\"type\": \"%s\"" % var[0]
+				elif len(var) > 1 and "@i" in var[1]:
+					print >> fp, "\"type\": \"%s\"," % var[0]
+					print >> fp, "\"index\": \"%s\"" % var[1]
+				elif len(var) > 1:
+					print >> fp, "\"type\": \"%s\"," % var[0]
+					print >> fp, "\"name\": \"%s\"" % var[1]	
 				print >> fp, "}"
+				if len(var) > 1:
+					print >> fp, "\"option\": {"
+					print >> fp, "\"name\": \"%s\"" % config[2]
+					print >> fp, "}"
 			
 			# UBUS
 			elif config_type[0] == "UBUS":
-			print >> fp, "\"object\": \"%s\"," % config[0]
-			print >> fp, "\"method\": \"%s\"," % config[1]
-			print >> fp, "\"args\": {"
-			if config[2] != "":
-				args = config[2].split(",")
-				print >> fp, "\"%s\": \"%s\"" % (args[0], args[1])
-			print >> fp, "}"
-			print >> fp, "\"key\": \"%s\"" % config[3]
+				print >> fp, "\"object\": \"%s\"," % config[0]
+				print >> fp, "\"method\": \"%s\"," % config[1]
+				print >> fp, "\"args\": {"
+				if config[2] != "":
+					args = config[2].split(",")
+					print >> fp, "\"%s\": \"%s\"" % (args[0], args[1])
+				print >> fp, "}"
+				print >> fp, "\"key\": \"%s\"" % config[3]
 	
 			# CLI
 			elif config_type[0] == "CLI":
-			print >> fp, "\"command\": \"%s\"," % config[0]
-			print >> fp, "\"args\": \"%s\"" % config[1]
-
-		print >> fp, "}"
+				print >> fp, "\"command\": \"%s\"," % config[0]
+				print >> fp, "\"args\": \"%s\"" % config[1]
+	
+			print >> fp, "}"
 			
 		print >> fp, "}"
 	print >> fp, "]\n}"

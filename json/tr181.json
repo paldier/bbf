@@ -412,16 +412,16 @@
 					{
 						"max": 256
 					}
-				],
+				], 
 				"mapping": [
 					{
-						"type": "uci",
+						"type": "uci", 
 						"uci": {
-							"file": "cwmp",
+							"file": "cwmp", 
 							"section": {
-								"type": "cpe",
+								"type": "cpe", 
 								"name": "cpe"
-							},
+							}, 
 							"option": {
 								"name": "description"
 							}
@@ -2494,16 +2494,16 @@
 				"protocols": [
 					"cwmp"
 				], 
-				"datatype": "boolean",
+				"datatype": "boolean", 
 				"mapping": [
 					{
-						"type": "uci",
+						"type": "uci", 
 						"uci": {
-							"file": "cwmp",
+							"file": "cwmp", 
 							"section": {
-								"type": "cpe",
+								"type": "cpe", 
 								"name": "cpe"
-							},
+							}, 
 							"option": {
 								"name": "upgrades_managed"
 							}
@@ -6449,9 +6449,7 @@
 					"cwmp", 
 					"usp"
 				], 
-				"datatype": "string",
-				"mapping": [
-				]
+				"datatype": "string"
 			}
 		}, 
 		"Device.UserInterface.": {
@@ -30116,6 +30114,15 @@
 					], 
 					"access": false, 
 					"array": true, 
+					"mapping": {
+						"type": "ubus", 
+						"ubus": {
+							"object": "wifi.radio.@Name", 
+							"method": "scanresults", 
+							"args": {}, 
+							"key": "accesspoints"
+						}
+					}, 
 					"Radio": {
 						"type": "string", 
 						"read": true, 
@@ -30137,6 +30144,17 @@
 							{
 								"max": 32
 							}
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.radio.@Name", 
+									"method": "scanresults", 
+									"args": {}, 
+									"key": "accesspoints[@i-1].ssid"
+								}
+							}
 						]
 					}, 
 					"BSSID": {
@@ -30154,6 +30172,17 @@
 						], 
 						"pattern": [
 							"([0-9A-Fa-f][0-9A-Fa-f]:){5}([0-9A-Fa-f][0-9A-Fa-f])"
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.radio.@Name", 
+									"method": "scanresults", 
+									"args": {}, 
+									"key": "accesspoints[@i-1].bssid"
+								}
+							}
 						]
 					}, 
 					"Mode": {
@@ -30182,6 +30211,17 @@
 								"min": 1, 
 								"max": 255
 							}
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.radio.@Name", 
+									"method": "scanresults", 
+									"args": {}, 
+									"key": "accesspoints[@i-1].channel"
+								}
+							}
 						]
 					}, 
 					"SignalStrength": {
@@ -30198,7 +30238,18 @@
 								"max": 0
 							}
 						], 
-						"unit": "dBm"
+						"unit": "dBm", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.radio.@Name", 
+									"method": "scanresults", 
+									"args": {}, 
+									"key": "accesspoints[@i-1].rssi"
+								}
+							}
+						]
 					}, 
 					"SecurityModeEnabled": {
 						"type": "string", 
@@ -30248,6 +30299,17 @@
 						"enumerations": [
 							"2.4GHz", 
 							"5GHz"
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.radio.@Name", 
+									"method": "scanresults", 
+									"args": {}, 
+									"key": "accesspoints[@i-1].band"
+								}
+							}
 						]
 					}, 
 					"SupportedStandards": {
@@ -30320,7 +30382,18 @@
 								"max": 0
 							}
 						], 
-						"unit": "dBm"
+						"unit": "dBm", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "wifi.radio.@Name", 
+									"method": "scanresults", 
+									"args": {}, 
+									"key": "accesspoints[@i-1].snr"
+								}
+							}
+						]
 					}, 
 					"BasicDataTransferRates": {
 						"type": "string", 
@@ -35733,15 +35806,8 @@
 							"datatype": "unsignedLong", 
 							"mapping": [
 								{
-									"type": "ubus", 
-									"ubus": {
-										"object": "network.device", 
-										"method": "status", 
-										"args": {
-											"name": "@Name"
-										}, 
-										"key": "statistics.tx_bytes"
-									}
+									"type": "sysfs", 
+									"file": "/sys/class/net/@Name/statistics/tx_bytes"
 								}
 							]
 						}, 
@@ -35766,15 +35832,8 @@
 							"datatype": "unsignedLong", 
 							"mapping": [
 								{
-									"type": "ubus", 
-									"ubus": {
-										"object": "network.device", 
-										"method": "status", 
-										"args": {
-											"name": "@Name"
-										}, 
-										"key": "statistics.tx_packets"
-									}
+									"type": "sysfs", 
+									"file": "/sys/class/net/@Name/statistics/tx_packets"
 								}
 							]
 						}, 
@@ -35789,15 +35848,8 @@
 							"datatype": "unsignedLong", 
 							"mapping": [
 								{
-									"type": "ubus", 
-									"ubus": {
-										"object": "network.device", 
-										"method": "status", 
-										"args": {
-											"name": "@Name"
-										}, 
-										"key": "statistics.rx_packets"
-									}
+									"type": "sysfs", 
+									"file": "/sys/class/net/@Name/statistics/rx_packets"
 								}
 							]
 						}, 
@@ -35812,15 +35864,8 @@
 							"datatype": "unsignedInt", 
 							"mapping": [
 								{
-									"type": "ubus", 
-									"ubus": {
-										"object": "network.device", 
-										"method": "status", 
-										"args": {
-											"name": "@Name"
-										}, 
-										"key": "statistics.tx_errors"
-									}
+									"type": "sysfs", 
+									"file": "/sys/class/net/@Name/statistics/tx_errors"
 								}
 							]
 						}, 
@@ -35835,15 +35880,8 @@
 							"datatype": "unsignedInt", 
 							"mapping": [
 								{
-									"type": "ubus", 
-									"ubus": {
-										"object": "network.device", 
-										"method": "status", 
-										"args": {
-											"name": "@Name"
-										}, 
-										"key": "statistics.rx_errors"
-									}
+									"type": "sysfs", 
+									"file": "/sys/class/net/@Name/statistics/rx_errors"
 								}
 							]
 						}, 
@@ -35878,15 +35916,8 @@
 							"datatype": "unsignedInt", 
 							"mapping": [
 								{
-									"type": "ubus", 
-									"ubus": {
-										"object": "network.device", 
-										"method": "status", 
-										"args": {
-											"name": "@Name"
-										}, 
-										"key": "statistics.tx_dropped"
-									}
+									"type": "sysfs", 
+									"file": "/sys/class/net/@Name/statistics/tx_dropped"
 								}
 							]
 						}, 
@@ -35901,15 +35932,8 @@
 							"datatype": "unsignedInt", 
 							"mapping": [
 								{
-									"type": "ubus", 
-									"ubus": {
-										"object": "network.device", 
-										"method": "status", 
-										"args": {
-											"name": "@Name"
-										}, 
-										"key": "statistics.rx_dropped"
-									}
+									"type": "sysfs", 
+									"file": "/sys/class/net/@Name/statistics/rx_dropped"
 								}
 							]
 						}, 
@@ -35931,7 +35955,13 @@
 								"cwmp", 
 								"usp"
 							], 
-							"datatype": "unsignedLong"
+							"datatype": "unsignedLong", 
+							"mapping": [
+								{
+									"type": "sysfs", 
+									"file": "/sys/class/net/@Name/statistics/multicast"
+								}
+							]
 						}, 
 						"BroadcastPacketsSent": {
 							"type": "unsignedLong", 
@@ -36122,18 +36152,6 @@
 								"min": 1, 
 								"max": 4094
 							}
-						]
-					},
-					"X_IOPSYS_EU_VLANPriority": {
-						"type": "string", 
-						"read": true, 
-						"write": true, 
-						"protocols": [
-							"cwmp", 
-							"usp"
-						], 
-						"datatype": "string", 
-						"mapping": [
 						]
 					}
 				}, 
@@ -38423,10 +38441,8 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "boolean", 
-						"mapping": [
-						]
-					}, 
+						"datatype": "boolean"
+					},
 				}, 
 				"Device.IP.Interface.{i}.Stats.": {
 					"type": "object", 
@@ -58939,9 +58955,7 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "string",
-					"mapping": [
-					]
+					"datatype": "string"
 				}, 
 				"Device.UPnP.Device.Capabilities.": {
 					"type": "object", 

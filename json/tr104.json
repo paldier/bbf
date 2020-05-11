@@ -1976,7 +1976,7 @@
 								"section": {
 									"type": "sip_advanced", 
 									"name": "SIP"
-				}, 
+								}, 
 								"option": {
 									"name": "call_lines"
 								}
@@ -3802,7 +3802,7 @@
 						"Disabled", 
 						"Quiescent", 
 						"Enabled"
-					],
+					], 
 					"mapping": [
 						{
 							"type": "uci", 
@@ -3847,7 +3847,7 @@
 						{
 							"max": 32
 						}
-					],
+					], 
 					"mapping": [
 						{
 							"type": "uci", 
@@ -3951,9 +3951,7 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "string", 
-					"mapping": [
-					]
+					"datatype": "string"
 				},
 				"X_IOPSYS_EU_TELLine": {
 					"type": "string", 
@@ -3963,9 +3961,7 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "string", 
-					"mapping": [
-					]
+					"datatype": "string"
 				},
 				"X_IOPSYS_EU_ComfortNoiseEnable": {
 					"type": "boolean", 

@@ -27,8 +27,8 @@
 #define DB_CONFIG "/lib/db/config"
 #define VARSTATE_CONFIG "/var/state"
 #define BBFDM_CONFIG "/etc/bbfdm"
-#define BBFDM_PATH "bbfdm"
 #define BBFDM_SAVEDIR "/tmp/.bbfdm"
+#define UCI_CONFIG_DIR "/etc/config/"
 
 extern struct uci_context *uci_ctx;
 extern struct uci_context *uci_varstate_ctx;
@@ -196,6 +196,8 @@ int dmuci_init_bbfdm(void);
 void init_uci_varstate_ctx(void);
 void end_uci_varstate_ctx(void);
 void uci_add_list_to_list(struct uci_list *addlist, struct uci_list *list);
+char *bbf_uci_get_value(char *path, char *package, char *section, char *option);
+char *bbf_uci_set_value(char *path, char *package, char *section, char *option, char *value);
 
 #define NEW_UCI_PATH(UCI_PATH, CPATH, DPATH)		\
 struct uci_context *uci_ctx_##UCI_PATH;			\

@@ -817,3 +817,54 @@ void end_uci_varstate_ctx(void)
 	if (uci_varstate_ctx) uci_free_context(uci_varstate_ctx);
 	uci_varstate_ctx = NULL;
 }
+
+char *bbf_uci_get_value(char *path, char *package, char *section, char *option)
+{
+	struct uci_option *o;
+	char *val = "";
+
+	if (!package || !section || !option)
+		return val;
+
+	o = dmuci_get_option_ptr((path) ? path : UCI_CONFIG_DIR, package, section, option);
+
+	if (!o)
+		return val;
+
+	if(o->type == UCI_TYPE_LIST)
+		return dmuci_list_to_string(&o->v.list, " ");
+
+	if (o->v.string)
+		return dmstrdup(o->v.string);
+
+	return val;
+}
+
+char *bbf_uci_set_value(char *path, char *package, char *section, char *option, char *value)
+{
+	struct uci_context *save_uci_ctx = NULL;
+	struct uci_ptr ptr = {0};
+	char *val = "";
+
+	if (!package || !section || !option || !value)
+		return val;
+
+	if (path && strcmp(path, BBFDM_CONFIG) == 0) {
+		save_uci_ctx = uci_ctx;
+		uci_ctx = uci_ctx_bbfdm;
+	}
+
+	if (dmuci_lookup_ptr(uci_ctx, &ptr, package, section, option, value))
+		goto end;
+
+	if (uci_set(uci_ctx, &ptr) != UCI_OK)
+		goto end;
+
+	if (ptr.o && ptr.o->v.string)
+		val = dmstrdup(ptr.o->v.string);
+
+end:
+	if (path && strcmp(path, BBFDM_CONFIG) == 0) uci_ctx = save_uci_ctx;;
+	return val;
+}
+

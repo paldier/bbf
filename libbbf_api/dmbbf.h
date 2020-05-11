@@ -207,6 +207,8 @@ struct dm_json_parameter {
 	char *arg4;
 	char *arg5;
 	char *arg6;
+	char *arg7;
+	char *arg8;
 };
 
 struct dmctx

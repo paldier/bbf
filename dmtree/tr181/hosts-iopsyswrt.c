@@ -1,175 +1,272 @@
+/*
+ * Copyright (C) 2020 iopsys Software Solutions AB
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 2.1
+ * as published by the Free Software Foundation
+ *
+ *	Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
+ */
+
 #include "os.h"
 #include "dmentry.h"
 
-struct host_args
+/*************************************************************
+* ENTRY METHOD
+**************************************************************/
+/*#Device.Hosts.Host.{i}.!UBUS:router.network/hosts//hosts*/
+int os__browseHostsHostInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	json_object *client;
-	char *key;
-};
+	json_object *res = NULL, *host_obj = NULL, *arrobj = NULL;
+	char *idx = NULL, *idx_last = NULL;
+	int id = 0, i = 0;
 
-static inline int init_host_args(struct host_args *args, json_object *clients, char *key)
-{
-	args->client = clients;
-	args->key = key;
-	return 0;
-}
-
-int os__browsehostInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	json_object *res;
-	char *idx, *idx_last = NULL, *connected;
-	int id = 0;
-	struct host_args curr_host_args = {0};
-
-	dmubus_call("router.network", "clients", UBUS_ARGS{}, 0, &res);
+	dmubus_call("router.network", "hosts", UBUS_ARGS{}, 0, &res);
 	if (res) {
-		json_object_object_foreach(res, key, client_obj) {
-			connected = dmjson_get_value(client_obj, 1, "connected");
-			if(strcmp(connected, "false") == 0)
-				continue;
-			init_host_args(&curr_host_args, client_obj, key);
-			idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, ++id);
-			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_host_args, idx) == DM_STOP)
+		dmjson_foreach_obj_in_array(res, arrobj, host_obj, i, 1, "hosts") {
+			idx = handle_update_instance(1, dmctx, &idx_last, update_instance_without_section, 1, ++id);
+			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)host_obj, idx) == DM_STOP)
 				break;
 		}
 	}
 	return 0;
 }
 
-int os__get_host_nbr_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+/*#Device.Hosts.Host.{i}.IPv4Address.{i}.!UBUS:router.network/hosts//hosts[@i-1].ipv4addr*/
+int os__browseHostsHostIPv4AddressInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
-	int entries = 0;
-	json_object *res;
+	json_object *ip_arr, *host_obj = (json_object *)prev_data;
+	char *idx = NULL, *idx_last = NULL, *ipv4addr = NULL;
+	int id = 0, i = 0;
 
-	dmubus_call("router.network", "clients", UBUS_ARGS{}, 0, &res);
-	DM_ASSERT(res, *value = "0");
-	json_object_object_foreach(res, key, client_obj) {
-		UNUSED(key);
-		UNUSED(client_obj);
-		entries++;
+	dmjson_foreach_value_in_array(host_obj, ip_arr, ipv4addr, i, 1, "ipv4addr") {
+		idx = handle_update_instance(1, dmctx, &idx_last, update_instance_without_section, 1, ++id);
+		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)ipv4addr, idx) == DM_STOP)
+			break;
 	}
-	dmasprintf(value, "%d", entries); // MEM WILL BE FREED IN DMMEMCLEAN
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.IPv6Address.{i}.!UBUS:router.network/hosts//hosts[@i-1].ipv6addr*/
+int os__browseHostsHostIPv6AddressInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+{
+	json_object *ip_arr, *host_obj = (json_object *)prev_data;
+	char *idx = NULL, *idx_last = NULL, *ipv6addr = NULL;
+	int id = 0, i = 0;
+
+	dmjson_foreach_value_in_array(host_obj, ip_arr, ipv6addr, i, 1, "ipv6addr") {
+		idx = handle_update_instance(1, dmctx, &idx_last, update_instance_without_section, 1, ++id);
+		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)ipv6addr, idx) == DM_STOP)
+			break;
+	}
 	return 0;
 }
 
 /*************************************************************
 * GET & SET PARAM
 **************************************************************/
-int os__get_host_associateddevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+/*#Device.Hosts.HostNumberOfEntries!UBUS:router.network/hosts//hosts*/
+int os__get_Hosts_HostNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *ss;
-	char *accesspointInstance = NULL, *wifiAssociativeDeviecPath;
-	char *macaddr_linker = dmjson_get_value(((struct host_args *)data)->client, 1, "macaddr");
+	json_object *res = NULL, *hosts = NULL;
+	size_t nbre_hosts = 0;
 
-	uci_path_foreach_sections(bbfdm, "dmmap_wireless", "wifi-iface", ss) {
-		dmuci_get_value_by_section_string(ss, "accesspointinstance", &accesspointInstance);
-		if(accesspointInstance[0] != '\0')
-			dmasprintf(&wifiAssociativeDeviecPath, "Device.WiFi.AccessPoint.%s.AssociatedDevice.", accesspointInstance);
-		accesspointInstance = NULL;
-		adm_entry_get_linker_param(ctx, wifiAssociativeDeviecPath, macaddr_linker, value);
-		if(*value != NULL)
+	dmubus_call("router.network", "hosts", UBUS_ARGS{}, 0, &res);
+	DM_ASSERT(res, *value = "0");
+	json_object_object_get_ex(res, "hosts", &hosts);
+	nbre_hosts = json_object_array_length(hosts);
+	dmasprintf(value, "%d", nbre_hosts);
+	return 0;
+}
+
+int os__get_HostsHost_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	struct uci_section *s = NULL;
+
+	char *macaddr = dmjson_get_value((json_object *)data, 1, "macaddr");
+	uci_path_foreach_sections(bbfdm, "dmmap", "hosts", s) {
+		char *mac;
+		dmuci_get_value_by_section_string(s, "mac", &mac);
+		if (strcmp(mac, macaddr) == 0) {
+			dmuci_get_value_by_section_string(s, "alias", value);
 			break;
-	}
-
-	if (*value == NULL)
-		*value = "";
-	return 0;
-}
-
-int os__get_host_layer3interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *ip_linker=dmjson_get_value(((struct host_args *)data)->client, 1, "network");
-	adm_entry_get_linker_param(ctx, "Device.IP.Interface.", ip_linker, value);
-	if (*value == NULL)
-		*value = "";
-	return 0;
-}
-
-int os__get_host_ipaddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value(((struct host_args *)data)->client, 1, "ipaddr");
-	return 0;
-}
-
-int os__get_host_hostname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value(((struct host_args *)data)->client, 1, "hostname");
-	return 0;
-}
-
-int os__get_host_active(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value(((struct host_args *)data)->client, 1, "connected");
-	return 0;
-}
-
-int os__get_host_phy_address(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value(((struct host_args *)data)->client, 1, "macaddr");
-	return 0;
-}
-
-int os__get_host_address_source(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *dhcp;
-
-	dhcp = dmjson_get_value(((struct host_args *)data)->client, 1, "dhcp");
-	if (strcasecmp(dhcp, "true") == 0)
-		*value = "DHCP";
-	else
-		*value = "Static";
-	return 0;
-}
-
-int os__get_host_leasetime_remaining(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *dhcp;
-	FILE *fp;
-	char line[MAX_DHCP_LEASES];
-	char *leasetime, *mac_f, *mac, *line1;
-	char delimiter[] = " \t";
-
-	dhcp = dmjson_get_value(((struct host_args *)data)->client, 1, "dhcp");
-	if (strcmp(dhcp, "false") == 0) {
-		*value = "0";
-	}
-	else {
-		mac = dmjson_get_value(((struct host_args *)data)->client, 1, "macaddr");
-		fp = fopen(DHCP_LEASES_FILE, "r");
-		if ( fp != NULL)
-		{
-			while (fgets(line, MAX_DHCP_LEASES, fp) != NULL )
-			{
-				if (line[0] == '\n')
-					continue;
-				line1 = dmstrdup(line);
-				leasetime = cut_fx(line, delimiter, 1);
-				mac_f = cut_fx(line1, delimiter, 2);
-				if (strcasecmp(mac, mac_f) == 0) {
-					int rem_lease = atoi(leasetime) - time(NULL);
-					if (rem_lease < 0)
-						*value = "-1";
-					else
-						dmasprintf(value, "%d", rem_lease); // MEM WILL BE FREED IN DMMEMCLEAN
-					fclose(fp) ;
-					return 0;
-				}
-			}
-			fclose(fp);
-			*value = "0";
 		}
 	}
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
 	return 0;
 }
 
-int os__get_host_dhcp_client(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os__set_HostsHost_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	char *linker;
-	dmasprintf(&linker, "%s", ((struct host_args *)data)->key);
-	adm_entry_get_linker_param(ctx, dm_print_path("%s%cDHCPv4%c", dmroot, dm_delim, dm_delim), linker, value); // MEM WILL BE FREED IN DMMEMCLEAN
-	if (*value == NULL) {
-		*value = "";
+	struct uci_section *s = NULL, *dmmap = NULL;
+	char *macaddr, *v;
+
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			macaddr = dmjson_get_value((json_object *)data, 1, "macaddr");
+			uci_path_foreach_option_eq(bbfdm, "dmmap", "hosts", "mac", macaddr, s) {
+				dmuci_set_value_by_section_bbfdm(s, "alias", value);
+				return 0;
+			}
+			dmuci_add_section_bbfdm("dmmap", "hosts", &dmmap, &v);
+			dmuci_set_value_by_section(dmmap, "mac", macaddr);
+			dmuci_set_value_by_section(dmmap, "alias", value);
+			break;
 	}
-	dmfree(linker);
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.PhysAddress!UBUS:router.network/hosts//hosts[@i-1].macaddr*/
+int os__get_HostsHost_PhysAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 1, "macaddr");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.IPAddress!UBUS:router.network/hosts//hosts[@i-1].ipaddr*/
+int os__get_HostsHost_IPAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 1, "ipaddr");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.AddressSource!UBUS:router.network/hosts//hosts[@i-1].addrsrc*/
+int os__get_HostsHost_AddressSource(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 1, "addrsrc");
+	*value = (strcmp(*value, "dhcp") == 0) ? "DHCP" : "Static";
+	return 0;
+}
+
+int os__get_HostsHost_DHCPClient(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	char *linker = dmjson_get_value((json_object *)data, 1, "macaddr");
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cDHCPv4%cServer%cPool%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), linker, value);
+	if (*value == NULL)
+		*value = "";
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.LeaseTimeRemaining!UBUS:router.network/hosts//hosts[@i-1].leasetmrmn*/
+int os__get_HostsHost_LeaseTimeRemaining(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 1, "leasetmrmn");
+	return 0;
+}
+
+int os__get_HostsHost_AssociatedDevice(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	char *linker = dmjson_get_value((json_object *)data, 1, "macaddr");
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cWiFi%cAccessPoint%c", dmroot, dm_delim, dm_delim, dm_delim, dm_delim), linker, value);
+	if (*value == NULL)
+		*value = "";
+	return 0;
+}
+
+int os__get_HostsHost_Layer1Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	char *linker = dmjson_get_value((json_object *)data, 1, "device");
+	char *type = dmjson_get_value((json_object *)data, 1, "type");
+	if (strcmp(type, "wifi") == 0)
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cWiFi%cRadio%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+	else
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+	if (*value == NULL)
+		*value = "";
+	return 0;
+}
+
+int os__get_HostsHost_Layer3Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	char *linker = dmjson_get_value((json_object *)data, 1, "network");
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+	if (*value == NULL)
+		*value = "";
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.InterfaceType!UBUS:router.network/hosts//hosts[@i-1].type*/
+int os__get_HostsHost_InterfaceType(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 1, "type");
+	*value = (strcmp(*value, "ethernet") == 0) ? "Ethernet" : "Wi-Fi";
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.VendorClassID!UBUS:router.network/hosts//hosts[@i-1].dhcpopts.vcid*/
+int os__get_HostsHost_VendorClassID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 2, "dhcpopts", "vcid");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.ClientID!UBUS:router.network/hosts//hosts[@i-1].dhcpopts.clid*/
+int os__get_HostsHost_ClientID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 2, "dhcpopts", "clid");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.UserClassID!UBUS:router.network/hosts//hosts[@i-1].dhcpopts.ucid*/
+int os__get_HostsHost_UserClassID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 2, "dhcpopts", "ucid");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.HostName!UBUS:router.network/hosts//hosts[@i-1].hostname*/
+int os__get_HostsHost_HostName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 1, "hostname");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.Active!UBUS:router.network/hosts//hosts[@i-1].active*/
+int os__get_HostsHost_Active(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 1, "active");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.IPv4AddressNumberOfEntries!UBUS:router.network/hosts//hosts[@i-1].ipv4addr*/
+int os__get_HostsHost_IPv4AddressNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	json_object *ipv4addr = NULL;
+	size_t nbre_addr = 0;
+
+	json_object_object_get_ex((json_object *)data, "ipv4addr", &ipv4addr);
+	nbre_addr = json_object_array_length(ipv4addr);
+	dmasprintf(value, "%d", nbre_addr);
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.IPv6AddressNumberOfEntries!UBUS:router.network/hosts//hosts[@i-1].ipv6addr*/
+int os__get_HostsHost_IPv6AddressNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	json_object *ipv6addr = NULL;
+	size_t nbre_addr = 0;
+
+	json_object_object_get_ex((json_object *)data, "ipv6addr", &ipv6addr);
+	nbre_addr = json_object_array_length(ipv6addr);
+	dmasprintf(value, "%d", nbre_addr);
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.IPv4Address.{i}.IPAddress!UBUS:router.network/hosts//hosts[@i-1].ipv4addr[@i-1]*/
+int os__get_HostsHostIPv4Address_IPAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = (char *)data;
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.IPv6Address.{i}.IPAddress!UBUS:router.network/hosts//hosts[@i-1].ipv6addr[@i-1]*/
+int os__get_HostsHostIPv6Address_IPAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = (char *)data;
 	return 0;
 }

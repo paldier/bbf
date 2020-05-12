@@ -122,6 +122,9 @@ def get_mapping_param( mappingobj ):
 		arg1, arg2 = getargsparam(argsobj)
 		key = getoptionparam(ubusobj, "key")
 		return type, object, method, arg1, arg2, key
+	elif type == "procfs" or type == "sysfs":
+		file = getoptionparam(mappingobj, "file")
+		return type, file, "", "", "", ""
 	else:
 		cliobj = getoptionparam(mappingobj, "cli")
 		command = getoptionparam(cliobj, "command")

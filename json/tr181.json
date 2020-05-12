@@ -38442,7 +38442,7 @@
 							"usp"
 						], 
 						"datatype": "boolean"
-					},
+					}
 				}, 
 				"Device.IP.Interface.{i}.Stats.": {
 					"type": "object", 
@@ -52020,7 +52020,18 @@
 					"cwmp", 
 					"usp"
 				], 
-				"datatype": "unsignedInt"
+				"datatype": "unsignedInt", 
+				"mapping": [
+					{
+						"type": "ubus", 
+						"ubus": {
+							"object": "router.network", 
+							"method": "hosts", 
+							"args": {}, 
+							"key": "hosts"
+						}
+					}
+				]
 			}, 
 			"Device.Hosts.Host.{i}.": {
 				"type": "object", 
@@ -52030,6 +52041,15 @@
 				], 
 				"access": false, 
 				"array": true, 
+				"mapping": {
+					"type": "ubus", 
+					"ubus": {
+						"object": "router.network", 
+						"method": "hosts", 
+						"args": {}, 
+						"key": "hosts"
+					}
+				}, 
 				"Alias": {
 					"type": "string", 
 					"read": true, 
@@ -52058,6 +52078,17 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].macaddr"
+							}
+						}
 					]
 				}, 
 				"IPAddress": {
@@ -52072,6 +52103,17 @@
 					"range": [
 						{
 							"max": 45
+						}
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].ipaddr"
+							}
 						}
 					]
 				}, 
@@ -52089,6 +52131,17 @@
 						"Static", 
 						"AutoIP", 
 						"None"
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].addrsrc"
+							}
+						}
 					]
 				}, 
 				"DHCPClient": {
@@ -52120,7 +52173,18 @@
 							"min": -1
 						}
 					], 
-					"unit": "seconds"
+					"unit": "seconds", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].leasetmrmn"
+							}
+						}
+					]
 				}, 
 				"AssociatedDevice": {
 					"type": "string", 
@@ -52185,6 +52249,17 @@
 						"UPA", 
 						"Wi-Fi", 
 						"Other"
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].type"
+							}
+						}
 					]
 				}, 
 				"VendorClassID": {
@@ -52199,6 +52274,17 @@
 					"range": [
 						{
 							"max": 255
+						}
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].dhcpopts.vcid"
+							}
 						}
 					]
 				}, 
@@ -52215,6 +52301,17 @@
 						{
 							"max": 65535
 						}
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].dhcpopts.clid"
+							}
+						}
 					]
 				}, 
 				"UserClassID": {
@@ -52229,6 +52326,17 @@
 					"range": [
 						{
 							"max": 65535
+						}
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].dhcpopts.ucid"
+							}
 						}
 					]
 				}, 
@@ -52245,6 +52353,17 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].hostname"
+							}
+						}
 					]
 				}, 
 				"Active": {
@@ -52255,7 +52374,18 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "boolean"
+					"datatype": "boolean", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].active"
+							}
+						}
+					]
 				}, 
 				"ActiveLastChange": {
 					"type": "dateTime", 
@@ -52275,7 +52405,18 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "unsignedInt"
+					"datatype": "unsignedInt", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].ipv4addr"
+							}
+						}
+					]
 				}, 
 				"IPv6AddressNumberOfEntries": {
 					"type": "unsignedInt", 
@@ -52285,7 +52426,18 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "unsignedInt"
+					"datatype": "unsignedInt", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "router.network", 
+								"method": "hosts", 
+								"args": {}, 
+								"key": "hosts[@i-1].ipv6addr"
+							}
+						}
+					]
 				}, 
 				"Device.Hosts.Host.{i}.IPv4Address.{i}.": {
 					"type": "object", 
@@ -52295,6 +52447,15 @@
 					], 
 					"access": false, 
 					"array": true, 
+					"mapping": {
+						"type": "ubus", 
+						"ubus": {
+							"object": "router.network", 
+							"method": "hosts", 
+							"args": {}, 
+							"key": "hosts[@i-1].ipv4addr"
+						}
+					}, 
 					"IPAddress": {
 						"type": "string", 
 						"read": true, 
@@ -52311,6 +52472,17 @@
 						], 
 						"pattern": [
 							"((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])"
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.network", 
+									"method": "hosts", 
+									"args": {}, 
+									"key": "hosts[@i-1].ipv4addr[@i-1]"
+								}
+							}
 						]
 					}
 				}, 
@@ -52322,6 +52494,15 @@
 					], 
 					"access": false, 
 					"array": true, 
+					"mapping": {
+						"type": "ubus", 
+						"ubus": {
+							"object": "router.network", 
+							"method": "hosts", 
+							"args": {}, 
+							"key": "hosts[@i-1].ipv6addr"
+						}
+					}, 
 					"IPAddress": {
 						"type": "string", 
 						"read": true, 
@@ -52334,6 +52515,17 @@
 						"range": [
 							{
 								"max": 45
+							}
+						], 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.network", 
+									"method": "hosts", 
+									"args": {}, 
+									"key": "hosts[@i-1].ipv6addr[@i-1]"
+								}
 							}
 						]
 					}

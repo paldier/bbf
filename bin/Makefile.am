@@ -57,7 +57,6 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/x_iopsys_eu_dropbear.c		\
 	../dmtree/tr181/x_iopsys_eu_owsd.c			\
 	../dmtree/tr181/x_iopsys_eu_buttons.c		\
-	../dmtree/tr181/x_iopsys_eu_wifilife.c		\
 	../dmtree/tr181/xmpp.c 						\
 	../dmtree/tr181/wifi.c						\
 	../dmtree/tr181/ethernet.c					\

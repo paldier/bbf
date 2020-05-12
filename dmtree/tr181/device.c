@@ -22,7 +22,6 @@
 #include "x_iopsys_eu_owsd.h"
 #include "x_iopsys_eu_dropbear.h"
 #include "x_iopsys_eu_buttons.h"
-#include "x_iopsys_eu_wifilife.h"
 #include "ip.h"
 #include "ethernet.h"
 #include "bridging.h"
@@ -84,7 +83,6 @@ DMOBJ tRoot_181_Obj[] = {
 {CUSTOM_PREFIX"MLD", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, X_IOPSYS_EU_MLDObj, X_IOPSYS_EU_MLDParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Dropbear", &DMWRITE, add_dropbear_instance, delete_dropbear_instance, NULL, browseXIopsysEuDropbear, NULL, &DMNONE, NULL, NULL, X_IOPSYS_EU_DropbearParams, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"Buttons", &DMREAD, NULL, NULL, NULL, browseXIopsysEuButton, NULL, &DMNONE, NULL, NULL, X_IOPSYS_EU_ButtonParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"WiFiLife", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, X_IOPSYS_EU_WiFiLifeObj, X_IOPSYS_EU_WiFiLifeParams, NULL, BBFDM_BOTH},
 {"Bridging",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tBridgingObj, tBridgingParams, NULL, BBFDM_BOTH},
 {"WiFi",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tWiFiObj, tWiFiParams, NULL, BBFDM_BOTH},
 {"IP",&DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tIPObj, tIPParams, NULL, BBFDM_BOTH},

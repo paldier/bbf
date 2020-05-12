@@ -21,7 +21,6 @@
 #include "x_iopsys_eu_owsd.h"
 #include "x_iopsys_eu_dropbear.h"
 #include "x_iopsys_eu_buttons.h"
-#include "x_iopsys_eu_wifilife.h"
 #include "ip.h"
 #include "ethernet.h"
 #include "bridging.h"

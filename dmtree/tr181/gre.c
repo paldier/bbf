@@ -225,6 +225,7 @@ static int get_GRE_TunnelNumberOfEntries(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
+/*#Device.GRE.Tunnel.{i}.Alias!UCI:dmmap_network/interface,@i-1/gretunnel_alias*/
 static int get_GRETunnel_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -329,6 +330,7 @@ static int get_GRETunnelStats_ErrorsReceived(char *refparam, struct dmctx *ctx, 
 	return 0;
 }
 
+/*#Device.GRE.Tunnel.{i}.Interface.{i}.Alias!UCI:dmmap_network/interface,@i-1/greiface_alias*/
 static int get_GRETunnelInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

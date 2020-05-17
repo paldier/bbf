@@ -1551,6 +1551,7 @@ static int get_WiFiEndPoint_Status(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
+/*#Device.WiFi.EndPoint.{i}.Alias!UCI:dmmap_wireless/wifi-iface,@i-1/endpointalias*/
 static int get_WiFiEndPoint_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -1976,6 +1977,7 @@ static int set_WiFiEndPointWPS_PIN(char *refparam, struct dmctx *ctx, void *data
 /**************************************************************************
 * SET AND GET ALIAS
 ***************************************************************************/
+/*#Device.WiFi.Radio.{i}.Alias!UCI:dmmap_wireless/wifi-device,@i-1/radioalias*/
 static int get_radio_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -2004,6 +2006,7 @@ static int set_radio_alias(char *refparam, struct dmctx *ctx, void *data, char *
 	return 0;
 }
 
+/*#Device.WiFi.SSID.{i}.Alias!UCI:dmmap_wireless/wifi-iface,@i-1/ssidalias*/
 static int get_ssid_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -2032,6 +2035,7 @@ static int set_ssid_alias(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
+/*#Device.WiFi.AccessPoint.{i}.Alias!UCI:dmmap_wireless/wifi-iface,@i-1/accesspointalias*/
 static int get_access_point_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

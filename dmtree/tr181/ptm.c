@@ -208,6 +208,7 @@ static int delete_ptm_link(char *refparam, struct dmctx *ctx, void *data, char *
 /*************************************************************
 * SET AND GET ALIAS
 *************************************************************/
+/*#Device.PTM.Link.{i}.Alias!UCI:dmmap_dsl/ptm-device,@i-1/ptmlinkalias*/
 static int get_ptm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

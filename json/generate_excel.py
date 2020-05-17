@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (C) 2019 iopsys Software Solutions AB
+# Copyright (C) 2020 iopsys Software Solutions AB
 # Author: Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
 
 import os, sys, time, json, xlwt
@@ -134,7 +134,10 @@ def load_param(dmobject):
 
 def printOBJPARAM(obj, supported, protocols, types):
 	fp = open('./.tmp', 'a')
-	print >> fp,  "%s::%s::%s::%s::" % (obj, protocols, supported, types)
+	if CUSTOM_PREFIX in obj:
+		print >> fp,  "%s::%s::%s::%s::" % (obj, protocols, "Yes", types)
+	else:
+		print >> fp,  "%s::%s::%s::%s::" % (obj, protocols, supported, types)
 	fp.close()
 
 def printusage():
@@ -241,6 +244,7 @@ if (sys.argv[1]).lower() == "-h" or (sys.argv[1]).lower() == "--help":
 	printusage()
 	exit(1)
 
+CUSTOM_PREFIX = "X_IOPSYS_EU"
 model_root_name = "Root"
 if "tr181" in sys.argv[1]:
 	excel_file = "tr181.xls"

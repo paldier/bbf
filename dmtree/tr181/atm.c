@@ -318,6 +318,7 @@ static int delete_atm_link(char *refparam, struct dmctx *ctx, void *data, char *
 /*************************************************************
 * SET AND GET ALIAS
 *************************************************************/
+/*#Device.ATM.Link.{i}.Alias!UCI:dmmap_dsl/atm-device,@i-1/atmlinkalias*/
 static int get_atm_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

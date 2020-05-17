@@ -830,6 +830,7 @@ static int get_DHCPv6ServerPool_Status(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
+/*#Device.DHCPv6.Server.Pool.{i}.Alias!UCI:dmmap_dhcpv6/dhcp,@i-1/dhcpv6_serv_pool_alias*/
 static int get_DHCPv6ServerPool_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_sect = NULL;

@@ -16,6 +16,7 @@
 /*************************************************************
 * GET SET ALIAS
 **************************************************************/
+/*#Device.PPP.Interface.{i}.Alias!UCI:dmmap_network/interface,@i-1/ppp_int_alias*/
 static int get_ppp_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

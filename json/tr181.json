@@ -718,6 +718,7 @@
 				"read": true, 
 				"write": false, 
 				"protocols": [
+					"cwmp", 
 					"usp"
 				], 
 				"datatype": "string", 
@@ -16132,6 +16133,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_dsl", 
+								"section": {
+									"type": "atm-device", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "atmlinkalias"
+								}
+							}
+						}
 					]
 				}, 
 				"Name": {
@@ -16981,6 +16997,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_dsl", 
+								"section": {
+									"type": "ptm-device", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "ptmlinkalias"
+								}
+							}
+						}
 					]
 				}, 
 				"Name": {
@@ -17438,6 +17469,21 @@
 					"range": [
 						{
 							"max": 64
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_ports", 
+								"section": {
+									"type": "ethport", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "eth_port_alias"
+								}
+							}
 						}
 					]
 				}, 
@@ -18219,6 +18265,21 @@
 					"range": [
 						{
 							"max": 64
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_network", 
+								"section": {
+									"type": "device", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "vlan_term_alias"
+								}
+							}
 						}
 					]
 				}, 
@@ -28771,6 +28832,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_wireless", 
+								"section": {
+									"type": "wifi-device", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "radioalias"
+								}
+							}
+						}
 					]
 				}, 
 				"Name": {
@@ -30521,6 +30597,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_wireless", 
+								"section": {
+									"type": "wifi-iface", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "ssidalias"
+								}
+							}
+						}
 					]
 				}, 
 				"Name": {
@@ -31195,6 +31286,21 @@
 					"range": [
 						{
 							"max": 64
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_wireless", 
+								"section": {
+									"type": "wifi-iface", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "accesspointalias"
+								}
+							}
 						}
 					]
 				}, 
@@ -32858,6 +32964,21 @@
 					"range": [
 						{
 							"max": 64
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_wireless", 
+								"section": {
+									"type": "wifi-iface", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "endpointalias"
+								}
+							}
 						}
 					]
 				}, 
@@ -35460,6 +35581,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_network", 
+								"section": {
+									"type": "interface", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "bridge_alias"
+								}
+							}
+						}
 					]
 				}, 
 				"Standard": {
@@ -37046,6 +37182,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_network", 
+								"section": {
+									"type": "interface", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "ppp_int_alias"
+								}
+							}
+						}
 					]
 				}, 
 				"Name": {
@@ -38095,6 +38246,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_network", 
+								"section": {
+									"type": "interface", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "ip_int_alias"
+								}
+							}
+						}
 					]
 				}, 
 				"Name": {
@@ -38332,6 +38498,21 @@
 						"range": [
 							{
 								"max": 64
+							}
+						], 
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "dmmap_network", 
+									"section": {
+										"type": "interface", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "ipv4_alias"
+									}
+								}
 							}
 						]
 					}, 
@@ -45062,6 +45243,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_network", 
+								"section": {
+									"type": "interface", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "gretunnel_alias"
+								}
+							}
+						}
 					]
 				}, 
 				"RemoteEndpoints": {
@@ -45306,6 +45502,21 @@
 						"range": [
 							{
 								"max": 64
+							}
+						], 
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "dmmap_network", 
+									"section": {
+										"type": "interface", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "greiface_alias"
+									}
+								}
 							}
 						]
 					}, 
@@ -53637,6 +53848,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_firewall", 
+								"section": {
+									"type": "zone", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "interface_setting_alias"
+								}
+							}
+						}
 					]
 				}, 
 				"Interface": {
@@ -53773,6 +53999,21 @@
 					"range": [
 						{
 							"max": 64
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_firewall", 
+								"section": {
+									"type": "redirect", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "port_mapping_alias"
+								}
+							}
 						}
 					]
 				}, 
@@ -55790,6 +56031,21 @@
 							{
 								"max": 64
 							}
+						], 
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "dmmap_dhcp", 
+									"section": {
+										"type": "dhcp", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "dhcp_alias"
+									}
+								}
+							}
 						]
 					}, 
 					"Order": {
@@ -56282,6 +56538,21 @@
 							"range": [
 								{
 									"max": 64
+								}
+							], 
+							"mapping": [
+								{
+									"type": "uci", 
+									"uci": {
+										"file": "dmmap_dhcp", 
+										"section": {
+											"type": "host", 
+											"index": "@i-1"
+										}, 
+										"option": {
+											"name": "ldhcpalias"
+										}
+									}
 								}
 							]
 						}, 
@@ -57568,6 +57839,21 @@
 							{
 								"max": 64
 							}
+						], 
+						"mapping": [
+							{
+								"type": "uci", 
+								"uci": {
+									"file": "dmmap_dhcpv6", 
+									"section": {
+										"type": "dhcp", 
+										"index": "@i-1"
+									}, 
+									"option": {
+										"name": "dhcpv6_serv_pool_alias"
+									}
+								}
+							}
 						]
 					}, 
 					"Order": {
@@ -58664,6 +58950,21 @@
 					"range": [
 						{
 							"max": 64
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_users", 
+								"section": {
+									"type": "user", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "user_alias"
+								}
+							}
 						}
 					]
 				}, 
@@ -70446,6 +70747,21 @@
 					"range": [
 						{
 							"max": 64
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_ddns", 
+								"section": {
+									"type": "service", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "clientalias"
+								}
+							}
 						}
 					]
 				}, 

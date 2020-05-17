@@ -104,6 +104,7 @@ static int get_users_user_number_of_entries(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
+/*#Device.Users.User.{i}.Alias!UCI:dmmap_users/user,@i-1/user_alias*/
 static int get_user_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

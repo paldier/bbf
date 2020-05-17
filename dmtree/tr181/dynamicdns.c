@@ -392,6 +392,7 @@ static int get_DynamicDNSClient_Status(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
+/*#Device.DynamicDNS.Client.{i}.Alias!UCI:dmmap_ddns/service,@i-1/clientalias*/
 static int get_DynamicDNSClient_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

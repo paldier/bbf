@@ -1155,6 +1155,7 @@ static int get_BridgingBridge_Status(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
+/*#Device.Bridging.Bridge.{i}.Alias!UCI:dmmap_network/interface,@i-1/bridge_alias*/
 static int get_BridgingBridge_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

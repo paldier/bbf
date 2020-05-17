@@ -9,20 +9,30 @@ The root directory of bbfdm library is **“src”** which is structred as follo
 The bbfdm library offers a tool to generate templates of the source code from json files.
 
 ```plain
-$ python convertor_json_to_c.py 
-Usage: convertor_json_to_c.py <json data model>
+$ python generate_source_code.py
+Usage: generate_source_code.py <json data model> [Object path]
 Examples:
-  - convertor_json_to_c.py tr181.json
+  - generate_source_code.py tr181.json
     ==> Generate the C code of all data model in tr181/ folder
-  - convertor_json_to_c.py tr104.json
+  - generate_source_code.py tr104.json
     ==> Generate the C code of all data model in tr104/ folder
+  - generate_source_code.py tr181.json Device.DeviceInfo.
+    ==> Generate the C code of DeviceInfo object in tr181/ folder
+  - generate_source_code.py tr181.json Device.WiFi.
+    ==> Generate the C code of WiFi object in tr181/ folder
+  - generate_source_code.py tr104.json Device.Services.VoiceService.{i}.Capabilities.
+    ==> Generate the C code of Services.VoiceService.{i}.Capabilities. object in tr104/ folder
 ```
 **Note:** Any developer can full the json file (**tr181.json** or **tr104.json**) with mapping field according to UCI, UBUS or CLI commands before generating the source code in C.
 
-Find below the examples of **UCI**, **UBUS** or **CLI** commands:<br/>
-**1. UCI command:**<br/>
-- **@Name:** the section name of paraent object<br/>
+Find below the examples of **UCI**, **UBUS** or **CLI** commands:
+
+**1. UCI command:**
+
+- **@Name:** the section name of paraent object
+
 - **@i:** is the number of instance object
+
 ```plain
     "mapping": [
         {
@@ -42,8 +52,10 @@ Find below the examples of **UCI**, **UBUS** or **CLI** commands:<br/>
     ]
 ```
 
-**2. UBUS command:**<br/>
+**2. UBUS command:**
+
 - **@Name:** the section name of paraent object
+
 ```plain
     "mapping": [
         {
@@ -60,9 +72,12 @@ Find below the examples of **UCI**, **UBUS** or **CLI** commands:<br/>
     ]
 ```
 
-**3. CLI command:**<br/>
-- **@Name:** the section name of paraent object<br/>
+**3. CLI command:**
+
+- **@Name:** the section name of paraent object
+
 - **-i:** is the number of arguments command
+
 ```plain
     "mapping": [
         {
@@ -82,7 +97,9 @@ Find below the examples of **UCI**, **UBUS** or **CLI** commands:<br/>
 After building the templates of C source code, a **tr181** or **tr104** folder will be generated under **json** folder that contains all files related a each object under root Device.
 
 #### Object definition ###
+
 ![object](/pictures/obj.png)
+
 Each object in the **DMOBJ** table contains the following arguments:
 
 |     Argument        |                                                   Description                                                               |
@@ -102,7 +119,9 @@ Each object in the **DMOBJ** table contains the following arguments:
 | `bbfdm_type`        | The bbfdm type of the object. Could be **BBFDM_CWMP**, **BBFDM_USP** or **BBFDM_NONE**.If it's `BBFDM_NONE` then we can see this object in all protocols (CWMP, USP,...) |
 
 #### Parameter definition ###
-![parameter](/pictures/param.png)<br/>
+
+![parameter](/pictures/param.png)
+
 Each parameter in the **DMLEAF** table contains the following arguments:
 
 |     Argument        |                                                   Description                                                               |
@@ -178,8 +197,10 @@ int dmubus_call_set(char *obj, char *method, struct ubus_arg u_args[], int u_arg
 **NOTE: There are others API related to JSON and CLI command defined in dmjson, dmcommon (.c and .h).**
 
 ## TIPS ##
-When developing a new parameters/features in the data model C source code, it's highly recommended to use the memory management functions of bbfdm allocate and free because it's freed at the end of each RPCs.<br/>
+When developing a new parameters/features in the data model C source code, it's highly recommended to use the memory management functions of bbfdm allocate and free because it's freed at the end of each RPCs.
+
 The list of memory management functions of bbfdm are:
+
 ```plain
 dmmalloc(x)
 dmcalloc(n, x)
@@ -297,31 +318,35 @@ To build a new JSON file, you can use **example.json file** under **dynamic_para
 ```
 
 **3. Parameter under object with instance:**
+
 - **UCI command:** uci get wireless.@wifi-device[0].country
 
 - **@i:** is the number of instance object
 
 ```plain
 "Country": {
-    "type": "string", 
-    "protocols": [
-        "cwmp", 
-        "usp"
-    ],
-    "read": true, 
-    "write": true, 
-    "mapping": {
-        "type" : "uci",
-        "uci" : {
-            "file" : "wireless",
-            "section" : {
-                "type": "wifi-device",
-                "index": "@i-1"
-            },
-            "option" : {
-                "name" : "country"
-            }
-        }
+	"type": "string", 
+	"protocols": [
+		"cwmp", 
+		"usp"
+	],
+	"read": true, 
+	"write": true, 
+	"mapping": [
+		{
+			"type" : "uci",
+			"uci" : {
+				"file" : "wireless",
+				"section" : {
+					"type": "wifi-device",
+					"index": "@i-1"
+				},
+				"option" : {
+					"name" : "country"
+				}
+			}
+		}
+	]
 }
 ```
 - **UBUS command (format 1):** ubus call network.interface status '{"interface":"lan"}' | jsonfilter -e @.device
@@ -329,114 +354,129 @@ To build a new JSON file, you can use **example.json file** under **dynamic_para
 - **@Name:** the section name of paraent object, in this example, the section name is "lan"
 ```plain
 "SSID": {
-    "type": "string", 
-    "protocols": [
-        "cwmp", 
-        "usp"
-    ],
-    "read": true, 
-    "write": false,
-    "mapping": {
-        "type" : "ubus",
-        "ubus" : {
-            "object" : "network.interface",
-            "method" : "status",
-            "args" : {
-                "interface" : "@Name"
-            },
-            "key" : "device"
-        }
-    }
+	"type": "string", 
+	"protocols": [
+		"cwmp", 
+		"usp"
+	],
+	"read": true, 
+	"write": false,
+	"mapping": [
+		{
+			"type" : "ubus",
+			"ubus" : {
+				"object" : "network.interface",
+				"method" : "status",
+				"args" : {
+					"interface" : "@Name"
+				},
+				"key" : "device"
+			}
+		}
+	]
 }
 ```
 
 - **UBUS command (format 2):** ubus call wifi status | jsonfilter -e @.radios[0].noise
+
 ```plain
 "Noise": {
-    "type": "int", 
-    "protocols": [
-        "cwmp", 
-        "usp"
-    ],
-    "read": true, 
-    "write": false,
-    "mapping": {
-        "type" : "ubus",
-        "ubus" : {
-            "object" : "wifi",
-            "method" : "status",
-            "args" : {},
-            "key" : "radios[i-1].noise"
-        }
-    }
+	"type": "int", 
+	"protocols": [
+		"cwmp", 
+		"usp"
+	],
+	"read": true, 
+	"write": false,
+	"mapping": [
+		{
+			"type" : "ubus",
+			"ubus" : {
+				"object" : "wifi",
+				"method" : "status",
+				"args" : {},
+				"key" : "radios[i-1].noise"
+			}
+		}
+	]
 }
 ```
 **4. Parameter under object without instance:**
+
 - **UCI command:** uci get cwmp.cpe.userid
+
 ```plain
 "Username": {
-    "type": "string", 
-    "protocols": [
-        "cwmp", 
-        "usp"
-    ],
-    "read": true, 
-    "write": true, 
-    "mapping": {
-        "type" : "uci",
-        "uci" : {
-            "file" : "cwmp",
-            "section" : {
-                "type": "cwmp",
-                "name": "cpe"
-            },
-            "option" : {
-                "name" : "userid"
-            }
-        }
-    }
+	"type": "string", 
+	"protocols": [
+		"cwmp", 
+		"usp"
+	],
+	"read": true, 
+	"write": true, 
+	"mapping": [
+		{
+			"type" : "uci",
+			"uci" : {
+				"file" : "cwmp",
+				"section" : {
+					"type": "cwmp",
+	      				"name": "cpe"
+	       			},
+				"option" : {
+					"name" : "userid"
+				}
+			}
+		}
+	]
 }
 ```
 - **UBUS command (format 1):** ubus call system info | jsonfilter -e @.uptime
+
 ```plain
 "Uptime": {
-    "type": "unsignedInt", 
-    "protocols": [
-        "cwmp", 
-        "usp"
-    ],
-    "read": true, 
-    "write": false,
-    "mapping": {
-        "type" : "ubus",
-        "ubus" : {
-            "object" : "system",
-            "method" : "info",
-            "args" : {},
-            "key" : "uptime"
-        }
-    }
+	"type": "unsignedInt", 
+	"protocols": [
+		"cwmp", 
+		"usp"
+	],
+	"read": true, 
+	"write": false,
+	"mapping": [
+		{
+			"type" : "ubus",
+			"ubus" : {
+				"object" : "system",
+				"method" : "info",
+				"args" : {},
+				"key" : "uptime"
+			}
+		}
+	]
 }
 ```
 - **UBUS command (format 2):** ubus call system info | jsonfilter -e @.memory.total
+
 ```plain
 "Total": {
-    "type": "unsignedInt", 
-    "protocols": [
-        "cwmp", 
-        "usp"
-    ],
-    "read": true, 
-    "write": false,
-    "mapping": {
-        "type" : "ubus",
-        "ubus" : {
-            "object" : "system",
-            "method" : "info",
-            "args" : {},
-            "key" : "memory.total"
-        }
-    }
+	"type": "unsignedInt", 
+	"protocols": [
+		"cwmp", 
+		"usp"
+	],
+	"read": true, 
+	"write": false,
+	"mapping": [
+		{
+			"type" : "ubus",
+			"ubus" : {
+				"object" : "system",
+				"method" : "info",
+				"args" : {},
+				"key" : "memory.total"
+			}
+		}
+	]
 }
 ```
 #### 

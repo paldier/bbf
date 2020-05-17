@@ -113,7 +113,9 @@ def get_mapping_param( mappingobj ):
 		sectionindex = getoptionparam(sectionobj, "index")
 		optionobj = getoptionparam(uciobj, "option")
 		optionname = getoptionparam(optionobj, "name")
-		return type, file, sectiontype, sectionname, sectionindex, optionname
+		path = getoptionparam(uciobj, "path")
+		ref = getoptionparam(uciobj, "ref")
+		return type, file, sectiontype, sectionname, sectionindex, optionname, path, ref
 	elif type == "ubus":
 		ubusobj = getoptionparam(mappingobj, "ubus")
 		object = getoptionparam(ubusobj, "object")
@@ -121,10 +123,10 @@ def get_mapping_param( mappingobj ):
 		argsobj = getoptionparam(ubusobj, "args")
 		arg1, arg2 = getargsparam(argsobj)
 		key = getoptionparam(ubusobj, "key")
-		return type, object, method, arg1, arg2, key
+		return type, object, method, arg1, arg2, key, None, None
 	elif type == "procfs" or type == "sysfs":
 		file = getoptionparam(mappingobj, "file")
-		return type, file, "", "", "", ""
+		return type, file, None, None, None, None, None, None
 	else:
 		cliobj = getoptionparam(mappingobj, "cli")
 		command = getoptionparam(cliobj, "command")
@@ -140,7 +142,7 @@ def get_mapping_param( mappingobj ):
 			else:
 				value = value + "\"" + argsobj[i] + "\", "
 			i += 1
-		return type, command, list_length, value, "", ""
+		return type, command, list_length, value, None, None, None, None
 
 def printGlobalstrCommon( str_exp ):
 	if "tr104" in sys.argv[1]:
@@ -153,12 +155,23 @@ def printGlobalstrCommon( str_exp ):
 
 def get_mapping_obj( mappingobj ):
 	type = getoptionparam(mappingobj, "type")
-	uciobj = getoptionparam(mappingobj, "uci")
-	file = getoptionparam(uciobj, "file")
-	sectionobj = getoptionparam(uciobj, "section")
-	sectiontype = getoptionparam(sectionobj, "type")
-	dmmapfile = getoptionparam(uciobj, "dmmapfile")
-	return type, file, sectiontype, dmmapfile
+	if type == "uci":
+		uciobj = getoptionparam(mappingobj, "uci")
+		file = getoptionparam(uciobj, "file")
+		sectionobj = getoptionparam(uciobj, "section")
+		sectiontype = getoptionparam(sectionobj, "type")
+		dmmapfile = getoptionparam(uciobj, "dmmapfile")
+		return type, file, sectiontype, dmmapfile, None, None
+	elif type == "ubus":
+		ubusobj = getoptionparam(mappingobj, "ubus")
+		object = getoptionparam(ubusobj, "object")
+		method = getoptionparam(ubusobj, "method")
+		argsobj = getoptionparam(ubusobj, "args")
+		arg1, arg2 = getargsparam(argsobj)
+		key = getoptionparam(ubusobj, "key")
+		return type, object, method, arg1, arg2, key
+	else:
+		return type, None, None, None, None, None
 
 def generate_validate_value(dmparam, value):
 	validate_value = ""
@@ -385,7 +398,7 @@ def cprintAddDelObj( faddobj, fdelobj, name, mappingobj, dmobject ):
 	print >> fp, "static int %s(char *refparam, struct dmctx *ctx, void *data, char **instance)" % faddobj
 	print >> fp, "{"
 	if mappingobj != None:
-		type, file, sectiontype, dmmapfile = get_mapping_obj(mappingobj)
+		type, file, sectiontype, dmmapfile, path, ref = get_mapping_obj(mappingobj)
 		if type == "uci":
 			print >> fp, "	char *inst, *value, *v;"
 			print >> fp, "	struct uci_section *dmmap = NULL, *s = NULL;"
@@ -456,8 +469,11 @@ def cprintBrowseObj( fbrowse, name, mappingobj, dmobject ):
 
 	### Mapping Parameter
 	if mappingobj != None:
-		type, file, sectiontype, dmmapfile = get_mapping_obj(mappingobj)
-		print >> fp, "/*#%s!%s:%s/%s/%s*/" % (dmobject, type.upper(), file, sectiontype, dmmapfile)
+		type, res1, res2, res3, res4, res5 = get_mapping_obj(mappingobj)
+		if type == "uci" :
+			print >> fp, "/*#%s!%s:%s/%s/%s*/" % (dmobject, type.upper(), res1, res2, res3)
+		elif type == "ubus" :
+			print >> fp, "/*#%s!%s:%s/%s/%s,%s/%s*/" % (dmobject, type.upper(), res1, res2, res3, res4, res5)
 
 	print >> fp, "static int %s(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)" % fbrowse
 	print >> fp, "{"
@@ -471,7 +487,7 @@ def cprintBrowseObj( fbrowse, name, mappingobj, dmobject ):
 			print >> fp, "	struct dmmap_dup *p;"
 			print >> fp, "	LIST_HEAD(dup_list);"
 			print >> fp, ""
-			print >> fp, "	synchronize_specific_config_sections_with_dmmap(\"%s\", \"%s\", \"%s\", &dup_list);" % (file, sectiontype, dmmapfile)
+			print >> fp, "	synchronize_specific_config_sections_with_dmmap(\"%s\", \"%s\", \"%s\", &dup_list);" % (res1, res2, res3)
 			print >> fp, "	list_for_each_entry(p, &dup_list, list) {"
 			print >> fp, "		inst =  handle_update_instance(1, dmctx, &inst_last, update_instance_alias, 3, p->dmmap_section, \"%s\", \"%s\");" % (name+"instance", name+"alias")
 			print >> fp, "		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)p->config_section, inst) == DM_STOP)"
@@ -482,8 +498,21 @@ def cprintBrowseObj( fbrowse, name, mappingobj, dmobject ):
 
 		############################## UBUS ########################################
 		elif type == "ubus" :
-			print >> fp, "	"
-
+			print >> fp, "	json_object *res = NULL, *obj = NULL, *arrobj = NULL;"
+			print >> fp, "	char *idx = NULL, *idx_last = NULL;"
+			print >> fp, "	int id = 0, i = 0;"
+			print >> fp, ""
+			if res3 == None and res4 == None:
+				print >> fp, "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{}, 0, &res);" % (res1, res2)
+			else:
+				print >> fp, "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{{\"%s\", \"%s\", String}}, 1, &res);" % (res1, res2, res3, res4)
+			print >> fp, "	if (res) {"
+			print >> fp, "		dmjson_foreach_obj_in_array(res, arrobj, obj, i, 1, \"%s\") {" % res5
+			print >> fp, "			idx = handle_update_instance(1, dmctx, &idx_last, update_instance_without_section, 1, ++id);"
+			print >> fp, "			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)obj, idx) == DM_STOP)"
+			print >> fp, "				break;"
+			print >> fp, "		}"
+			print >> fp, "	}"
 
 	# Mapping doesn't exist
 	else:
@@ -513,10 +542,9 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 		tmpsetvalue = ""
 		set_value = ""
 		for element in mappingparam:
-			type, res1, res2, res3, res4, res5 = get_mapping_param(element)
+			type, res1, res2, res3, res4, res5, res6, res7 = get_mapping_param(element)
 			get_value = ""
 			i += 1
-
 
 			############################## UCI ########################################
 			if type == "uci":
@@ -535,6 +563,26 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 					get_value += "		cnt++;\n"
 					get_value += "	}\n"
 					get_value += "	dmasprintf(value, \"%d\", cnt);"
+				elif "Alias" in dmparam:
+					get_value += "	struct uci_section *dmmap_section = NULL;\n"
+					get_value += "\n"
+					get_value += "	get_dmmap_section_of_config_section(\"%s\", \"%s\", section_name((struct uci_section *)data), &dmmap_section);\n" % (res1, res2)
+					get_value += "	dmuci_get_value_by_section_string(dmmap_section, \"%s\", value);\n" % res5
+					get_value += "	if ((*value)[0] == '\\0')\n"
+					get_value += "		dmasprintf(value, \"cpe-%s\", instance);"
+				elif instance == "TRUE" and res6 != None:
+					get_value += "	char uci_type[32] = {0};\n"
+					get_value += "\n"
+					get_value += "	snprintf(uci_type, sizeof(uci_type), \"@%s[%s]\", instance ? atoi(instance)-1 : 0);\n" % (res2, "%d")
+					get_value += "	*value = bbf_uci_get_value(\"%s\", \"%s\", uci_type, \"%s\");" % (res6, res1, res5)
+				elif instance == "TRUE" and res7 != None:
+					get_value += "	char *linker = dmstrdup(*value);\n"
+					get_value += "	adm_entry_get_linker_param(ctx, \"%s\", linker, value);\n" % res7
+					get_value += "	dmfree(linker);\n"
+					get_value += "	if (*value == NULL)\n"
+					get_value += "		*value = \"\";"
+				elif res6 != None:
+					get_value += "	*value = bbf_uci_get_value(\"%s\", \"%s\", \"%s\", \"%s\");" % (res6, res1, res3, res5)
 				elif instance == "TRUE":
 					get_value += "	dmuci_get_value_by_section_string((struct uci_section *)data, \"%s\", value);" % res5
 				else:
@@ -567,33 +615,40 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 					mapping = "%s:%s/%s//%s" % (type.upper(), res1, res2, res5)
 
 				### GET VALUE Parameter
-				get_value += "	json_object *res;\n"
-				if res3 == None and res4 == None:
-					get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{}, 0, &res);\n" % (res1, res2)
+				if instance == "TRUE":
+					options = res5.split(".")
+					if len(options) == 3:
+						get_value += "	*value = dmjson_get_value((json_object *)data, 2, \"%s\", \"%s\");\n" % (options[1], options[2])
+					elif len(options) == 2:
+						get_value += "	*value = dmjson_get_value((json_object *)data, 1, \"%s\");\n" % options[1]
 				else:
-					if i == 2 and res4 == "prev_value":
-						get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{{\"%s\", *value, String}}, 1, &res);\n" % (res1, res2, res3)
-
-					elif i == 2 and res4 == "@Name":
-						get_value += "	if (*value[0] == '\\0')\n"
-						get_value += "	{\n"
-						get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{{\"%s\", section_name((struct uci_section *)data), String}}, 1, &res);\n" % (res1, res2, res3)
-					elif res4 == "@Name":
-						get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{{\"%s\", section_name((struct uci_section *)data), String}}, 1, &res);\n" % (res1, res2, res3)
+					get_value += "	json_object *res;\n"
+					if res3 == None and res4 == None:
+						get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{}, 0, &res);\n" % (res1, res2)
 					else:
-						get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{{\"%s\", \"%s\", String}}, 1, &res);\n" % (res1, res2, res3, res4)
+						if i == 2 and res4 == "prev_value":
+							get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{{\"%s\", *value, String}}, 1, &res);\n" % (res1, res2, res3)
 
-				get_value += "	DM_ASSERT(res, *value = \"\");\n"
-				option = res5.split(".")
-				if "." in res5:
-					if option[0] == "@Name":
-						get_value += "	*value = dmjson_get_value(res, 2, section_name((struct uci_section *)data), \"%s\");" % (option[1])
+						elif i == 2 and res4 == "@Name":
+							get_value += "	if (*value[0] == '\\0')\n"
+							get_value += "	{\n"
+							get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{{\"%s\", section_name((struct uci_section *)data), String}}, 1, &res);\n" % (res1, res2, res3)
+						elif res4 == "@Name":
+							get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{{\"%s\", section_name((struct uci_section *)data), String}}, 1, &res);\n" % (res1, res2, res3)
+						else:
+							get_value += "	dmubus_call(\"%s\", \"%s\", UBUS_ARGS{{\"%s\", \"%s\", String}}, 1, &res);\n" % (res1, res2, res3, res4)
+
+					get_value += "	DM_ASSERT(res, *value = \"\");\n"
+					option = res5.split(".")
+					if "." in res5:
+						if option[0] == "@Name":
+							get_value += "	*value = dmjson_get_value(res, 2, section_name((struct uci_section *)data), \"%s\");" % (option[1])
+						else:
+							get_value += "	*value = dmjson_get_value(res, 2, \"%s\", \"%s\");" % (option[0], option[1])
 					else:
-						get_value += "	*value = dmjson_get_value(res, 2, \"%s\", \"%s\");" % (option[0], option[1])
-				else:
-					get_value += "	*value = dmjson_get_value(res, 1, \"%s\");" % option[0]
-				if i == 2 and res4 == "@Name":
-					get_value += "\n	}"
+						get_value += "	*value = dmjson_get_value(res, 1, \"%s\");" % option[0]
+					if i == 2 and res4 == "@Name":
+						get_value += "\n	}"
 
 				### SET VALUE Parameter
 				set_value += "	switch (action)	{\n"
@@ -602,6 +657,33 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 				set_value += "			break;\n"
 				set_value += "		case VALUESET:\n"
 				set_value += "			//TODO"
+
+
+			############################## SYSFS ########################################
+			elif type == "sysfs":
+				### Mapping Parameter
+				mapping = "%s:%s" % (type.upper(), res1)
+
+				### GET VALUE Parameter
+				if res1[:15] == "/sys/class/net/" and res1[15:20] == "@Name":
+					get_value += "	get_net_device_sysfs(section_name((struct uci_section *)data), \"%s\", value);" % res1[21:]
+				else:
+					get_value += "	char val[64];\n"
+					get_value += "\n"
+					get_value += "	dm_read_sysfs_file(\"%s\", val, sizeof(val));\n" % res1
+					get_value += "	*value = dmstrdup(val);"
+
+
+			############################## PROCFS ########################################
+			elif type == "procfs":
+				### Mapping Parameter
+				mapping = "%s:%s" % (type.upper(), res1)
+
+				### GET VALUE Parameter
+				get_value += "	char val[64];\n"
+				get_value += "\n"
+				get_value += "	dm_read_sysfs_file(\"%s\", val, sizeof(val));\n" % res1
+				get_value += "	*value = dmstrdup(val);"
 
 
 			############################## CLI ########################################
@@ -623,7 +705,7 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 				print >> fp, "}"
 				print >> fp, ""
 				if setvalue != "NULL":
-					print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)" % setvalue
+					print >> fp, "static int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)" % setvalue
 					print >> fp, "{"
 					print >> fp, "%s" % tmpsetvalue
 					print >> fp, "			break;"
@@ -640,7 +722,7 @@ def cprintGetSetValue(getvalue, setvalue, mappingparam, instance, typeparam, par
 				print >> fp, "}"
 				print >> fp, ""
 				if setvalue != "NULL":
-					print >> fp, "int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)" % setvalue
+					print >> fp, "static int %s(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)" % setvalue
 					print >> fp, "{"
 					print >> fp, "%s" % set_value
 					print >> fp, "			break;"
@@ -767,11 +849,11 @@ def printusage():
 	print "  - " + sys.argv[0] + " tr104.json"
 	print "    ==> Generate the C code of all data model in tr104/ folder"
 	print "  - " + sys.argv[0] + " tr181.json" + " Device.DeviceInfo."
-	print "    ==> Generate the C code of all data model in tr181/ folder"
+	print "    ==> Generate the C code of DeviceInfo object in tr181/ folder"
 	print "  - " + sys.argv[0] + " tr181.json" + " Device.WiFi."
-	print "    ==> Generate the C code of all data model in tr181/ folder"
+	print "    ==> Generate the C code of WiFi object in tr181/ folder"
 	print "  - " + sys.argv[0] + " tr104.json" + " Device.Services.VoiceService.{i}.Capabilities."
-	print "    ==> Generate the C code of all data model in tr104/ folder"
+	print "    ==> Generate the C code of Services.VoiceService.{i}.Capabilities. object in tr104/ folder"
 
 def object_parse_childs( dmobject , value, nextlevel ):
 	hasobj = objhaschild(value)
@@ -950,4 +1032,3 @@ if (os.path.isdir(gendir)):
 	print "Source code generated under \"./%s\" folder" % gendir
 else:
 	print "No source code generated!"
-

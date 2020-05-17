@@ -1294,6 +1294,7 @@ static int set_IPInterfaceTWAMPReflector_PortAllowedList(char *refparam, struct 
 /*************************************************************
 * GET & SET ALIAS
 **************************************************************/
+/*#Device.IP.Interface.{i}.Alias!UCI:dmmap_network/interface,@i-1/ip_int_alias*/
 static int get_IPInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -1322,6 +1323,7 @@ static int set_IPInterface_Alias(char *refparam, struct dmctx *ctx, void *data, 
 	return 0;
 }
 
+/*#Device.IP.Interface.{i}.IPv4Address.{i}.Alias!UCI:dmmap_network/interface,@i-1/ipv4_alias*/
 static int get_ipv4_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

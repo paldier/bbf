@@ -191,6 +191,7 @@ static int get_nat_interface_setting_status(char *refparam, struct dmctx *ctx, v
 	return 0;
 }
 
+/*#Device.NAT.InterfaceSetting.{i}.Alias!UCI:dmmap_firewall/zone,@i-1/interface_setting_alias*/
 static int get_nat_interface_setting_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -300,6 +301,7 @@ static int get_nat_port_mapping_status(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
+/*#Device.NAT.PortMapping.{i}.Alias!UCI:dmmap_firewall/redirect,@i-1/port_mapping_alias*/
 static int get_nat_port_mapping_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

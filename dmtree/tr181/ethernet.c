@@ -475,6 +475,7 @@ static int get_EthernetInterface_Status(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
+/*#Device.Ethernet.Interface.{i}.Alias!UCI:dmmap_ports/ethport,@i-1/eth_port_alias*/
 static int get_EthernetInterface_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -1193,6 +1194,7 @@ static int get_EthernetVLANTermination_Status(char *refparam, struct dmctx *ctx,
 	return 0;
 }
 
+/*#Device.Ethernet.VLANTermination.{i}.Alias!UCI:dmmap_network/device,@i-1/vlan_term_alias*/
 static int get_EthernetVLANTermination_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

@@ -2088,6 +2088,7 @@ static int set_cap_codec_alias(char *refparam, struct dmctx *ctx, void *data, ch
 	return 0;
 }
 
+/*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.Alias!UCI:dmmap_voice_client/sip_service_provider,@i-1/profilealias*/
 static int get_voice_profile_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;
@@ -2116,6 +2117,7 @@ static int set_voice_profile_alias(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
+/*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.Line.{i}.Alias!UCI:dmmap_voice_client/tel_line,@i-1/linealias*/
 static int get_line_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

@@ -548,6 +548,7 @@ static int delObjDHCPv4RelayForwarding(char *refparam, struct dmctx *ctx, void *
 /*************************************************************
 * GET & SET PARAM
 **************************************************************/
+/*#Device.DHCPv4.Server.Pool.{i}.Alias!UCI:dmmap_dhcp/dhcp,@i-1/dhcp_alias*/
 static int get_server_pool_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_sect = NULL;
@@ -1227,6 +1228,7 @@ end:
 	return 0;
 }
 
+/*#Device.DHCPv4.Server.Pool.{i}.StaticAddress.{i}.Alias!UCI:dmmap_dhcp/host,@i-1/ldhcpalias*/
 static int get_dhcp_static_alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct uci_section *dmmap_section = NULL;

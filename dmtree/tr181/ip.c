@@ -233,9 +233,11 @@ static int get_IP_InterfaceNumberOfEntries(char *refparam, struct dmctx *ctx, vo
 {
 	struct uci_section *s = NULL;
 	int cnt = 0;
+	char *proto;
 
 	uci_foreach_sections("network", "interface", s) {
-		if (strcmp(section_name(s), "loopback") == 0)
+		dmuci_get_value_by_section_string(s, "proto", &proto);
+		if (strcmp(section_name(s), "loopback") == 0 || *proto == '\0')
 			continue;
 		cnt++;
 	}
@@ -645,7 +647,7 @@ static int get_ipv4_addressing_type(char *refparam, struct dmctx *ctx, void *dat
 
 static int get_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *proto, *device, *mac, linker[64] = {0};
+	char *proto, *device, linker[64] = {0};
 
 	dmuci_get_value_by_section_string(((struct ip_args *)data)->ip_sec, "proto", &proto);
 	if (strstr(proto, "ppp")) {
@@ -662,9 +664,12 @@ static int get_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *
 			return 0;
 	}
 
-	mac = get_macaddr(section_name(((struct ip_args *)data)->ip_sec));
-	if (mac[0] != '\0') {
-		adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), mac, value);
+	if (device[0] != '\0') {
+		char linker[32] = {0};
+		strncpy(linker, device, sizeof(linker) - 1);
+		char *vid = strchr(linker, '.');
+		if (vid) *vid = '\0';
+		adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cLink%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
 		if (*value != NULL)
 			return 0;
 	}
@@ -685,7 +690,6 @@ static int set_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *
 				return FAULT_9007;
 			return 0;
 		case VALUESET:
-
 			if (value[strlen(value)-1] != '.')
 				snprintf(lower_layer, sizeof(lower_layer), "%s.", value);
 			else
@@ -693,12 +697,48 @@ static int set_IPInterface_LowerLayers(char *refparam, struct dmctx *ctx, void *
 
 			if (strncmp(lower_layer, "Device.Ethernet.VLANTermination.", 32) == 0) {
 				adm_entry_get_linker_value(ctx, lower_layer, &linker);
-				if (linker) {
-					// Update ifname list
-					dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ifname", linker);
+
+				if (linker == NULL || *linker == '\0')
+					return -1;
+
+				struct uci_section *s = NULL, *stmp = NULL;
+
+				// Remove the device section corresponding to this interface if exists
+				char *device = get_device(section_name(((struct ip_args *)data)->ip_sec));
+				uci_foreach_option_eq_safe("network", "device", "name", device, stmp, s) {
+					char *type;
+					dmuci_get_value_by_section_string(s, "type", &type);
+					if (strcmp(type, "untagged") == 0) dmuci_delete_by_section(s, NULL, NULL);
+					break;
 				}
-			} else
-				return FAULT_9005;
+
+				char *mac_vlan = strchr(linker, '_');
+				if (mac_vlan) {
+					// Check if there is an interface that has the same ifname ==> if yes, remove it
+					uci_foreach_option_eq_safe("network", "interface", "ifname", linker, stmp, s) {
+						dmuci_delete_by_section(s, NULL, NULL);
+					}
+
+					// Check if there is an dmmap link section that has the same device ==> if yes, update section name
+					get_dmmap_section_of_config_section_eq("dmmap", "link", "device", linker, &s);
+					dmuci_set_value_by_section_bbfdm(s, "section_name", section_name(((struct ip_args *)data)->ip_sec));
+
+				} else {
+					// Check if there is an interface that has the same name of device ==> if yes, remove it
+					char device[32] = {0};
+					strncpy(device, linker, sizeof(device) - 1);
+					char *vid = strchr(device, '.');
+					if (vid) {
+						*vid = '\0';
+						uci_foreach_option_eq_safe("network", "interface", "ifname", device, stmp, s) {
+							dmuci_delete_by_section(s, NULL, NULL);
+						}
+					}
+				}
+
+				// Update ifname list
+				dmuci_set_value_by_section(((struct ip_args *)data)->ip_sec, "ifname", linker);
+			}
 			return 0;
 	}
 	return 0;
@@ -1515,8 +1555,17 @@ static int delete_ip_interface(char *refparam, struct dmctx *ctx, void *data, ch
 			dmuci_set_value_by_section(dmmap_section, "ip_int_instance", "");
 			dmuci_set_value_by_section(dmmap_section, "ipv4_instance", "");
 		} else {
-			/* type is not bridge ==> remove interface and dmmap section */
+			/* Remove the device section corresponding to this interface if exists */
+			char *device = get_device(section_name(((struct ip_args *)data)->ip_sec));
+			struct uci_section *s = NULL, *stmp = NULL;
+			uci_foreach_option_eq_safe("network", "device", "name", device, stmp, s) {
+				char *type;
+				dmuci_get_value_by_section_string(s, "type", &type);
+				if (strcmp(type, "untagged") == 0) dmuci_delete_by_section(s, NULL, NULL);
+				break;
+			}
 
+			/* type is not bridge ==> remove interface and dmmap section */
 			dmuci_delete_by_section(((struct ip_args *)data)->ip_sec, NULL, NULL);
 			dmuci_delete_by_section(dmmap_section, NULL, NULL);
 		}

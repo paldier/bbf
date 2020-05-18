@@ -1,0 +1,27 @@
+if PACKAGE_libbbfdm
+
+config LIBBBFDM_VENDOR_PREFIX
+    string "Vendor Prefix"
+    default "X_IOPSYS_EU_"
+
+config BBF_TR181
+	bool "Compile with tr181 device features"
+	default y
+
+config BBF_TR104
+	bool "Compile with tr104 voice features"
+	default y
+
+config BBF_TR143
+	bool "Compile with tr143 diagnostics features"
+	default y
+
+config BBF_TR157
+	bool "Compile with tr157 bulkdata collector features"
+	default y
+
+config BBF_TR064
+	bool "Compile with tr064 features"
+	default n
+
+endif

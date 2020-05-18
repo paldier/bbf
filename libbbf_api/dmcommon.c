@@ -1510,19 +1510,6 @@ int dm_time_format(time_t ts, char **dst)
 	return 0;
 }
 
-int is_mac_exist(char *macaddr)
-{
-	struct uci_section *s = NULL;
-	char *mac;
-
-	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
-		dmuci_get_value_by_section_string(s, "mac", &mac);
-		if (strcmp(mac, macaddr) == 0)
-			return 1;
-	}
-	return 0;
-}
-
 bool match(const char *string, const char *pattern)
 {
 	regex_t re;

@@ -52212,6 +52212,21 @@
 					{
 						"max": 64
 					}
+				],
+				"mapping": [
+					{
+						"type": "uci", 
+						"uci": {
+							"file": "users", 
+							"section": {
+								"type": "user", 
+								"name": "user"
+							}, 
+							"option": {
+								"name": "password"
+							}
+						}
+					}
 				]
 			}
 		}, 

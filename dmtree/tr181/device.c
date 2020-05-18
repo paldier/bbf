@@ -45,6 +45,7 @@
 #include "datamodelversion.h"
 #include "gre.h"
 #include "dynamicdns.h"
+#include "lanconfigsecurity.h"
 #include "security.h"
 #ifdef BBF_TR104
 #include "voice_services.h"
@@ -106,6 +107,7 @@ DMOBJ tRoot_181_Obj[] = {
 {"DynamicDNS", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDynamicDNSObj, tDynamicDNSParams, NULL, BBFDM_BOTH},
 {"QoS", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tQoSObj, tQoSParams, NULL, BBFDM_BOTH},
 {"XMPP", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tXMPPObj, tXMPPParams, NULL, BBFDM_BOTH},
+{"LANConfigSecurity", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tLANConfigSecurityParams, NULL, BBFDM_BOTH},
 #ifdef BBF_TR157
 {"BulkData", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tBulkDataObj, tBulkDataParams, NULL, BBFDM_BOTH},
 {"SoftwareModules", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, tSoftwareModulesObj, tSoftwareModulesParams, NULL, BBFDM_BOTH},

@@ -80,7 +80,8 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/datamodelversion.c			\
 	../dmtree/tr181/gre.c 						\
 	../dmtree/tr181/dynamicdns.c				\
-	../dmtree/tr181/security.c
+	../dmtree/tr181/security.c					\
+	../dmtree/tr181/lanconfigsecurity.c
 endif
 
 if GENERIC_OPENWRT

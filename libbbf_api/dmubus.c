@@ -32,7 +32,6 @@ struct dm_ubus_req {
 	unsigned n_args;
 };
 
-#if DM_USE_LIBUBUS
 static struct blob_buf b;
 static struct ubus_context *ubus_ctx;
 static int timeout = 1000;
@@ -102,41 +101,8 @@ static int __dm_ubus_call(const char *obj, const char *method, const struct ubus
 	return rc;
 }
 
-#else
-static void dm_libubus_free() {}
-#endif
-
 int dmubus_call_set(char *obj, char *method, struct ubus_arg u_args[], int u_args_size)
 {
-#if !DM_USE_LIBUBUS
-	char bufargs[256], *p;
-	int i;
-	p = bufargs;
-
-	if (u_args_size) {
-		sprintf(p, "{");
-		for (i = 0; i < u_args_size; i++) {
-			p += strlen(p);
-			if (i == 0) {
-				if(u_args[i].type != Integer)
-					sprintf(p, "\"%s\": \"%s\"", u_args[i].key, u_args[i].val);
-				else
-					sprintf(p, "\"%s\": %s", u_args[i].key, u_args[i].val);
-			} else {
-				if(u_args[i].type != Integer)
-					sprintf(p, ", \"%s\": \"%s\"", u_args[i].key, u_args[i].val);
-				else
-					sprintf(p, ", \"%s\": %s", u_args[i].key, u_args[i].val);
-			}
-		}
-		p += strlen(p);
-		sprintf(p, "}");
-		DMCMD("ubus", 7, "-S", "-t", "1", "call", obj, method, bufargs);
-	} else {
-		DMCMD("ubus", 6, "-S", "-t", "1", "call", obj, method);
-	}
-	return 0;
-#else
 	int rc = __dm_ubus_call(obj, method, u_args, u_args_size);
 
 	if (json_res != NULL) {
@@ -144,51 +110,12 @@ int dmubus_call_set(char *obj, char *method, struct ubus_arg u_args[], int u_arg
 		json_res = NULL;
 	}
 	return rc;
-#endif
 }
 
 static inline json_object *ubus_call_req(char *obj, char *method, struct ubus_arg u_args[], int u_args_size)
 {
-#if !DM_USE_LIBUBUS
-	json_object *res = NULL;
-	char *ubus_return, bufargs[256], *p;
-	int i, pp = 0;
-	p = bufargs;
-
-	if (u_args_size) {
-		sprintf(p, "{");
-		for (i = 0; i < u_args_size; i++) {
-			p += strlen(p);
-			if (i == 0) {
-				if(u_args[i].type != Integer)
-					sprintf(p, "\"%s\": \"%s\"", u_args[i].key, u_args[i].val);
-				else
-					sprintf(p, "\"%s\": %s", u_args[i].key, u_args[i].val);
-			} else {
-				if(u_args[i].type != Integer)
-					sprintf(p, ", \"%s\": \"%s\"", u_args[i].key, u_args[i].val);
-				else
-					sprintf(p, ", \"%s\": %s", u_args[i].key, u_args[i].val);
-			}
-		}
-		p += strlen(p);
-		sprintf(p, "}");
-		pp = dmcmd("ubus", 7, "-S", "-t", "3", "call", obj, method, bufargs);
-	} else {
-		pp = dmcmd("ubus", 6, "-S", "-t", "3", "call", obj, method);
-	}
-	if (pp) {
-		dmcmd_read_alloc(pp, &ubus_return);
-		close(pp);
-		if (ubus_return)
-			res = json_tokener_parse(ubus_return);
-	}
-	return res;
-
-#else
 	__dm_ubus_call(obj, method, u_args, u_args_size);
 	return json_res;
-#endif
 }
 
 /* Based on an efficient hash function published by D. J. Bernstein

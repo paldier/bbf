@@ -81,7 +81,9 @@ libbbfdm_la_SOURCES +=							\
 	../dmtree/tr181/gre.c 						\
 	../dmtree/tr181/dynamicdns.c				\
 	../dmtree/tr181/security.c					\
-	../dmtree/tr181/lanconfigsecurity.c
+	../dmtree/tr181/lanconfigsecurity.c			\
+	../dmtree/tr181/qos.c
+	
 endif
 
 if GENERIC_OPENWRT
@@ -89,7 +91,7 @@ libbbfdm_la_SOURCES += \
 	../dmtree/tr181/deviceinfo-openwrt.c \
 	../dmtree/tr181/wifi-openwrt.c \
 	../dmtree/tr181/hosts-openwrt.c \
-	../dmtree/tr181/qos.c						
+	../dmtree/tr181/qos-openwrt.c						
 else
 libbbfdm_la_SOURCES += \
 	../dmtree/tr181/deviceinfo-iopsyswrt.c \

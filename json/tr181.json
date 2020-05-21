@@ -29790,56 +29790,6 @@
 					"list": {
 						"datatype": "string"
 					}
-				}, 
-				"X_IOPSYS_EU_MaxAllowedAssociations": {
-					"type": "string", 
-					"read": true, 
-					"write": true, 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"datatype": "string", 
-					"mapping": [
-						{
-							"type": "uci", 
-							"uci": {
-								"file": "wireless", 
-								"section": {
-									"type": "wifi-device", 
-									"index": "@i-1"
-								}, 
-								"option": {
-									"name": "maxassoc"
-								}
-							}
-						}
-					]
-				},
-				"X_IOPSYS_EU_DFSEnable": {
-					"type": "boolean", 
-					"read": true, 
-					"write": true, 
-					"protocols": [
-						"cwmp", 
-						"usp"
-					], 
-					"datatype": "boolean",  
-					"mapping": [
-						{
-							"type": "uci", 
-							"uci": {
-								"file": "wireless", 
-								"section": {
-									"type": "wifi-device", 
-									"index": "@i-1"
-								}, 
-								"option": {
-									"name": "dfsc"
-								}
-							}
-						}
-					]
 				},
 				"Device.WiFi.Radio.{i}.Stats.": {
 					"type": "object", 
@@ -31626,7 +31576,7 @@
 										"index": "@i-1"
 									}, 
 									"option": {
-										"name": "cipher"
+										"name": "encryption"
 									}
 								}
 							}
@@ -31703,7 +31653,7 @@
 										"index": "@i-1"
 									}, 
 									"option": {
-										"name": "gtk_rekey"
+										"name": "wpa_group_rekey"
 									}
 								}
 							}
@@ -31743,7 +31693,7 @@
 										"index": "@i-1"
 									}, 
 									"option": {
-										"name": "radius_server"
+										"name": "auth_server"
 									}
 								}
 							}
@@ -31783,7 +31733,7 @@
 										"index": "@i-1"
 									}, 
 									"option": {
-										"name": "radius_port"
+										"name": "auth_port"
 									}
 								}
 							}
@@ -31807,7 +31757,22 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "string"
+						"datatype": "string",
+						"mapping": [
+							{
+								"type": "uci",
+								"uci": {
+									"file": "wireless",
+									"section": {
+										"type": "wifi-iface",
+										"index": "@i-1"
+									},
+									"option": {
+										"name": "auth_secret"
+									}
+								}
+							}
+						]
 					}, 
 					"SecondaryRadiusSecret": {
 						"type": "string", 
@@ -31857,32 +31822,7 @@
 							"cwmp"
 						], 
 						"datatype": "boolean"
-					}, 
-					"X_IOPSYS_EU_WEPKeyIndex": {
-						"type": "unsignedInt", 
-						"read": true, 
-						"write": true, 
-						"protocols": [
-							"cwmp", 
-							"usp"
-						], 
-						"datatype": "unsignedInt", 
-						"mapping": [
-							{
-								"type": "uci", 
-								"uci": {
-									"file": "wireless", 
-									"section": {
-										"type": "wifi-iface", 
-										"index": "@i-1"
-									}, 
-									"option": {
-										"name": "key_index"
-									}
-								}
-							}
-						]
-					}, 
+					},
 					"Reset()": {
 						"type": "command", 
 						"protocols": [

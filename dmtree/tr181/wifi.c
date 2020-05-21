@@ -412,15 +412,29 @@ static int set_WiFiRadio_DTIMPeriod(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-/*#Device.WiFi.Radio.{i}.OperatingChannelBandwidth!UCI:wireless/wifi-device,@i-1/bandwidth*/
+/*#Device.WiFi.Radio.{i}.OperatingChannelBandwidth!UCI:wireless/wifi-device,@i-1/htmode*/
 static int get_WiFiRadio_OperatingChannelBandwidth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "bandwidth", value);
+	dmuci_get_value_by_section_string(((struct wifi_radio_args *)data)->wifi_radio_sec, "htmode", value);
 	if(*value[0] == '\0') {
 		*value = "";
 		return 0;
 	}
-	dmastrcat(value, *value, "MHz");
+	if (strncmp(*value, "NOHT", 4) == 0)
+		*value = "20MHz";
+	else if (strncmp(*value, "HT20", 4) == 0)
+		*value = "20MHz";
+	else if (strncmp(*value, "HT40", 4) == 0)
+		*value = "40MHz";
+	else if (strncmp(*value, "VHT20", 5) == 0)
+		*value = "20MHz";
+	else if (strncmp(*value, "VHT40", 5) == 0)
+		*value = "40MHz";
+	else if (strncmp(*value, "VHT80", 5) == 0)
+		*value = "80MHz";
+	else if (strncmp(*value, "VHT160", 6) == 0)
+		*value = "160MHz";
+
 	return 0;
 }
 

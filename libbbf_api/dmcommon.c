@@ -1516,19 +1516,6 @@ int dm_time_format(time_t ts, char **dst)
 	return 0;
 }
 
-int is_mac_exist(char *macaddr)
-{
-	struct uci_section *s = NULL;
-	char *mac;
-
-	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
-		dmuci_get_value_by_section_string(s, "mac", &mac);
-		if (strcmp(mac, macaddr) == 0)
-			return 1;
-	}
-	return 0;
-}
-
 bool match(const char *string, const char *pattern)
 {
 	regex_t re;
@@ -1883,58 +1870,17 @@ int is_vlan_termination_section(char *name)
 
 		// check if ifname list contains the device name
 		if (strstr(ifname, name)) {
-			char *type, *proto;
-			dmuci_get_value_by_section_string(s, "type", &type);
-			dmuci_get_value_by_section_string(s, "proto", &proto);
+			char *type;
+			// check type is not bridge
 
-			// check type is not bridge and proto is not empty
-			if (strcmp(type, "bridge") == 0 || *proto == '\0')
+			dmuci_get_value_by_section_string(s, "type", &type);
+			if (strcmp(type, "bridge") == 0)
 				return 0;
 
 			break;
 		}
 	}
 	return 1;
-}
-
-int get_upstream_interface(char *intf_tag, int len)
-{
-	/* Get the upstream interface. */
-	struct uci_section *port_s = NULL;
-	uci_foreach_option_eq("ports", "ethport", "uplink", "1", port_s) {
-		char *iface;
-		dmuci_get_value_by_section_string(port_s, "ifname", &iface);
-		if (*iface != '\0') {
-			strncpy(intf_tag, iface, len - 1);
-			break;
-		}
-	}
-
-	return 0;
-}
-
-int create_mac_addr_upstream_intf(char *mac_addr, char *mac, int mac_len)
-{
-	int  num = 0;
-	char macaddr[25] = {0};
-
-	if (*mac != '\0') {
-		strncpy(macaddr, mac, sizeof(macaddr) - 1);
-		int len = strlen(macaddr);
-
-		/* Fetch the last octect of base mac address in integer variable. */
-		if (sscanf(&macaddr[len - 2], "%02x", &num) >  0) {
-			num += 1;
-			snprintf(&macaddr[len - 2], sizeof(macaddr), "%02x", num);
-		}
-
-		if (macaddr[0] != '\0') {
-			strncpy(mac_addr, macaddr, mac_len);
-			return 0;
-		}
-	}
-
-	return -1;
 }
 
 void del_dmmap_sec_with_opt_eq(char *dmmap_file, char *section, char *option, char *value)

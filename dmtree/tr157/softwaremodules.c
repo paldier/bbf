@@ -60,23 +60,16 @@ static int browseSoftwareModulesExecEnvInst(struct dmctx *dmctx, DMNODE *parent_
 static int browseSoftwareModulesDeploymentUnitInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	char *idx, *idx_last = NULL, buf[16] = {0};
-	int id = 0, j = 0, i, incr;
+	char *idx, *idx_last = NULL;
+	int id = 0, j = 0;
 
-	for (i = 0;; i += 100) {
-		snprintf(buf, sizeof(buf), "%d", i);
-		dmubus_call("swmodules", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
-		if (res) {
-			incr = 0;
-			dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
-				incr++;
-				idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, ++id);
-				if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)du_obj, idx) == DM_STOP)
-					break;
-			}
-			if (incr != 100) break;
-		} else
-			break;
+	dmubus_call("swmodules", "du_list", UBUS_ARGS{}, 0, &res);
+	if (res) {
+		dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
+			idx = handle_update_instance(2, dmctx, &idx_last, update_instance_without_section, 1, ++id);
+			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)du_obj, idx) == DM_STOP)
+				break;
+		}
 	}
 	return 0;
 }
@@ -117,20 +110,13 @@ static int get_SoftwareModules_ExecEnvNumberOfEntries(char *refparam, struct dmc
 static int get_SoftwareModules_DeploymentUnitNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *deployment_unit = NULL;
-	size_t nbre_du = 0, total_du = 0;
-	char buf[16] = {0};
-	int i;
+	size_t nbre_du = 0;
 
-	for (i = 0;; i += 100) {
-		snprintf(buf, sizeof(buf), "%d", i);
-		dmubus_call("swmodules", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
-		DM_ASSERT(res, *value = "0");
-		json_object_object_get_ex(res, "deployment_unit", &deployment_unit);
-		nbre_du = json_object_array_length(deployment_unit);
-		total_du = total_du + nbre_du;
-		if (nbre_du != 100) break;
-	}
-	dmasprintf(value, "%d", total_du);
+	dmubus_call("swmodules", "du_list", UBUS_ARGS{}, 0, &res);
+	DM_ASSERT(res, *value = "0");
+	json_object_object_get_ex(res, "deployment_unit", &deployment_unit);
+	nbre_du = json_object_array_length(deployment_unit);
+	dmasprintf(value, "%d", nbre_du);
 	return 0;
 }
 
@@ -307,28 +293,28 @@ static int get_SoftwareModulesExecEnv_ParentExecEnv(char *refparam, struct dmctx
 /*#Device.SoftwareModules.ExecEnv.{i}.AllocatedDiskSpace!UBUS:swmodules/environment//environment[i-1].allocateddiskspace*/
 static int get_SoftwareModulesExecEnv_AllocatedDiskSpace(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = dmjson_get_value((json_object *)data, 1, "allocateddiskspace");
+	*value = dmjson_get_value((json_object *)data, 1, "allocated_disk_space");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.AvailableDiskSpace!UBUS:swmodules/environment//environment[i-1].availablediskspace*/
 static int get_SoftwareModulesExecEnv_AvailableDiskSpace(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = dmjson_get_value((json_object *)data, 1, "availablediskspace");
+	*value = dmjson_get_value((json_object *)data, 1, "available_disk_space");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.AllocatedMemory!UBUS:swmodules/environment//environment[i-1].allocatedmemory*/
 static int get_SoftwareModulesExecEnv_AllocatedMemory(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = dmjson_get_value((json_object *)data, 1, "allocatedmemory");
+	*value = dmjson_get_value((json_object *)data, 1, "allocated_memory");
 	return 0;
 }
 
 /*#Device.SoftwareModules.ExecEnv.{i}.AvailableMemory!UBUS:swmodules/environment//environment[i-1].availablememory*/
 static int get_SoftwareModulesExecEnv_AvailableMemory(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = dmjson_get_value((json_object *)data, 1, "availablememory");
+	*value = dmjson_get_value((json_object *)data, 1, "available_memory");
 	return 0;
 }
 
@@ -657,31 +643,24 @@ static int get_SoftwareModulesExecutionUnit_MemoryInUse(char *refparam, struct d
 static int get_SoftwareModulesExecutionUnit_References(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	char *environment, *name, *curr_environment, *curr_name, buf[16] = {0};
-	int j = 0, env = 0, i, incr;
+	char *environment, *name, *curr_environment, *curr_name;
+	int j = 0, env = 0;
 
 	curr_name = dmjson_get_value((json_object *)data, 1, "name");
 	curr_environment = dmjson_get_value((json_object *)data, 1, "environment");
 
-	for (i = 0;; i += 100) {
-		snprintf(buf, sizeof(buf), "%d", i);
-		dmubus_call("swmodules", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
-		DM_ASSERT(res, *value = "");
-		if (res) {
-			incr = 0;
-			dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
-				incr++;
-				env++;
-				name = dmjson_get_value(du_obj, 1, "name");
-				environment = dmjson_get_value(du_obj, 1, "environment");
-				if ((strcmp(name, curr_name) == 0) && (strcmp(environment, curr_environment) == 0)) {
-					dmasprintf(value, "%s", dm_print_path("%s%cSoftwareModules%cDeploymentUnit%c%d%c", dmroot, dm_delim, dm_delim, dm_delim, env, dm_delim));
-					break;
-				}
+	dmubus_call("swmodules", "du_list", UBUS_ARGS{}, 0, &res);
+	DM_ASSERT(res, *value = "");
+	if (res) {
+		dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
+			env++;
+			name = dmjson_get_value(du_obj, 1, "name");
+			environment = dmjson_get_value(du_obj, 1, "environment");
+			if ((strcmp(name, curr_name) == 0) && (strcmp(environment, curr_environment) == 0)) {
+				dmasprintf(value, "%s", dm_print_path("%s%cSoftwareModules%cDeploymentUnit%c%d%c", dmroot, dm_delim, dm_delim, dm_delim, env, dm_delim));
+				break;
 			}
-			if (incr != 100) break;
-		} else
-			break;
+		}
 	}
 	return 0;
 }
@@ -757,52 +736,38 @@ char *get_deployment_unit_reference(struct dmctx *ctx, char *package_name, char 
 void get_deployment_unit_name_version(char *uuid, char **name, char **version, char **env)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	int j = 0, i, incr;
-	char *cur_uuid, buf[16];
+	int j = 0;
+	char *cur_uuid;
 
-	for (i = 0;; i += 100) {
-		snprintf(buf, sizeof(buf), "%d", i);
-		dmubus_call("swmodules", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
-		if (res) {
-			incr = 0;
-			dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
-				incr++;
-				cur_uuid = dmjson_get_value(du_obj, 1, "uuid");
-				if (strcmp(cur_uuid, uuid) == 0) {
-					*name = dmjson_get_value(du_obj, 1, "name");
-					*version = dmjson_get_value(du_obj, 1, "version");
-					*env = dmjson_get_value(du_obj, 1, "environment");
-					return;
-				}
+	dmubus_call("swmodules", "du_list", UBUS_ARGS{}, 0, &res);
+	if (res) {
+		dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
+			cur_uuid = dmjson_get_value(du_obj, 1, "uuid");
+			if (strcmp(cur_uuid, uuid) == 0) {
+				*name = dmjson_get_value(du_obj, 1, "name");
+				*version = dmjson_get_value(du_obj, 1, "version");
+				*env = dmjson_get_value(du_obj, 1, "environment");
+				return;
 			}
-			if (incr != 100) break;
-		} else
-			break;
+		}
 	}
 }
 
 char *get_softwaremodules_uuid(char *url)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	int j = 0, i, incr;
-	char *cur_url, *uuid = "", buf[16];
+	char *cur_url, *uuid = "";
+	int j = 0;
 
-	for (i = 0;; i += 100) {
-		snprintf(buf, sizeof(buf), "%d", i);
-		dmubus_call("swmodules", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
-		if (res) {
-			incr = 0;
-			dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
-				incr++;
-				cur_url = dmjson_get_value(du_obj, 1, "url");
-				if (strcmp(cur_url, url) == 0) {
-					uuid = dmjson_get_value(du_obj, 1, "uuid");
-					return uuid;
-				}
+	dmubus_call("swmodules", "du_list", UBUS_ARGS{}, 0, &res);
+	if (res) {
+		dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
+			cur_url = dmjson_get_value(du_obj, 1, "url");
+			if (strcmp(cur_url, url) == 0) {
+				uuid = dmjson_get_value(du_obj, 1, "uuid");
+				break;
 			}
-			if (incr != 100) break;
-		} else
-			break;
+		}
 	}
 	return uuid;
 }
@@ -810,25 +775,18 @@ char *get_softwaremodules_uuid(char *url)
 char *get_softwaremodules_url(char *uuid)
 {
 	json_object *res = NULL, *du_obj = NULL, *arrobj = NULL;
-	int j = 0, i, incr;
-	char *cur_uuid, *url = "", buf[16];
+	char *cur_uuid, *url = "";
+	int j = 0;
 
-	for (i = 0;; i += 100) {
-		snprintf(buf, sizeof(buf), "%d", i);
-		dmubus_call("swmodules", "du_list", UBUS_ARGS{{"index", buf, Integer}}, 1, &res);
-		if (res) {
-			incr = 0;
-			dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
-				incr++;
-				cur_uuid = dmjson_get_value(du_obj, 1, "uuid");
-				if (strcmp(cur_uuid, uuid) == 0) {
-					url = dmjson_get_value(du_obj, 1, "url");
-					return url;
-				}
+	dmubus_call("swmodules", "du_list", UBUS_ARGS{}, 0, &res);
+	if (res) {
+		dmjson_foreach_obj_in_array(res, arrobj, du_obj, j, 1, "deployment_unit") {
+			cur_uuid = dmjson_get_value(du_obj, 1, "uuid");
+			if (strcmp(cur_uuid, uuid) == 0) {
+				url = dmjson_get_value(du_obj, 1, "url");
+				break;
 			}
-			if (incr != 100) break;
-		} else
-			break;
+		}
 	}
 	return url;
 }

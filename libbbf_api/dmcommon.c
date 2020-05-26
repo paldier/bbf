@@ -641,13 +641,17 @@ void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, 
 							p_ifname);
 					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "upstream",
 							"1");
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "snooping_mode",
+							"0");
 					add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
 				}
 			}
 		}
 
 		struct uci_list *snooping_iface = NULL;
+		char *s_mode;
 		dmuci_get_value_by_section_list(s, "downstream_interface", &snooping_iface);
+		dmuci_get_value_by_section_string(s, "snooping_mode", &s_mode);
 		if (snooping_iface != NULL) {
 			struct uci_element *e;
 			uci_foreach_element(snooping_iface, e) {
@@ -672,6 +676,8 @@ void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, 
 							s_ifname);
 					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "upstream",
 							"0");
+					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "snooping_mode",
+							s_mode);
 					add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
 				}
 			}
@@ -1510,6 +1516,19 @@ int dm_time_format(time_t ts, char **dst)
 	return 0;
 }
 
+int is_mac_exist(char *macaddr)
+{
+	struct uci_section *s = NULL;
+	char *mac;
+
+	uci_path_foreach_sections(bbfdm, DMMAP, "link", s) {
+		dmuci_get_value_by_section_string(s, "mac", &mac);
+		if (strcmp(mac, macaddr) == 0)
+			return 1;
+	}
+	return 0;
+}
+
 bool match(const char *string, const char *pattern)
 {
 	regex_t re;
@@ -1864,17 +1883,58 @@ int is_vlan_termination_section(char *name)
 
 		// check if ifname list contains the device name
 		if (strstr(ifname, name)) {
-			char *type;
-			// check type is not bridge
-
+			char *type, *proto;
 			dmuci_get_value_by_section_string(s, "type", &type);
-			if (strcmp(type, "bridge") == 0)
+			dmuci_get_value_by_section_string(s, "proto", &proto);
+
+			// check type is not bridge and proto is not empty
+			if (strcmp(type, "bridge") == 0 || *proto == '\0')
 				return 0;
 
 			break;
 		}
 	}
 	return 1;
+}
+
+int get_upstream_interface(char *intf_tag, int len)
+{
+	/* Get the upstream interface. */
+	struct uci_section *port_s = NULL;
+	uci_foreach_option_eq("ports", "ethport", "uplink", "1", port_s) {
+		char *iface;
+		dmuci_get_value_by_section_string(port_s, "ifname", &iface);
+		if (*iface != '\0') {
+			strncpy(intf_tag, iface, len - 1);
+			break;
+		}
+	}
+
+	return 0;
+}
+
+int create_mac_addr_upstream_intf(char *mac_addr, char *mac, int mac_len)
+{
+	int  num = 0;
+	char macaddr[25] = {0};
+
+	if (*mac != '\0') {
+		strncpy(macaddr, mac, sizeof(macaddr) - 1);
+		int len = strlen(macaddr);
+
+		/* Fetch the last octect of base mac address in integer variable. */
+		if (sscanf(&macaddr[len - 2], "%02x", &num) >  0) {
+			num += 1;
+			snprintf(&macaddr[len - 2], sizeof(macaddr), "%02x", num);
+		}
+
+		if (macaddr[0] != '\0') {
+			strncpy(mac_addr, macaddr, mac_len);
+			return 0;
+		}
+	}
+
+	return -1;
 }
 
 void del_dmmap_sec_with_opt_eq(char *dmmap_file, char *section, char *option, char *value)

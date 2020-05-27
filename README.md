@@ -108,7 +108,7 @@ Each object in the **DMOBJ** table contains the following arguments:
 | `permission`        | The permission of the object. Could be **&DMREAD** or **&DMWRITE**. If it's `&DMWRITE` then we can add/delete instances of this object |
 | `addobj`            | The function to add new instance under this object. This function will be triggered when the ACS/Controller call AddObject of this object |
 | `delobj`            | The function to delete instance under this object. This function will be triggered when the ACS/Controller call DeleteObject of an instance of this object |
-| `checkobj`          | The function to check if the object is allowed to appear in the tree. If it's `NULL` then the object has always appeared in the tree |
+| `checkdep`          | A string of the object dependency, it can be a file("file:/etc/config/network") or an ubus object,method("ubus:network.interface->status"). If it's `NULL` then the object has always appeared in the tree. |
 | `browseinstobj`     | This function allow to browse all instances under this object |
 | `forced_inform`     | If it's set to `&DMFINFRM` that mean the object contains a force inform parameter in its subtree. The forced inform parameters are the parameter included in the inform message |
 | `notification`      | The notification of the object. Could be **&DMACTIVE**, **&DMACTIVE** or **&DMNONE** |

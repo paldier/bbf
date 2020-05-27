@@ -133,12 +133,12 @@ typedef struct dm_leaf_s {
 } DMLEAF;
 
 typedef struct dm_obj_s {
-	/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type(13)*/
+	/* OBJ, permission, addobj, delobj, checkdep, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type(13)*/
 	char *obj;
 	struct dm_permession_s *permission;
 	int (*addobj)(char *refparam, struct dmctx *ctx, void *data, char **instance);
 	int (*delobj)(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action);
-	bool (*checkobj)(struct dmctx *dmctx, void *data);
+	char *checkdep;
 	int (*browseinstobj)(struct dmctx *dmctx, struct dmnode *node, void *data, char *instance);
 	struct dm_forced_inform_s *forced_inform;
 	struct dm_notif_s *notification;

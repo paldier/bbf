@@ -743,7 +743,7 @@ static void count_obj_param_under_jsonobj(json_object *jsonobj, int *obj_number,
 
 static void parse_obj(char *object, json_object *jobj, DMOBJ *pobj, int index, struct list_head *list)
 {
-	/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type(13)*/
+	/* OBJ, permission, addobj, delobj, checkdep, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type(13)*/
 
 	char *full_obj = NULL, *prfix_obj = NULL, *obj_str = NULL;
 	int obj_number = 0, param_number = 0, i = 0, j = 0;
@@ -802,8 +802,8 @@ static void parse_obj(char *object, json_object *jobj, DMOBJ *pobj, int index, s
 			//delobj
 			pobj[index].delobj = json_object_get_boolean(json_obj) ? delete_obj : NULL;
 
-			//checkobj
-			pobj[index].checkobj = NULL;
+			//checkdep
+			pobj[index].checkdep = NULL;
 
 			//browseinstobj
 			pobj[index].browseinstobj = json_object_get_boolean(json_obj) ? browse_obj : NULL;

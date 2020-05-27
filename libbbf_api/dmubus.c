@@ -36,6 +36,8 @@ static struct blob_buf b;
 static struct ubus_context *ubus_ctx;
 static int timeout = 1000;
 static json_object *json_res = NULL;
+static char ubus_method[32] = {0};
+static bool ubus_method_exists = false;
 
 static void dm_libubus_free()
 {
@@ -198,6 +200,52 @@ int dmubus_call(char *obj, char *method, struct ubus_arg u_args[], int u_args_si
 
 	*req_res = res;
 	return 0;
+}
+
+static void receive_list_result(struct ubus_context *ctx, struct ubus_object_data *obj, void *priv)
+{
+	struct blob_attr *cur;
+	size_t rem;
+
+	if (!obj->signature  || *ubus_method == '\0')
+		return;
+
+	blob_for_each_attr(cur, obj->signature, rem) {
+		const char *method_name = blobmsg_name(cur);
+		if (!strcmp(ubus_method, method_name)) {
+			ubus_method_exists = true;
+			return;
+		}
+	}
+}
+
+bool dmubus_object_method_exists(const char *obj)
+{
+	if (ubus_ctx == NULL) {
+		ubus_ctx = dm_libubus_init();
+		if (ubus_ctx == NULL)
+			return false;
+	}
+
+	char *method = "";
+	// check if the method exists in the obj
+	// if yes, copy it in ubus_method buffer
+	char *delimiter = strstr(obj, "->");
+	if (delimiter) {
+		method = dmstrdup(delimiter + 2);
+		*delimiter = '\0';
+	}
+
+	strncpy(ubus_method, method, sizeof(ubus_method) - 1);
+	ubus_method_exists = false;
+
+	if (ubus_lookup(ubus_ctx, obj, receive_list_result, NULL))
+		return false;
+
+	if (*ubus_method != '\0' && !ubus_method_exists)
+		return false;
+
+	return true;
 }
 
 void dmubus_free()

@@ -241,6 +241,36 @@ static int bbfdatamodel_matches(const enum bbfdm_type_enum type)
 	return bbfdatamodel_type == BBFDM_BOTH || type == BBFDM_BOTH || bbfdatamodel_type == type;
 }
 
+static bool check_dependency(const char *conf_obj)
+{
+	/* Available cases */
+	/* one file => "file:/etc/config/network" */
+	/* multiple files => "file:/etc/config/network,/lib/netifd/proto/dhcp.sh" */
+	/* one ubus => "ubus:router.network" (with method : "ubus:router.network->hosts") */
+	/* multiple ubus => "ubus:router.system->info,dsl->status,wifi" */
+	/* common (files and ubus) => "file:/etc/config/network,/etc/config/dhcp;ubus:router.system,dsl->status" */
+
+	char *pch, *spch;
+
+	char *conf_list = dmstrdup(conf_obj);
+	for (pch = strtok_r(conf_list, ";", &spch); pch != NULL; pch = strtok_r(NULL, ";", &spch)) {
+		char *conf_type = strchr(pch, ':');
+		if (!conf_type)
+			return false;
+
+		char *conf_name = dmstrdup(conf_type + 1);
+		*conf_type = '\0';
+
+		char *token, *saveptr;
+		for (token = strtok_r(conf_name, ",", &saveptr); token != NULL; token = strtok_r(NULL, ",", &saveptr)) {
+			if ((!strcmp(pch, "file") && !file_exists(token)) || (!strcmp(pch, "ubus") && !dmubus_object_method_exists(token)))
+				return false;
+		}
+	}
+
+	return true;
+}
+
 int dm_browse_leaf(struct dmctx *dmctx, DMNODE *parent_node, DMLEAF *leaf, void *data, char *instance)
 {
 	int err = 0;
@@ -270,6 +300,9 @@ void dm_browse_entry(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, 
 	if (!bbfdatamodel_matches(entryobj->bbfdm_type))
 		return;
 
+	if (entryobj->checkdep && (check_dependency(entryobj->checkdep) == false))
+		return;
+
 	if (dmctx->checkobj) {
 		*err = dmctx->checkobj(dmctx, &node, entryobj->permission, entryobj->addobj, entryobj->delobj, entryobj->forced_inform, entryobj->notification, entryobj->get_linker, data, instance);
 		if (*err)
@@ -279,10 +312,6 @@ void dm_browse_entry(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, 
 	*err = dmctx->method_obj(dmctx, &node, entryobj->permission, entryobj->addobj, entryobj->delobj, entryobj->forced_inform, entryobj->notification, entryobj->get_linker, data, instance);
 	if (dmctx->stop)
 		return;
-
-	if (entryobj->checkobj && ((entryobj->checkobj)(dmctx, data) == false) ) {
-		return;
-	}
 
 	if (entryobj->browseinstobj) {
 		if (dmctx->instance_wildchar) {

@@ -103,11 +103,11 @@ extern char *IPv6Prefix[];
 extern char *SupportedOperatingChannelBandwidth[];
 extern char *SupportedStandards[];
 
-#define NVRAM_FILE "/proc/nvram/WpaKey"
+#define UPTIME "/proc/uptime"
+#define DEFAULT_CONFIG_DIR "/etc/config/"
 #define MAX_DHCP_LEASES 256
 #define MAX_PROC_ROUTING 256
 #define ROUTING_FILE "/proc/net/route"
-#define ARP_FILE "/proc/net/arp"
 #define DHCP_LEASES_FILE "/tmp/dhcp.leases"
 #define DMMAP "dmmap"
 #define DHCPSTATICADDRESS_DISABLED_CHADDR "00:00:00:00:00:01"

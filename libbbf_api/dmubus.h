@@ -29,6 +29,7 @@ struct ubus_arg {
 
 int dmubus_call(char *obj, char *method, struct ubus_arg u_args[], int u_args_size, json_object **req_res);
 int dmubus_call_set(char *obj, char *method, struct ubus_arg u_args[], int u_args_size);
+bool dmubus_object_method_exists(const char *obj);
 void dmubus_free();
 
 #endif

@@ -407,6 +407,20 @@ static int is_bridge_port_management_in_dmmap(char *br_inst)
 	return 0;
 }
 
+static int is_wireless_ifname_exist(char *br_section_name, char *ifname)
+{
+	struct uci_section *s = NULL;
+	uci_foreach_option_eq("wireless", "wifi-iface", "network", br_section_name, s) {
+
+		// get ifname from wireless/wifi-iface section
+		char *curr_ifname;
+		dmuci_get_value_by_section_string(s, "ifname", &curr_ifname);
+		if (strcmp(curr_ifname, ifname) == 0)
+			return 1;
+	}
+	return 0;
+}
+
 static void set_linker_bridge_port_management(char *br_inst, char *linker)
 {
 	struct uci_section *s = NULL;
@@ -445,7 +459,7 @@ static int dmmap_synchronizeBridgingBridgePort(struct dmctx *dmctx, DMNODE *pare
 		// device is available in ifname list ==> skip it
 		char *device;
 		dmuci_get_value_by_section_string(s, "device", &device);
-		if (dm_strword(br_args->ifname, device) != NULL)
+		if (dm_strword(br_args->ifname, device) != NULL || is_wireless_ifname_exist(section_name(br_args->bridge_sec), device))
 			continue;
 
 		// else ==> delete section
@@ -490,6 +504,30 @@ static int dmmap_synchronizeBridgingBridgePort(struct dmctx *dmctx, DMNODE *pare
 		linker_req = true;
 	}
 	dmfree(br_ifname);
+
+	struct uci_section *ss = NULL;
+	uci_foreach_option_eq("wireless", "wifi-iface", "network", section_name(br_args->bridge_sec), ss) {
+
+		// get ifname from wireless/wifi-iface section
+		char *ifname;
+		dmuci_get_value_by_section_string(ss, "ifname", &ifname);
+
+		if (is_bridge_port_device_exist(br_args->br_inst, ifname))
+			continue;
+
+		struct uci_section *sbr_port = NULL;
+		char *sbr_name;
+		dmuci_add_section_bbfdm("dmmap_bridge_port", "bridge_port", &sbr_port, &sbr_name);
+		dmuci_set_value_by_section(sbr_port, "device", ifname);
+		dmuci_set_value_by_section(sbr_port, "br_inst", br_args->br_inst);
+		dmuci_set_value_by_section(sbr_port, "interface", section_name(br_args->bridge_sec));
+		dmuci_set_value_by_section(sbr_port, "management", "0");
+		snprintf(plinker, sizeof(plinker), "br_%s:%s+%s", br_args->br_inst, section_name(sbr_port), ifname);
+		dmstrappendstr(p, plinker);
+		dmstrappendchr(p, ',');
+		linker_req = true;
+	}
+
 	p = p -1;
 	dmstrappendend(p);
 

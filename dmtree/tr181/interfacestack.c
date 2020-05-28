@@ -400,7 +400,7 @@ int browseInterfaceStackInst(struct dmctx *dmctx, DMNODE *parent_node, void *pre
 				vb = "";
 
 			dmuci_get_value_by_section_string(sd, "bridge_port_alias", &loweralias);
-			bridge_port_inst = get_instance_by_section(dmctx->instance_mode, "dmmap_bridge_port", "bridge_port", sd, "bridge_port_instance", "bridge_port_alias");
+			dmuci_get_value_by_section_string(sd, "bridge_port_instance", &bridge_port_inst);
 			if (*loweralias == '\0')
 				snprintf(buf_loweralias, sizeof(buf_loweralias), "cpe-%s", bridge_port_inst);
 			else

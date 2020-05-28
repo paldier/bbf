@@ -384,12 +384,14 @@ int dm_entry_apply(struct dmctx *ctx, int cmd, char *arg1, char *arg2)
 	return fault;
 }
 
-int dm_entry_load_enabled_notify(unsigned int dm_type, unsigned int amd_version, int instance_mode)
+int dm_entry_load_enabled_notify(unsigned int dm_type, unsigned int amd_version, int instance_mode, void (*add_list_value_change)(char *param_name, char *param_data, char *param_type), void (*send_active_value_change)(void))
 {
 	struct dmctx dmctx = {0};
 
 	dm_ctx_init(&dmctx, dm_type, amd_version, instance_mode);
 	dmctx.in_param = "";
+	dmctx.add_list_value_change = add_list_value_change;
+	dmctx.send_active_value_change = send_active_value_change;
 
 	free_all_list_enabled_lwnotify();
 	dm_entry_enabled_notify_check_value_change(&dmctx);

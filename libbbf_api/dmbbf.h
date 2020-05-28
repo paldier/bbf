@@ -219,6 +219,8 @@ struct dmctx
 	int (*method_obj)(DMOBJECT_ARGS);
 	int (*checkobj)(DMOBJECT_ARGS);
 	int (*checkleaf)(DMOBJECT_ARGS);
+	void (*add_list_value_change)(char *param_name, char *param_data, char *param_type);
+	void (*send_active_value_change)(void);
 	struct list_head list_parameter;
 	struct list_head set_list_tmp;
 	struct list_head list_fault_param;
@@ -592,8 +594,6 @@ void free_all_list_enabled_lwnotify();
 int dm_link_inst_obj(struct dmctx *dmctx, DMNODE *parent_node, void *data, char *instance);
 void dm_check_dynamic_obj(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, char *full_obj, char *obj, DMOBJ **root_entry, int *obj_found);
 int free_dm_browse_node_dynamic_object_tree(DMNODE *parent_node, DMOBJ *entryobj);
-void add_list_value_change(char *param_name, char *param_data, char *param_type);
-void send_active_value_change(void);
 #ifdef BBF_TR064
 void dm_upnp_apply_config(void);
 void add_list_upnp_param_track(struct dmctx *dmctx, struct list_head *pchead, char *param, char *key, char *value, unsigned int isobj);

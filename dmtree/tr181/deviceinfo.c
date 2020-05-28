@@ -12,6 +12,20 @@
 #include "deviceinfo.h"
 #include "os.h"
 
+struct Supported_Data_Models
+{
+	char url[128];
+	char urn[128];
+	char features[128];
+};
+
+struct Supported_Data_Models Data_Models[] = {
+{"http://www.broadband-forum.org/cwmp/tr-181-2-13-0.xml","urn:broadband-forum-org:tr-181-2-13-0","IP,Wireless,Firewall,NAT,DHCP,QoS,DNS,GRE,UPnP"},
+{"http://www.broadband-forum.org/cwmp/tr-104-1-1-0.xml","urn:broadband-forum-org:tr-104-1-1-0", "VoiceService"},
+{"http://www.broadband-forum.org/cwmp/tr-143-1-1-0.xml","urn:broadband-forum-org:tr-143-1-1-0", "Ping,TraceRoute,Download,Upload,UDPecho,ServerSelectionDiag"},
+{"http://www.broadband-forum.org/cwmp/tr-157-1-3-0.xml","urn:broadband-forum-org:tr-157-1-3-0", "Bulkdata,SoftwareModules"},
+};
+
 /*
  *DeviceInfo. functions
  */
@@ -130,6 +144,12 @@ static int get_number_of_cpus(void)
 static int get_DeviceInfo_ProcessorNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmasprintf(value, "%d", get_number_of_cpus());
+	return 0;
+}
+
+static int get_DeviceInfo_SupportedDataModelNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	dmasprintf(value, "%d", sizeof(Data_Models)/sizeof(struct Supported_Data_Models));
 	return 0;
 }
 
@@ -393,6 +413,73 @@ static int get_DeviceInfoProcessor_Architecture(char *refparam, struct dmctx *ct
 	return 0;
 }
 
+static int browseDeviceInfoSupportedDataModelInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+{
+	char *idx = NULL, *idx_last = NULL;
+	int i;
+
+	for (i = 0; i < sizeof(Data_Models)/sizeof(struct Supported_Data_Models); i++) {
+		idx = handle_update_instance(1, dmctx, &idx_last, update_instance_without_section, 1, i+1);
+		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&Data_Models[i], idx) == DM_STOP)
+			break;
+	}
+	return 0;
+}
+
+static int get_DeviceInfoSupportedDataModel_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	struct uci_section *s = NULL;
+
+	uci_path_foreach_option_eq(bbfdm, "dmmap", "data_model", "data_model_inst", instance, s) {
+		dmuci_get_value_by_section_string(s, "alias", value);
+		break;
+	}
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
+	return 0;
+}
+
+static int set_DeviceInfoSupportedDataModel_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	struct uci_section *s = NULL, *dmmap = NULL;
+	char *v;
+
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			uci_path_foreach_option_eq(bbfdm, "dmmap", "data_model", "data_model_inst", instance, s) {
+				dmuci_set_value_by_section_bbfdm(s, "alias", value);
+				return 0;
+			}
+			dmuci_add_section_bbfdm("dmmap", "data_model", &dmmap, &v);
+			dmuci_set_value_by_section(dmmap, "data_model_inst", instance);
+			dmuci_set_value_by_section(dmmap, "alias", value);
+			break;
+	}
+	return 0;
+}
+
+static int get_DeviceInfoSupportedDataModel_URL(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmstrdup(((struct Supported_Data_Models *)data)->url);
+	return 0;
+}
+
+static int get_DeviceInfoSupportedDataModel_URN(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmstrdup(((struct Supported_Data_Models *)data)->urn);
+	return 0;
+}
+
+static int get_DeviceInfoSupportedDataModel_Features(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmstrdup(((struct Supported_Data_Models *)data)->features);
+	return 0;
+}
+
 /* *** Device.DeviceInfo. *** */
 DMOBJ tDeviceInfoObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
@@ -401,6 +488,7 @@ DMOBJ tDeviceInfoObj[] = {
 {"ProcessStatus", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDeviceInfoProcessStatusObj, tDeviceInfoProcessStatusParams, NULL, BBFDM_BOTH},
 {"Processor", &DMREAD, NULL, NULL, NULL, browseDeviceInfoProcessorInst, NULL, NULL, NULL, NULL, tDeviceInfoProcessorParams, NULL, BBFDM_BOTH},
 {"VendorLogFile", &DMREAD, NULL, NULL, NULL, browseVlfInst, NULL, NULL, NULL, NULL, tDeviceInfoVendorLogFileParams, NULL, BBFDM_BOTH},
+{"SupportedDataModel", &DMREAD, NULL, NULL, NULL, browseDeviceInfoSupportedDataModelInst, NULL, NULL, NULL, NULL, tDeviceInfoSupportedDataModelParams, NULL, BBFDM_CWMP},
 {0}
 };
 
@@ -417,6 +505,7 @@ DMLEAF tDeviceInfoParams[] = {
 {"ProvisioningCode", &DMWRITE, DMT_STRING, get_device_provisioningcode, set_device_provisioningcode, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
 {"UpTime", &DMREAD, DMT_UNINT, get_device_info_uptime, NULL, NULL, NULL, BBFDM_BOTH},
 {"ProcessorNumberOfEntries", &DMREAD, DMT_UNINT, get_DeviceInfo_ProcessorNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{"SupportedDataModelNumberOfEntries", &DMREAD, DMT_UNINT, get_DeviceInfo_SupportedDataModelNumberOfEntries, NULL, NULL, NULL, BBFDM_CWMP},
 {CUSTOM_PREFIX"BaseMACAddress", &DMREAD, DMT_STRING, os__get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
@@ -482,5 +571,15 @@ DMLEAF tDeviceInfoProcessorParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"Alias", &DMWRITE, DMT_STRING, get_DeviceInfoProcessor_Alias, set_DeviceInfoProcessor_Alias, NULL, NULL, BBFDM_BOTH},
 {"Architecture", &DMREAD, DMT_STRING, get_DeviceInfoProcessor_Architecture, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DeviceInfo.SupportedDataModel.{i}. *** */
+DMLEAF tDeviceInfoSupportedDataModelParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Alias", &DMWRITE, DMT_STRING, get_DeviceInfoSupportedDataModel_Alias, set_DeviceInfoSupportedDataModel_Alias, NULL, NULL, BBFDM_CWMP},
+{"URL", &DMREAD, DMT_STRING, get_DeviceInfoSupportedDataModel_URL, NULL, NULL, NULL, BBFDM_CWMP},
+{"URN", &DMREAD, DMT_STRING, get_DeviceInfoSupportedDataModel_URN, NULL, NULL, NULL, BBFDM_CWMP},
+{"Features", &DMREAD, DMT_STRING, get_DeviceInfoSupportedDataModel_Features, NULL, NULL, NULL, BBFDM_CWMP},
 {0}
 };

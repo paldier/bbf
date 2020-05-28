@@ -118,6 +118,21 @@ static int set_device_provisioningcode(char *refparam, struct dmctx *ctx, void *
 	return 0;
 }
 
+static int get_number_of_cpus(void)
+{
+	char val[16];
+
+	dm_read_sysfs_file("/sys/devices/system/cpu/present", val, sizeof(val));
+	char *max = strchr(val, '-');
+	return max ? atoi(max+1)+1 : 0;
+}
+
+static int get_DeviceInfo_ProcessorNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	dmasprintf(value, "%d", get_number_of_cpus());
+	return 0;
+}
+
 static int get_vcf_name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_value_by_section_string((struct uci_section *)data, "name", value);
@@ -312,13 +327,80 @@ static int browseVlfInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_da
 	return 0;
 }
 
+static int browseDeviceInfoProcessorInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+{
+	char *idx = NULL, *idx_last = NULL;
+	int i;
+
+	for (i = 0; i < get_number_of_cpus(); i++) {
+		idx = handle_update_instance(1, dmctx, &idx_last, update_instance_without_section, 1, i+1);
+		if (DM_LINK_INST_OBJ(dmctx, parent_node, NULL, idx) == DM_STOP)
+			break;
+	}
+	return 0;
+}
+
+static int get_DeviceInfoProcessor_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	struct uci_section *s = NULL;
+
+	uci_path_foreach_option_eq(bbfdm, "dmmap", "processor", "processor_inst", instance, s) {
+		dmuci_get_value_by_section_string(s, "alias", value);
+		break;
+	}
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
+	return 0;
+}
+
+static int set_DeviceInfoProcessor_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	struct uci_section *s = NULL, *dmmap = NULL;
+	char *v;
+
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			uci_path_foreach_option_eq(bbfdm, "dmmap", "processor", "processor_inst", instance, s) {
+				dmuci_set_value_by_section_bbfdm(s, "alias", value);
+				return 0;
+			}
+			dmuci_add_section_bbfdm("dmmap", "processor", &dmmap, &v);
+			dmuci_set_value_by_section(dmmap, "processor_inst", instance);
+			dmuci_set_value_by_section(dmmap, "alias", value);
+			break;
+	}
+	return 0;
+}
+
+static int get_DeviceInfoProcessor_Architecture(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	struct utsname utsname;
+
+	if (uname(&utsname) < 0)
+		return 0;
+
+	if (strstr(utsname.machine, "arm")) {
+		*value = "arm";
+	} else if(strstr(utsname.machine, "mips")) {
+		const bool is_big_endian = IS_BIG_ENDIAN;
+		*value = (is_big_endian) ? "mipseb" : "mipsel";
+	} else
+		*value = dmstrdup(utsname.machine);
+	return 0;
+}
+
 /* *** Device.DeviceInfo. *** */
 DMOBJ tDeviceInfoObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"VendorConfigFile", &DMREAD, NULL, NULL, NULL, browseVcfInst, NULL, NULL, NULL, NULL, tDeviceInfoVendorConfigFileParams, NULL, BBFDM_BOTH},
-{"VendorLogFile", &DMREAD, NULL, NULL, NULL, browseVlfInst, NULL, NULL, NULL, NULL, tDeviceInfoVendorLogFileParams, NULL, BBFDM_BOTH},
 {"MemoryStatus", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDeviceInfoMemoryStatusParams, NULL, BBFDM_BOTH},
 {"ProcessStatus", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tDeviceInfoProcessStatusObj, tDeviceInfoProcessStatusParams, NULL, BBFDM_BOTH},
+{"Processor", &DMREAD, NULL, NULL, NULL, browseDeviceInfoProcessorInst, NULL, NULL, NULL, NULL, tDeviceInfoProcessorParams, NULL, BBFDM_BOTH},
+{"VendorLogFile", &DMREAD, NULL, NULL, NULL, browseVlfInst, NULL, NULL, NULL, NULL, tDeviceInfoVendorLogFileParams, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -332,8 +414,9 @@ DMLEAF tDeviceInfoParams[] = {
 {"SerialNumber", &DMREAD, DMT_STRING, get_device_serialnumber, NULL,  &DMFINFRM, NULL, BBFDM_BOTH},
 {"HardwareVersion", &DMREAD, DMT_STRING, os__get_device_hardwareversion, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"SoftwareVersion", &DMREAD, DMT_STRING, get_device_softwareversion, NULL, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
-{"UpTime", &DMREAD, DMT_UNINT, get_device_info_uptime, NULL, NULL, NULL, BBFDM_BOTH},
 {"ProvisioningCode", &DMWRITE, DMT_STRING, get_device_provisioningcode, set_device_provisioningcode, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
+{"UpTime", &DMREAD, DMT_UNINT, get_device_info_uptime, NULL, NULL, NULL, BBFDM_BOTH},
+{"ProcessorNumberOfEntries", &DMREAD, DMT_UNINT, get_DeviceInfo_ProcessorNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {CUSTOM_PREFIX"BaseMACAddress", &DMREAD, DMT_STRING, os__get_base_mac_addr, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
@@ -391,5 +474,13 @@ DMLEAF tDeviceInfoVendorLogFileParams[] = {
 {"Name", &DMREAD, DMT_STRING, get_vlf_name, NULL, NULL, NULL, BBFDM_BOTH},
 {"MaximumSize", &DMREAD, DMT_UNINT, get_vlf_max_size, NULL, NULL, NULL, BBFDM_BOTH},
 {"Persistent", &DMREAD, DMT_BOOL, get_vlf_persistent, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.DeviceInfo.Processor.{i}. *** */
+DMLEAF tDeviceInfoProcessorParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Alias", &DMWRITE, DMT_STRING, get_DeviceInfoProcessor_Alias, set_DeviceInfoProcessor_Alias, NULL, NULL, BBFDM_BOTH},
+{"Architecture", &DMREAD, DMT_STRING, get_DeviceInfoProcessor_Architecture, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };

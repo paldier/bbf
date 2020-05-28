@@ -45,6 +45,7 @@
 #include <sys/ioctl.h>
 #include <sys/klog.h>
 #include <sys/param.h>
+#include <sys/utsname.h>
 #include <net/if.h>
 #include <net/if_arp.h>
 #include <uci.h>
@@ -112,6 +113,7 @@ extern char *SupportedStandards[];
 #define DMMAP "dmmap"
 #define DHCPSTATICADDRESS_DISABLED_CHADDR "00:00:00:00:00:01"
 #define RANGE_ARGS (struct range_args[])
+#define IS_BIG_ENDIAN (*(uint16_t *)"\0\xff" < 0x100)
 
 #define DM_ASSERT(X, Y) \
 do { \

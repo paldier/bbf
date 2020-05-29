@@ -186,18 +186,34 @@ static int get_IP_IPv6Capable(char *refparam, struct dmctx *ctx, void *data, cha
 
 static int get_IP_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "1";
+	char buf[64] = {0};
+
+	*value = "0";
+	int pp = dmcmd("sysctl", 1, "net.ipv6.conf.all.disable_ipv6");
+	if (pp) {
+		int r = dmcmd_read(pp, buf, sizeof(buf));
+		close(pp);
+		char *val = NULL;
+		if (r > 0 && (val = strchr(buf, '=')))
+			*value = (strcmp(val+2, "1") == 0) ? "0" : "1";
+	}
 	return 0;
 }
 
 static int set_IP_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	char buf[64] = {0};
+	bool b;
+
 	switch (action)	{
 		case VALUECHECK:
 			if (dm_validate_boolean(value))
 				return FAULT_9007;
 			break;
 		case VALUESET:
+			string_to_bool(value, &b);
+			snprintf(buf, sizeof(buf), "net.ipv6.conf.all.disable_ipv6=%d", b ? 0 : 1);
+			DMCMD("sysctl", 2, "-w", buf);
 			break;
 	}
 	return 0;
@@ -205,7 +221,10 @@ static int set_IP_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char
 
 static int get_IP_IPv6Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "Enabled";
+	char buf[16];
+
+	dm_read_sysfs_file("/proc/sys/net/ipv6/conf/all/disable_ipv6", buf, sizeof(buf));
+	*value = (strcmp(buf, "1") == 0) ? "Disabled" : "Enabled";
 	return 0;
 }
 

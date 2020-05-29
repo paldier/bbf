@@ -201,6 +201,14 @@ bool is_strword_in_optionvalue(char *optionvalue, char *str)
 	return false;
 }
 
+void remove_new_line(char *buf)
+{
+	int len;
+	len = strlen(buf) - 1;
+	if (buf[len] == '\n')
+		buf[len] = 0;
+}
+
 int dmcmd(char *cmd, int n, ...)
 {
 	va_list arg;
@@ -303,6 +311,7 @@ int dmcmd_read(int pipe, char *buffer, int size)
 	int rd;
 	if (size < 2) return -1;
 	if ((rd = read(pipe, buffer, (size-1))) > 0) {
+		remove_new_line(buffer);
 		buffer[rd] = '\0';
 		return (rd + 1);
 	} else {

@@ -58,7 +58,7 @@
 /* *** BBFDM *** */
 DMOBJ tEntry181Obj[] = {
 /* OBJ, permission, addobj, delobj, checkdep, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"Device", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, NULL, tRoot_181_Obj, tRoot_181_Params, NULL, BBFDM_BOTH},
+{"Device", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, NULL, NULL, tRoot_181_Obj, tRoot_181_Params, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -71,19 +71,19 @@ DMLEAF tRoot_181_Params[] = {
 
 DMOBJ tRoot_181_Obj[] = {
 /* OBJ, permission, addobj, delobj, checkdep, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
-{"DeviceInfo", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, &DMNONE, NULL, tDeviceInfoObj, tDeviceInfoParams, NULL, BBFDM_BOTH},
-{"ManagementServer", &DMREAD, NULL, NULL, "file:/etc/config/cwmp", NULL, &DMFINFRM, &DMNONE, NULL, NULL, tManagementServerParams, NULL, BBFDM_BOTH},
-{"Time", &DMREAD, NULL, NULL, "file:/etc/config/system", NULL, NULL, &DMNONE, NULL, NULL, tTimeParams, NULL, BBFDM_BOTH},
-{"UPnP", &DMREAD, NULL, NULL, "file:/etc/config/upnpd", NULL, NULL, &DMNONE, NULL, tUPnPObj, NULL, NULL, BBFDM_BOTH},
+{"DeviceInfo", &DMREAD, NULL, NULL, NULL, NULL, &DMFINFRM, NULL, NULL, tDeviceInfoObj, tDeviceInfoParams, NULL, BBFDM_BOTH},
+{"ManagementServer", &DMREAD, NULL, NULL, "file:/etc/config/cwmp", NULL, &DMFINFRM, NULL, NULL, NULL, tManagementServerParams, NULL, BBFDM_BOTH},
+{"Time", &DMREAD, NULL, NULL, "file:/etc/config/system", NULL, NULL, NULL, NULL, NULL, tTimeParams, NULL, BBFDM_BOTH},
+{"UPnP", &DMREAD, NULL, NULL, "file:/etc/config/upnpd", NULL, NULL, NULL, NULL, tUPnPObj, NULL, NULL, BBFDM_BOTH},
 #ifdef BBF_TR104
-{"Services", &DMREAD, NULL, NULL, NULL, NULL, NULL, &DMNONE, NULL, tServicesObj, NULL, NULL, BBFDM_BOTH},
+{"Services", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tServicesObj, NULL, NULL, BBFDM_BOTH},
 #endif
-{CUSTOM_PREFIX"Syslog", &DMREAD, NULL, NULL, "file:/etc/config/system", NULL, NULL, &DMNONE, NULL, NULL, tSe_SyslogParam, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"OWSD", &DMREAD, NULL, NULL, "file:/etc/config/owsd", NULL, NULL, &DMNONE, NULL, X_IOPSYS_EU_OWSDObj, X_IOPSYS_EU_OWSDParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"IGMP", &DMREAD, NULL, NULL, "file:/etc/config/mcast", NULL, NULL, &DMNONE, NULL, X_IOPSYS_EU_IGMPObj, X_IOPSYS_EU_IGMPParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"MLD", &DMREAD, NULL, NULL, "file:/etc/config/mcast", NULL, NULL, &DMNONE, NULL, X_IOPSYS_EU_MLDObj, X_IOPSYS_EU_MLDParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"Dropbear", &DMWRITE, add_dropbear_instance, delete_dropbear_instance, "file:/etc/config/dropbear", browseXIopsysEuDropbear, NULL, &DMNONE, NULL, NULL, X_IOPSYS_EU_DropbearParams, NULL, BBFDM_BOTH},
-{CUSTOM_PREFIX"Buttons", &DMREAD, NULL, NULL, "file:/etc/config/buttons", browseXIopsysEuButton, NULL, &DMNONE, NULL, NULL, X_IOPSYS_EU_ButtonParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"Syslog", &DMREAD, NULL, NULL, "file:/etc/config/system", NULL, NULL, NULL, NULL, NULL, tSe_SyslogParam, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"OWSD", &DMREAD, NULL, NULL, "file:/etc/config/owsd", NULL, NULL, NULL, NULL, X_IOPSYS_EU_OWSDObj, X_IOPSYS_EU_OWSDParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"IGMP", &DMREAD, NULL, NULL, "file:/etc/config/mcast", NULL, NULL, NULL, NULL, X_IOPSYS_EU_IGMPObj, X_IOPSYS_EU_IGMPParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"MLD", &DMREAD, NULL, NULL, "file:/etc/config/mcast", NULL, NULL, NULL, NULL, X_IOPSYS_EU_MLDObj, X_IOPSYS_EU_MLDParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"Dropbear", &DMWRITE, add_dropbear_instance, delete_dropbear_instance, "file:/etc/config/dropbear", browseXIopsysEuDropbear, NULL, NULL, NULL, NULL, X_IOPSYS_EU_DropbearParams, NULL, BBFDM_BOTH},
+{CUSTOM_PREFIX"Buttons", &DMREAD, NULL, NULL, "file:/etc/config/buttons", browseXIopsysEuButton, NULL, NULL, NULL, NULL, X_IOPSYS_EU_ButtonParams, NULL, BBFDM_BOTH},
 {"Bridging",&DMREAD, NULL, NULL, "file:/etc/config/network", NULL, NULL, NULL, NULL, tBridgingObj, tBridgingParams, NULL, BBFDM_BOTH},
 {"WiFi",&DMREAD, NULL, NULL, "file:/etc/config/wireless", NULL, NULL, NULL, NULL, tWiFiObj, tWiFiParams, NULL, BBFDM_BOTH},
 {"IP",&DMREAD, NULL, NULL, "file:/etc/config/network", NULL, NULL, NULL, NULL, tIPObj, tIPParams, NULL, BBFDM_BOTH},
@@ -114,7 +114,7 @@ DMOBJ tRoot_181_Obj[] = {
 {"LANConfigSecurity", &DMREAD, NULL, NULL, "file:/etc/config/users", NULL, NULL, NULL, NULL, NULL, tLANConfigSecurityParams, NULL, BBFDM_BOTH},
 #ifdef BBF_TR157
 {"BulkData", &DMREAD, NULL, NULL, "file:/etc/config/cwmp_bulkdata", NULL, NULL, NULL, NULL, tBulkDataObj, tBulkDataParams, NULL, BBFDM_BOTH},
-{"SoftwareModules", &DMREAD, NULL, NULL, "ubus:swmodules", NULL, NULL, &DMNONE, NULL, tSoftwareModulesObj, tSoftwareModulesParams, NULL, BBFDM_BOTH},
+{"SoftwareModules", &DMREAD, NULL, NULL, "ubus:swmodules", NULL, NULL, NULL, NULL, tSoftwareModulesObj, tSoftwareModulesParams, NULL, BBFDM_BOTH},
 #endif
 {"Security", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL,  NULL, tSecurityObj, tSecurityParams, NULL, BBFDM_BOTH},
 {0}

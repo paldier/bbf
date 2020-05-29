@@ -27,6 +27,51 @@ LIST_HEAD(head_package_change);
 unsigned char dmcli_timetrack = 0;
 unsigned char dmcli_evaluatetest = 0;
 
+static int usp_fault_map(int fault)
+{
+	int usp_fault;
+
+	if (bbfdatamodel_type != BBFDM_USP)
+		return fault;
+
+	switch(fault) {
+	case FAULT_9000:
+		usp_fault = 7001;
+		break;
+	case FAULT_9001:
+		usp_fault = 7002;
+		break;
+	case FAULT_9002:
+		usp_fault = 7003;
+		break;
+	case FAULT_9003:
+		usp_fault = 7004;
+		break;
+	case FAULT_9004:
+		usp_fault = 7005;
+		break;
+	case FAULT_9005:
+		usp_fault = 7026;
+		break;
+	case FAULT_9006:
+		usp_fault = 7011;
+		break;
+	case FAULT_9007:
+		usp_fault = 7012;
+		break;
+	case FAULT_9008:
+		usp_fault = 7013;
+		break;
+	case FAULT_9027:
+		usp_fault = 7013;
+		break;
+	default:
+		usp_fault = fault;
+	}
+
+	return usp_fault;
+}
+
 static void print_dm_help(void)
 {
 	printf("Usage:\n");
@@ -298,7 +343,7 @@ int dm_entry_param_method(struct dmctx *ctx, int cmd, char *inparam, char *arg1,
 #endif
 	}
 	dmuci_commit();
-	return fault;
+	return usp_fault_map(fault);
 }
 
 int dm_entry_apply(struct dmctx *ctx, int cmd, char *arg1, char *arg2)
@@ -381,7 +426,7 @@ int dm_entry_apply(struct dmctx *ctx, int cmd, char *arg1, char *arg2)
 			break;
 #endif
 	}
-	return fault;
+	return usp_fault_map(fault);
 }
 
 int dm_entry_load_enabled_notify(unsigned int dm_type, unsigned int amd_version, int instance_mode, void (*add_list_value_change)(char *param_name, char *param_data, char *param_type), void (*send_active_value_change)(void))

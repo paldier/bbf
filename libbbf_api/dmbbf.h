@@ -219,8 +219,6 @@ struct dmctx
 	int (*method_obj)(DMOBJECT_ARGS);
 	int (*checkobj)(DMOBJECT_ARGS);
 	int (*checkleaf)(DMOBJECT_ARGS);
-	void (*add_list_value_change)(char *param_name, char *param_data, char *param_type);
-	void (*send_active_value_change)(void);
 	struct list_head list_parameter;
 	struct list_head set_list_tmp;
 	struct list_head list_fault_param;
@@ -249,6 +247,8 @@ struct dmctx
 	char all_instances[512];
 	char *inst_buf[16];
 	char *instance_wildchar;
+	void (*add_list_value_change)(char *param_name, char *param_data, char *param_type);
+	void (*send_active_value_change)(void);
 };
 
 

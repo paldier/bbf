@@ -295,9 +295,9 @@ def objhasparam (dmobject):
 def printopenobject (obj):
 	fp = open('./.json_tmp', 'a')
 	if "tr-104" in sys.argv[1]:
-		print >> fp, "\"Device.Services.%s\" : {" % obj.get('name')
+		print >> fp, "\"Device.Services.%s\" : {" % obj.get('name').replace(" ", "")
 	else:
-		print >> fp, "\"%s\" : {" % obj.get('name')
+		print >> fp, "\"%s\" : {" % obj.get('name').replace(" ", "")
 	fp.close()
 
 def printopenfile ():
@@ -463,7 +463,7 @@ def printPARAM( dmparam, dmobject, bbfdm_type ):
 	islist, datatype, paramvalrange, paramenum, paramunit, parampattern, listminItem, listmaxItem, listmaxsize = getparamoption(dmparam)
 
 	fp = open('./.json_tmp', 'a')
-	print >> fp,  "\"%s\" : {" % dmparam.get('name')
+	print >> fp,  "\"%s\" : {" % dmparam.get('name').replace(" ", "")
 	print >> fp,  "\"type\" : \"%s\"," % getparamtype(dmparam)
 	print >> fp,  "\"read\" : true,"
 	print >> fp,  "\"write\" : %s," % ("false" if dmparam.get('access') == "readOnly" else "true")

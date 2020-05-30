@@ -29790,7 +29790,7 @@
 					"list": {
 						"datatype": "string"
 					}
-				},
+				}, 
 				"Device.WiFi.Radio.{i}.Stats.": {
 					"type": "object", 
 					"protocols": [
@@ -31699,7 +31699,7 @@
 							}
 						]
 					}, 
-					"SecondaryRadiusServerIPAddr ": {
+					"SecondaryRadiusServerIPAddr": {
 						"type": "string", 
 						"read": true, 
 						"write": true, 
@@ -31822,7 +31822,7 @@
 							"cwmp"
 						], 
 						"datatype": "boolean"
-					},
+					}, 
 					"Reset()": {
 						"type": "command", 
 						"protocols": [
@@ -74311,7 +74311,7 @@
 							}
 						]
 					}, 
-					"PublishQoS ": {
+					"PublishQoS": {
 						"type": "unsignedInt", 
 						"read": true, 
 						"write": true, 

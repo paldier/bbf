@@ -25,7 +25,7 @@ static int get_stats_json_folder(char *folder_path, int *file_count, unsigned lo
 	int filecount = 0;
 	unsigned long filesize = 0, filedate = 0;
 
-	if (isfolderexist(folder_path)) {
+	if (folder_exists(folder_path)) {
 		dirp = opendir(folder_path);
 		while ((entry = readdir(dirp)) != NULL) {
 			if ((entry->d_type == DT_REG) && (strstr(entry->d_name, ".json"))) {
@@ -877,7 +877,7 @@ int load_json_dynamic_arrays(struct dmctx *ctx)
 	struct dirent *ent;
 	DIR *dir = NULL;
 
-	if (isfolderexist(JSON_FOLDER_PATH)) {
+	if (folder_exists(JSON_FOLDER_PATH)) {
 		sysfs_foreach_file(JSON_FOLDER_PATH, dir, ent) {
 			if (strstr(ent->d_name, ".json")) {
 				DMOBJ *dm_entryobj = NULL;

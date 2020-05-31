@@ -136,7 +136,7 @@ static int browseUSBInterfaceInst(struct dmctx *dmctx, DMNODE *parent_node, void
 		iface_name[0] = 0;
 
 		snprintf(netfolderpath, sizeof(netfolderpath), "%s/%s/net", SYSFS_USB_DEVICES_PATH, p->sysfs_folder_name);
-		if(!isfolderexist(netfolderpath)){
+		if (!folder_exists(netfolderpath)) {
 			//dmuci_delete_by_section_unnamed_bbfdm(p->dm, NULL, NULL);
 			continue;
 		}
@@ -293,7 +293,7 @@ static int synchronize_usb_devices_with_dmmap_opt_recursively(char *sysfsrep, ch
 	if(is_root){
 		uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
 			dmuci_get_value_by_section_string(s, opt_name, &v);
-			if(isfolderexist(v) == 0){
+			if (!folder_exists(v)) {
 				dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
 			}
 		}

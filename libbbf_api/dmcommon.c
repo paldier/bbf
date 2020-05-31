@@ -976,7 +976,7 @@ int synchronize_system_folders_with_dmmap_opt(char *sysfsrep, char *dmmap_packag
 	 */
 	uci_path_foreach_sections_safe(bbfdm, dmmap_package, dmmap_section, stmp, s) {
 		dmuci_get_value_by_section_string(s, opt_name, &v);
-		if (isfolderexist(v) == 0)
+		if (!folder_exists(v))
 			dmuci_delete_by_section_unnamed_bbfdm(s, NULL, NULL);
 	}
 	return 0;
@@ -1409,16 +1409,6 @@ int command_exec_output_to_array(char *cmd, char **output, int *length)
 	return 0;
 }
 
-int isfolderexist(char *folderpath)
-{
-	DIR* dir = opendir(folderpath);
-	if (dir) {
-	    closedir(dir);
-	    return 1;
-	} else
-		return 0;
-}
-
 int copy_temporary_file_to_original_file(char *f1, char *f2)
 {
 	FILE *fp, *ftmp;
@@ -1794,7 +1784,17 @@ int dm_validate_unsignedInt_list(char *value, int min_item, int max_item, int ma
 	return 0;
 }
 
-bool file_exists(const char* path)
+bool folder_exists(const char *path)
+{
+	struct stat buffer;
+
+	if (stat(path, &buffer) == 0 && S_ISDIR(buffer.st_mode))
+		return true;
+	else
+		return false;
+}
+
+bool file_exists(const char *path)
 {
 	struct stat buffer;
 
@@ -1804,14 +1804,14 @@ bool file_exists(const char* path)
 		return false;
 }
 
-int is_regular_file(const char *path)
+bool is_regular_file(const char *path)
 {
-	if (path == NULL || strlen(path) == 0)
-		return 0;
+	struct stat buffer;
 
-	struct stat path_stat;
-	stat(path, &path_stat);
-	return S_ISREG(path_stat.st_mode);
+	if (stat(path, &buffer) == 0 && S_ISREG(buffer.st_mode))
+		return true;
+	else
+		return false;
 }
 
 int get_base64char_value(char b64)

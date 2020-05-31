@@ -149,7 +149,7 @@ static char *get_child_prefix_linker(char *interface)
  */
 static int get_IP_IPv4Capable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "1";
+	*value = folder_exists("/proc/sys/net/ipv4") ? "1" : "0";
 	return 0;
 }
 
@@ -180,23 +180,16 @@ static int get_IP_IPv4Status(char *refparam, struct dmctx *ctx, void *data, char
 
 static int get_IP_IPv6Capable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = "1";
+	*value = folder_exists("/proc/sys/net/ipv6") ? "1" : "0";
 	return 0;
 }
 
 static int get_IP_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char buf[64] = {0};
+	char buf[16] = {0};
 
-	*value = "0";
-	int pp = dmcmd("sysctl", 1, "net.ipv6.conf.all.disable_ipv6");
-	if (pp) {
-		int r = dmcmd_read(pp, buf, sizeof(buf));
-		close(pp);
-		char *val = NULL;
-		if (r > 0 && (val = strchr(buf, '=')))
-			*value = (strcmp(val+2, "1") == 0) ? "0" : "1";
-	}
+	dm_read_sysfs_file("/proc/sys/net/ipv6/conf/all/disable_ipv6", buf, sizeof(buf));
+	*value = (strcmp(buf, "1") == 0) ? "0" : "1";
 	return 0;
 }
 
@@ -221,10 +214,8 @@ static int set_IP_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char
 
 static int get_IP_IPv6Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char buf[16];
-
-	dm_read_sysfs_file("/proc/sys/net/ipv6/conf/all/disable_ipv6", buf, sizeof(buf));
-	*value = (strcmp(buf, "1") == 0) ? "Disabled" : "Enabled";
+	get_IP_IPv6Enable(refparam, ctx, data, instance, value);
+	*value = (strcmp(*value, "1") == 0) ? "Enabled" : "Disabled";
 	return 0;
 }
 

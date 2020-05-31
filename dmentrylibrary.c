@@ -23,7 +23,7 @@ static int get_stats_library_folder(char *folder_path, int *file_count, unsigned
 	int filecount = 0;
 	unsigned long filesize = 0, filedate = 0;
 
-	if (isfolderexist(folder_path)) {
+	if (folder_exists(folder_path)) {
 		dirp = opendir(folder_path);
 		while ((entry = readdir(dirp)) != NULL) {
 			if ((entry->d_type == DT_REG) && (strstr(entry->d_name, ".so"))) {
@@ -118,7 +118,7 @@ int load_library_dynamic_arrays(struct dmctx *ctx)
 	struct dirent *ent;
 	DIR *dir = NULL;
 
-	if (isfolderexist(LIBRARY_FOLDER_PATH)) {
+	if (folder_exists(LIBRARY_FOLDER_PATH)) {
 		sysfs_foreach_file(LIBRARY_FOLDER_PATH, dir, ent) {
 			if (strstr(ent->d_name, ".so")) {
 				void *handle;

@@ -301,7 +301,6 @@ int command_exec_output_to_array(char *cmd, char **output, int *length);
 int copy_temporary_file_to_original_file(char *f1, char *f2);
 struct uci_section *is_dmmap_section_exist(char* package, char* section);
 struct uci_section *is_dmmap_section_exist_eq(char* package, char* section, char* opt, char* value);
-int isfolderexist(char *folderpath);
 char * dmmap_file_path_get(const char *dmmap_package);
 int dm_read_sysfs_file(const char *file, char *dst, unsigned len);
 int get_net_iface_sysfs(const char *uci_iface, const char *name, char **value);
@@ -320,8 +319,9 @@ int dm_validate_hexBinary(char *value, struct range_args r_args[], int r_args_si
 int dm_validate_string_list(char *value, int min_item, int max_item, int max_size, int min, int max, char *enumeration[], int enumeration_size, char *pattern[], int pattern_size);
 int dm_validate_unsignedInt_list(char *value, int min_item, int max_item, int max_size, struct range_args r_args[], int r_args_size);
 char *decode64(char *enc);
+bool folder_exists(const char *path);
 bool file_exists(const char *path);
-int is_regular_file(const char *path);
+bool is_regular_file(const char *path);
 char *stringToHex(char *text, int length);
 char *replace_char(char *str, char find, char replace);
 int is_vlan_termination_section(char *name);

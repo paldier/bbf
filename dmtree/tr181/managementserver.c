@@ -181,12 +181,14 @@ static int get_management_server_connection_request_url(char *refparam, struct d
 	char *ip, *port, *iface;
 
 	dmuci_get_option_value_string("cwmp", "cpe", "default_wan_interface", &iface);
-	network_get_ipaddr(&ip, iface);	
+	network_get_ipaddr(&ip, iface);
 	dmuci_get_option_value_string("cwmp", "cpe", "port", &port);
+
 	if (ip[0] != '\0' && port[0] != '\0') {
-		char buf[64];
-		snprintf(buf, sizeof(buf), "http://%s:%s/", ip, port);
-		*value = dmstrdup(buf); //  MEM WILL BE FREED IN DMMEMCLEAN
+		char *path;
+
+		dmuci_get_option_value_string("cwmp", "cpe", "path", &path);
+		dmasprintf(value, "http://%s:%s/%s", ip, port, path ? path : "");
 	}
 	return 0;
 }

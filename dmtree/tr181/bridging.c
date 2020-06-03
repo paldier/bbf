@@ -381,15 +381,17 @@ static int dmmap_synchronizeBridgingBridgeVLANPort(struct dmctx *dmctx, DMNODE *
 	return 0;
 }
 
-static int is_bridge_port_device_exist(char *br_inst, char *name)
+static int is_bridge_port_device_exist(char *br_inst, char *name, struct uci_section **dmmap_br_port)
 {
 	struct uci_section *s = NULL;
 
 	uci_path_foreach_option_eq(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_inst, s) {
 		char *s_name;
 		dmuci_get_value_by_section_string(s, "device", &s_name);
-		if (strcmp(s_name, name) == 0)
+		if (strcmp(s_name, name) == 0) {
+			*dmmap_br_port = s;
 			return 1;
+		}
 	}
 	return 0;
 }
@@ -438,9 +440,8 @@ static void set_linker_bridge_port_management(char *br_inst, char *linker)
 static int dmmap_synchronizeBridgingBridgePort(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	struct bridge_args *br_args = (struct bridge_args *)prev_data;
-	struct uci_section *s = NULL, *stmp = NULL, *dmmap_network = NULL;
+	struct uci_section *s = NULL, *stmp = NULL, *dmmap_network = NULL, *dmmap_br_port = NULL;
 	char *br_ifname = NULL, *pch = NULL, *spch = NULL, *p, plinker[32], linker_buf[512] = {0};
-	bool linker_req = false;
 
 	uci_path_foreach_option_eq_safe(bbfdm, "dmmap_bridge_port", "bridge_port", "br_inst", br_args->br_inst, stmp, s) {
 
@@ -488,8 +489,14 @@ static int dmmap_synchronizeBridgingBridgePort(struct dmctx *dmctx, DMNODE *pare
 	br_ifname = dmstrdup(br_args->ifname);
 	for (pch = strtok_r(br_ifname, " ", &spch); pch != NULL; pch = strtok_r(NULL, " ", &spch)) {
 
-		if (is_bridge_port_device_exist(br_args->br_inst, pch))
+		if (is_bridge_port_device_exist(br_args->br_inst, pch, &dmmap_br_port)) {
+			if (dmmap_br_port) {
+				snprintf(plinker, sizeof(plinker), "br_%s:%s+%s", br_args->br_inst, section_name(dmmap_br_port), pch);
+				dmstrappendstr(p, plinker);
+				dmstrappendchr(p, ',');
+			}
 			continue;
+		}
 
 		struct uci_section *sbr_port = NULL;
 		char *sbr_name;
@@ -501,7 +508,6 @@ static int dmmap_synchronizeBridgingBridgePort(struct dmctx *dmctx, DMNODE *pare
 		snprintf(plinker, sizeof(plinker), "br_%s:%s+%s", br_args->br_inst, section_name(sbr_port), pch);
 		dmstrappendstr(p, plinker);
 		dmstrappendchr(p, ',');
-		linker_req = true;
 	}
 	dmfree(br_ifname);
 
@@ -512,8 +518,14 @@ static int dmmap_synchronizeBridgingBridgePort(struct dmctx *dmctx, DMNODE *pare
 		char *ifname;
 		dmuci_get_value_by_section_string(ss, "ifname", &ifname);
 
-		if (is_bridge_port_device_exist(br_args->br_inst, ifname))
+		if (is_bridge_port_device_exist(br_args->br_inst, ifname, &dmmap_br_port)) {
+			if (dmmap_br_port) {
+				snprintf(plinker, sizeof(plinker), "br_%s:%s+%s", br_args->br_inst, section_name(dmmap_br_port), ifname);
+				dmstrappendstr(p, plinker);
+				dmstrappendchr(p, ',');
+			}
 			continue;
+		}
 
 		struct uci_section *sbr_port = NULL;
 		char *sbr_name;
@@ -525,16 +537,13 @@ static int dmmap_synchronizeBridgingBridgePort(struct dmctx *dmctx, DMNODE *pare
 		snprintf(plinker, sizeof(plinker), "br_%s:%s+%s", br_args->br_inst, section_name(sbr_port), ifname);
 		dmstrappendstr(p, plinker);
 		dmstrappendchr(p, ',');
-		linker_req = true;
 	}
 
 	p = p -1;
 	dmstrappendend(p);
 
-	if (linker_req && strcmp(s_user, "1") != 0) {
-		char *linker = dmstrdup(linker_buf);
-		set_linker_bridge_port_management(br_args->br_inst, linker);
-	}
+	// Update the device linker for management port
+	set_linker_bridge_port_management(br_args->br_inst, linker_buf);
 	return 0;
 }
 

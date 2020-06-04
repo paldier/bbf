@@ -38,6 +38,24 @@ int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
+int os__get_device_devicecategory(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = get_uci_deviceinfo("DeviceCategory");
+	return 0;
+}
+
+int os__get_device_additionalhardwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = get_uci_deviceinfo("AdditionalHardwareVersion");
+	return 0;
+}
+
+int os__get_device_additionalsoftwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = get_uci_deviceinfo("AdditionalSoftwareVersion");
+	return 0;
+}
+
 int os__get_device_modelname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = get_uci_deviceinfo("ModelName");

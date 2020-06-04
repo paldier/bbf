@@ -494,6 +494,7 @@ DMOBJ tDeviceInfoObj[] = {
 
 DMLEAF tDeviceInfoParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"DeviceCategory", &DMREAD, DMT_STRING, os__get_device_devicecategory, NULL, NULL, NULL, BBFDM_BOTH},
 {"Manufacturer", &DMREAD, DMT_STRING, get_device_manufacturer, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"ManufacturerOUI", &DMREAD, DMT_STRING, get_device_manufactureroui, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"ModelName", &DMREAD, DMT_STRING, os__get_device_modelname, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
@@ -502,6 +503,8 @@ DMLEAF tDeviceInfoParams[] = {
 {"SerialNumber", &DMREAD, DMT_STRING, get_device_serialnumber, NULL,  &DMFINFRM, NULL, BBFDM_BOTH},
 {"HardwareVersion", &DMREAD, DMT_STRING, os__get_device_hardwareversion, NULL, &DMFINFRM, NULL, BBFDM_BOTH},
 {"SoftwareVersion", &DMREAD, DMT_STRING, get_device_softwareversion, NULL, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
+{"AdditionalHardwareVersion", &DMREAD, DMT_STRING, os__get_device_additionalhardwareversion, NULL, NULL, NULL, BBFDM_BOTH},
+{"AdditionalSoftwareVersion", &DMREAD, DMT_STRING, os__get_device_additionalsoftwareversion, NULL, NULL, NULL, BBFDM_BOTH},
 {"ProvisioningCode", &DMWRITE, DMT_STRING, get_device_provisioningcode, set_device_provisioningcode, &DMFINFRM, &DMACTIVE, BBFDM_BOTH},
 {"UpTime", &DMREAD, DMT_UNINT, get_device_info_uptime, NULL, NULL, NULL, BBFDM_BOTH},
 {"ProcessorNumberOfEntries", &DMREAD, DMT_UNINT, get_DeviceInfo_ProcessorNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},

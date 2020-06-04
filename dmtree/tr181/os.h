@@ -12,6 +12,9 @@ char * os__get_softwareversion();
 char * os__get_deviceid_manufactureroui();
 
 int os__get_device_hardwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
+int os__get_device_devicecategory(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
+int os__get_device_additionalhardwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
+int os__get_device_additionalsoftwareversion(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_device_modelname(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_device_description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_base_mac_addr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

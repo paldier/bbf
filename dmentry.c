@@ -435,11 +435,9 @@ int dm_entry_load_enabled_notify(unsigned int dm_type, unsigned int amd_version,
 
 	dm_ctx_init(&dmctx, dm_type, amd_version, instance_mode);
 	dmctx.in_param = "";
-	dmctx.add_list_value_change = add_list_value_change;
-	dmctx.send_active_value_change = send_active_value_change;
 
 	free_all_list_enabled_lwnotify();
-	dm_entry_enabled_notify_check_value_change(&dmctx);
+	dm_entry_enabled_notify_check_value_change(&dmctx, add_list_value_change, send_active_value_change);
 	dm_entry_enabled_notify(&dmctx);
 
 	dm_ctx_clean(&dmctx);

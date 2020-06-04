@@ -103,6 +103,9 @@ char dmroot[64] = "Device";
 int bbfdatamodel_type = BBFDM_BOTH;
 unsigned int upnp_in_user_mask = DM_SUPERADMIN_MASK;
 
+void (*api_add_list_value_change)(char *param_name, char *param_data, char *param_type) = NULL;
+void (*api_send_active_value_change)(void) = NULL;
+
 struct notification notifications[] = {
 	[0] = {"0", "disabled"},
 	[1] = {"1", "passive"},
@@ -1827,7 +1830,7 @@ static int enabled_notify_check_param(DMPARAM_ARGS)
 /*********************
  * Check enabled notify value change
  ********************/
-int dm_entry_enabled_notify_check_value_change(struct dmctx *dmctx)
+int dm_entry_enabled_notify_check_value_change(struct dmctx *dmctx, void (*add_list_value_change_arg)(char *param_name, char *param_data, char *param_type), void (*send_active_value_change_arg)(void))
 {
 	DMOBJ *root = dmctx->dm_entryobj;
 	FILE *fp;
@@ -1838,6 +1841,8 @@ int dm_entry_enabled_notify_check_value_change(struct dmctx *dmctx)
 	if (fp == NULL) {
 		return 0;
 	}
+	api_add_list_value_change = add_list_value_change_arg;
+	api_send_active_value_change = send_active_value_change_arg;
 
 	while (fgets(buf, 512, fp) != NULL) {
 		DMNODE node = {.current_object = ""};
@@ -1879,11 +1884,11 @@ static int enabled_notify_check_value_change_param(DMPARAM_ARGS)
 	(get_cmd)(refparam, dmctx, data, instance, &value);
 
 	if (strcmp(value, dmctx->in_value) != 0) {
-		if (dmctx->add_list_value_change) {
-			dmctx->add_list_value_change(refparam, value, DMT_TYPE[type]);
+		if (api_add_list_value_change) {
+			api_add_list_value_change(refparam, value, DMT_TYPE[type]);
 		}
-		if(dmctx->in_notification[0] =='2' && dmctx->send_active_value_change) {
-			dmctx->send_active_value_change();
+		if(dmctx->in_notification[0] =='2' && api_send_active_value_change) {
+			api_send_active_value_change();
 		}
 	}
 	dmfree(refparam);

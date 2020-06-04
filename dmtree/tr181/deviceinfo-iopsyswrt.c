@@ -6,11 +6,7 @@
 char * os__get_deviceid_manufacturer()
 {
 	char *v;
-	dmuci_get_option_value_string("cwmp","cpe","manufacturer", &v);
-	if (v[0] == '\0') {
-		db_get_value_string("device", "deviceinfo", "Manufacturer", &v);
-		return v;
-	}
+	db_get_value_string("device", "deviceinfo", "Manufacturer", &v);
 	return v;
 }
 

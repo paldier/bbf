@@ -19,6 +19,12 @@ struct eth_port_args
 	char *ifname;
 };
 
+struct eth_rmon_args
+{
+	struct uci_section *eth_rmon_sec;
+	json_object *eth_rmon_obj;
+};
+
 /*************************************************************
 * INIT
 **************************************************************/
@@ -26,6 +32,13 @@ static inline int init_eth_port(struct eth_port_args *args, struct uci_section *
 {
 	args->eth_port_sec = s;
 	args->ifname = ifname;
+	return 0;
+}
+
+static inline int init_eth_rmon(struct eth_rmon_args *args, struct uci_section *s, json_object *obj)
+{
+	args->eth_rmon_sec = s;
+	args->eth_rmon_obj = obj;
 	return 0;
 }
 
@@ -253,6 +266,28 @@ static int browseEthernetVLANTerminationInst(struct dmctx *dmctx, DMNODE *parent
 	return 0;
 }
 
+static int browseEthernetRMONStatsInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+{
+	char *idx = NULL, *idx_last = NULL, *ifname;
+	struct eth_rmon_args curr_eth_rmon_args = {0};
+	struct dmmap_dup *p = NULL;
+	json_object *res = NULL;
+	LIST_HEAD(dup_list);
+
+	synchronize_specific_config_sections_with_dmmap("ports", "ethport", "dmmap_eth_rmon", &dup_list);
+	list_for_each_entry(p, &dup_list, list) {
+		dmuci_get_value_by_section_string(p->config_section, "ifname", &ifname);
+		dmubus_call("ethernet", "rmonstats", UBUS_ARGS{{"ifname", ifname, String}}, 1, &res);
+		if (!res) continue;
+		init_eth_rmon(&curr_eth_rmon_args, p->config_section, res);
+		idx =  handle_update_instance(1, dmctx, &idx_last, update_instance_alias, 3, p->dmmap_section, "eth_rmon_instance", "eth_rmon_alias");
+		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_eth_rmon_args, idx) == DM_STOP)
+			break;
+	}
+	free_dmmap_config_dup_list(&dup_list);
+	return 0;
+}
+
 /*************************************************************
 * LINKER
 **************************************************************/
@@ -440,6 +475,23 @@ static int get_Ethernet_VLANTerminationNumberOfEntries(char *refparam, struct dm
 		dmuci_get_value_by_section_string(s, "name", &name);
 		if (strcmp(type, "untagged") == 0 || (*name != '\0' && !is_vlan_termination_section(name)))
 			continue;
+		cnt++;
+	}
+	dmasprintf(value, "%d", cnt);
+	return 0;
+}
+
+static int get_Ethernet_RMONStatsNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	struct uci_section *s = NULL;
+	json_object *res = NULL;
+	char *ifname;
+	int cnt = 0;
+
+	uci_foreach_sections("ports", "ethport", s) {
+		dmuci_get_value_by_section_string(s, "ifname", &ifname);
+		dmubus_call("ethernet", "rmonstats", UBUS_ARGS{{"ifname", ifname, String}}, 1, &res);
+		if (!res) continue;
 		cnt++;
 	}
 	dmasprintf(value, "%d", cnt);
@@ -1353,12 +1405,238 @@ static int get_EthernetVLANTerminationStats_MulticastPacketsReceived(char *refpa
 	return eth_iface_sysfs(data, "statistics/multicast", value);
 }
 
+/*#Device.Ethernet.RMONStats.{i}.Enable!UCI:ports/ethport,@i-1/rmon*/
+static int get_EthernetRMONStats_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	dmuci_get_value_by_section_string(((struct eth_rmon_args *)data)->eth_rmon_sec, "rmon", value);
+	if ((*value)[0] == '\0')
+		*value = "1";
+	return 0;
+}
+
+static int set_EthernetRMONStats_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	bool b;
+
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			string_to_bool(value, &b);
+			dmuci_set_value_by_section(((struct eth_rmon_args *)data)->eth_rmon_sec, "rmon", b ? "1" : "0");
+			break;
+	}
+	return 0;
+}
+
+static int get_EthernetRMONStats_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	get_EthernetRMONStats_Enable(refparam, ctx, data, instance, value);
+	*value = (strcmp(*value, "1") == 0) ? "Enabled" : "Disabled";
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Alias!UCI:dmmap_eth_rmon/ethport,@i-1/eth_rmon_alias*/
+static int get_EthernetRMONStats_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	struct uci_section *dmmap_section = NULL;
+
+	get_dmmap_section_of_config_section("dmmap_eth_rmon", "ethport", section_name(((struct eth_rmon_args *)data)->eth_rmon_sec), &dmmap_section);
+	dmuci_get_value_by_section_string(dmmap_section, "eth_rmon_alias", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "cpe-%s", instance);
+	return 0;
+}
+
+static int set_EthernetRMONStats_Alias(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	struct uci_section *dmmap_section = NULL;
+
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_string(value, -1, 64, NULL, 0, NULL, 0))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			get_dmmap_section_of_config_section("dmmap_eth_rmon", "ethport", section_name(((struct eth_rmon_args *)data)->eth_rmon_sec), &dmmap_section);
+			dmuci_set_value_by_section(dmmap_section, "eth_rmon_alias", value);
+			break;
+	}
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Name!UCI:ports/ethport,@i-1/ifname*/
+static int get_EthernetRMONStats_Name(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "ifname");
+	return 0;
+}
+
+static int get_EthernetRMONStats_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	char *linker;
+
+	dmuci_get_value_by_section_string(((struct eth_rmon_args *)data)->eth_rmon_sec, "ifname", &linker);
+	adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), linker, value);
+	if (*value == NULL)
+		*value = "";
+	return 0;
+}
+
+static int set_EthernetRMONStats_Interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_string(value, -1, -1, NULL, 0, NULL, 0))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			break;
+	}
+	return 0;
+}
+
+static int get_EthernetRMONStats_VLANID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = "0";
+	return 0;
+}
+
+static int set_EthernetRMONStats_VLANID(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_unsignedInt(value, RANGE_ARGS{{"0","4094"}}, 1))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			break;
+	}
+	return 0;
+}
+
+static int get_EthernetRMONStats_AllQueues(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = "true";
+	return 0;
+}
+
+static int set_EthernetRMONStats_AllQueues(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+{
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_boolean(value))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			break;
+	}
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Bytes!UBUS:ethernet/rmonstats/ifname,ifname/rx_bytes*/
+static int get_EthernetRMONStats_Bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_bytes");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Packets!UBUS:ethernet/rmonstats/ifname,ifname/rx_packets*/
+static int get_EthernetRMONStats_Packets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_packets");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.BroadcastPackets!UBUS:ethernet/rmonstats/ifname,ifname/rx_broadcast_packets*/
+static int get_EthernetRMONStats_BroadcastPackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_broadcast_packets");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.MulticastPackets!UBUS:ethernet/rmonstats/ifname,ifname/rx_multicast_packets*/
+static int get_EthernetRMONStats_MulticastPackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_multicast_packets");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.CRCErroredPackets!UBUS:ethernet/rmonstats/ifname,ifname/rx_crc_error_packets*/
+static int get_EthernetRMONStats_CRCErroredPackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_crc_error_packets");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.UndersizePackets!UBUS:ethernet/rmonstats/ifname,ifname/rx_undersize_packets*/
+static int get_EthernetRMONStats_UndersizePackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_undersize_packets");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.OversizePackets!UBUS:ethernet/rmonstats/ifname,ifname/rx_oversize_packets*/
+static int get_EthernetRMONStats_OversizePackets(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_oversize_packets");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Packets64Bytes!UBUS:ethernet/rmonstats/ifname,ifname/rx_packets_64bytes*/
+static int get_EthernetRMONStats_Packets64Bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_packets_64bytes");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Packets65to127Bytes!UBUS:ethernet/rmonstats/ifname,ifname/rx_packets_65to127bytes*/
+static int get_EthernetRMONStats_Packets65to127Bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_packets_65to127bytes");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Packets128to255Bytes!UBUS:ethernet/rmonstats/ifname,ifname/rx_packets_128to255bytes*/
+static int get_EthernetRMONStats_Packets128to255Bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_packets_128to255bytes");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Packets256to511Bytes!UBUS:ethernet/rmonstats/ifname,ifname/rx_packets_256to511bytes*/
+static int get_EthernetRMONStats_Packets256to511Bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_packets_256to511bytes");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Packets512to1023Bytes!UBUS:ethernet/rmonstats/ifname,ifname/rx_packets_512to1023bytes*/
+static int get_EthernetRMONStats_Packets512to1023Bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_packets_512to1023bytes");
+	return 0;
+}
+
+/*#Device.Ethernet.RMONStats.{i}.Packets1024to1518Bytes!UBUS:ethernet/rmonstats/ifname,ifname/rx_packets_1024to1518bytes*/
+static int get_EthernetRMONStats_Packets1024to1518Bytes(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value(((struct eth_rmon_args *)data)->eth_rmon_obj, 1, "rx_packets_1024to1518bytes");
+	return 0;
+}
+
+/**********************************************************************************************************************************
+*                                            OBJ & PARAM DEFINITION
+***********************************************************************************************************************************/
 /* *** Device.Ethernet. *** */
 DMOBJ tEthernetObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkdep, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Interface", &DMREAD, NULL, NULL, NULL, browseEthernetInterfaceInst, NULL, NULL, NULL, tEthernetInterfaceObj, tEthernetInterfaceParams, get_linker_interface, BBFDM_BOTH},
 {"Link", &DMWRITE, addObjEthernetLink, delObjEthernetLink, NULL, browseEthernetLinkInst, NULL, NULL, NULL, tEthernetLinkObj, tEthernetLinkParams, get_linker_link, BBFDM_BOTH},
 {"VLANTermination", &DMWRITE, addObjEthernetVLANTermination, delObjEthernetVLANTermination, NULL, browseEthernetVLANTerminationInst, NULL, NULL, NULL, tEthernetVLANTerminationObj, tEthernetVLANTerminationParams, get_linker_vlan_term, BBFDM_BOTH},
+{"RMONStats", &DMREAD, NULL, NULL, "file:/etc/config/ports;ubus:ethernet->rmonstats", browseEthernetRMONStatsInst, NULL, NULL, NULL, NULL, tEthernetRMONStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -1367,12 +1645,13 @@ DMLEAF tEthernetParams[] = {
 {"InterfaceNumberOfEntries", &DMREAD, DMT_UNINT, get_Ethernet_InterfaceNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {"LinkNumberOfEntries", &DMREAD, DMT_UNINT, get_Ethernet_LinkNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {"VLANTerminationNumberOfEntries", &DMREAD, DMT_UNINT, get_Ethernet_VLANTerminationNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
+{"RMONStatsNumberOfEntries", &DMREAD, DMT_UNINT, get_Ethernet_RMONStatsNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
 /* *** Device.Ethernet.Interface.{i}. *** */
 DMOBJ tEthernetInterfaceObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkdep, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tEthernetInterfaceStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
@@ -1418,7 +1697,7 @@ DMLEAF tEthernetInterfaceStatsParams[] = {
 
 /* *** Device.Ethernet.Link.{i}. *** */
 DMOBJ tEthernetLinkObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkdep, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tEthernetLinkStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
@@ -1458,7 +1737,7 @@ DMLEAF tEthernetLinkStatsParams[] = {
 
 /* *** Device.Ethernet.VLANTermination.{i}. *** */
 DMOBJ tEthernetVLANTerminationObj[] = {
-/* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
+/* OBJ, permission, addobj, delobj, checkdep, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Stats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tEthernetVLANTerminationStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
@@ -1495,5 +1774,33 @@ DMLEAF tEthernetVLANTerminationStatsParams[] = {
 //{"BroadcastPacketsSent", &DMREAD, DMT_UNLONG, get_EthernetVLANTerminationStats_BroadcastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
 //{"BroadcastPacketsReceived", &DMREAD, DMT_UNLONG, get_EthernetVLANTerminationStats_BroadcastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 //{"UnknownProtoPacketsReceived", &DMREAD, DMT_UNINT, get_EthernetVLANTerminationStats_UnknownProtoPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Ethernet.RMONStats.{i}. *** */
+DMLEAF tEthernetRMONStatsParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"Enable", &DMWRITE, DMT_BOOL, get_EthernetRMONStats_Enable, set_EthernetRMONStats_Enable, NULL, NULL, BBFDM_BOTH},
+{"Status", &DMREAD, DMT_STRING, get_EthernetRMONStats_Status, NULL, NULL, NULL, BBFDM_BOTH},
+{"Alias", &DMWRITE, DMT_STRING, get_EthernetRMONStats_Alias, set_EthernetRMONStats_Alias, NULL, NULL, BBFDM_BOTH},
+{"Name", &DMREAD, DMT_STRING, get_EthernetRMONStats_Name, NULL, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMWRITE, DMT_STRING, get_EthernetRMONStats_Interface, set_EthernetRMONStats_Interface, NULL, NULL, BBFDM_BOTH},
+{"VLANID", &DMWRITE, DMT_UNINT, get_EthernetRMONStats_VLANID, set_EthernetRMONStats_VLANID, NULL, NULL, BBFDM_BOTH},
+//{"Queue", &DMWRITE, DMT_STRING, get_EthernetRMONStats_Queue, set_EthernetRMONStats_Queue, NULL, NULL, BBFDM_BOTH},
+{"AllQueues", &DMWRITE, DMT_BOOL, get_EthernetRMONStats_AllQueues, set_EthernetRMONStats_AllQueues, NULL, NULL, BBFDM_BOTH},
+//{"DropEvents", &DMREAD, DMT_UNINT, get_EthernetRMONStats_DropEvents, NULL, NULL, NULL, BBFDM_BOTH},
+{"Bytes", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_Bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"Packets", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_Packets, NULL, NULL, NULL, BBFDM_BOTH},
+{"BroadcastPackets", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_BroadcastPackets, NULL, NULL, NULL, BBFDM_BOTH},
+{"MulticastPackets", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_MulticastPackets, NULL, NULL, NULL, BBFDM_BOTH},
+{"CRCErroredPackets", &DMREAD, DMT_UNINT, get_EthernetRMONStats_CRCErroredPackets, NULL, NULL, NULL, BBFDM_BOTH},
+{"UndersizePackets", &DMREAD, DMT_UNINT, get_EthernetRMONStats_UndersizePackets, NULL, NULL, NULL, BBFDM_BOTH},
+{"OversizePackets", &DMREAD, DMT_UNINT, get_EthernetRMONStats_OversizePackets, NULL, NULL, NULL, BBFDM_BOTH},
+{"Packets64Bytes", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_Packets64Bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"Packets65to127Bytes", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_Packets65to127Bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"Packets128to255Bytes", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_Packets128to255Bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"Packets256to511Bytes", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_Packets256to511Bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"Packets512to1023Bytes", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_Packets512to1023Bytes, NULL, NULL, NULL, BBFDM_BOTH},
+{"Packets1024to1518Bytes", &DMREAD, DMT_UNLONG, get_EthernetRMONStats_Packets1024to1518Bytes, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };

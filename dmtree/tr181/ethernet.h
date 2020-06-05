@@ -26,5 +26,6 @@ extern DMLEAF tEthernetLinkStatsParams[];
 extern DMOBJ tEthernetVLANTerminationObj[];
 extern DMLEAF tEthernetVLANTerminationParams[];
 extern DMLEAF tEthernetVLANTerminationStatsParams[];
+extern DMLEAF tEthernetRMONStatsParams[];
 
 #endif //__ETHERNET_H

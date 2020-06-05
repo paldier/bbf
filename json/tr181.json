@@ -18621,7 +18621,22 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "boolean"
+					"datatype": "boolean", 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ports", 
+								"section": {
+									"type": "ethport", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "rmon"
+								}
+							}
+						}
+					]
 				}, 
 				"Status": {
 					"type": "string", 
@@ -18652,6 +18667,21 @@
 						{
 							"max": 64
 						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "dmmap_eth_rmon", 
+								"section": {
+									"type": "ethport", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "eth_rmon_alias"
+								}
+							}
+						}
 					]
 				}, 
 				"Name": {
@@ -18666,6 +18696,21 @@
 					"range": [
 						{
 							"max": 64
+						}
+					], 
+					"mapping": [
+						{
+							"type": "uci", 
+							"uci": {
+								"file": "ports", 
+								"section": {
+									"type": "ethport", 
+									"index": "@i-1"
+								}, 
+								"option": {
+									"name": "ifname"
+								}
+							}
 						}
 					]
 				}, 
@@ -18734,7 +18779,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "bytes"
+					"unit": "bytes", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_bytes"
+							}
+						}
+					]
 				}, 
 				"Packets": {
 					"type": "unsignedLong", 
@@ -18745,7 +18803,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_packets"
+							}
+						}
+					]
 				}, 
 				"BroadcastPackets": {
 					"type": "unsignedLong", 
@@ -18756,7 +18827,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_broadcast_packets"
+							}
+						}
+					]
 				}, 
 				"MulticastPackets": {
 					"type": "unsignedLong", 
@@ -18767,7 +18851,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_multicast_packets"
+							}
+						}
+					]
 				}, 
 				"CRCErroredPackets": {
 					"type": "unsignedInt", 
@@ -18778,7 +18875,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_crc_error_packets"
+							}
+						}
+					]
 				}, 
 				"UndersizePackets": {
 					"type": "unsignedInt", 
@@ -18789,7 +18899,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_undersize_packets"
+							}
+						}
+					]
 				}, 
 				"OversizePackets": {
 					"type": "unsignedInt", 
@@ -18800,7 +18923,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedInt", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_oversize_packets"
+							}
+						}
+					]
 				}, 
 				"Packets64Bytes": {
 					"type": "unsignedLong", 
@@ -18811,7 +18947,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_packets_64bytes"
+							}
+						}
+					]
 				}, 
 				"Packets65to127Bytes": {
 					"type": "unsignedLong", 
@@ -18822,7 +18971,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_packets_65to127bytes"
+							}
+						}
+					]
 				}, 
 				"Packets128to255Bytes": {
 					"type": "unsignedLong", 
@@ -18833,7 +18995,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_packets_128to255bytes"
+							}
+						}
+					]
 				}, 
 				"Packets256to511Bytes": {
 					"type": "unsignedLong", 
@@ -18844,7 +19019,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_packets_256to511bytes"
+							}
+						}
+					]
 				}, 
 				"Packets512to1023Bytes": {
 					"type": "unsignedLong", 
@@ -18855,7 +19043,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_packets_512to1023bytes"
+							}
+						}
+					]
 				}, 
 				"Packets1024to1518Bytes": {
 					"type": "unsignedLong", 
@@ -18866,7 +19067,20 @@
 						"usp"
 					], 
 					"datatype": "unsignedLong", 
-					"unit": "packets"
+					"unit": "packets", 
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "ethernet", 
+								"method": "rmonstats", 
+								"args": {
+									"ifname": "ifname"
+								}, 
+								"key": "rx_packets_1024to1518bytes"
+							}
+						}
+					]
 				}
 			}, 
 			"Device.Ethernet.WoL.": {

@@ -17738,8 +17738,15 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "sysfs", 
-								"file": "/sys/class/net/@Name/statistics/tx_bytes"
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "tx_bytes"
+								}
 							}
 						]
 					}, 
@@ -17754,8 +17761,15 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "sysfs", 
-								"file": "/sys/class/net/@Name/statistics/rx_bytes"
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "rx_bytes"
+								}
 							}
 						]
 					}, 
@@ -17770,8 +17784,15 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "sysfs", 
-								"file": "/sys/class/net/@Name/statistics/tx_packets"
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "tx_packets"
+								}
 							}
 						]
 					}, 
@@ -17786,8 +17807,15 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "sysfs", 
-								"file": "/sys/class/net/@Name/statistics/rx_packets"
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "rx_packets"
+								}
 							}
 						]
 					}, 
@@ -17802,8 +17830,15 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "sysfs", 
-								"file": "/sys/class/net/@Name/statistics/tx_errors"
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "tx_errors"
+								}
 							}
 						]
 					}, 
@@ -17818,8 +17853,15 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "sysfs", 
-								"file": "/sys/class/net/@Name/statistics/rx_errors"
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "rx_errors"
+								}
 							}
 						]
 					}, 
@@ -17831,7 +17873,20 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "tx_unicast_packets"
+								}
+							}
+						]
 					}, 
 					"UnicastPacketsReceived": {
 						"type": "unsignedLong", 
@@ -17841,7 +17896,20 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "rx_unicast_packets"
+								}
+							}
+						]
 					}, 
 					"DiscardPacketsSent": {
 						"type": "unsignedInt", 
@@ -17854,8 +17922,15 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "sysfs", 
-								"file": "/sys/class/net/@Name/statistics/tx_dropped"
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "tx_discard_packets"
+								}
 							}
 						]
 					}, 
@@ -17870,8 +17945,15 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "sysfs", 
-								"file": "/sys/class/net/@Name/statistics/rx_dropped"
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "rx_discard_packets"
+								}
 							}
 						]
 					}, 
@@ -17883,7 +17965,20 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "tx_multicast_packets"
+								}
+							}
+						]
 					}, 
 					"MulticastPacketsReceived": {
 						"type": "unsignedLong", 
@@ -17893,7 +17988,20 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "rx_multicast_packets"
+								}
+							}
+						]
 					}, 
 					"BroadcastPacketsSent": {
 						"type": "unsignedLong", 
@@ -17903,7 +18011,20 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "tx_broadcast_packets"
+								}
+							}
+						]
 					}, 
 					"BroadcastPacketsReceived": {
 						"type": "unsignedLong", 
@@ -17913,7 +18034,20 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedLong"
+						"datatype": "unsignedLong", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "rx_broadcast_packets"
+								}
+							}
+						]
 					}, 
 					"UnknownProtoPacketsReceived": {
 						"type": "unsignedInt", 
@@ -17923,7 +18057,20 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "unsignedInt"
+						"datatype": "unsignedInt", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "ethernet", 
+									"method": "stats", 
+									"args": {
+										"ifname": "ifname"
+									}, 
+									"key": "rx_unknown_packets"
+								}
+							}
+						]
 					}
 				}
 			}, 

@@ -441,10 +441,10 @@ int os__get_neighboring_wifi_diagnostics_result_operating_frequency_band(char *r
 	return 0;
 }
 
-/*#Device.WiFi.NeighboringWiFiDiagnostic.Result.{i}.Noise!UBUS:wifi.radio.@Name/scanresults//accesspoints[@i-1].snr*/
+/*#Device.WiFi.NeighboringWiFiDiagnostic.Result.{i}.Noise!UBUS:wifi.radio.@Name/scanresults//accesspoints[@i-1].noise*/
 int os__get_neighboring_wifi_diagnostics_result_noise(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = dmjson_get_value((json_object *)data, 1, "snr");
+	*value = dmjson_get_value((json_object *)data, 1, "noise");
 	return 0;
 }
 

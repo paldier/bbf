@@ -32530,7 +32530,7 @@
 									"object": "wifi.ap.@Name", 
 									"method": "stations", 
 									"args": {}, 
-									"key": "stations[i-1].tx_failures"
+									"key": "stations[i-1].noise"
 								}
 							}
 						]

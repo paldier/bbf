@@ -17738,15 +17738,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "ethernet", 
-									"method": "stats", 
-									"args": {
-										"ifname": "ifname"
-									}, 
-									"key": "tx_bytes"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_bytes"
 							}
 						]
 					}, 
@@ -17761,15 +17754,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "ethernet", 
-									"method": "stats", 
-									"args": {
-										"ifname": "ifname"
-									}, 
-									"key": "rx_bytes"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_bytes"
 							}
 						]
 					}, 
@@ -17784,15 +17770,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "ethernet", 
-									"method": "stats", 
-									"args": {
-										"ifname": "ifname"
-									}, 
-									"key": "tx_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_packets"
 							}
 						]
 					}, 
@@ -17807,15 +17786,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "ethernet", 
-									"method": "stats", 
-									"args": {
-										"ifname": "ifname"
-									}, 
-									"key": "rx_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_packets"
 							}
 						]
 					}, 
@@ -17830,15 +17802,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "ethernet", 
-									"method": "stats", 
-									"args": {
-										"ifname": "ifname"
-									}, 
-									"key": "tx_errors"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_errors"
 							}
 						]
 					}, 
@@ -17853,15 +17818,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "ethernet", 
-									"method": "stats", 
-									"args": {
-										"ifname": "ifname"
-									}, 
-									"key": "rx_errors"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_errors"
 							}
 						]
 					}, 
@@ -17879,7 +17837,7 @@
 								"type": "ubus", 
 								"ubus": {
 									"object": "ethernet", 
-									"method": "stats", 
+									"method": "ifstats", 
 									"args": {
 										"ifname": "ifname"
 									}, 
@@ -17902,7 +17860,7 @@
 								"type": "ubus", 
 								"ubus": {
 									"object": "ethernet", 
-									"method": "stats", 
+									"method": "ifstats", 
 									"args": {
 										"ifname": "ifname"
 									}, 
@@ -17922,15 +17880,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "ethernet", 
-									"method": "stats", 
-									"args": {
-										"ifname": "ifname"
-									}, 
-									"key": "tx_discard_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/tx_dropped"
 							}
 						]
 					}, 
@@ -17945,15 +17896,8 @@
 						"datatype": "unsignedInt", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "ethernet", 
-									"method": "stats", 
-									"args": {
-										"ifname": "ifname"
-									}, 
-									"key": "rx_discard_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/rx_dropped"
 							}
 						]
 					}, 
@@ -17971,7 +17915,7 @@
 								"type": "ubus", 
 								"ubus": {
 									"object": "ethernet", 
-									"method": "stats", 
+									"method": "ifstats", 
 									"args": {
 										"ifname": "ifname"
 									}, 
@@ -17991,15 +17935,8 @@
 						"datatype": "unsignedLong", 
 						"mapping": [
 							{
-								"type": "ubus", 
-								"ubus": {
-									"object": "ethernet", 
-									"method": "stats", 
-									"args": {
-										"ifname": "ifname"
-									}, 
-									"key": "rx_multicast_packets"
-								}
+								"type": "sysfs", 
+								"file": "/sys/class/net/@Name/statistics/multicast"
 							}
 						]
 					}, 
@@ -18017,7 +17954,7 @@
 								"type": "ubus", 
 								"ubus": {
 									"object": "ethernet", 
-									"method": "stats", 
+									"method": "ifstats", 
 									"args": {
 										"ifname": "ifname"
 									}, 
@@ -18040,7 +17977,7 @@
 								"type": "ubus", 
 								"ubus": {
 									"object": "ethernet", 
-									"method": "stats", 
+									"method": "ifstats", 
 									"args": {
 										"ifname": "ifname"
 									}, 
@@ -18063,7 +18000,7 @@
 								"type": "ubus", 
 								"ubus": {
 									"object": "ethernet", 
-									"method": "stats", 
+									"method": "ifstats", 
 									"args": {
 										"ifname": "ifname"
 									}, 

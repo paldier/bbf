@@ -58,16 +58,6 @@ static int eth_port_sysfs(const struct eth_port_args *args, const char *name, ch
 	return get_net_device_sysfs(args->ifname, name, value);
 }
 
-static int eth_port_ubus(const struct eth_port_args *args, const char *name, char **value)
-{
-	json_object *res = NULL;
-
-	dmubus_call("ethernet", "stats", UBUS_ARGS{{"ifname", args->ifname, String}}, 1, &res);
-	DM_ASSERT(res, *value = "0");
-	*value = dmjson_get_value(res, 1, name);
-	return 0;
-}
-
 static struct uci_section *is_device_section_exist(char *device)
 {
 	struct uci_section *s = NULL;
@@ -766,161 +756,107 @@ static int set_EthernetInterface_EEEEnable(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.BytesSent!UBUS:ethernet/stats/ifname,ifname/tx_bytes*/
+/*#Device.Ethernet.Interface.{i}.Stats.BytesSent!SYSFS:/sys/class/net/@Name/statistics/tx_bytes*/
 static int get_EthernetInterfaceStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
 	return eth_port_sysfs(data, "statistics/tx_bytes", value);
-#else
-	return eth_port_ubus(data, "tx_bytes", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.BytesReceived!UBUS:ethernet/stats/ifname,ifname/rx_bytes*/
+/*#Device.Ethernet.Interface.{i}.Stats.BytesReceived!SYSFS:/sys/class/net/@Name/statistics/rx_bytes*/
 static int get_EthernetInterfaceStats_BytesReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
 	return eth_port_sysfs(data, "statistics/rx_bytes", value);
-#else
-	return eth_port_ubus(data, "rx_bytes", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.PacketsSent!UBUS:ethernet/stats/ifname,ifname/tx_packets*/
+/*#Device.Ethernet.Interface.{i}.Stats.PacketsSent!SYSFS:/sys/class/net/@Name/statistics/tx_packets*/
 static int get_EthernetInterfaceStats_PacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
 	return eth_port_sysfs(data, "statistics/tx_packets", value);
-#else
-	return eth_port_ubus(data, "tx_packets", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.PacketsReceived!UBUS:ethernet/stats/ifname,ifname/rx_packets*/
+/*#Device.Ethernet.Interface.{i}.Stats.PacketsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_packets*/
 static int get_EthernetInterfaceStats_PacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
 	return eth_port_sysfs(data, "statistics/rx_packets", value);
-#else
-	return eth_port_ubus(data, "rx_packets", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.ErrorsSent!UBUS:ethernet/stats/ifname,ifname/tx_errors*/
+/*#Device.Ethernet.Interface.{i}.Stats.ErrorsSent!SYSFS:/sys/class/net/@Name/statistics/tx_errors*/
 static int get_EthernetInterfaceStats_ErrorsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
 	return eth_port_sysfs(data, "statistics/tx_errors", value);
-#else
-	return eth_port_ubus(data, "tx_errors", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.ErrorsReceived!UBUS:ethernet/stats/ifname,ifname/rx_errors*/
+/*#Device.Ethernet.Interface.{i}.Stats.ErrorsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_errors*/
 static int get_EthernetInterfaceStats_ErrorsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
 	return eth_port_sysfs(data, "statistics/rx_errors", value);
-#else
-	return eth_port_ubus(data, "rx_errors", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.UnicastPacketsSent!UBUS:ethernet/stats/ifname,ifname/tx_unicast_packets*/
-static int get_EthernetInterfaceStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-#ifdef GENERIC_OPENWRT
-	*value = "0";
-	return 0;
-#else
-	return eth_port_ubus(data, "tx_unicast_packets", value);
-#endif
-}
-
-/*#Device.Ethernet.Interface.{i}.Stats.UnicastPacketsReceived!UBUS:ethernet/stats/ifname,ifname/rx_unicast_packets*/
-static int get_EthernetInterfaceStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-#ifdef GENERIC_OPENWRT
-	*value = "0";
-	return 0;
-#else
-	return eth_port_ubus(data, "rx_unicast_packets", value);
-#endif
-}
-
-/*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsSent!UBUS:ethernet/stats/ifname,ifname/tx_discard_packets*/
+/*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsSent!SYSFS:/sys/class/net/@Name/statistics/tx_dropped*/
 static int get_EthernetInterfaceStats_DiscardPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
 	return eth_port_sysfs(data, "statistics/tx_dropped", value);
-#else
-	return eth_port_ubus(data, "tx_discard_packets", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsReceived!UBUS:ethernet/stats/ifname,ifname/rx_discard_packets*/
+/*#Device.Ethernet.Interface.{i}.Stats.DiscardPacketsReceived!SYSFS:/sys/class/net/@Name/statistics/rx_dropped*/
 static int get_EthernetInterfaceStats_DiscardPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
 	return eth_port_sysfs(data, "statistics/rx_dropped", value);
-#else
-	return eth_port_ubus(data, "rx_discard_packets", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.MulticastPacketsSent!UBUS:ethernet/stats/ifname,ifname/tx_multicast_packets*/
-static int get_EthernetInterfaceStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-#ifdef GENERIC_OPENWRT
-	*value = "0";
-	return 0;
-#else
-	return eth_port_ubus(data, "tx_multicast_packets", value);
-#endif
-}
-
-/*#Device.Ethernet.Interface.{i}.Stats.MulticastPacketsReceived!UBUS:ethernet/stats/ifname,ifname/rx_multicast_packets*/
+/*#Device.Ethernet.Interface.{i}.Stats.MulticastPacketsReceived!SYSFS:/sys/class/net/@Name/statistics/multicast*/
 static int get_EthernetInterfaceStats_MulticastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
 	return eth_port_sysfs(data, "statistics/multicast", value);
-#else
-	return eth_port_ubus(data, "rx_multicast_packets", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.BroadcastPacketsSent!UBUS:ethernet/stats/ifname,ifname/tx_broadcast_packets*/
+#ifndef GENERIC_OPENWRT
+static int eth_port_ubus(const struct eth_port_args *args, const char *name, char **value)
+{
+	json_object *res = NULL;
+
+	dmubus_call("ethernet", "ifstats", UBUS_ARGS{{"ifname", args->ifname, String}}, 1, &res);
+	DM_ASSERT(res, *value = "0");
+	*value = dmjson_get_value(res, 1, name);
+	return 0;
+}
+
+/*#Device.Ethernet.Interface.{i}.Stats.MulticastPacketsSent!UBUS:ethernet/ifstats/ifname,ifname/tx_multicast_packets*/
+static int get_EthernetInterfaceStats_MulticastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	return eth_port_ubus(data, "tx_multicast_packets", value);
+}
+
+/*#Device.Ethernet.Interface.{i}.Stats.UnicastPacketsSent!UBUS:ethernet/ifstats/ifname,ifname/tx_unicast_packets*/
+static int get_EthernetInterfaceStats_UnicastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	return eth_port_ubus(data, "tx_unicast_packets", value);
+}
+
+/*#Device.Ethernet.Interface.{i}.Stats.UnicastPacketsReceived!UBUS:ethernet/ifstats/ifname,ifname/rx_unicast_packets*/
+static int get_EthernetInterfaceStats_UnicastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	return eth_port_ubus(data, "rx_unicast_packets", value);
+}
+
+/*#Device.Ethernet.Interface.{i}.Stats.BroadcastPacketsSent!UBUS:ethernet/ifstats/ifname,ifname/tx_broadcast_packets*/
 static int get_EthernetInterfaceStats_BroadcastPacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
-	*value = "0";
-	return 0;
-#else
 	return eth_port_ubus(data, "tx_broadcast_packets", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.BroadcastPacketsReceived!UBUS:ethernet/stats/ifname,ifname/rx_broadcast_packets*/
+/*#Device.Ethernet.Interface.{i}.Stats.BroadcastPacketsReceived!UBUS:ethernet/ifstats/ifname,ifname/rx_broadcast_packets*/
 static int get_EthernetInterfaceStats_BroadcastPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
-	*value = "0";
-	return 0;
-#else
 	return eth_port_ubus(data, "rx_broadcast_packets", value);
-#endif
 }
 
-/*#Device.Ethernet.Interface.{i}.Stats.UnknownProtoPacketsReceived!UBUS:ethernet/stats/ifname,ifname/rx_unknown_packets*/
+/*#Device.Ethernet.Interface.{i}.Stats.UnknownProtoPacketsReceived!UBUS:ethernet/ifstats/ifname,ifname/rx_unknown_packets*/
 static int get_EthernetInterfaceStats_UnknownProtoPacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-#ifdef GENERIC_OPENWRT
-	*value = "0";
-	return 0;
-#else
 	return eth_port_ubus(data, "rx_unknown_packets", value);
-#endif
 }
+#endif
 
 static int get_EthernetLink_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
@@ -1795,15 +1731,17 @@ DMLEAF tEthernetInterfaceStatsParams[] = {
 {"PacketsReceived", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_PacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsSent", &DMREAD, DMT_UNINT, get_EthernetInterfaceStats_ErrorsSent, NULL, NULL, NULL, BBFDM_BOTH},
 {"ErrorsReceived", &DMREAD, DMT_UNINT, get_EthernetInterfaceStats_ErrorsReceived, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsSent", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_UnicastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
-{"UnicastPacketsReceived", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_UnicastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsSent", &DMREAD, DMT_UNINT, get_EthernetInterfaceStats_DiscardPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
 {"DiscardPacketsReceived", &DMREAD, DMT_UNINT, get_EthernetInterfaceStats_DiscardPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
-{"MulticastPacketsSent", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_MulticastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
 {"MulticastPacketsReceived", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_MulticastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
+#ifndef GENERIC_OPENWRT
+{"MulticastPacketsSent", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_MulticastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
+{"UnicastPacketsSent", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_UnicastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
+{"UnicastPacketsReceived", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_UnicastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {"BroadcastPacketsSent", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_BroadcastPacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
 {"BroadcastPacketsReceived", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_BroadcastPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {"UnknownProtoPacketsReceived", &DMREAD, DMT_UNLONG, get_EthernetInterfaceStats_UnknownProtoPacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
+#endif
 {0}
 };
 

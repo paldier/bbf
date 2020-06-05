@@ -65,7 +65,7 @@ DMOBJ tEntry181Obj[] = {
 DMLEAF tRoot_181_Params[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"InterfaceStackNumberOfEntries", &DMREAD, DMT_UNINT, get_Device_InterfaceStackNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
-{"RootDataModelVersion", &DMREAD, DMT_UNINT, get_Device_RootDataModelVersion, NULL, NULL, NULL, BBFDM_BOTH},
+{"RootDataModelVersion", &DMREAD, DMT_STRING, get_Device_RootDataModelVersion, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

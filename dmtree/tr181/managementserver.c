@@ -235,6 +235,8 @@ static int set_management_server_connection_request_passwd(char *refparam, struc
 static int get_upgrades_managed(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	dmuci_get_option_value_string("cwmp", "cpe", "upgrades_managed", value);
+	if ((*value)[0] == '\0')
+		dmasprintf(value, "%s", "false");
 	return 0;
 }
 

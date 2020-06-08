@@ -270,3 +270,31 @@ int os__get_HostsHostIPv6Address_IPAddress(char *refparam, struct dmctx *ctx, vo
 	*value = (char *)data;
 	return 0;
 }
+
+/*#Device.Hosts.Host.{i}.WANStats.BytesSent!UBUS:router.network/hosts//hosts[@i-1].stats.tx_bytes*/
+int os__get_HostsHostWANStats_BytesSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 2, "stats", "tx_bytes");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.WANStats.BytesReceived!UBUS:router.network/hosts//hosts[@i-1].stats.rx_bytes*/
+int os__get_HostsHostWANStats_BytesReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 2, "stats", "rx_bytes");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.WANStats.PacketsSent!UBUS:router.network/hosts//hosts[@i-1].stats.tx_packets*/
+int os__get_HostsHostWANStats_PacketsSent(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 2, "stats", "tx_packets");
+	return 0;
+}
+
+/*#Device.Hosts.Host.{i}.WANStats.PacketsReceived!UBUS:router.network/hosts//hosts[@i-1].stats.rx_packets*/
+int os__get_HostsHostWANStats_PacketsReceived(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	*value = dmjson_get_value((json_object *)data, 2, "stats", "rx_packets");
+	return 0;
+}

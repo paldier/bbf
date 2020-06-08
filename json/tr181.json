@@ -53010,7 +53010,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "StatsCounter64"
+						"datatype": "StatsCounter64", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.network", 
+									"method": "hosts", 
+									"args": {}, 
+									"key": "hosts[@i-1].stats.tx_bytes"
+								}
+							}
+						]
 					}, 
 					"BytesReceived": {
 						"type": "unsignedInt", 
@@ -53020,7 +53031,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "StatsCounter64"
+						"datatype": "StatsCounter64", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.network", 
+									"method": "hosts", 
+									"args": {}, 
+									"key": "hosts[@i-1].stats.rx_bytes"
+								}
+							}
+						]
 					}, 
 					"PacketsSent": {
 						"type": "unsignedInt", 
@@ -53030,7 +53052,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "StatsCounter64"
+						"datatype": "StatsCounter64", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.network", 
+									"method": "hosts", 
+									"args": {}, 
+									"key": "hosts[@i-1].stats.tx_packets"
+								}
+							}
+						]
 					}, 
 					"PacketsReceived": {
 						"type": "unsignedInt", 
@@ -53040,7 +53073,18 @@
 							"cwmp", 
 							"usp"
 						], 
-						"datatype": "StatsCounter64"
+						"datatype": "StatsCounter64", 
+						"mapping": [
+							{
+								"type": "ubus", 
+								"ubus": {
+									"object": "router.network", 
+									"method": "hosts", 
+									"args": {}, 
+									"key": "hosts[@i-1].stats.rx_packets"
+								}
+							}
+						]
 					}, 
 					"ErrorsSent": {
 						"type": "unsignedInt", 

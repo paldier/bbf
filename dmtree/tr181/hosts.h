@@ -19,5 +19,6 @@ extern DMOBJ tHostsHostObj[];
 extern DMLEAF tHostsHostParams[];
 extern DMLEAF tHostsHostIPv4AddressParams[];
 extern DMLEAF tHostsHostIPv6AddressParams[];
+extern DMLEAF tHostsHostWANStatsParams[];
 
 #endif //__HOSTS_H

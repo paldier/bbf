@@ -29,6 +29,7 @@ DMOBJ tHostsHostObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"IPv4Address", &DMREAD, NULL, NULL, NULL, os__browseHostsHostIPv4AddressInst, NULL, NULL, NULL, NULL, tHostsHostIPv4AddressParams, NULL, BBFDM_BOTH},
 {"IPv6Address", &DMREAD, NULL, NULL, NULL, os__browseHostsHostIPv6AddressInst, NULL, NULL, NULL, NULL, tHostsHostIPv6AddressParams, NULL, BBFDM_BOTH},
+{"WANStats", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tHostsHostWANStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -65,5 +66,15 @@ DMLEAF tHostsHostIPv4AddressParams[] = {
 DMLEAF tHostsHostIPv6AddressParams[] = {
 /* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
 {"IPAddress", &DMREAD, DMT_STRING, os__get_HostsHostIPv6Address_IPAddress, NULL, NULL, NULL, BBFDM_BOTH},
+{0}
+};
+
+/* *** Device.Hosts.Host.{i}.WANStats. *** */
+DMLEAF tHostsHostWANStatsParams[] = {
+/* PARAM, permission, type, getvalue, setvalue, forced_inform, notification, bbfdm_type*/
+{"BytesSent", &DMREAD, DMT_UNINT, os__get_HostsHostWANStats_BytesSent, NULL, NULL, NULL, BBFDM_BOTH},
+{"BytesReceived", &DMREAD, DMT_UNINT, os__get_HostsHostWANStats_BytesReceived, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsSent", &DMREAD, DMT_UNINT, os__get_HostsHostWANStats_PacketsSent, NULL, NULL, NULL, BBFDM_BOTH},
+{"PacketsReceived", &DMREAD, DMT_UNINT, os__get_HostsHostWANStats_PacketsReceived, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };

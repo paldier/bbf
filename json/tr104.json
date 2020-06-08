@@ -765,11 +765,11 @@
 			"mapping": {
 				"type": "uci", 
 				"uci": {
-					"file": "voice_client", 
+					"file": "asterisk", 
 					"section": {
 						"type": "sip_service_provider"
 					}, 
-					"dmmapfile": "dmmap_voice_client"
+					"dmmapfile": "dmmap_asterisk"
 				}
 			}, 
 			"Enable": {
@@ -790,7 +790,7 @@
 					{
 						"type": "uci", 
 						"uci": {
-							"file": "voice_client", 
+							"file": "asterisk", 
 							"section": {
 								"type": "sip_service_provider", 
 								"index": "@i-1"
@@ -866,7 +866,7 @@
 					{
 						"type": "uci", 
 						"uci": {
-							"file": "voice_client", 
+							"file": "asterisk", 
 							"section": {
 								"type": "sip_service_provider", 
 								"index": "@i-1"
@@ -932,7 +932,7 @@
 					{
 						"type": "uci", 
 						"uci": {
-							"file": "voice_client", 
+							"file": "asterisk", 
 							"section": {
 								"type": "sip_advanced", 
 								"name": "SIP"
@@ -1182,7 +1182,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_advanced", 
 									"name": "SIP"
@@ -1223,7 +1223,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_service_provider", 
 									"index": "@i-1"
@@ -1253,7 +1253,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_service_provider", 
 									"index": "@i-1"
@@ -1284,7 +1284,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_service_provider", 
 									"index": "@i-1"
@@ -1309,7 +1309,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_service_provider", 
 									"index": "@i-1"
@@ -1339,7 +1339,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_service_provider", 
 									"index": "@i-1"
@@ -1370,7 +1370,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_advanced", 
 									"name": "SIP"
@@ -1395,7 +1395,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_service_provider", 
 									"index": "@i-1"
@@ -1425,7 +1425,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_service_provider", 
 									"index": "@i-1"
@@ -1456,7 +1456,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_service_provider", 
 									"index": "@i-1"
@@ -1502,7 +1502,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_advanced", 
 									"name": "SIP"
@@ -1773,7 +1773,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_advanced", 
 									"name": "SIP"
@@ -1972,7 +1972,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "sip_advanced", 
 									"name": "SIP"
@@ -3782,11 +3782,11 @@
 				"mapping": {
 					"type": "uci", 
 					"uci": {
-						"file": "voice_client", 
+						"file": "asterisk", 
 						"section": {
 							"type": "tel_line"
 						}, 
-						"dmmapfile": "dmmap_voice_client"
+						"dmmapfile": "dmmap_asterisk"
 					}
 				}, 
 				"Enable": {
@@ -3807,7 +3807,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "tel_line", 
 									"index": "@i-1"
@@ -3852,7 +3852,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "tel_line", 
 									"index": "@i-1"
@@ -3975,7 +3975,7 @@
 						{
 							"type": "uci", 
 							"uci": {
-								"file": "voice_client", 
+								"file": "asterisk", 
 								"section": {
 									"type": "tel_line", 
 									"index": "@i-1"

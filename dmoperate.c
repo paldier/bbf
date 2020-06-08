@@ -17,6 +17,17 @@
 
 #define GLOB_EXPR "[=><]+"
 
+char *DMT_TYPE[] = {
+[DMT_STRING] = "xsd:string",
+[DMT_UNINT] = "xsd:unsignedInt",
+[DMT_INT] = "xsd:int",
+[DMT_UNLONG] = "xsd:unsignedLong",
+[DMT_LONG] = "xsd:long",
+[DMT_BOOL] = "xsd:boolean",
+[DMT_TIME] = "xsd:dateTime",
+[DMT_HEXBIN] = "xsd:hexBinary",
+};
+
 static uint8_t wifi_neighbor_count = 0;
 struct op_cmd *dynamic_operate = NULL;
 
@@ -324,12 +335,12 @@ static void fill_wireless_scan_results(struct dmctx *dmctx, char *radio)
 		dmasprintf(&signal_stregth, "Result.%d.SignalStrength", wifi_neighbor_count);
 		dmasprintf(&noise, "Result.%d.Noise", wifi_neighbor_count);
 
-		add_list_paramameter(dmctx, ssid, neighboring.ssid, "string", NULL, 0);
-		add_list_paramameter(dmctx, bssid, neighboring.bssid, "string", NULL, 0);
-		add_list_paramameter(dmctx, channel, neighboring.channel, "unsignedInt", NULL, 0);
-		add_list_paramameter(dmctx, frequency, neighboring.frequency, "string", NULL, 0);
-		add_list_paramameter(dmctx, signal_stregth, neighboring.signal_strength, "int", NULL, 0);
-		add_list_paramameter(dmctx, noise, neighboring.noise, "int", NULL, 0);
+		add_list_paramameter(dmctx, ssid, neighboring.ssid, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, bssid, neighboring.bssid, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, channel, neighboring.channel, DMT_TYPE[DMT_UNINT], NULL, 0);
+		add_list_paramameter(dmctx, frequency, neighboring.frequency, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, signal_stregth, neighboring.signal_strength, DMT_TYPE[DMT_INT], NULL, 0);
+		add_list_paramameter(dmctx, noise, neighboring.noise, DMT_TYPE[DMT_INT], NULL, 0);
 	}
 }
 
@@ -398,14 +409,14 @@ static opr_ret_t ip_diagnostics_ipping(struct dmctx *dmctx, char *path, char *in
 	char *param_minimum_response_time_detailed = dmstrdup("MinimumResponseTimeDetailed");
 	char *param_maximum_response_time_detailed = dmstrdup("MaximumResponseTimeDetailed");
 
-	add_list_paramameter(dmctx, param_success_count, ipping.success_count, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_failure_count, ipping.failure_count, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_average_response_time, ipping.average_response_time, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_minimum_response_time, ipping.minimum_response_time, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_maximum_response_time, ipping.maximum_response_time, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_average_response_time_detailed, ipping.average_response_time_detailed, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_minimum_response_time_detailed, ipping.minimum_response_time_detailed, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_maximum_response_time_detailed, ipping.maximum_response_time_detailed, "unsignedInt", NULL, 0);
+	add_list_paramameter(dmctx, param_success_count, ipping.success_count, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_failure_count, ipping.failure_count, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_average_response_time, ipping.average_response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_minimum_response_time, ipping.minimum_response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_maximum_response_time, ipping.maximum_response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_average_response_time_detailed, ipping.average_response_time_detailed, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_minimum_response_time_detailed, ipping.minimum_response_time_detailed, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_maximum_response_time_detailed, ipping.maximum_response_time_detailed, DMT_TYPE[DMT_UNINT], NULL, 0);
 
 	return SUCCESS;
 }
@@ -449,7 +460,7 @@ static opr_ret_t ip_diagnostics_traceroute(struct dmctx *dmctx, char *path, char
 
 	traceroute.response_time = get_param_diagnostics("traceroutediagnostic", "ResponseTime");
 	char *param_response_time = dmstrdup("ResponseTime");
-	add_list_paramameter(dmctx, param_response_time, traceroute.response_time, "unsignedInt", NULL, 0);
+	add_list_paramameter(dmctx, param_response_time, traceroute.response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
 
 	uci_foreach_sections_state("cwmp", "RouteHops", s)
 	{
@@ -462,10 +473,10 @@ static opr_ret_t ip_diagnostics_traceroute(struct dmctx *dmctx, char *path, char
 		dmuci_get_value_by_section_string(s, "ip", &traceroute.host_address);
 		dmuci_get_value_by_section_string(s, "time", &traceroute.rttimes);
 
-		add_list_paramameter(dmctx, host, traceroute.host_name, "string­", NULL, 0);
-		add_list_paramameter(dmctx, host_address, traceroute.host_address, "string­", NULL, 0);
-		add_list_paramameter(dmctx, errorcode, "0", "unsignedInt", NULL, 0);
-		add_list_paramameter(dmctx, rttimes, traceroute.rttimes, "string­", NULL, 0);
+		add_list_paramameter(dmctx, host, traceroute.host_name, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, host_address, traceroute.host_address, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, errorcode, "0", DMT_TYPE[DMT_UNINT], NULL, 0);
+		add_list_paramameter(dmctx, rttimes, traceroute.rttimes, DMT_TYPE[DMT_STRING], NULL, 0);
 		i++;
 	}
 
@@ -525,18 +536,18 @@ static opr_ret_t ip_diagnostics_download(struct dmctx *dmctx, char *path, char *
 	char *param_tcp_open_request_time = dmstrdup("TCPOpenRequestTime");
 	char *param_tcp_open_response_time = dmstrdup("TCPOpenResponseTime");
 
-	add_list_paramameter(dmctx, param_rom_time, download.romtime, "dateTime", NULL, 0);
-	add_list_paramameter(dmctx, param_bom_time, download.bomtime, "dateTime", NULL, 0);
-	add_list_paramameter(dmctx, param_eom_time, download.eomtime, "dateTime", NULL, 0);
-	add_list_paramameter(dmctx, param_test_bytes_received, download.test_bytes_received, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_total_bytes_received, download.total_bytes_received, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_total_bytes_sent, download.total_bytes_sent, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_test_bytes_received_under_full_loading, download.test_bytes_received_under_full_loading, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_total_bytes_received_under_full_loading, download.total_bytes_received_under_full_loading, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_total_bytes_sent_under_full_loading, download.total_bytes_sent_under_full_loading, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_period_of_full_loading, download.period_of_full_loading, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_tcp_open_request_time, download.tcp_open_request_time, "dateTime", NULL, 0);
-	add_list_paramameter(dmctx, param_tcp_open_response_time, download.tcp_open_response_time, "dateTime", NULL, 0);
+	add_list_paramameter(dmctx, param_rom_time, download.romtime, DMT_TYPE[DMT_TIME], NULL, 0);
+	add_list_paramameter(dmctx, param_bom_time, download.bomtime, DMT_TYPE[DMT_TIME], NULL, 0);
+	add_list_paramameter(dmctx, param_eom_time, download.eomtime, DMT_TYPE[DMT_TIME], NULL, 0);
+	add_list_paramameter(dmctx, param_test_bytes_received, download.test_bytes_received, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_total_bytes_received, download.total_bytes_received, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_total_bytes_sent, download.total_bytes_sent, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_test_bytes_received_under_full_loading, download.test_bytes_received_under_full_loading, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_total_bytes_received_under_full_loading, download.total_bytes_received_under_full_loading, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_total_bytes_sent_under_full_loading, download.total_bytes_sent_under_full_loading, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_period_of_full_loading, download.period_of_full_loading, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_tcp_open_request_time, download.tcp_open_request_time, DMT_TYPE[DMT_TIME], NULL, 0);
+	add_list_paramameter(dmctx, param_tcp_open_response_time, download.tcp_open_response_time, DMT_TYPE[DMT_TIME], NULL, 0);
 
 	return SUCCESS;
 }
@@ -598,18 +609,18 @@ static opr_ret_t ip_diagnostics_upload(struct dmctx *dmctx, char *path, char *in
 	char *param_tcp_open_request_time = dmstrdup("TCPOpenRequestTime");
 	char *param_tcp_open_response_time = dmstrdup("TCPOpenResponseTime");
 
-	add_list_paramameter(dmctx, param_rom_time, upload.romtime, "dateTime", NULL, 0);
-	add_list_paramameter(dmctx, param_bom_time, upload.bomtime, "dateTime", NULL, 0);
-	add_list_paramameter(dmctx, param_eom_time, upload.eomtime, "dateTime", NULL, 0);
-	add_list_paramameter(dmctx, param_test_bytes_sent, upload.test_bytes_sent, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_total_bytes_received, upload.total_bytes_received, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_total_bytes_sent, upload.total_bytes_sent, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_test_bytes_sent_under_full_loading, upload.test_bytes_sent_under_full_loading, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_total_bytes_received_under_full_loading, upload.total_bytes_received_under_full_loading, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_total_bytes_sent_under_full_loading, upload.total_bytes_sent_under_full_loading, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_period_of_full_loading, upload.period_of_full_loading, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_tcp_open_request_time, upload.tcp_open_request_time, "dateTime", NULL, 0);
-	add_list_paramameter(dmctx, param_tcp_open_response_time, upload.tcp_open_response_time, "dateTime", NULL, 0);
+	add_list_paramameter(dmctx, param_rom_time, upload.romtime, DMT_TYPE[DMT_TIME], NULL, 0);
+	add_list_paramameter(dmctx, param_bom_time, upload.bomtime, DMT_TYPE[DMT_TIME], NULL, 0);
+	add_list_paramameter(dmctx, param_eom_time, upload.eomtime, DMT_TYPE[DMT_TIME], NULL, 0);
+	add_list_paramameter(dmctx, param_test_bytes_sent, upload.test_bytes_sent, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_total_bytes_received, upload.total_bytes_received, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_total_bytes_sent, upload.total_bytes_sent, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_test_bytes_sent_under_full_loading, upload.test_bytes_sent_under_full_loading, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_total_bytes_received_under_full_loading, upload.total_bytes_received_under_full_loading, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_total_bytes_sent_under_full_loading, upload.total_bytes_sent_under_full_loading, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_period_of_full_loading, upload.period_of_full_loading, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_tcp_open_request_time, upload.tcp_open_request_time, DMT_TYPE[DMT_TIME], NULL, 0);
+	add_list_paramameter(dmctx, param_tcp_open_response_time, upload.tcp_open_response_time, DMT_TYPE[DMT_TIME], NULL, 0);
 
 	return SUCCESS;
 }
@@ -665,11 +676,11 @@ static opr_ret_t ip_diagnostics_udpecho(struct dmctx *dmctx, char *path, char *i
 	char *param_minimum_response_time = dmstrdup("MinimumResponseTime");
 	char *param_maximum_response_time = dmstrdup("MaximumResponseTime");
 
-	add_list_paramameter(dmctx, param_success_count, udpecho.success_count, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_failure_count, udpecho.failure_count, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_average_response_time, udpecho.average_response_time, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_minimum_response_time, udpecho.minimum_response_time, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_maximum_response_time, udpecho.maximum_response_time, "unsignedInt", NULL, 0);
+	add_list_paramameter(dmctx, param_success_count, udpecho.success_count, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_failure_count, udpecho.failure_count, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_average_response_time, udpecho.average_response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_minimum_response_time, udpecho.minimum_response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_maximum_response_time, udpecho.maximum_response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
 
 	return SUCCESS;
 }
@@ -721,10 +732,10 @@ static opr_ret_t ip_diagnostics_serverselection(struct dmctx *dmctx, char *path,
 	char *param_minimum_response_time = dmstrdup("MinimumResponseTime");
 	char *param_maximum_response_time = dmstrdup("MaximumResponseTime");
 
-	add_list_paramameter(dmctx, param_fastest_host, serverselection.fasthost, "string", NULL, 0);
-	add_list_paramameter(dmctx, param_average_response_time, serverselection.average_response_time, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_minimum_response_time, serverselection.minimum_response_time, "unsignedInt", NULL, 0);
-	add_list_paramameter(dmctx, param_maximum_response_time, serverselection.maximum_response_time, "unsignedInt", NULL, 0);
+	add_list_paramameter(dmctx, param_fastest_host, serverselection.fasthost, DMT_TYPE[DMT_STRING], NULL, 0);
+	add_list_paramameter(dmctx, param_average_response_time, serverselection.average_response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_minimum_response_time, serverselection.minimum_response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
+	add_list_paramameter(dmctx, param_maximum_response_time, serverselection.maximum_response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
 
 	return SUCCESS;
 }
@@ -762,7 +773,7 @@ static opr_ret_t ip_diagnostics_nslookup(struct dmctx *dmctx, char *path, char *
 
 	nslookup.success_count = get_param_diagnostics("nslookupdiagnostic", "SuccessCount");
 	char *param_success_count = dmstrdup("SuccessCount");
-	add_list_paramameter(dmctx, param_success_count, nslookup.success_count, "unsignedInt", NULL, 0);
+	add_list_paramameter(dmctx, param_success_count, nslookup.success_count, DMT_TYPE[DMT_UNINT], NULL, 0);
 
 	uci_foreach_sections_state("cwmp", "NSLookupResult", s)
 	{
@@ -780,12 +791,12 @@ static opr_ret_t ip_diagnostics_nslookup(struct dmctx *dmctx, char *path, char *
 		dmuci_get_value_by_section_string(s, "DNSServerIP", &nslookup.dns_server_ip);
 		dmuci_get_value_by_section_string(s, "ResponseTime", &nslookup.response_time);
 
-		add_list_paramameter(dmctx, status, nslookup.status, "string­", NULL, 0);
-		add_list_paramameter(dmctx, answertype, nslookup.answer_type, "string­", NULL, 0);
-		add_list_paramameter(dmctx, hostname, nslookup.hostname_returned, "string­", NULL, 0);
-		add_list_paramameter(dmctx, ipaddress, nslookup.ip_addresses, "string­", NULL, 0);
-		add_list_paramameter(dmctx, dnsserverip, nslookup.dns_server_ip, "string­", NULL, 0);
-		add_list_paramameter(dmctx, responsetime, nslookup.response_time, "unsignedInt", NULL, 0);
+		add_list_paramameter(dmctx, status, nslookup.status, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, answertype, nslookup.answer_type, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, hostname, nslookup.hostname_returned, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, ipaddress, nslookup.ip_addresses, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, dnsserverip, nslookup.dns_server_ip, DMT_TYPE[DMT_STRING], NULL, 0);
+		add_list_paramameter(dmctx, responsetime, nslookup.response_time, DMT_TYPE[DMT_UNINT], NULL, 0);
 		i++;
 	}
 

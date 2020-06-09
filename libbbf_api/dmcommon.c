@@ -1137,8 +1137,10 @@ static inline int isword_delim(char c)
 char *dm_strword(char *src, char *str)
 {
 	char *ret = src;
-	if (src[0] == '\0')
+
+	if (src[0] == 0 || str[0] == 0)
 		return NULL;
+
 	int len = strlen(str);
 	while ((ret = strstr(ret, str)) != NULL) {
 		if ((ret == src && isword_delim(ret[len])) ||

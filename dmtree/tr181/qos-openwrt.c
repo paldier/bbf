@@ -679,14 +679,15 @@ int get_QoS_AvailableAppList(char *refparam, struct dmctx *ctx, void *data, char
 	//TODO
 	return 0;
 }
-
-int get_QoSClassification_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+#endif
+int os_get_QoSClassification_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -699,7 +700,7 @@ int set_QoSClassification_Enable(char *refparam, struct dmctx *ctx, void *data, 
 	}
 	return 0;
 }
-
+#if 0
 int get_QoSClassification_Status(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
@@ -841,14 +842,15 @@ int set_QoSClassification_AllInterfaces(char *refparam, struct dmctx *ctx, void 
 	}
 	return 0;
 }
-
-int get_QoSClassification_DestMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+#endif
+int os_get_QoSClassification_DestMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_DestMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_DestMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -861,7 +863,7 @@ int set_QoSClassification_DestMask(char *refparam, struct dmctx *ctx, void *data
 	}
 	return 0;
 }
-
+#if 0
 int get_QoSClassification_DestIPExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
@@ -881,14 +883,15 @@ int set_QoSClassification_DestIPExclude(char *refparam, struct dmctx *ctx, void 
 	}
 	return 0;
 }
-
-int get_QoSClassification_SourceMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+#endif
+int os_get_QoSClassification_SourceMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_SourceMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_SourceMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -901,7 +904,7 @@ int set_QoSClassification_SourceMask(char *refparam, struct dmctx *ctx, void *da
 	}
 	return 0;
 }
-
+#if 0
 int get_QoSClassification_SourceIPExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
@@ -1108,14 +1111,14 @@ int os_set_QoSClassification_SourcePort(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-#if 0
-int get_QoSClassification_SourcePortRangeMax(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_SourcePortRangeMax(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_SourcePortRangeMax(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_SourcePortRangeMax(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -1128,7 +1131,7 @@ int set_QoSClassification_SourcePortRangeMax(char *refparam, struct dmctx *ctx, 
 	}
 	return 0;
 }
-
+#if 0
 int get_QoSClassification_SourcePortExclude(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
@@ -1148,14 +1151,15 @@ int set_QoSClassification_SourcePortExclude(char *refparam, struct dmctx *ctx, v
 	}
 	return 0;
 }
-
-int get_QoSClassification_SourceMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+#endif
+int os_get_QoSClassification_SourceMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_SourceMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_SourceMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -1168,7 +1172,7 @@ int set_QoSClassification_SourceMACAddress(char *refparam, struct dmctx *ctx, vo
 	}
 	return 0;
 }
-
+#endif
 int get_QoSClassification_SourceMACMask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
@@ -1209,13 +1213,14 @@ int set_QoSClassification_SourceMACExclude(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int get_QoSClassification_DestMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_DestMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_DestMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_DestMACAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -1269,13 +1274,14 @@ int set_QoSClassification_DestMACExclude(char *refparam, struct dmctx *ctx, void
 	return 0;
 }
 
-int get_QoSClassification_Ethertype(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_Ethertype(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_Ethertype(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_Ethertype(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -1989,13 +1995,14 @@ int set_QoSClassification_TCPACKExclude(char *refparam, struct dmctx *ctx, void 
 	return 0;
 }
 
-int get_QoSClassification_IPLengthMin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_IPLengthMin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_IPLengthMin(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_IPLengthMin(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -2009,13 +2016,14 @@ int set_QoSClassification_IPLengthMin(char *refparam, struct dmctx *ctx, void *d
 	return 0;
 }
 
-int get_QoSClassification_IPLengthMax(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_IPLengthMax(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_IPLengthMax(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_IPLengthMax(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -2049,13 +2057,14 @@ int set_QoSClassification_IPLengthExclude(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-int get_QoSClassification_DSCPCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_DSCPCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_DSCPCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_DSCPCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -2090,14 +2099,14 @@ int set_QoSClassification_DSCPExclude(char *refparam, struct dmctx *ctx, void *d
 }
 
 /*#Device.QoS.Classification.{i}.DSCPMark!UCI:qos/classify,@i-1/dscp*/
-int get_QoSClassification_DSCPMark(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_DSCPMark(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	struct dmmap_dup *p= (struct dmmap_dup *)data;
 	dmuci_get_value_by_section_string(p->config_section, "dscp", value);
 	return 0;
 }
 
-int set_QoSClassification_DSCPMark(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_DSCPMark(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	struct dmmap_dup *p= (struct dmmap_dup *)data;
 
@@ -2113,13 +2122,14 @@ int set_QoSClassification_DSCPMark(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-int get_QoSClassification_EthernetPriorityCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_EthernetPriorityCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_EthernetPriorityCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_EthernetPriorityCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -2273,13 +2283,14 @@ int set_QoSClassification_EthernetDEIExclude(char *refparam, struct dmctx *ctx, 
 	return 0;
 }
 
-int get_QoSClassification_VLANIDCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_VLANIDCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_VLANIDCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_VLANIDCheck(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:
@@ -2353,13 +2364,14 @@ int set_QoSClassification_ForwardingPolicy(char *refparam, struct dmctx *ctx, vo
 	return 0;
 }
 
-int get_QoSClassification_TrafficClass(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+int os_get_QoSClassification_TrafficClass(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	//TODO
+	*value = "";
 	return 0;
 }
 
-int set_QoSClassification_TrafficClass(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
+int os_set_QoSClassification_TrafficClass(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	switch (action)	{
 		case VALUECHECK:

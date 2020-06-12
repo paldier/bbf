@@ -852,7 +852,7 @@ int set_QoSClassification_DestMask(char *refparam, struct dmctx *ctx, void *data
 {
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 2))
+			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 3))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -892,7 +892,7 @@ int set_QoSClassification_SourceMask(char *refparam, struct dmctx *ctx, void *da
 {
 	switch (action)	{
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 2))
+			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 3))
 				return FAULT_9007;
 			break;
 		case VALUESET:

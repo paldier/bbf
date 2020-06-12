@@ -938,7 +938,7 @@ static int set_rule_dest_mask(char *refparam, struct dmctx *ctx, void *data, cha
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 2))
+			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 3))
 				return FAULT_9007;
 			break;
 		case VALUESET:
@@ -983,7 +983,7 @@ static int set_rule_source_mask(char *refparam, struct dmctx *ctx, void *data, c
 
 	switch (action) {
 		case VALUECHECK:
-			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 2))
+			if (dm_validate_string(value, -1, 49, NULL, 0, IPPrefix, 3))
 				return FAULT_9007;
 			break;
 		case VALUESET:

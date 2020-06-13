@@ -59,18 +59,16 @@ static int browseRuleInst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_d
 static int add_firewall_rule(char *refparam, struct dmctx *ctx, void *data, char **instance)
 {
 	struct uci_section *s, *dmmap_firewall_rule;
-	char *last_inst = NULL, *sect_name = NULL, *rule_name, *v;
-	char ib[8];
+	char *last_inst = NULL, *sect_name = NULL, *v;
 
 	last_inst = get_last_instance_bbfdm("dmmap_firewall", "rule", "firewall_chain_rule_instance");
-	snprintf(ib, sizeof(ib), "%s", last_inst ? last_inst : "1");
-	dmasprintf(&rule_name, "Firewall rule %d", atoi(ib)+1);
 
 	dmuci_add_section("firewall", "rule", &s, &sect_name);
-	dmuci_set_value_by_section(s, "name", rule_name);
-	dmuci_set_value_by_section(s, "dest", "lan");
-	dmuci_set_value_by_section(s, "src", "wan");
-	dmuci_set_value_by_section(s, "target", "ACCEPT");
+	dmuci_set_value_by_section(s, "name", "-");
+	dmuci_set_value_by_section(s, "enabled", "0");
+	dmuci_set_value_by_section(s, "dest", "");
+	dmuci_set_value_by_section(s, "src", "");
+	dmuci_set_value_by_section(s, "target", "DROP");
 
 	dmuci_add_section_bbfdm("dmmap_firewall", "rule", &dmmap_firewall_rule, &v);
 	dmuci_set_value_by_section(dmmap_firewall_rule, "section_name", sect_name);
@@ -261,12 +259,10 @@ static int get_rule_order(char *refparam, struct dmctx *ctx, void *data, char *i
 	return 0;
 }
 
+/*#Device.Firewall.Chain.{i}.Rule.{i}.Target!UCI:firewall/rule,@i-1/name*/
 static int get_rule_description(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct uci_section *dms = NULL;
-	get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name((struct uci_section *)data), &dms);
-	if (dms)
-		dmuci_get_value_by_section_string(dms, "description", value);
+	dmuci_get_value_by_section_string((struct uci_section *)data, "name", value);
 	return 0;
 }
 
@@ -774,7 +770,7 @@ static int set_rule_enable(char *refparam, struct dmctx *ctx, void *data, char *
 			break;
 		case VALUESET:
 			string_to_bool(value, &b);
-			dmuci_set_value_by_section((struct uci_section *)data, "enabled", b ? "" : "no");
+			dmuci_set_value_by_section((struct uci_section *)data, "enabled", b ? "" : "0");
 			break;
 	}
         return 0;
@@ -803,9 +799,7 @@ static int set_rule_description(char *refparam, struct dmctx *ctx, void *data, c
 				return FAULT_9007;
 			break;
 		case VALUESET:
-			get_dmmap_section_of_config_section("dmmap_firewall", "rule", section_name((struct uci_section *)data), &dms);
-			if (dms)
-				DMUCI_SET_VALUE_BY_SECTION(bbfdm, dms, "description", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "name", value);
 			break;
 	}
         return 0;
@@ -874,6 +868,10 @@ static int set_rule_dest_interface(char *refparam, struct dmctx *ctx, void *data
 				return FAULT_9007;
 			break;
 		case VALUESET:
+			if (value[0] == '\0') {
+				dmuci_set_value_by_section((struct uci_section *)data, "dest", "");
+				break;
+			}
 			adm_entry_get_linker_value(ctx, value, &iface);
 			if (iface != NULL && iface[0] != '\0') {
 				uci_foreach_sections("firewall", "zone", s) {

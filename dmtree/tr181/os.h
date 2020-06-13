@@ -52,6 +52,7 @@ int os__get_HostsHost_ClientID(char *refparam, struct dmctx *ctx, void *data, ch
 int os__get_HostsHost_UserClassID(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_HostsHost_HostName(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_HostsHost_Active(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
+int os__get_HostsHost_ActiveLastChange(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_HostsHost_IPv4AddressNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_HostsHost_IPv6AddressNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_HostsHostIPv4Address_IPAddress(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

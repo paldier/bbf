@@ -52859,7 +52859,18 @@
 						"cwmp", 
 						"usp"
 					], 
-					"datatype": "dateTime"
+					"datatype": "dateTime",
+					"mapping": [
+						{
+							"type": "ubus",
+							"ubus": {
+								"object": "router.network",
+								"method": "hosts",
+								"args": {},
+								"key": "hosts[@i-1].activelstch"
+							}
+						}
+					]
 				}, 
 				"IPv4AddressNumberOfEntries": {
 					"type": "unsignedInt", 

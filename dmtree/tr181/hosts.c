@@ -50,6 +50,7 @@ DMLEAF tHostsHostParams[] = {
 {"UserClassID", &DMREAD, DMT_HEXBIN, os__get_HostsHost_UserClassID, NULL, NULL, NULL, BBFDM_BOTH},
 {"HostName", &DMREAD, DMT_STRING, os__get_HostsHost_HostName, NULL, NULL, NULL, BBFDM_BOTH},
 {"Active", &DMREAD, DMT_BOOL, os__get_HostsHost_Active, NULL, NULL, NULL, BBFDM_BOTH},
+{"ActiveLastChange", &DMREAD, DMT_TIME, os__get_HostsHost_ActiveLastChange, NULL, NULL, NULL, BBFDM_BOTH},
 {"IPv4AddressNumberOfEntries", &DMREAD, DMT_UNINT, os__get_HostsHost_IPv4AddressNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {"IPv6AddressNumberOfEntries", &DMREAD, DMT_UNINT, os__get_HostsHost_IPv6AddressNumberOfEntries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}

@@ -233,6 +233,25 @@ int os__get_HostsHost_Active(char *refparam, struct dmctx *ctx, void *data, char
 	return 0;
 }
 
+/*#Device.Hosts.Host.{i}.ActiveLastChange!UBUS:router.network/hosts//hosts[@i-1].activelstch*/
+int os__get_HostsHost_ActiveLastChange(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	char local_time[32] = {0};
+	time_t t_time;
+
+	*value = "0001-01-01T00:00:00Z";
+	char *lastchange = dmjson_get_value((json_object *)data, 1, "activelstch");
+	t_time = atoi(lastchange);
+	if (localtime(&t_time) == NULL)
+		return -1;
+
+	if (strftime(local_time, sizeof(local_time), "%Y-%m-%dT%H:%M:%SZ", localtime(&t_time)) == 0)
+		return -1;
+
+	*value = dmstrdup(local_time);
+	return 0;
+}
+
 /*#Device.Hosts.Host.{i}.IPv4AddressNumberOfEntries!UBUS:router.network/hosts//hosts[@i-1].ipv4addr*/
 int os__get_HostsHost_IPv4AddressNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {

@@ -120,6 +120,11 @@ int os__get_HostsHost_Active(char *refparam, struct dmctx *ctx, void *data, char
 	return not_implemented(value);
 }
 
+int os__get_HostsHost_ActiveLastChange(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	return not_implemented(value);
+}
+
 int os__get_HostsHost_IPv4AddressNumberOfEntries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);

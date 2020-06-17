@@ -246,7 +246,7 @@ int dm_entry_param_method(struct dmctx *ctx, int cmd, char *inparam, char *arg1,
 			ctx->setaction = VALUECHECK;
 			fault = dm_entry_set_value(ctx);
 			if (fault)
-				add_list_fault_param(ctx, ctx->in_param, fault);
+				add_list_fault_param(ctx, ctx->in_param, usp_fault_map(fault));
 			break;
 		case CMD_SET_NOTIFICATION:
 			if (arg2)
@@ -364,7 +364,7 @@ int dm_entry_apply(struct dmctx *ctx, int cmd, char *arg1, char *arg2)
 			if (fault) {
 				//Should not happen
 				dmuci_revert();
-				add_list_fault_param(ctx, ctx->in_param, fault);
+				add_list_fault_param(ctx, ctx->in_param, usp_fault_map(fault));
 			} else {
 				dmuci_set_value("cwmp", "acs", "ParameterKey", arg1 ? arg1 : "");
 				dmuci_change_packages(&head_package_change);

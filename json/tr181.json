@@ -30714,7 +30714,7 @@
 									"object": "wifi.radio.@Name", 
 									"method": "scanresults", 
 									"args": {}, 
-									"key": "accesspoints[@i-1].snr"
+									"key": "accesspoints[@i-1].noise"
 								}
 							}
 						]

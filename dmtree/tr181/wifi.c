@@ -1407,10 +1407,10 @@ static int get_access_point_associative_device_active(char *refparam, struct dmc
 	return 0;
 }
 
-/*#Device.WiFi.AccessPoint.{i}.AssociatedDevice.{i}.Noise!UBUS:wifi.ap.@Name/stations//stations[i-1].tx_failures*/
+/*#Device.WiFi.AccessPoint.{i}.AssociatedDevice.{i}.Noise!UBUS:wifi.ap.@Name/stations//stations[i-1].noise*/
 static int get_WiFiAccessPointAssociatedDevice_Noise(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	*value = dmjson_get_value((json_object *)data, 1, "snr");
+	*value = dmjson_get_value((json_object *)data, 1, "noise");
 	return 0;
 }
 

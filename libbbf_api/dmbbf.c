@@ -1266,7 +1266,7 @@ static int mparam_get_name(DMPARAM_ARGS)
 	if (permission->get_permission != NULL)
 		perm = permission->get_permission(refparam, dmctx, data, instance);
 
-	add_list_paramameter(dmctx, refparam, perm, NULL, NULL, 0);
+	add_list_paramameter(dmctx, refparam, perm, DMT_TYPE[type], NULL, 0);
 	return 0;
 }
 
@@ -1278,7 +1278,7 @@ static int mobj_get_name(DMOBJECT_ARGS)
 	if (permission->get_permission != NULL)
 		perm = permission->get_permission(refparam, dmctx, data, instance);
 
-	add_list_paramameter(dmctx, refparam, perm, NULL, NULL, 0);
+	add_list_paramameter(dmctx, refparam, perm, "xsd:object", NULL, 0);
 	return 0;
 }
 
@@ -1299,7 +1299,7 @@ static int mparam_get_name_in_param(DMPARAM_ARGS)
 	if (permission->get_permission != NULL)
 		perm = permission->get_permission(refparam, dmctx, data, instance);
 
-	add_list_paramameter(dmctx, refparam, perm, NULL, NULL, 0);
+	add_list_paramameter(dmctx, refparam, perm, DMT_TYPE[type], NULL, 0);
 	return 0;
 }
 
@@ -1318,7 +1318,7 @@ static int mparam_get_name_in_obj(DMPARAM_ARGS)
 	if (permission->get_permission != NULL)
 		perm = permission->get_permission(refparam, dmctx, data, instance);
 
-	add_list_paramameter(dmctx, refparam, perm, NULL, NULL, 0);
+	add_list_paramameter(dmctx, refparam, perm, DMT_TYPE[type], NULL, 0);
 	return 0;
 }
 
@@ -1339,7 +1339,7 @@ static int mobj_get_name_in_obj(DMOBJECT_ARGS)
 	if (permission->get_permission != NULL)
 		perm = permission->get_permission(refparam, dmctx, data, instance);
 
-	add_list_paramameter(dmctx, refparam, perm, NULL, NULL, 0);
+	add_list_paramameter(dmctx, refparam, perm, "xsd:object", NULL, 0);
 	return 0;
 }
 
@@ -1402,7 +1402,7 @@ static int mparam_get_notification(DMPARAM_ARGS)
 		if (notification->get_notif)
 			value = notification->get_notif(refparam, dmctx, data, instance);
 	}
-	add_list_paramameter(dmctx, refparam, value, NULL, NULL, 0);
+	add_list_paramameter(dmctx, refparam, value, DMT_TYPE[type], NULL, 0);
 	return 0;
 }
 
@@ -1428,7 +1428,7 @@ static int mparam_get_notification_in_param(DMPARAM_ARGS)
 		if (notification->get_notif)
 			value = notification->get_notif(refparam, dmctx, data, instance);
 	}
-	add_list_paramameter(dmctx, refparam, value, NULL, NULL, 0);
+	add_list_paramameter(dmctx, refparam, value, DMT_TYPE[type], NULL, 0);
 	dmctx->stop = 1;
 	return 0;
 }

@@ -29232,7 +29232,18 @@
 							"2.4GHz", 
 							"5GHz"
 						]
-					}
+					},
+					"mapping": [
+						{
+							"type": "ubus", 
+							"ubus": {
+								"object": "wifi.radio.@Name", 
+								"method": "status", 
+								"args": {}, 
+								"key": "supp_bands"
+							}
+						}
+					]
 				}, 
 				"OperatingFrequencyBand": {
 					"type": "string", 

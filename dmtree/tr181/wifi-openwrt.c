@@ -221,6 +221,11 @@ int os__get_radio_frequency(char *refparam, struct dmctx *ctx, void *data, char 
 	return not_implemented(value);
 }
 
+int os__get_radio_supported_frequency_bands(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	return not_implemented(value);
+}
+
 int os__get_radio_channel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	return not_implemented(value);

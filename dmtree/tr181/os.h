@@ -106,6 +106,7 @@ int os__get_access_point_associative_device_statistics_retry_count(char *refpara
 int os__get_access_point_associative_device_statistics_multiple_retry_count(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_radio_max_bit_rate (char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_radio_frequency(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
+int os__get_radio_supported_frequency_bands(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_radio_channel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_neighboring_wifi_diagnostics_diagnostics_state(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 int os__get_neighboring_wifi_diagnostics_result_ssid(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);

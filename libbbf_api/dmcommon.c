@@ -57,6 +57,7 @@ char *DTMFMethod[] = {"InBand", "RFC2833", "SIPInfo"};
 char *ProfileEnable[] = {"Disabled", "Quiescent", "Enabled"};
 char *SupportedOperatingChannelBandwidth[] = {"20MHz", "40MHz", "80MHz", "160MHZ", "80+80MHz", "Auto"};
 char *SupportedStandards[] = {"a", "b", "g", "n", "ac", "ax"};
+char *SupportedFrequencyBands[] = {"2.4GHz", "5GHz"};
 
 char *PIN[] = {"^\\d{4}|\\d{8}$"};
 char *DestinationAddress[] = {"^\\d+/\\d+$"};

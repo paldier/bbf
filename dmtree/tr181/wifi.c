@@ -1341,9 +1341,17 @@ static int set_WiFiAccessPointAccounting_Secret(char *refparam, struct dmctx *ct
 	return 0;
 }
 
-static int get_radio_supported_frequency_bands(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int set_radio_frequency(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	*value = "2.4GHz,5GHz";
+	switch (action)	{
+		case VALUECHECK:
+			if (dm_validate_string(value, -1, -1, SupportedFrequencyBands, 2, NULL, 0))
+				return FAULT_9007;
+			break;
+		case VALUESET:
+			dmuci_set_value_by_section(((struct wifi_radio_args *)data)->wifi_radio_sec, "hwmode", (!strcmp(value, "5GHz") ? "11a" :"11g"));
+			break;
+	}
 	return 0;
 }
 
@@ -2275,8 +2283,8 @@ DMLEAF tWiFiRadioParams[] = {
 {"LowerLayers", &DMWRITE, DMT_STRING, get_WiFiRadio_LowerLayers, set_WiFiRadio_LowerLayers, NULL, NULL, BBFDM_BOTH},
 {"Name", &DMREAD, DMT_STRING, get_WiFiRadio_Name, NULL, NULL, NULL, BBFDM_BOTH},
 {"MaxBitRate", &DMREAD, DMT_UNINT, os__get_radio_max_bit_rate, NULL, NULL, NULL, BBFDM_BOTH},
-{"OperatingFrequencyBand", &DMREAD, DMT_STRING, os__get_radio_frequency, NULL, NULL, NULL, BBFDM_BOTH},
-{"SupportedFrequencyBands", &DMREAD, DMT_STRING, get_radio_supported_frequency_bands, NULL, NULL, NULL, BBFDM_BOTH},
+{"OperatingFrequencyBand", &DMWRITE, DMT_STRING, os__get_radio_frequency, set_radio_frequency, NULL, NULL, BBFDM_BOTH},
+{"SupportedFrequencyBands", &DMREAD, DMT_STRING, os__get_radio_supported_frequency_bands, NULL, NULL, NULL, BBFDM_BOTH},
 {"SupportedStandards", &DMREAD, DMT_STRING, os__get_radio_supported_standard, NULL, NULL, NULL, BBFDM_BOTH},
 {"OperatingStandards", &DMWRITE, DMT_STRING, os_get_radio_operating_standard, set_radio_operating_standard, NULL, NULL, BBFDM_BOTH},
 {"ChannelsInUse", &DMREAD, DMT_STRING, os__get_radio_channel, NULL, NULL, NULL, BBFDM_BOTH},

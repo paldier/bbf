@@ -311,6 +311,19 @@ int os__get_radio_frequency(char *refparam, struct dmctx *ctx, void *data, char 
 	return 0;
 }
 
+/*#Device.WiFi.Radio.{i}.SupportedFrequencyBands!UBUS:wifi.radio.@Name/status//supp_bands*/
+int os__get_radio_supported_frequency_bands(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+{
+	json_object *res = NULL;
+	char object[32];
+
+	snprintf(object, sizeof(object), "wifi.radio.%s", section_name(((struct wifi_radio_args *)data)->wifi_radio_sec));
+	dmubus_call(object, "status", UBUS_ARGS{}, 0, &res);
+	DM_ASSERT(res, *value = "");
+	*value = dmjson_get_value_array_all(res, DELIMITOR, 1, "supp_bands");
+	return 0;
+}
+
 /*#Device.WiFi.Radio.{i}.ChannelsInUse!UCI:wireless/wifi-device,@i-1/channel*/
 int os__get_radio_channel(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {

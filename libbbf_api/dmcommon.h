@@ -103,6 +103,7 @@ extern char *IPv4Prefix[];
 extern char *IPv6Prefix[];
 extern char *SupportedOperatingChannelBandwidth[];
 extern char *SupportedStandards[];
+extern char *SupportedFrequencyBands[];
 
 #define UPTIME "/proc/uptime"
 #define DEFAULT_CONFIG_DIR "/etc/config/"

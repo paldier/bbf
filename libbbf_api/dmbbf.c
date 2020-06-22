@@ -96,7 +96,7 @@ LIST_HEAD(list_enabled_notify);
 LIST_HEAD(list_enabled_lw_notify);
 LIST_HEAD(list_execute_end_session);
 
-int end_session_flag = 0;
+int* end_session_flag_ptr = NULL;
 int ip_version = 4;
 char dm_delim = DMDELIM_CWMP;
 char dmroot[64] = "Device";
@@ -1728,7 +1728,7 @@ static int mobj_set_notification_in_obj(DMOBJECT_ARGS)
 		add_set_list_tmp(dmctx, dmctx->in_param, dmctx->in_notification, 0);
 	} else if (dmctx->setaction == VALUESET) {
 		set_parameter_notification(dmctx, dmctx->in_param, dmctx->in_notification);
-		cwmp_set_end_session(END_SESSION_RELOAD);
+		bbf_api_cwmp_set_end_session(END_SESSION_RELOAD);
 	}
 	return 0;
 }
@@ -1755,7 +1755,7 @@ static int mparam_set_notification_in_param(DMPARAM_ARGS)
 		add_set_list_tmp(dmctx, dmctx->in_param, dmctx->in_notification, 0);
 	} else if (dmctx->setaction == VALUESET) {
 		set_parameter_notification(dmctx, dmctx->in_param, dmctx->in_notification);
-		cwmp_set_end_session(END_SESSION_RELOAD);
+		bbf_api_cwmp_set_end_session(END_SESSION_RELOAD);
 	}
 	dmfree(refparam);
 	return 0;
@@ -3207,9 +3207,11 @@ int apply_end_session()
 	return 0;
 }
 
-void cwmp_set_end_session (unsigned int flag)
+void bbf_api_cwmp_set_end_session (unsigned int flag)
 {
-	end_session_flag |= flag;
+	if(end_session_flag_ptr == NULL)
+		end_session_flag_ptr = (int*)dmmalloc(sizeof(int));
+	*end_session_flag_ptr |= flag;
 }
 
 char *dm_print_path(char *fpath, ...)

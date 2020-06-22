@@ -11,6 +11,7 @@
 
 #include "dmbbfcommon.h"
 
+int end_session_flag = 0;
 int bbfdmuci_lookup_ptr(struct uci_context *ctx, struct uci_ptr *ptr, char *package, char *section, char *option, char *value)
 {
 	return dmuci_lookup_ptr(ctx, ptr, package, section, option, value);
@@ -103,4 +104,13 @@ void bbfdm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value)
 struct list_head get_bbf_list_enabled_lw_notify(void)
 {
 	return list_enabled_lw_notify;
+}
+
+void cwmp_set_end_session (unsigned int flag)
+{
+	if (end_session_flag_ptr != NULL) {
+		end_session_flag = *end_session_flag_ptr;
+		end_session_flag_ptr = &end_session_flag;
+	}
+	end_session_flag |= flag;
 }

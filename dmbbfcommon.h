@@ -11,6 +11,8 @@
 
 #include <libbbf_api/dmcommon.h>
 
+extern int end_session_flag;
+
 int bbfdmuci_lookup_ptr(struct uci_context *ctx, struct uci_ptr *ptr, char *package, char *section, char *option, char *value);
 void bbf_apply_end_session(void);
 int set_bbfdatamodel_type(int bbf_type);
@@ -30,3 +32,4 @@ void bbfdmjson_get_var(char *jkey, char **jval);
 void bbfdm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value);
 struct list_head get_bbf_list_enabled_lw_notify(void);
 
+void cwmp_set_end_session (unsigned int flag);

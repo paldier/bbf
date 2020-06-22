@@ -8,6 +8,7 @@
  *	  Author MOHAMED Kallel <mohamed.kallel@pivasoftware.com>
  *	  Author Imen Bhiri <imen.bhiri@pivasoftware.com>
  *	  Author Feten Besbes <feten.besbes@pivasoftware.com>
+ *	  Author Omar Kallel <omar.kallel@pivasoftware.c>
  *	  Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
  *
  */
@@ -527,7 +528,7 @@ extern struct list_head list_upnp_changed_onalarm;
 extern struct list_head list_upnp_changed_version;
 #endif
 
-extern int end_session_flag;
+extern int* end_session_flag_ptr;
 extern int ip_version;
 extern char dm_delim;
 extern char dmroot[64];
@@ -588,7 +589,7 @@ char *get_last_instance_lev2_bbfdm(char *package, char *section, char* dmmap_pac
 char *handle_update_instance(int instance_ranck, struct dmctx *ctx, char **last_inst, char * (*up_instance)(int action, char **last_inst, void *argv[]), int argc, ...);
 int dm_add_end_session(struct dmctx *ctx, void(*function)(struct execute_end_session *), int action, void *data);
 int apply_end_session();
-void cwmp_set_end_session (unsigned int flag);
+void bbf_api_cwmp_set_end_session (unsigned int flag);
 char *dm_print_path(char *fpath, ...);
 void free_all_list_enabled_lwnotify();
 int dm_link_inst_obj(struct dmctx *dmctx, DMNODE *parent_node, void *data, char *instance);

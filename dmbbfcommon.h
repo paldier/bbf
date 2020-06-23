@@ -20,14 +20,14 @@ void bbf_apply_end_session(void);
 int set_bbfdatamodel_type(int bbf_type);
 int bbf_set_ip_version(int ipversion);
 void bbf_del_list_parameter(struct dm_parameter *dm_parameter);
-int bbfdm_update_file_enabled_notify(char *param, char *new_value);
-void bbfdmjson_parse_init(char *msg);
-void bbfdmjson_parse_fini(void);
-json_object *bbfdmjson_select_obj(json_object * jobj, char *argv[]);
-void bbf_del_list_fault_param(struct param_fault *param_fault);
-int dm_copy_temporary_file_to_original_file(char *f1, char *f2);
-void bbfdmjson_get_var(char *jkey, char **jval);
-void bbfdm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value);
+int dm_update_file_enabled_notify(char *param, char *new_value);
+void dmjson_parse_init(char *msg);
+void dmjson_parse_fini(void);
+json_object *dmjson_select_obj(json_object * jobj, char *argv[]);
+void del_list_fault_param(struct param_fault *param_fault);
+int copy_temporary_file_to_original_file(char *f1, char *f2);
+void dmjson_get_var(char *jkey, char **jval);
+void dm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value);
 struct list_head get_bbf_list_enabled_lw_notify(void);
 
 

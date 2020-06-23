@@ -93,44 +93,45 @@ void bbf_del_list_parameter(struct dm_parameter *dm_parameter)
 	del_list_parameter(dm_parameter);
 }
 
-int bbfdm_update_file_enabled_notify(char *param, char *new_value)
+int dm_update_file_enabled_notify(char *param, char *new_value)
 {
-	return dm_update_file_enabled_notify(param, new_value);
+	return bbf_api_dm_update_file_enabled_notify(param, new_value);
 }
 
-void bbfdmjson_parse_init(char *msg)
+void dmjson_parse_init(char *msg)
 {
-	dmjson_parse_init(msg);
+	bbf_api_dmjson_parse_init(msg);
 }
 
-void bbfdmjson_parse_fini(void)
+void dmjson_parse_fini(void)
 {
-	dmjson_parse_fini();
+	bbf_api_dmjson_parse_fini();
 }
 
-json_object *bbfdmjson_select_obj(json_object * jobj, char *argv[])
+json_object *dmjson_select_obj(json_object * jobj, char *argv[])
 {
-	return (dmjson_select_obj(jobj, argv));
+	return (bbf_api_dmjson_select_obj(jobj, argv));
 }
 
-void bbf_del_list_fault_param(struct param_fault *param_fault)
+void del_list_fault_param(struct param_fault *param_fault)
 {
-	del_list_fault_param(param_fault);
+	bbf_api_del_list_fault_param(param_fault);
 }
 
-int dm_copy_temporary_file_to_original_file(char *f1, char *f2)
+int copy_temporary_file_to_original_file(char *f1, char *f2)
 {
-	return copy_temporary_file_to_original_file(f1, f2);
+	return bbf_api_copy_temporary_file_to_original_file(f1, f2);
 }
 
-void bbfdmjson_get_var(char *jkey, char **jval)
+void dmjson_get_var(char *jkey, char **jval)
 {
-	dmjson_get_var(jkey, jval);
+	bbf_api_dmjson_get_var(jkey, jval);
 }
 
-void bbfdm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value)
+void dm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value)
 {
-	dm_update_enabled_notify(p, new_value);
+	free(p->value); // Should be free and not dmfree
+	p->value = strdup(new_value);
 }
 
 struct list_head get_bbf_list_enabled_lw_notify(void)

@@ -43,7 +43,7 @@ void dmjson_fprintf(FILE *fp, int argc, struct dmjson_arg dmarg[])
 	__dmjson_fprintf(fp, argc, dmarg);
 }
 
-void dmjson_parse_init(char *msg)
+void bbf_api_dmjson_parse_init(char *msg)
 {
 	if (dmjson_jobj) {
 		json_object_put(dmjson_jobj);
@@ -52,7 +52,7 @@ void dmjson_parse_init(char *msg)
 	dmjson_jobj = json_tokener_parse(msg);
 }
 
-void dmjson_parse_fini(void)
+void bbf_api_dmjson_parse_fini(void)
 {
 	if (dmjson_jobj) {
 		json_object_put(dmjson_jobj);
@@ -87,7 +87,7 @@ char *____dmjson_get_value_in_obj(json_object *mainjobj, char *argv[])
 	json_object *jobj = NULL;
 	char *value = "";
 
-	jobj = dmjson_select_obj(mainjobj, argv);
+	jobj = bbf_api_dmjson_select_obj(mainjobj, argv);
 	value = dmjson_print_value(jobj);
 
 	return value;
@@ -121,11 +121,11 @@ json_object *__dmjson_get_obj(json_object *mainjobj, int argc, ...)
 	}
 	argv[argc] = NULL;
 	va_end(arg);
-	return dmjson_select_obj(mainjobj, argv);
+	return bbf_api_dmjson_select_obj(mainjobj, argv);
 	//return v;
 }
 
-json_object *dmjson_select_obj(json_object * jobj, char *argv[])
+json_object *bbf_api_dmjson_select_obj(json_object * jobj, char *argv[])
 {
 	int i;
 	for (i = 0; argv[i]; i++) {
@@ -154,7 +154,7 @@ json_object *____dmjson_select_obj_in_array_idx(json_object *mainjobj, json_obje
 	json_object *jobj = NULL;
 
 	if (arrobj == NULL || *arrobj == NULL) {
-		jobj = dmjson_select_obj(mainjobj, argv);
+		jobj = bbf_api_dmjson_select_obj(mainjobj, argv);
 		if (arrobj)
 			*arrobj = jobj;
 		if (jobj && json_object_get_type(jobj) == json_type_array) {
@@ -197,7 +197,7 @@ char *____dmjson_get_value_in_array_idx(json_object *mainjobj, json_object **arr
 	char *value = NULL;
 
 	if (arrobj == NULL || *arrobj == NULL) {
-		jobj = dmjson_select_obj(mainjobj, argv);
+		jobj = bbf_api_dmjson_select_obj(mainjobj, argv);
 		if (arrobj)
 			*arrobj = jobj;
 		if (jobj && json_object_get_type(jobj) == json_type_array) {
@@ -276,7 +276,7 @@ char *__dmjson_get_value_array_all(json_object *mainjobj, char *delim, int argc,
 	return ret;
 }
 
-void dmjson_get_var(char *jkey, char **jval)
+void bbf_api_dmjson_get_var(char *jkey, char **jval)
 {
 	*jval = "";
 

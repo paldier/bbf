@@ -101,6 +101,7 @@ char dm_delim = DMDELIM_CWMP;
 char dmroot[64] = "Device";
 int bbfdatamodel_type = BBFDM_BOTH;
 
+
 void (*api_add_list_value_change)(char *param_name, char *param_data, char *param_type) = NULL;
 void (*api_send_active_value_change)(void) = NULL;
 
@@ -826,7 +827,7 @@ void add_list_fault_param(struct dmctx *ctx, char *param, int fault)
 	param_fault->fault = fault;
 }
 
-void del_list_fault_param(struct param_fault *param_fault)
+void bbf_api_del_list_fault_param(struct param_fault *param_fault)
 {
 	list_del(&param_fault->list);
 	dmfree(param_fault->name);
@@ -838,7 +839,7 @@ void free_all_list_fault_param(struct dmctx *ctx)
 	struct param_fault *param_fault;
 	while (ctx->list_fault_param.next != &ctx->list_fault_param) {
 		param_fault = list_entry(ctx->list_fault_param.next, struct param_fault, list);
-		del_list_fault_param(param_fault);
+		bbf_api_del_list_fault_param(param_fault);
 	}
 }
 
@@ -871,7 +872,7 @@ void free_all_list_enabled_lwnotify()
 	}
 }
 
-int dm_update_file_enabled_notify(char *param, char *new_value)
+int bbf_api_dm_update_file_enabled_notify(char *param, char *new_value)
 {
 	FILE *fp, *ftmp;
 	char buf[512];
@@ -891,16 +892,16 @@ int dm_update_file_enabled_notify(char *param, char *new_value)
 		int len = strlen(buf);
 		if (len)
 			buf[len-1] = '\0';
-		dmjson_parse_init(buf);
-		dmjson_get_var("parameter", &jval);
+		bbf_api_dmjson_parse_init(buf);
+		bbf_api_dmjson_get_var("parameter", &jval);
 		parameter = dmstrdup(jval);
-		dmjson_get_var("value", &jval);
+		bbf_api_dmjson_get_var("value", &jval);
 		value = dmstrdup(jval);
-		dmjson_get_var("notification", &jval);
+		bbf_api_dmjson_get_var("notification", &jval);
 		notification = dmstrdup(jval);
-		dmjson_get_var("type", &jval);
+		bbf_api_dmjson_get_var("type", &jval);
 		type = dmstrdup(jval);
-		dmjson_parse_fini();
+		bbf_api_dmjson_parse_fini();
 		if (strcmp(parameter, param) == 0)
 			dmjson_fprintf(ftmp, 4, DMJSON_ARGS{{"parameter", parameter}, {"notification", notification}, {"value", new_value}, {"type", type}});
 		else
@@ -912,18 +913,12 @@ int dm_update_file_enabled_notify(char *param, char *new_value)
 	return 0;
 }
 
-void dm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value)
-{
-	free(p->value); // Should be free and not dmfree
-	p->value = strdup(new_value);
-}
-
 void dm_update_enabled_notify_byname(char *name, char *new_value)
 {
 	int iscopy;
-	dm_update_file_enabled_notify(name, new_value);
+	bbf_api_dm_update_file_enabled_notify(name, new_value);
 	remove(DM_ENABLED_NOTIFY);
-	iscopy = copy_temporary_file_to_original_file(DM_ENABLED_NOTIFY, DM_ENABLED_NOTIFY_TEMPORARY);
+	iscopy = bbf_api_copy_temporary_file_to_original_file(DM_ENABLED_NOTIFY, DM_ENABLED_NOTIFY_TEMPORARY);
 	if(iscopy)
 		remove(DM_ENABLED_NOTIFY_TEMPORARY);
 
@@ -1847,14 +1842,14 @@ int dm_entry_enabled_notify_check_value_change(struct dmctx *dmctx, void (*add_l
 		int len = strlen(buf);
 		if (len)
 			buf[len-1] = '\0';
-		dmjson_parse_init(buf);
-		dmjson_get_var("parameter", &jval);
+		bbf_api_dmjson_parse_init(buf);
+		bbf_api_dmjson_get_var("parameter", &jval);
 		dmctx->in_param = dmstrdup(jval);
-		dmjson_get_var("value", &jval);
+		bbf_api_dmjson_get_var("value", &jval);
 		dmctx->in_value = dmstrdup(jval);
-		dmjson_get_var("notification", &jval);
+		bbf_api_dmjson_get_var("notification", &jval);
 		dmctx->in_notification = dmstrdup(jval);
-		dmjson_parse_fini();
+		bbf_api_dmjson_parse_fini();
 		dmctx->checkobj = NULL ;
 		dmctx->checkleaf = NULL;
 		dmctx->method_obj = enabled_notify_check_value_change_obj;

@@ -546,7 +546,7 @@ void add_set_list_tmp(struct dmctx *ctx, char *param, char *value, unsigned int 
 void del_set_list_tmp(struct set_tmp *set_tmp);
 void free_all_set_list_tmp(struct dmctx *ctx);
 void add_list_fault_param(struct dmctx *ctx, char *param, int fault);
-void del_list_fault_param(struct param_fault *param_fault);
+void bbf_api_del_list_fault_param(struct param_fault *param_fault);
 void free_all_list_fault_param(struct dmctx *ctx);
 int string_to_bool(char *v, bool *b);
 void dmentry_instance_lookup_inparam(struct dmctx *ctx);
@@ -575,8 +575,7 @@ char *dm_entry_get_all_instance_numbers(struct dmctx *pctx, char *param);
 void free_all_list_enabled_notify();
 void free_all_list_upnp_param_track(struct list_head *head);
 #endif
-void dm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value);
-int dm_update_file_enabled_notify(char *param, char *new_value);
+int bbf_api_dm_update_file_enabled_notify(char *param, char *new_value);
 void dm_update_enabled_notify_byname(char *name, char *new_value);
 char *get_last_instance(char *package, char *section, char *opt_inst);
 char *get_last_instance_bbfdm_without_update(char *package, char *section, char *opt_inst);

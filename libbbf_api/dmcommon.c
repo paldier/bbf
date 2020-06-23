@@ -1412,7 +1412,7 @@ int command_exec_output_to_array(char *cmd, char **output, int *length)
 	return 0;
 }
 
-int copy_temporary_file_to_original_file(char *f1, char *f2)
+int bbf_api_copy_temporary_file_to_original_file(char *f1, char *f2)
 {
 	FILE *fp, *ftmp;
 	char buf[512];

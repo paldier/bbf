@@ -517,7 +517,6 @@ enum {
 
 extern struct list_head list_enabled_notify;
 extern struct list_head list_enabled_lw_notify;
-extern struct list_head list_execute_end_session;
 
 #ifdef BBF_TR064
 extern struct list_head list_upnp_enabled_onevent;
@@ -533,7 +532,6 @@ extern int ip_version;
 extern char dm_delim;
 extern char dmroot[64];
 extern int bbfdatamodel_type;
-extern unsigned int upnp_in_user_mask;
 
 char *update_instance(struct uci_section *s, char *last_inst, char *inst_opt);
 char *update_instance_bbfdm(struct uci_section *s, char *last_inst, char *inst_opt);
@@ -588,7 +586,6 @@ char *get_last_instance_lev2_bbfdm_dmmap_opt(char* dmmap_package, char *section,
 char *get_last_instance_lev2_bbfdm(char *package, char *section, char* dmmap_package, char *opt_inst, char *opt_check, char *value_check);
 char *handle_update_instance(int instance_ranck, struct dmctx *ctx, char **last_inst, char * (*up_instance)(int action, char **last_inst, void *argv[]), int argc, ...);
 int dm_add_end_session(struct dmctx *ctx, void(*function)(struct execute_end_session *), int action, void *data);
-int apply_end_session();
 void bbf_api_cwmp_set_end_session (unsigned int flag);
 char *dm_print_path(char *fpath, ...);
 void free_all_list_enabled_lwnotify();

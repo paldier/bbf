@@ -6,22 +6,20 @@
  * as published by the Free Software Foundation
  *
  *	  Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
- *
+ *    Author Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
 #include <libbbf_api/dmcommon.h>
 
 extern int end_session_flag;
+extern unsigned int upnp_in_user_mask;
+extern struct list_head list_execute_end_session;
 
 int bbfdmuci_lookup_ptr(struct uci_context *ctx, struct uci_ptr *ptr, char *package, char *section, char *option, char *value);
 void bbf_apply_end_session(void);
 int set_bbfdatamodel_type(int bbf_type);
-int set_upnp_in_user_mask(unsigned int upnp_user_mask);
 int bbf_set_ip_version(int ipversion);
-int set_bbf_end_session_flag(int flag);
-int reset_bbf_end_session_flag(void);
 void bbf_del_list_parameter(struct dm_parameter *dm_parameter);
-void bbf_cwmp_set_end_session (unsigned int flag);
 int bbfdm_update_file_enabled_notify(char *param, char *new_value);
 void bbfdmjson_parse_init(char *msg);
 void bbfdmjson_parse_fini(void);
@@ -32,4 +30,7 @@ void bbfdmjson_get_var(char *jkey, char **jval);
 void bbfdm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value);
 struct list_head get_bbf_list_enabled_lw_notify(void);
 
+
+void apply_end_session(void);
+int dm_add_end_session(struct dmctx *ctx, void(*function)(struct execute_end_session *), int action, void *data);
 void cwmp_set_end_session (unsigned int flag);

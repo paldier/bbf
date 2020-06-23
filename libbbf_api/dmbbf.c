@@ -94,14 +94,12 @@ LIST_HEAD(list_upnp_changed_version);
 
 LIST_HEAD(list_enabled_notify);
 LIST_HEAD(list_enabled_lw_notify);
-LIST_HEAD(list_execute_end_session);
 
 int* end_session_flag_ptr = NULL;
 int ip_version = 4;
 char dm_delim = DMDELIM_CWMP;
 char dmroot[64] = "Device";
 int bbfdatamodel_type = BBFDM_BOTH;
-unsigned int upnp_in_user_mask = DM_SUPERADMIN_MASK;
 
 void (*api_add_list_value_change)(char *param_name, char *param_data, char *param_type) = NULL;
 void (*api_send_active_value_change)(void) = NULL;
@@ -3166,46 +3164,6 @@ static int enabled_tracked_param_check_param(DMPARAM_ARGS)
 #endif
 
 /********************/
-
-int dm_add_end_session(struct dmctx *ctx, void(*function)(struct execute_end_session *), int action, void *data)
-{
-	struct execute_end_session *execute_end_session;
-
-	execute_end_session = calloc (1,sizeof(struct execute_end_session));
-	if (execute_end_session == NULL)
-	{
-		return -1;
-	}
-	execute_end_session->action = action;
-	execute_end_session->data = data;
-	execute_end_session->function = function;
-	execute_end_session->amd_version = ctx->amd_version;
-	execute_end_session->instance_mode = ctx->instance_mode;
-	execute_end_session->dm_type = ctx->dm_type;
-	list_add_tail (&(execute_end_session->list), &(list_execute_end_session));
-
-	return 0;
-}
-
-int cwmp_free_dm_end_session(struct execute_end_session *execute_end_session)
-{
-	if(execute_end_session != NULL)
-	{
-		FREE(execute_end_session);
-	}
-	return 0;
-}
-
-int apply_end_session()
-{
-	struct execute_end_session *p, *q;
-	list_for_each_entry_safe(p, q, &(list_execute_end_session), list) {
-		p->function(p);
-		list_del(&(p->list));
-		cwmp_free_dm_end_session(p);
-	}
-	return 0;
-}
 
 void bbf_api_cwmp_set_end_session (unsigned int flag)
 {

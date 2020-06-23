@@ -6,12 +6,71 @@
  * as published by the Free Software Foundation
  *
  *	  Author Amin Ben Ramdhane <amin.benramdhane@pivasoftware.com>
- *
+ *	  Author Omar Kallel <omar.kallel@pivasoftware.com>
  */
 
 #include "dmbbfcommon.h"
 
 int end_session_flag = 0;
+unsigned int upnp_in_user_mask = DM_SUPERADMIN_MASK;
+
+LIST_HEAD(list_execute_end_session);
+
+int dm_add_end_session(struct dmctx *ctx, void(*function)(struct execute_end_session *), int action, void *data)
+{
+	struct execute_end_session *execute_end_session;
+
+	execute_end_session = calloc (1,sizeof(struct execute_end_session));
+	if (execute_end_session == NULL)
+	{
+		return -1;
+	}
+	execute_end_session->action = action;
+	execute_end_session->data = data;
+	execute_end_session->function = function;
+	execute_end_session->amd_version = ctx->amd_version;
+	execute_end_session->instance_mode = ctx->instance_mode;
+	execute_end_session->dm_type = ctx->dm_type;
+	list_add_tail (&(execute_end_session->list), &(list_execute_end_session));
+
+	return 0;
+}
+
+int cwmp_free_dm_end_session(struct execute_end_session *execute_end_session)
+{
+	if(execute_end_session != NULL)
+	{
+		FREE(execute_end_session);
+	}
+	return 0;
+}
+
+void apply_end_session()
+{
+	struct execute_end_session *p, *q;
+	list_for_each_entry_safe(p, q, &(list_execute_end_session), list) {
+		p->function(p);
+		list_del(&(p->list));
+		cwmp_free_dm_end_session(p);
+	}
+	return 0;
+}
+
+void cwmp_set_end_session (unsigned int flag)
+{
+	if (end_session_flag_ptr != NULL)
+		end_session_flag = *end_session_flag_ptr;
+	end_session_flag_ptr = &end_session_flag;
+
+	end_session_flag |= flag;
+}
+
+int set_bbfdatamodel_type(int bbf_type)
+{
+	bbfdatamodel_type = bbf_type;
+	return 0;
+}
+
 int bbfdmuci_lookup_ptr(struct uci_context *ctx, struct uci_ptr *ptr, char *package, char *section, char *option, char *value)
 {
 	return dmuci_lookup_ptr(ctx, ptr, package, section, option, value);
@@ -22,17 +81,6 @@ void bbf_apply_end_session(void)
 	apply_end_session();
 }
 
-int set_bbfdatamodel_type(int bbf_type)
-{
-	bbfdatamodel_type = bbf_type;
-	return 0;
-}
-
-int set_upnp_in_user_mask(unsigned int upnp_user_mask)
-{
-	upnp_in_user_mask = upnp_user_mask;
-	return 0;
-}
 
 int bbf_set_ip_version(int ipversion)
 {
@@ -40,25 +88,9 @@ int bbf_set_ip_version(int ipversion)
 	return 0;
 }
 
-int set_bbf_end_session_flag(int flag)
-{
-	return (end_session_flag & flag);
-}
-
-int reset_bbf_end_session_flag(void)
-{
-	end_session_flag = 0;
-	return 0;
-}
-
 void bbf_del_list_parameter(struct dm_parameter *dm_parameter)
 {
 	del_list_parameter(dm_parameter);
-}
-
-void bbf_cwmp_set_end_session (unsigned int flag)
-{
-	cwmp_set_end_session (flag);
 }
 
 int bbfdm_update_file_enabled_notify(char *param, char *new_value)
@@ -104,13 +136,4 @@ void bbfdm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value)
 struct list_head get_bbf_list_enabled_lw_notify(void)
 {
 	return list_enabled_lw_notify;
-}
-
-void cwmp_set_end_session (unsigned int flag)
-{
-	if (end_session_flag_ptr != NULL) {
-		end_session_flag = *end_session_flag_ptr;
-		end_session_flag_ptr = &end_session_flag;
-	}
-	end_session_flag |= flag;
 }

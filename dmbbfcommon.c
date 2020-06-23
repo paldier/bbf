@@ -53,7 +53,6 @@ void apply_end_session()
 		list_del(&(p->list));
 		cwmp_free_dm_end_session(p);
 	}
-	return 0;
 }
 
 void cwmp_set_end_session (unsigned int flag)
@@ -88,9 +87,9 @@ int bbf_set_ip_version(int ipversion)
 	return 0;
 }
 
-void bbf_del_list_parameter(struct dm_parameter *dm_parameter)
+void del_list_parameter(struct dm_parameter *dm_parameter)
 {
-	del_list_parameter(dm_parameter);
+	api_del_list_parameter(dm_parameter);
 }
 
 int dm_update_file_enabled_notify(char *param, char *new_value)
@@ -132,9 +131,4 @@ void dm_update_enabled_notify(struct dm_enabled_notify *p, char *new_value)
 {
 	free(p->value); // Should be free and not dmfree
 	p->value = strdup(new_value);
-}
-
-struct list_head get_bbf_list_enabled_lw_notify(void)
-{
-	return list_enabled_lw_notify;
 }

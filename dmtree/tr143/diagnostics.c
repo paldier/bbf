@@ -11,6 +11,7 @@
 
 #include "dmentry.h"
 #include "diagnostics.h"
+#include "dmbbfcommon.h"
 
 static int get_diag_enable_true(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {

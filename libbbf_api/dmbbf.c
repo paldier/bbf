@@ -93,7 +93,6 @@ LIST_HEAD(list_upnp_changed_version);
 #endif
 
 LIST_HEAD(list_enabled_notify);
-LIST_HEAD(list_enabled_lw_notify);
 
 int* end_session_flag_ptr = NULL;
 int ip_version = 4;
@@ -104,6 +103,7 @@ int bbfdatamodel_type = BBFDM_BOTH;
 
 void (*api_add_list_value_change)(char *param_name, char *param_data, char *param_type) = NULL;
 void (*api_send_active_value_change)(void) = NULL;
+void (*api_add_list_enabled_lwnotify)(char *param, char *notification, char *value) = NULL;
 
 struct notification notifications[] = {
 	[0] = {"0", "disabled"},
@@ -773,7 +773,7 @@ void add_list_paramameter(struct dmctx *ctx, char *param_name, char *param_data,
 	dm_parameter->flags = flags;
 }
 
-void del_list_parameter(struct dm_parameter *dm_parameter)
+void api_del_list_parameter(struct dm_parameter *dm_parameter)
 {
 	list_del(&dm_parameter->list);
 	dmfree(dm_parameter->name);
@@ -785,7 +785,7 @@ void free_all_list_parameter(struct dmctx *ctx)
 	struct dm_parameter *dm_parameter;
 	while (ctx->list_parameter.next != &ctx->list_parameter) {
 		dm_parameter = list_entry(ctx->list_parameter.next, struct dm_parameter, list);
-		del_list_parameter(dm_parameter);
+		api_del_list_parameter(dm_parameter);
 	}
 }
 
@@ -840,35 +840,6 @@ void free_all_list_fault_param(struct dmctx *ctx)
 	while (ctx->list_fault_param.next != &ctx->list_fault_param) {
 		param_fault = list_entry(ctx->list_fault_param.next, struct param_fault, list);
 		bbf_api_del_list_fault_param(param_fault);
-	}
-}
-
-void add_list_enabled_lwnotify(struct dmctx *dmctx, char *param, char *notification, char *value)
-{
-	struct dm_enabled_notify *dm_enabled_notify;
-
-	dm_enabled_notify = calloc(1, sizeof(struct dm_enabled_notify)); // Should be calloc and not dmcalloc
-	list_add_tail(&dm_enabled_notify->list, &list_enabled_lw_notify);
-	dm_enabled_notify->name = strdup(param); // Should be strdup and not dmstrdup
-	dm_enabled_notify->value = value ? strdup(value) : strdup(""); // Should be strdup and not dmstrdup
-	dm_enabled_notify->notification = strdup(notification); // Should be strdup and not dmstrdup
-}
-
-void del_list_enabled_notify(struct dm_enabled_notify *dm_enabled_notify)
-{
-	list_del(&dm_enabled_notify->list); // Should be free and not dmfree
-	free(dm_enabled_notify->name);
-	free(dm_enabled_notify->value);
-	free(dm_enabled_notify->notification);
-	free(dm_enabled_notify);
-}
-
-void free_all_list_enabled_lwnotify()
-{
-	struct dm_enabled_notify *dm_enabled_notify;
-	while (list_enabled_lw_notify.next != &list_enabled_lw_notify) {
-		dm_enabled_notify = list_entry(list_enabled_lw_notify.next, struct dm_enabled_notify, list);
-		del_list_enabled_notify(dm_enabled_notify);
 	}
 }
 
@@ -1762,12 +1733,13 @@ static int mobj_set_notification_in_param(DMOBJECT_ARGS)
 /*********************
  * load enabled notify
  ********************/
-int dm_entry_enabled_notify(struct dmctx *dmctx)
+int dm_entry_enabled_notify(struct dmctx *dmctx, void (*add_list_enabled_lwnotify_arg)(char *param, char *notification, char *value))
 {
 	int err;
 	DMOBJ *root = dmctx->dm_entryobj;
 	DMNODE node = { .current_object = "" };
 
+	api_add_list_enabled_lwnotify = add_list_enabled_lwnotify_arg;
 	dmctx->method_obj = enabled_notify_check_obj;
 	dmctx->method_param = enabled_notify_check_param;
 	dmctx->checkobj = NULL ;
@@ -1813,8 +1785,8 @@ static int enabled_notify_check_param(DMPARAM_ARGS)
 	}
 	fclose(fp);
 
-	if (notif[0] >= '3') {
-		add_list_enabled_lwnotify(dmctx, refparam, notif, value);
+	if (api_add_list_enabled_lwnotify != NULL && notif[0] >= '3') {
+		api_add_list_enabled_lwnotify(refparam, notif, value);
 	}
 	dmfree(refparam);
 	return 0;

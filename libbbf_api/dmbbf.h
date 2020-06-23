@@ -67,6 +67,7 @@ extern struct dm_notif_s DMPASSIVE;
 
 extern void (*api_add_list_value_change)(char *param_name, char *param_data, char *param_type);
 extern void (*api_send_active_value_change)(void);
+extern void (*api_add_list_enabled_lwnotify)(char *param, char *notification, char *value);
 #define DMPARAM_ARGS \
 	struct dmctx *dmctx, \
 	struct dmnode *node, \
@@ -516,7 +517,6 @@ enum {
 };
 
 extern struct list_head list_enabled_notify;
-extern struct list_head list_enabled_lw_notify;
 
 #ifdef BBF_TR064
 extern struct list_head list_upnp_enabled_onevent;
@@ -533,6 +533,7 @@ extern char dm_delim;
 extern char dmroot[64];
 extern int bbfdatamodel_type;
 
+
 char *update_instance(struct uci_section *s, char *last_inst, char *inst_opt);
 char *update_instance_bbfdm(struct uci_section *s, char *last_inst, char *inst_opt);
 char *update_instance_alias_bbfdm(int action, char **last_inst , void *argv[]);
@@ -540,7 +541,7 @@ char *update_instance_alias(int action, char **last_inst , void *argv[]);
 char *update_instance_without_section(int action, char **last_inst, void *argv[]);
 int get_empty(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value);
 void add_list_paramameter(struct dmctx *ctx, char *param_name, char *param_data, char *param_type, char *param_version, unsigned int flags);
-void del_list_parameter(struct dm_parameter *dm_parameter);
+void api_del_list_parameter(struct dm_parameter *dm_parameter);
 void free_all_list_parameter(struct dmctx *ctx);
 void add_set_list_tmp(struct dmctx *ctx, char *param, char *value, unsigned int flags);
 void del_set_list_tmp(struct set_tmp *set_tmp);
@@ -558,7 +559,7 @@ int dm_entry_add_object(struct dmctx *ctx);
 int dm_entry_delete_object(struct dmctx *ctx);
 int dm_entry_set_value(struct dmctx *ctx);
 int dm_entry_set_notification(struct dmctx *ctx);
-int dm_entry_enabled_notify(struct dmctx *ctx);
+int dm_entry_enabled_notify(struct dmctx *dmctx, void (*add_list_enabled_lwnotify_arg)(char *param, char *notification, char *value));
 int dm_entry_enabled_notify_check_value_change(struct dmctx *dmctx, void (*add_list_value_change_arg)(char *param_name, char *param_data, char *param_type), void (*send_active_value_change_arg)(void));
 int dm_entry_get_linker(struct dmctx *ctx);
 int dm_entry_get_linker_value(struct dmctx *ctx);
@@ -587,7 +588,6 @@ char *handle_update_instance(int instance_ranck, struct dmctx *ctx, char **last_
 int dm_add_end_session(struct dmctx *ctx, void(*function)(struct execute_end_session *), int action, void *data);
 void bbf_api_cwmp_set_end_session (unsigned int flag);
 char *dm_print_path(char *fpath, ...);
-void free_all_list_enabled_lwnotify();
 int dm_link_inst_obj(struct dmctx *dmctx, DMNODE *parent_node, void *data, char *instance);
 void dm_check_dynamic_obj(struct dmctx *dmctx, DMNODE *parent_node, DMOBJ *entryobj, char *full_obj, char *obj, DMOBJ **root_entry, int *obj_found);
 int free_dm_browse_node_dynamic_object_tree(DMNODE *parent_node, DMOBJ *entryobj);

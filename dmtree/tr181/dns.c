@@ -10,6 +10,7 @@
 
 #include "dmentry.h"
 #include "dns.h"
+#include "dmbbfcommon.h"
 
 static inline char *nslookup_get(char *option, char *def)
 {

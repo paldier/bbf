@@ -791,8 +791,6 @@ static int set_rule_order(char *refparam, struct dmctx *ctx, void *data, char *i
 
 static int set_rule_description(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
-	struct uci_section *dms = NULL;
-
 	switch (action) {
 		case VALUECHECK:
 			if (dm_validate_string(value, -1, 256, NULL, 0, NULL, 0))

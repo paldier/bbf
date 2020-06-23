@@ -11,6 +11,7 @@
  */
 
 #include "managementserver.h"
+#include "dmbbfcommon.h"
 
 /*#Device.ManagementServer.URL!UCI:cwmp/acs,acs/url*/
 static int get_management_server_url(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)

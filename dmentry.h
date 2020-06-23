@@ -20,6 +20,7 @@
 extern struct list_head head_package_change;
 extern unsigned char dmcli_timetrack;
 extern unsigned char dmcli_evaluatetest;
+extern struct list_head list_enabled_lw_notify;
 
 enum ctx_init_enum {
 	CTX_INIT_ALL,

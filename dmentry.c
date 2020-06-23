@@ -18,12 +18,14 @@
 #include "dmoperate.h"
 #include "device.h"
 #include "wepkey.h"
+#include "dmbbfcommon.h"
 
 #ifdef BBF_TR064
 #include "upnp_device.h"
 #endif
 
 LIST_HEAD(head_package_change);
+LIST_HEAD(list_enabled_lw_notify);
 unsigned char dmcli_timetrack = 0;
 unsigned char dmcli_evaluatetest = 0;
 
@@ -429,6 +431,35 @@ int dm_entry_apply(struct dmctx *ctx, int cmd, char *arg1, char *arg2)
 	return usp_fault_map(fault);
 }
 
+void add_list_enabled_lwnotify(char *param, char *notification, char *value)
+{
+	struct dm_enabled_notify *dm_enabled_notify;
+
+	dm_enabled_notify = calloc(1, sizeof(struct dm_enabled_notify)); // Should be calloc and not dmcalloc
+	list_add_tail(&dm_enabled_notify->list, &list_enabled_lw_notify);
+	dm_enabled_notify->name = strdup(param); // Should be strdup and not dmstrdup
+	dm_enabled_notify->value = value ? strdup(value) : strdup(""); // Should be strdup and not dmstrdup
+	dm_enabled_notify->notification = strdup(notification); // Should be strdup and not dmstrdup
+}
+
+void del_list_enabled_notify(struct dm_enabled_notify *dm_enabled_notify)
+{
+	list_del(&dm_enabled_notify->list); // Should be free and not dmfree
+	free(dm_enabled_notify->name);
+	free(dm_enabled_notify->value);
+	free(dm_enabled_notify->notification);
+	free(dm_enabled_notify);
+}
+
+void free_all_list_enabled_lwnotify()
+{
+	struct dm_enabled_notify *dm_enabled_notify;
+	while (list_enabled_lw_notify.next != &list_enabled_lw_notify) {
+		dm_enabled_notify = list_entry(list_enabled_lw_notify.next, struct dm_enabled_notify, list);
+		del_list_enabled_notify(dm_enabled_notify);
+	}
+}
+
 int dm_entry_load_enabled_notify(unsigned int dm_type, unsigned int amd_version, int instance_mode, void (*add_list_value_change)(char *param_name, char *param_data, char *param_type), void (*send_active_value_change)(void))
 {
 	struct dmctx dmctx = {0};
@@ -438,7 +469,7 @@ int dm_entry_load_enabled_notify(unsigned int dm_type, unsigned int amd_version,
 
 	free_all_list_enabled_lwnotify();
 	dm_entry_enabled_notify_check_value_change(&dmctx, add_list_value_change, send_active_value_change);
-	dm_entry_enabled_notify(&dmctx);
+	dm_entry_enabled_notify(&dmctx, add_list_enabled_lwnotify);
 
 	dm_ctx_clean(&dmctx);
 	return 0;
@@ -452,7 +483,7 @@ int dm_entry_reload_enabled_notify(unsigned int dm_type, unsigned int amd_versio
 	dmctx.in_param = "";
 
 	free_all_list_enabled_lwnotify();
-	dm_entry_enabled_notify(&dmctx);
+	dm_entry_enabled_notify(&dmctx, add_list_enabled_lwnotify);
 
 	dm_ctx_clean(&dmctx);
 	return 0;

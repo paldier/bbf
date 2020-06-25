@@ -803,6 +803,122 @@ static opr_ret_t ip_diagnostics_nslookup(struct dmctx *dmctx, char *path, char *
 	return SUCCESS;
 }
 
+static opr_ret_t swmodules_exec_env_reset(struct dmctx *dmctx, char *path, char *input)
+{
+	char *exec_env = get_param_val_from_op_cmd(path, "Name");
+	if (exec_env) {
+		if (strcmp(exec_env, "OpenWRT_Linux") == 0) {
+			if (0 == dmcmd_no_wait("/sbin/defaultreset", 0))
+				return SUCCESS;
+			else
+				return FAIL;
+		}
+	} else
+		return FAIL;
+
+	return SUCCESS;
+}
+
+static opr_ret_t swmodules_install_du(struct dmctx *dmctx, char *path, char *input)
+{
+	json_object *json_res = NULL, *res = NULL;
+	struct deployment_unit_install du_install = {0};
+
+	json_res = json_tokener_parse((const char *)input);
+	du_install.url = dmjson_get_value(json_res, 1, "URL");
+	if (du_install.url[0] == '\0')
+		return UBUS_INVALID_ARGUMENTS;
+	du_install.uuid = dmjson_get_value(json_res, 1, "UUID");
+	du_install.username = dmjson_get_value(json_res, 1, "Username");
+	du_install.password = dmjson_get_value(json_res, 1, "Password");
+	du_install.environment = dmjson_get_value(json_res, 1, "ExecutionEnvRef");
+	if (du_install.environment[0] == '\0')
+		return UBUS_INVALID_ARGUMENTS;
+
+	char *exec_env = get_param_val_from_op_cmd(du_install.environment, "Name");
+	if (!exec_env)
+		return FAIL;
+
+	dmubus_call("swmodules", "du_install",
+			UBUS_ARGS{{"url", du_install.url},
+					  {"uuid", du_install.uuid},
+					  {"username", du_install.username},
+					  {"password", du_install.password},
+					  {"environment", exec_env}},
+			5,
+			&res);
+
+	if (!res)
+		return FAIL;
+
+	char *status = dmjson_get_value(res, 1, "status");
+
+	return (strcmp(status, "true") == 0) ? SUCCESS : FAIL;
+}
+
+static opr_ret_t swmodules_update_du(struct dmctx *dmctx, char *path, char *input)
+{
+	json_object *json_res = NULL, *res = NULL;
+	struct deployment_unit_update du_update = {0};
+
+	json_res = json_tokener_parse((const char *)input);
+	du_update.url = dmjson_get_value(json_res, 1, "URL");
+	if (du_update.url[0] == '\0')
+		return UBUS_INVALID_ARGUMENTS;
+	du_update.username = dmjson_get_value(json_res, 1, "Username");
+	du_update.password = dmjson_get_value(json_res, 1, "Password");
+
+	char *du_uuid = get_param_val_from_op_cmd(path, "UUID");
+	if (!du_uuid)
+		return FAIL;
+
+	dmubus_call("swmodules", "du_update",
+			UBUS_ARGS{{"uuid", du_uuid},
+					  {"url", du_update.url},
+					  {"username", du_update.username},
+					  {"password", du_update.password}},
+			4,
+			&res);
+
+	if (!res)
+		return FAIL;
+
+	char *status = dmjson_get_value(res, 1, "status");
+
+	return (strcmp(status, "true") == 0) ? SUCCESS : FAIL;
+}
+
+static opr_ret_t swmodules_uninstall_du(struct dmctx *dmctx, char *path, char *input)
+{
+	json_object *res = NULL;
+
+	char *du_name = get_param_val_from_op_cmd(path, "Name");
+	if (!du_name)
+		return FAIL;
+
+	char *exec_env = get_param_val_from_op_cmd(path, "ExecutionEnvRef");
+	if (!exec_env)
+		return FAIL;
+
+	char *env = get_param_val_from_op_cmd(exec_env, "Name");
+	if (!env)
+		return FAIL;
+
+	dmubus_call("swmodules", "du_uninstall",
+			UBUS_ARGS{{"name", du_name},
+					  {"environment", env}},
+			2,
+			&res);
+
+	if (!res)
+		return FAIL;
+
+	char *status = dmjson_get_value(res, 1, "status");
+
+	return (strcmp(status, "true") == 0) ? SUCCESS : FAIL;
+
+}
+
 static int get_index_of_available_dynamic_operate(struct op_cmd *operate)
 {
 	int idx = 0;
@@ -851,7 +967,11 @@ static struct op_cmd operate_helper[] = {
 	{"Device.IP.Diagnostics.UploadDiagnostics", ip_diagnostics_upload},
 	{"Device.IP.Diagnostics.UDPEchoDiagnostics", ip_diagnostics_udpecho},
 	{"Device.IP.Diagnostics.ServerSelectionDiagnostics", ip_diagnostics_serverselection},
-	{"Device.DNS.Diagnostics.NSLookupDiagnostics", ip_diagnostics_nslookup}
+	{"Device.DNS.Diagnostics.NSLookupDiagnostics", ip_diagnostics_nslookup},
+	{"Device.SoftwareModules.ExecEnv.*.Reset", swmodules_exec_env_reset},
+	{"Device.SoftwareModules.InstallDU", swmodules_install_du},
+	{"Device.SoftwareModules.DeploymentUnit.*.Update", swmodules_update_du},
+	{"Device.SoftwareModules.DeploymentUnit.*.Uninstall", swmodules_uninstall_du}
 };
 
 opr_ret_t operate_on_node(struct dmctx *dmctx, char *path, char *input)

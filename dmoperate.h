@@ -196,6 +196,20 @@ struct nslookup_diagnostics {
 	char *response_time;
 };
 
+struct deployment_unit_install {
+	char *url;
+	char *uuid;
+	char *username;
+	char *password;
+	char *environment;
+};
+
+struct deployment_unit_update {
+	char *url;
+	char *username;
+	char *password;
+};
+
 struct op_cmd {
 	char *name;
 	operation opt;

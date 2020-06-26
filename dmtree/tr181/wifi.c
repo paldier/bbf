@@ -1942,7 +1942,7 @@ static int get_access_point_alias(char *refparam, struct dmctx *ctx, void *data,
 	struct uci_section *dmmap_section = NULL;
 
 	get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_acp_args *)data)->wifi_acp_sec), &dmmap_section);
-	dmuci_get_value_by_section_string(dmmap_section, "accesspointalias", value);
+	dmuci_get_value_by_section_string(dmmap_section, "ap_alias", value);
 	if ((*value)[0] == '\0')
 		dmasprintf(value, "cpe-%s", instance);
 	return 0;
@@ -1959,7 +1959,7 @@ static int set_access_point_alias(char *refparam, struct dmctx *ctx, void *data,
 			return 0;
 		case VALUESET:
 			get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_acp_args *)data)->wifi_acp_sec), &dmmap_section);
-			dmuci_set_value_by_section(dmmap_section, "accesspointalias", value);
+			dmuci_set_value_by_section(dmmap_section, "ap_alias", value);
 			return 0;
 	}
 	return 0;
@@ -2022,11 +2022,10 @@ static int add_wifi_ssid(char *refparam, struct dmctx *ctx, void *data, char **i
 	inst = get_last_instance_bbfdm("dmmap_wireless", "wifi-iface", "ssidinstance");
 	snprintf(ssid, sizeof(ssid), "iopsys_%d", inst ? (atoi(inst)+1) : 1);
 	dmuci_add_section("wireless", "wifi-iface", &s, &value);
-	dmuci_set_value_by_section(s, "device", "wl0");
-	dmuci_set_value_by_section(s, "encryption", "none");
-	dmuci_set_value_by_section(s, "macfilter", "0");
-	dmuci_set_value_by_section(s, "mode", "ap");
 	dmuci_set_value_by_section(s, "ssid", ssid);
+	dmuci_set_value_by_section(s, "network", "lan");
+	dmuci_set_value_by_section(s, "mode", "ap");
+	dmuci_set_value_by_section(s, "disabled", "0");
 
 	dmuci_add_section_bbfdm("dmmap_wireless", "wifi-iface", &dmmap_wifi, &v);
 	dmuci_set_value_by_section(dmmap_wifi, "section_name", section_name(s));
@@ -2042,25 +2041,73 @@ static int delete_wifi_ssid(char *refparam, struct dmctx *ctx, void *data, char 
 	switch (del_action) {
 		case DEL_INST:
 			get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_ssid_args *)data)->wifi_ssid_sec), &dmmap_section);
-			if (dmmap_section)
-				dmuci_delete_by_section(dmmap_section, NULL, NULL);
+			dmuci_delete_by_section(dmmap_section, NULL, NULL);
 			dmuci_delete_by_section(((struct wifi_ssid_args *)data)->wifi_ssid_sec, NULL, NULL);
 			break;
 		case DEL_ALL:
 			uci_foreach_sections("wireless", "wifi-iface", s) {
-				if (found != 0){
+				if (found != 0) {
 					get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(ss), &dmmap_section);
-					if (dmmap_section)
-						dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					dmuci_delete_by_section(dmmap_section, NULL, NULL);
 					dmuci_delete_by_section(ss, NULL, NULL);
 				}
 				ss = s;
 				found++;
 			}
-			if (ss != NULL){
+			if (ss != NULL) {
 				get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(ss), &dmmap_section);
-				if (dmmap_section)
+				dmuci_delete_by_section(dmmap_section, NULL, NULL);
+				dmuci_delete_by_section(ss, NULL, NULL);
+			}
+			return 0;
+	}
+	return 0;
+}
+
+static int add_wifi_accesspoint(char *refparam, struct dmctx *ctx, void *data, char **instance)
+{
+	char *value, *v, *inst, ssid[32] = {0};
+	struct uci_section *s = NULL, *dmmap_wifi = NULL;
+
+	check_create_dmmap_package("dmmap_wireless");
+	inst = get_last_instance_bbfdm("dmmap_wireless", "wifi-iface", "ap_instance");
+	snprintf(ssid, sizeof(ssid), "iopsys_%d", inst ? (atoi(inst)+1) : 1);
+	dmuci_add_section("wireless", "wifi-iface", &s, &value);
+	dmuci_set_value_by_section(s, "ssid", ssid);
+	dmuci_set_value_by_section(s, "network", "lan");
+	dmuci_set_value_by_section(s, "mode", "ap");
+	dmuci_set_value_by_section(s, "disabled", "0");
+
+	dmuci_add_section_bbfdm("dmmap_wireless", "wifi-iface", &dmmap_wifi, &v);
+	dmuci_set_value_by_section(dmmap_wifi, "section_name", section_name(s));
+	*instance = update_instance_bbfdm(dmmap_wifi, inst, "ap_instance");
+	return 0;
+}
+
+static int delete_wifi_accesspoint(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
+{
+	int found = 0;
+	struct uci_section *s = NULL, *ss = NULL, *dmmap_section = NULL;
+
+	switch (del_action) {
+		case DEL_INST:
+			get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(((struct wifi_ssid_args *)data)->wifi_ssid_sec), &dmmap_section);
+			dmuci_delete_by_section(dmmap_section, NULL, NULL);
+			dmuci_delete_by_section(((struct wifi_ssid_args *)data)->wifi_ssid_sec, NULL, NULL);
+			break;
+		case DEL_ALL:
+			uci_foreach_sections("wireless", "wifi-iface", s) {
+				if (found != 0) {
+					get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(ss), &dmmap_section);
 					dmuci_delete_by_section(dmmap_section, NULL, NULL);
+					dmuci_delete_by_section(ss, NULL, NULL);
+				}
+				ss = s;
+				found++;
+			}
+			if (ss != NULL) {
+				get_dmmap_section_of_config_section("dmmap_wireless", "wifi-iface", section_name(ss), &dmmap_section);
+				dmuci_delete_by_section(dmmap_section, NULL, NULL);
 				dmuci_delete_by_section(ss, NULL, NULL);
 			}
 			return 0;
@@ -2171,11 +2218,11 @@ static int browseWifiAccessPointInst(struct dmctx *dmctx, DMNODE *parent_node, v
 	synchronize_specific_config_sections_with_dmmap("wireless", "wifi-iface", "dmmap_wireless", &dup_list);
 	list_for_each_entry(p, &dup_list, list) {
 		dmuci_get_value_by_section_string(p->config_section, "mode", &mode);
-		if ((strlen(mode)>0 || mode[0] != '\0') &&strcmp(mode, "ap") != 0)
+		if ((strlen(mode)>0 || mode[0] != '\0') && strcmp(mode, "ap") != 0)
 			continue;
 		dmuci_get_value_by_section_string(p->config_section, "ifname", &ifname);
 		init_wifi_acp(&curr_wifi_acp_args, p->config_section, ifname);
-		wnum =  handle_update_instance(1, dmctx, &acpt_last, update_instance_alias, 3, p->dmmap_section, "accesspointinstance", "accesspointalias");
+		wnum =  handle_update_instance(1, dmctx, &acpt_last, update_instance_alias, 3, p->dmmap_section, "ap_instance", "ap_alias");
 		if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)&curr_wifi_acp_args, wnum) == DM_STOP)
 			break;
 	}
@@ -2253,7 +2300,7 @@ DMOBJ tWiFiObj[] = {
 /* OBJ, permission, addobj, delobj, checkobj, browseinstobj, forced_inform, notification, nextdynamicobj, nextobj, leaf, linker, bbfdm_type*/
 {"Radio", &DMREAD, NULL, NULL, NULL, browseWifiRadioInst, NULL, NULL, NULL, tWiFiRadioObj, tWiFiRadioParams, get_linker_Wifi_Radio, BBFDM_BOTH},
 {"SSID", &DMWRITE, add_wifi_ssid, delete_wifi_ssid, NULL, browseWifiSsidInst, NULL, NULL, NULL, tWiFiSSIDObj, tWiFiSSIDParams, get_linker_Wifi_Ssid, BBFDM_BOTH},
-{"AccessPoint", &DMREAD, NULL, NULL, NULL, browseWifiAccessPointInst, NULL, NULL, NULL, tWiFiAccessPointObj, tWiFiAccessPointParams, NULL, BBFDM_BOTH},
+{"AccessPoint", &DMWRITE, add_wifi_accesspoint, delete_wifi_accesspoint, NULL, browseWifiAccessPointInst, NULL, NULL, NULL, tWiFiAccessPointObj, tWiFiAccessPointParams, NULL, BBFDM_BOTH},
 {"NeighboringWiFiDiagnostic", &DMREAD, NULL, NULL, NULL, NULL, NULL, NULL, NULL, tWiFiNeighboringWiFiDiagnosticObj, tWiFiNeighboringWiFiDiagnosticParams, NULL, BBFDM_BOTH},
 {"EndPoint", &DMWRITE, addObjWiFiEndPoint, delObjWiFiEndPoint, NULL, browseWiFiEndPointInst, NULL, NULL, NULL, tWiFiEndPointObj, tWiFiEndPointParams, NULL, BBFDM_BOTH},
 {0}

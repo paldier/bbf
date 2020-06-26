@@ -31557,7 +31557,7 @@
 									"index": "@i-1"
 								}, 
 								"option": {
-									"name": "accesspointalias"
+									"name": "ap_alias"
 								}
 							}
 						}

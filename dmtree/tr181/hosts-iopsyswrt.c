@@ -63,6 +63,15 @@ int os__browseHostsHostIPv6AddressInst(struct dmctx *dmctx, DMNODE *parent_node,
 }
 
 /*************************************************************
+* LINKER
+**************************************************************/
+int get_linker_host(char *refparam, struct dmctx *dmctx, void *data, char *instance, char **linker)
+{
+	*linker = dmjson_get_value((json_object *)data, 1, "ipaddr");
+        return 0;
+}
+
+/*************************************************************
 * GET & SET PARAM
 **************************************************************/
 /*#Device.Hosts.HostNumberOfEntries!UBUS:router.network/hosts//hosts*/

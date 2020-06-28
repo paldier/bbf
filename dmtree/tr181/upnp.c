@@ -367,10 +367,7 @@ static int browseUPnPDescriptionServiceInstanceInst(struct dmctx *dmctx, DMNODE 
 /*#Device.UPnP.Device.Enable!UCI:upnpd/upnpd,config/enabled*/
 static int get_UPnPDevice_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_option_value_string("upnpd","config","enabled", value);
-	if ((*value)[0] == '\0') {
-		*value = "1";
-	}
+	*value = dmuci_get_option_value_fallback_def("upnpd", "config", "enabled", "1");
 	return 0;
 }
 

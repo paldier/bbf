@@ -235,9 +235,7 @@ static int set_management_server_connection_request_passwd(char *refparam, struc
 /*#Device.ManagementServer.UpgradesManaged!UCI:cwmp/cpe,cpe/upgrades_managed*/
 static int get_upgrades_managed(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_option_value_string("cwmp", "cpe", "upgrades_managed", value);
-	if ((*value)[0] == '\0')
-		dmasprintf(value, "%s", "false");
+	*value = dmuci_get_option_value_fallback_def("cwmp", "cpe", "upgrades_managed", "false");
 	return 0;
 }
 
@@ -413,11 +411,8 @@ static int set_management_server_retry_interval_multiplier(char *refparam, struc
 /*#Device.ManagementServer.AliasBasedAddressing!UCI:cwmp/cpe,cpe/amd_version*/
 static int get_alias_based_addressing(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_option_value_string("cwmp", "cpe", "amd_version", value);
-	if ((*value)[0] == '\0'|| atoi(*value) <= AMD_4)
-		*value = "false";
-	else
-		*value = "true";
+	char *res = dmuci_get_option_value_fallback_def("cwmp", "cpe", "amd_version", "5");
+	*value = (atoi(res) <= AMD_4) ? "false" : "true";
 	return 0;
 }
 

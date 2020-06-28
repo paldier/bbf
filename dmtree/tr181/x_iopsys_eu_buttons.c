@@ -103,10 +103,7 @@ static int set_x_iopsys_eu_button_longpress(char *refparam, struct dmctx *ctx, v
 
 static int get_x_iopsys_eu_button_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "enable", value);
-	if ((*value)[0] == '\0') {
-		*value = "1";
-	}
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "enable", "1");
 	return 0;
 }
 

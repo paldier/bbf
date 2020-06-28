@@ -862,9 +862,7 @@ static int set_voice_profile_sip_registerserver(char *refparam, struct dmctx *ct
 /*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.RegistrarServerPort!UCI:asterisk/sip_service_provider,@i-1/port*/
 static int get_voice_profile_sip_registerserverport(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct sip_args *)data)->sip_section, "port", value);
-	if ((*value)[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct sip_args *)data)->sip_section, "port", "0");
 	return 0;
 }
 
@@ -937,9 +935,7 @@ static int set_sip_user_agent_domain(char *refparam, struct dmctx *ctx, void *da
 /*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.UserAgentPort!UCI:asterisk/sip_advanced,SIP/bindport*/
 static int get_sip_user_agent_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_option_value_string("asterisk", "sip_options", "bindport", value);
-	if ((*value)[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_option_value_fallback_def("asterisk", "sip_options", "bindport", "0");
 	return 0;
 }
 
@@ -960,14 +956,7 @@ static int set_sip_user_agent_port(char *refparam, struct dmctx *ctx, void *data
 /*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.UserAgentTransport!UCI:asterisk/sip_service_provider,@i-1/transport*/
 static int get_sip_user_agent_transport(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *tmp;
-	struct sip_args *sipargs = (struct sip_args *)data;
-	
-	dmuci_get_value_by_section_string(sipargs->sip_section, "transport", &tmp);
-	if (tmp[0] == '\0')
-		*value = "udp";
-	else
-		*value = tmp;
+	*value = dmuci_get_value_by_section_fallback_def(((struct sip_args *)data)->sip_section, "transport", "udp");
 	return 0;
 }
 
@@ -1015,9 +1004,7 @@ static int set_sip_outbound_proxy(char *refparam, struct dmctx *ctx, void *data,
 /*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.OutboundProxyPort!UCI:asterisk/sip_service_provider,@i-1/outboundproxyport*/
 static int get_sip_outbound_proxy_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct sip_args *)data)->sip_section, "outboundproxyport", value);
-	if ((*value)[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct sip_args *)data)->sip_section, "outboundproxyport", "0");
 	return 0;
 }
 
@@ -1060,9 +1047,7 @@ static int set_sip_registration_period(char *refparam, struct dmctx *ctx, void *
 /*#Device.Services.VoiceService.{i}.VoiceProfile.{i}.SIP.ReInviteExpires!UCI:asterisk/sip_advanced,SIP/registertimeout*/
 static int get_sip_re_invite_expires(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_option_value_string("asterisk", "sip_options", "registertimeout", value);
-	if ((*value)[0] == '\0')
-		*value = "1";
+	*value = dmuci_get_option_value_fallback_def("asterisk", "sip_options", "registertimeout", "1");
 	return 0;
 }
 
@@ -1227,13 +1212,7 @@ static int set_sip_fax_t38_enable(char *refparam, struct dmctx *ctx, void *data,
 
 static int get_voice_service_vp_rtp_portmin(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *tmp; 
-	
-	dmuci_get_option_value_string("asterisk", "sip_options", "rtpstart", &tmp);
-	if(tmp[0] == '\0')
-		*value = "5000";
-	else
-		*value = tmp;
+	*value = dmuci_get_option_value_fallback_def("asterisk", "sip_options", "rtpstart", "5000");
 	return 0;
 }
 
@@ -1253,13 +1232,7 @@ static int set_voice_service_vp_rtp_portmin(char *refparam, struct dmctx *ctx, v
 
 static int get_voice_service_vp_rtp_portmax(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *tmp;
-	
-	dmuci_get_option_value_string("asterisk", "sip_options", "rtpend", &tmp);
-	if(tmp[0] == '\0')
-		*value = "31000";
-	else
-		*value = tmp;
+	*value = dmuci_get_option_value_fallback_def("asterisk", "sip_options", "rtpend", "31000");
 	return 0;
 }
 
@@ -1324,13 +1297,7 @@ static int get_voice_service_vp_rtp_rtcp_enable(char *refparam, struct dmctx *ct
 
 static int get_voice_service_vp_rtp_rtcp_txrepeatinterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *tmp;
-	
-	dmuci_get_option_value_string("asterisk", "sip_options", "rtcpinterval", &tmp);
-	if(tmp[0] == '\0')
-		*value = "5000";
-	else
-		*value = tmp;
+	*value = dmuci_get_option_value_fallback_def("asterisk", "sip_options", "rtcpinterval", "5000");
 	return 0;
 }
 
@@ -1667,11 +1634,7 @@ static int set_line_calling_features_caller_id_name(char *refparam, struct dmctx
 
 static int get_line_calling_features_callwaiting(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	struct tel_args *telargs = (struct tel_args *)data;
-	
-	dmuci_get_value_by_section_string(telargs->tel_section, "callwaiting", value);
-	if((*value)[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct tel_args *)data)->tel_section, "callwaiting", "0");
 	return 0;
 }
 

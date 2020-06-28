@@ -154,6 +154,7 @@ void free_all_list_package_change(struct list_head *clist);
 int dmuci_lookup_ptr(struct uci_context *ctx, struct uci_ptr *ptr, char *package, char *section, char *option, char *value);
 int dmuci_get_section_type(char *package, char *section,char **value);
 int dmuci_get_option_value_string(char *package, char *section, char *option, char **value);
+char *dmuci_get_option_value_fallback_def(char *package, char *section, char *option, char *default_value);
 int dmuci_get_option_value_list(char *package, char *section, char *option, struct uci_list **value);
 struct uci_option *dmuci_get_option_ptr(char *cfg_path, char *package, char *section, char *option);
 int db_get_value_string(char *package, char *section, char *option, char **value);
@@ -173,6 +174,7 @@ char * dmuci_add_section_and_rename(char *package, char *stype, struct uci_secti
 int dmuci_delete(char *package, char *section, char *option, char *value);
 int dmuci_lookup_ptr_by_section(struct uci_context *ctx, struct uci_ptr *ptr, struct uci_section *s, char *option, char *value);
 int dmuci_get_value_by_section_string(struct uci_section *s, char *option, char **value);
+char *dmuci_get_value_by_section_fallback_def(struct uci_section *s, char *option, char *default_value);
 int dmuci_get_value_by_section_list(struct uci_section *s, char *option, struct uci_list **value);
 char *dmuci_set_value_by_section(struct uci_section *s, char *option, char *value);
 int dmuci_delete_by_section(struct uci_section *s, char *option, char *value);

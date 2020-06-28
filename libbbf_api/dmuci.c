@@ -182,6 +182,17 @@ int dmuci_get_option_value_string(char *package, char *section, char *option, ch
 	return 0;
 }
 
+char *dmuci_get_option_value_fallback_def(char *package, char *section, char *option, char *default_value)
+{
+	char *value = "";
+
+	dmuci_get_option_value_string(package, section, option, &value);
+	if (*value == '\0')
+		value = default_value;
+
+	return value;
+}
+
 int dmuci_get_option_value_list(char *package, char *section, char *option, struct uci_list **value)
 {
 	struct uci_element *e;
@@ -595,6 +606,17 @@ int dmuci_get_value_by_section_string(struct uci_section *s, char *option, char 
 not_found:
 	*value = "";
 	return -1;
+}
+
+char *dmuci_get_value_by_section_fallback_def(struct uci_section *s, char *option, char *default_value)
+{
+	char *value = "";
+
+	dmuci_get_value_by_section_string(s, option, &value);
+	if (*value == '\0')
+		value = default_value;
+
+	return value;
 }
 
 int dmuci_get_value_by_section_list(struct uci_section *s, char *option, struct uci_list **value)

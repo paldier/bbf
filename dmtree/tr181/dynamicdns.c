@@ -334,9 +334,7 @@ static int get_DynamicDNS_SupportedServices(char *refparam, struct dmctx *ctx, v
 /*#Device.DynamicDNS.Client.{i}.Enable!UCI:ddns/service,@i-1/enabled*/
 static int get_DynamicDNSClient_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "enabled", value);
-	if (*value[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "enabled", "0");
 	return 0;
 }
 
@@ -570,9 +568,7 @@ static int get_DynamicDNSClient_HostnameNumberOfEntries(char *refparam, struct d
 /*#Device.DynamicDNS.Client.{i}.Hostname.{i}.Enable!UCI:ddns/service,@i-1/enabled*/
 static int get_DynamicDNSClientHostname_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "enabled", value);
-	if (*value[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "enabled", "0");
 	return 0;
 }
 
@@ -692,9 +688,7 @@ static int get_DynamicDNSClientHostname_LastUpdate(char *refparam, struct dmctx 
 /*#Device.DynamicDNS.Server.{i}.Enable!UCI:ddns/service,@i-1/enabled*/
 static int get_DynamicDNSServer_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "enabled", value);
-	if (*value[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "enabled", "0");
 	return 0;
 }
 
@@ -963,9 +957,7 @@ static int set_DynamicDNSServer_Protocol(char *refparam, struct dmctx *ctx, void
 /*#Device.DynamicDNS.Server.{i}.CheckInterval!UCI:ddns/service,@i-1/check_interval*/
 static int get_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "check_interval", value);
-	if (*value[0] == '\0')
-		*value = "600";
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "check_interval", "600");
 	return 0;
 }
 
@@ -1003,9 +995,7 @@ static int set_DynamicDNSServer_CheckInterval(char *refparam, struct dmctx *ctx,
 /*#Device.DynamicDNS.Server.{i}.RetryInterval!UCI:ddns/service,@i-1/retry_interval*/
 static int get_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "retry_interval", value);
-	if (*value[0] == '\0')
-		*value = "259200";
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "retry_interval", "259200");
 	return 0;
 }
 
@@ -1042,9 +1032,7 @@ static int set_DynamicDNSServer_RetryInterval(char *refparam, struct dmctx *ctx,
 /*#Device.DynamicDNS.Server.{i}.MaxRetries!UCI:ddns/service,@i-1/retry_count*/
 static int get_DynamicDNSServer_MaxRetries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "retry_count", value);
-	if (*value[0] == '\0')
-		*value = "5";
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "retry_count", "5");
 	return 0;
 }
 

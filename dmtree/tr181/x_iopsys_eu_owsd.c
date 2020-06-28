@@ -73,10 +73,7 @@ static int set_x_iopsys_eu_owsd_global_redirect(char *refparam, struct dmctx *ct
 **************************************************************************************/
 static int get_x_iopsys_eu_owsd_virtualhost_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "port", value);
-	if ((*value)[0] == '\0') {
-		*value = "";
-	}		
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "port", "");
 	return 0;
 }
 
@@ -125,12 +122,8 @@ static int set_x_iopsys_eu_owsd_virtualhost_interface(char *refparam, struct dmc
 
 static int get_x_iopsys_eu_owsd_virtualhost_ipv6_enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "ipv6", value);
-	if ((*value)[0] != '\0' && (*value)[0] == 'o' && (*value)[1] == 'n' ) {
-		*value = "1";
-	}
-	else
-		*value = "0";
+	char *res = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "ipv6", "1");
+	*value = (strcmp(res, "on") == 0) ? "1" : "0";
 	return 0;
 }
 
@@ -153,10 +146,7 @@ static int set_x_iopsys_eu_owsd_virtualhost_ipv6_enable(char *refparam, struct d
 
 static int get_x_iopsys_eu_owsd_virtualhost_whitelist_interface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "whitelist_interface_as_origin", value);
-	if ((*value)[0] == '\0' ) {
-		*value = "0";
-	}
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "whitelist_interface_as_origin", "0");
 	return 0;
 }
 
@@ -179,10 +169,7 @@ static int set_x_iopsys_eu_owsd_virtualhost_whitelist_interface(char *refparam, 
 
 static int get_x_iopsys_eu_owsd_virtualhost_whitelist_dhcp(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "whitelist_dhcp_domains", value);
-	if ((*value)[0] == '\0') {
-		*value = "0";
-	}
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "whitelist_dhcp_domains", "0");
 	return 0;
 }
 

@@ -617,9 +617,7 @@ static int set_EthernetInterface_LowerLayers(char *refparam, struct dmctx *ctx, 
 /*#Device.Ethernet.Interface.{i}.Upstream!UCI:ports/ethport,@i-1/uplink*/
 static int get_EthernetInterface_Upstream(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct eth_port_args *)data)->eth_port_sec, "uplink", value);
-	if ((*value)[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct eth_port_args *)data)->eth_port_sec, "uplink", "0");
 	return 0;
 }
 
@@ -1456,9 +1454,7 @@ static int get_EthernetVLANTerminationStats_MulticastPacketsReceived(char *refpa
 /*#Device.Ethernet.RMONStats.{i}.Enable!UCI:ports/ethport,@i-1/rmon*/
 static int get_EthernetRMONStats_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct eth_rmon_args *)data)->eth_rmon_sec, "rmon", value);
-	if ((*value)[0] == '\0')
-		*value = "1";
+	*value = dmuci_get_value_by_section_fallback_def(((struct eth_rmon_args *)data)->eth_rmon_sec, "rmon", "1");
 	return 0;
 }
 

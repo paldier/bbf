@@ -550,10 +550,7 @@ static int get_router_ipv4forwarding_status(char *refparam, struct dmctx *ctx, v
 /*#Device.Routing.Router.{i}.IPv4Forwarding.{i}.DestIPAddress!UCI:network/route,@i-1/target*/
 static int get_router_ipv4forwarding_destip(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
-		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "target", value);
-	if ((*value)[0] == '\0')
-		*value = "0.0.0.0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct routingfwdargs *)data)->routefwdsection, "target", "0.0.0.0");
 	return 0;
 }
 
@@ -574,10 +571,7 @@ static int set_router_ipv4forwarding_destip(char *refparam, struct dmctx *ctx, v
 /*#Device.Routing.Router.{i}.IPv4Forwarding.{i}.DestSubnetMask!UCI:network/route,@i-1/netmask*/
 static int get_router_ipv4forwarding_destmask(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
-		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "netmask", value);
-	if ((*value)[0] == '\0')
-		*value = "255.255.255.255";
+	*value = dmuci_get_value_by_section_fallback_def(((struct routingfwdargs *)data)->routefwdsection, "netmask", "255.255.255.255");
 	return 0;
 }
 
@@ -621,10 +615,7 @@ static int get_router_ipv4forwarding_origin(char *refparam, struct dmctx *ctx, v
 /*#Device.Routing.Router.{i}.IPv4Forwarding.{i}.GatewayIPAddress!UCI:network/route,@i-1/gateway*/
 static int get_router_ipv4forwarding_gatewayip(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
-		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "gateway", value);
-	if ((*value)[0] == '\0')
-		*value = "0.0.0.0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct routingfwdargs *)data)->routefwdsection, "gateway", "0.0.0.0");
 	return 0;
 }
 
@@ -679,10 +670,7 @@ static int set_router_ipv4forwarding_interface_linker_parameter(char *refparam, 
 /*#Device.Routing.Router.{i}.IPv4Forwarding.{i}.ForwardingMetric!UCI:network/route,@i-1/metric*/
 static int get_router_ipv4forwarding_metric(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
-		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "metric", value);
-	if ((*value)[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct routingfwdargs *)data)->routefwdsection, "metric", "0");
 	return 0;
 }
 
@@ -728,10 +716,7 @@ static int get_RoutingRouterIPv6Forwarding_Status(char *refparam, struct dmctx *
 /*#Device.Routing.Router.{i}.IPv6Forwarding.{i}.DestIPPrefix!UCI:network/route,@i-1/target*/
 static int get_RoutingRouterIPv6Forwarding_DestIPPrefix(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
-		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "target", value);
-	if ((*value)[0] == '\0')
-		*value = "::";
+	*value = dmuci_get_value_by_section_fallback_def(((struct routingfwdargs *)data)->routefwdsection, "target", "::");
 	return 0;
 }
 
@@ -771,10 +756,7 @@ static int set_RoutingRouterIPv6Forwarding_ForwardingPolicy(char *refparam, stru
 /*#Device.Routing.Router.{i}.IPv6Forwarding.{i}.NextHop!UCI:network/route,@i-1/gateway*/
 static int get_RoutingRouterIPv6Forwarding_NextHop(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
-		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "gateway", value);
-	if ((*value)[0] == '\0')
-		*value = "::";
+	*value = dmuci_get_value_by_section_fallback_def(((struct routingfwdargs *)data)->routefwdsection, "gateway", "::");
 	return 0;
 }
 
@@ -836,10 +818,7 @@ static int get_RoutingRouterIPv6Forwarding_Origin(char *refparam, struct dmctx *
 /*#Device.Routing.Router.{i}.IPv6Forwarding.{i}.ForwardingMetric!UCI:network/route,@i-1/metric*/
 static int get_RoutingRouterIPv6Forwarding_ForwardingMetric(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	if (((struct routingfwdargs *)data)->routefwdsection != NULL)
-		dmuci_get_value_by_section_string(((struct routingfwdargs *)data)->routefwdsection, "metric", value);
-	if ((*value)[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct routingfwdargs *)data)->routefwdsection, "metric", "0");
 	return 0;
 }
 

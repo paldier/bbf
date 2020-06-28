@@ -1168,9 +1168,7 @@ static int set_WiFiAccessPointSecurity_MFPConfig(char *refparam, struct dmctx *c
 /*#Device.WiFi.AccessPoint.{i}.WPS.Enable!UCI:wireless/wifi-iface,@i-1/wps*/
 static int get_WiFiAccessPointWPS_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct wifi_acp_args *)data)->wifi_acp_sec, "wps", value);
-	if(*value[0] == '\0')
-		*value= "0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct wifi_acp_args *)data)->wifi_acp_sec, "wps", "0");
 	return 0;
 }
 
@@ -1764,9 +1762,7 @@ static int set_WiFiEndPointProfileSecurity_MFPConfig(char *refparam, struct dmct
 /*#Device.WiFi.EndPoint.{i}.WPS.Enable!UCI:wireless/wifi-iface,@i-1/wps*/
 static int get_WiFiEndPointWPS_Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string(((struct wifi_enp_args *)data)->wifi_enp_sec, "wps", value);
-	if(*value[0] == '\0')
-		*value = "0";
+	*value = dmuci_get_value_by_section_fallback_def(((struct wifi_enp_args *)data)->wifi_enp_sec, "wps", "0");
 	return 0;
 }
 

@@ -32,11 +32,8 @@ int browseXIopsysEuDropbear(struct dmctx *dmctx, DMNODE *parent_node, void *prev
 **************************************************************************************/
 static int get_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "PasswordAuth", value);
-	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1')
-		*value = "1";
-	else
-		*value = "0";
+	char *res = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "PasswordAuth", "1");
+	*value = ((strcmp(res, "on") == 0) || *res == '1') ? "1" : "0";
 	return 0;
 }
 
@@ -59,11 +56,8 @@ static int set_x_iopsys_eu_dropbear_password_auth(char *refparam, struct dmctx *
 
 static int get_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "RootPasswordAuth", value);
-	if ((*value)[0] == '\0' || ((*value)[0] == 'o' && (*value)[1] == 'n') || (*value)[0] == '1')
-		*value = "1";
-	else
-		*value = "0";
+	char *res = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "RootPasswordAuth", "1");
+	*value = ((strcmp(res, "on") == 0) || *res == '1') ? "1" : "0";
 	return 0;
 }
 
@@ -86,10 +80,7 @@ static int set_x_iopsys_eu_dropbear_root_password_auth(char *refparam, struct dm
 
 static int get_x_iopsys_eu_dropbear_port(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "Port", value);
-	if ((*value)[0] == '\0') {
-		*value = "22";
-	}
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "Port", "22");
 	return 0;
 }
 
@@ -100,10 +91,7 @@ static int set_x_iopsys_eu_dropbear_port(char *refparam, struct dmctx *ctx, void
 		case VALUECHECK:
 			return 0;
 		case VALUESET:
-			if (value[0] == '\0')
-				dmuci_set_value_by_section((struct uci_section *)data, "Port", "22");
-			else
-				dmuci_set_value_by_section((struct uci_section *)data, "Port", value);
+			dmuci_set_value_by_section((struct uci_section *)data, "Port", value);
 			return 0;
 	}
 	return 0;
@@ -138,11 +126,7 @@ static int set_x_iopsys_eu_dropbear_root_login(char *refparam, struct dmctx *ctx
 
 static int get_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "verbose", value);
-	if ((*value)[0] == '\0' || (*value)[0] == '0' )
-		*value = "0";
-	else
-		*value = "1";
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "verbose", "0");
 	return 0;
 }
 
@@ -165,11 +149,7 @@ static int set_x_iopsys_eu_dropbear_verbose(char *refparam, struct dmctx *ctx, v
 
 static int get_x_iopsys_eu_dropbear_gateway_ports(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "GatewayPorts", value);
-	if ((*value)[0] == '\0' || (*value)[0] == '0' )
-		*value = "0";
-	else
-		*value = "1";
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "GatewayPorts", "0");
 	return 0;
 }
 
@@ -249,10 +229,7 @@ static int set_x_iopsys_eu_dropbear_dsskeyfile(char *refparam, struct dmctx *ctx
 
 static int get_x_iopsys_eu_dropbear_ssh_keepalive(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "SSHKeepAlive", value);
-	if ((*value)[0] == '\0') {
-		*value = "300";
-	}
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "SSHKeepAlive", "300");
 	return 0;
 }
 
@@ -274,10 +251,7 @@ static int set_x_iopsys_eu_dropbear_ssh_keepalive(char *refparam, struct dmctx *
 
 static int get_x_iopsys_eu_dropbear_idle_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	dmuci_get_value_by_section_string((struct uci_section *)data, "IdleTimeout", value);
-	if ((*value)[0] == '\0') {
-		*value = "300";
-	}
+	*value = dmuci_get_value_by_section_fallback_def((struct uci_section *)data, "IdleTimeout", "300");
 	return 0;
 }
 

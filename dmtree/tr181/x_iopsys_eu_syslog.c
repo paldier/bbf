@@ -32,12 +32,7 @@ static int set_server_ip_address(char *refparam, struct dmctx *ctx, void *data, 
 	
 static int get_server_port_number(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *tmp;
-	dmuci_get_option_value_string("system", "@system[0]", "log_port", &tmp);
-	if (tmp[0] == '\0')
-		*value = "514";
-	else
-		*value = tmp;
+	*value = dmuci_get_option_value_fallback_def("system", "@system[0]", "log_port", "514");
 	return 0;
 }
 
@@ -55,12 +50,7 @@ static int set_server_port_number(char *refparam, struct dmctx *ctx, void *data,
 
 static int get_remote_log_level(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
-	char *tmp;
-	dmuci_get_option_value_string("system", "@system[0]", "conloglevel", &tmp);
-	if (tmp[0] == '\0')
-		*value = "7";
-	else
-		*value = tmp;
+	*value = dmuci_get_option_value_fallback_def("system", "@system[0]", "conloglevel", "7");
 	return 0;
 }
 

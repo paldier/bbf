@@ -162,8 +162,10 @@ int load_library_dynamic_arrays(struct dmctx *ctx)
 				*(void **) (&root_dynamic_operate) = dlsym(handle, "tRootDynamicOperate");
 				if(root_dynamic_operate) {
 					for (i = 0; root_dynamic_operate[i].path; i++) {
-						if (root_dynamic_operate[i].operate)
-							add_dynamic_operate(root_dynamic_operate[i].path, root_dynamic_operate[i].operate);
+						if (root_dynamic_operate[i].operate && root_dynamic_operate[i].type)
+							add_dynamic_operate(root_dynamic_operate[i].path,
+									    root_dynamic_operate[i].operate,
+									    root_dynamic_operate[i].type);
 					}
 				}
 

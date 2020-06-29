@@ -311,6 +311,7 @@ typedef opr_ret_t (*operation) (struct dmctx *dmctx, char *p, char *input);
 typedef struct lib_map_operate {
 	char *path;
 	operation operate;
+	char *type; // sync or async
 } LIB_MAP_OPERATE;
 
 enum set_value_action {
@@ -333,6 +334,7 @@ enum {
 	CMD_DEL_OBJECT,
 	CMD_INFORM,
 	CMD_USP_OPERATE,
+	CMD_USP_LIST_OPERATE,
 #ifdef BBF_TR064
 	CMD_UPNP_GET_SUPPORTED_PARAMETERS,
 	CMD_UPNP_GET_INSTANCES,

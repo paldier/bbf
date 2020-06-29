@@ -47,7 +47,8 @@
 		}
 	},
 	"Device.BBKSpeedTest": {
-		"type": "operate"
+		"type": "operate",
+		"optype": "async"
 	}	
 }
 

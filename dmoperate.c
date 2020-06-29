@@ -928,12 +928,13 @@ static int get_index_of_available_dynamic_operate(struct op_cmd *operate)
 	return idx;
 }
 
-int add_dynamic_operate(char *path, operation operate)
+int add_dynamic_operate(char *path, operation operate, char *type)
 {
 	if (dynamic_operate == NULL) {
 		dynamic_operate = calloc(2, sizeof(struct op_cmd));
 		dynamic_operate[0].name = path;
 		dynamic_operate[0].opt = operate;
+		dynamic_operate[0].type = type;
 	} else {
 		int idx = get_index_of_available_dynamic_operate(dynamic_operate);
 		struct op_cmd *new_dynamic_operate = realloc(dynamic_operate, (idx + 2) * sizeof(struct op_cmd));
@@ -944,36 +945,58 @@ int add_dynamic_operate(char *path, operation operate)
 		memset(dynamic_operate + (idx + 1), 0, sizeof(struct op_cmd));
 		dynamic_operate[idx].name = path;
 		dynamic_operate[idx].opt = operate;
+		dynamic_operate[idx].type = type;
 	}
 	return 0;
 }
 
 static struct op_cmd operate_helper[] = {
-	{"Device.Reboot", reboot_device},
-	{"Device.FactoryReset", factory_reset},
-	{"Device.IP.Interface.*.Reset", network_interface_reset},
-	{"Device.PPP.Interface.*.Reset", network_interface_reset},
-	{"Device.WiFi.Reset", wireless_reset},
-	{"Device.WiFi.AccessPoint.*.Security.Reset", ap_security_reset},
-	{"Device.DHCPv4.Client.*.Renew", dhcp_client_renew},
-	{"Device.DHCPv6.Client.*.Renew", dhcp_client_renew},
-	{"Device.DeviceInfo.VendorConfigFile.*.Backup", vendor_conf_backup},
-	{"Device.DeviceInfo.VendorConfigFile.*.Restore", vendor_conf_restore},
-	{"Device.WiFi.NeighboringWiFiDiagnostic", fetch_neighboring_wifi_diagnostic},
+	{"Device.Reboot", reboot_device, "sync"},
+	{"Device.FactoryReset", factory_reset, "sync"},
+	{"Device.IP.Interface.*.Reset", network_interface_reset, "sync"},
+	{"Device.PPP.Interface.*.Reset", network_interface_reset, "sync"},
+	{"Device.WiFi.Reset", wireless_reset, "sync"},
+	{"Device.WiFi.AccessPoint.*.Security.Reset", ap_security_reset, "sync"},
+	{"Device.DHCPv4.Client.*.Renew", dhcp_client_renew, "sync"},
+	{"Device.DHCPv6.Client.*.Renew", dhcp_client_renew, "sync"},
+	{"Device.DeviceInfo.VendorConfigFile.*.Backup", vendor_conf_backup, "async"},
+	{"Device.DeviceInfo.VendorConfigFile.*.Restore", vendor_conf_restore, "async"},
+	{"Device.WiFi.NeighboringWiFiDiagnostic", fetch_neighboring_wifi_diagnostic, "async"},
 	//{"Device.DeviceInfo.VendorLogFile.*.Upload", blob_parser},
-	{"Device.IP.Diagnostics.IPPing", ip_diagnostics_ipping},
-	{"Device.IP.Diagnostics.TraceRoute", ip_diagnostics_traceroute},
-	{"Device.IP.Diagnostics.DownloadDiagnostics", ip_diagnostics_download},
-	{"Device.IP.Diagnostics.UploadDiagnostics", ip_diagnostics_upload},
-	{"Device.IP.Diagnostics.UDPEchoDiagnostics", ip_diagnostics_udpecho},
-	{"Device.IP.Diagnostics.ServerSelectionDiagnostics", ip_diagnostics_serverselection},
-	{"Device.DNS.Diagnostics.NSLookupDiagnostics", ip_diagnostics_nslookup},
-	{"Device.SoftwareModules.ExecEnv.*.Reset", swmodules_exec_env_reset},
-	{"Device.SoftwareModules.InstallDU", swmodules_install_du},
-	{"Device.SoftwareModules.DeploymentUnit.*.Update", swmodules_update_du},
-	{"Device.SoftwareModules.DeploymentUnit.*.Uninstall", swmodules_uninstall_du}
+	{"Device.IP.Diagnostics.IPPing", ip_diagnostics_ipping, "async"},
+	{"Device.IP.Diagnostics.TraceRoute", ip_diagnostics_traceroute, "async"},
+	{"Device.IP.Diagnostics.DownloadDiagnostics", ip_diagnostics_download, "async"},
+	{"Device.IP.Diagnostics.UploadDiagnostics", ip_diagnostics_upload, "async"},
+	{"Device.IP.Diagnostics.UDPEchoDiagnostics", ip_diagnostics_udpecho, "async"},
+	{"Device.IP.Diagnostics.ServerSelectionDiagnostics", ip_diagnostics_serverselection, "async"},
+	{"Device.DNS.Diagnostics.NSLookupDiagnostics", ip_diagnostics_nslookup, "async"},
+	{"Device.SoftwareModules.ExecEnv.*.Reset", swmodules_exec_env_reset, "sync"},
+	{"Device.SoftwareModules.InstallDU", swmodules_install_du, "async"},
+	{"Device.SoftwareModules.DeploymentUnit.*.Update", swmodules_update_du, "async"},
+	{"Device.SoftwareModules.DeploymentUnit.*.Uninstall", swmodules_uninstall_du, "async"}
 };
 
+void operate_list_cmds(struct dmctx *dmctx)
+{
+	char *param, *type;
+	uint8_t len = 0, i;
+	struct op_cmd *save_pointer = NULL;
+	if (dynamic_operate) save_pointer = dynamic_operate;
+
+	len = ARRAY_SIZE(operate_helper);
+	for(i = 0; i < len; i++) {
+		param = dmstrdup(operate_helper[i].name);
+		type = operate_helper[i].type;
+		add_list_paramameter(dmctx, param, NULL, type, NULL, 0);
+	}
+
+	for (; (dynamic_operate && dynamic_operate->name); dynamic_operate++) {
+		param = dmstrdup(dynamic_operate->name);
+		type = dynamic_operate->type;
+		add_list_paramameter(dmctx, param, NULL, type, NULL, 0);
+	}
+	if (save_pointer) dynamic_operate = save_pointer;
+}
 opr_ret_t operate_on_node(struct dmctx *dmctx, char *path, char *input)
 {
 	uint8_t len = 0, i;

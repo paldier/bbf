@@ -290,6 +290,11 @@ int dm_entry_param_method(struct dmctx *ctx, int cmd, char *inparam, char *arg1,
 			ctx->in_value = arg1 ? arg1 : "";
 			fault = operate_on_node(ctx, ctx->in_param, ctx->in_value);
 			break;
+
+		case CMD_USP_LIST_OPERATE:
+			ctx->in_value = arg1 ? arg1 : "";
+			operate_list_cmds(ctx);
+			break;
 #ifdef BBF_TR064
 		case CMD_UPNP_GET_SUPPORTED_PARAMETERS:
 			ctx->depth = atoi(arg1);

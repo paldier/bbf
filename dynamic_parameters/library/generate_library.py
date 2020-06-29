@@ -121,7 +121,7 @@ def cprintheaderRootDynamicOperate( ):
 	fp = open('./.objroot.c', 'a')
 	print >> fp, "/* ********** RootDynamicOperate ********** */"
 	print >> fp,  "LIB_MAP_OPERATE tRootDynamicOperate[] = {"
-	print >> fp,  "/* pathname, operation */"
+	print >> fp,  "/* pathname, operation, type */"
 	fp.close()
 
 def printObjRootDynamic( dmobject ):
@@ -130,9 +130,9 @@ def printObjRootDynamic( dmobject ):
 	print >> fp,  "{\"%s\", %s}," % (dmobject, "tdynamic" + commonname + "Obj")
 	fp.close()
 
-def printOperateRootDynamic( dmobject, commonname ):
+def printOperateRootDynamic( dmobject, commonname , optype):
 	fp = open('./.objroot.c', 'a')
-	print >> fp,  "{\"%s\", %s}," % (dmobject, "dynamic" + commonname + "Operate")
+	print >> fp,  "{\"%s\", %s, \"%s\"}," % (dmobject, "dynamic" + commonname + "Operate", optype)
 	fp.close()
 
 def printtailArrayRootDynamic( ):
@@ -550,9 +550,10 @@ def generatecfiles( pdir ):
 def generatestartedobject( key , value ):
 	obj_type = getoptionparam(value, "type")
 	if obj_type == "operate":
+	        op_type = getoptionparam(value, "optype")
 		key = key.replace(".{i}.", ".*.")
-		if key not in ListOperate:
-			ListOperate.append(key)
+		if key not in DictOperate:
+			DictOperate[key] = op_type;
 	else:
 		key = key.replace(".{i}", "")
 		obj = '.'.join(key.split(".")[0:key.count('.')-1]) + '.'
@@ -566,9 +567,9 @@ def generateRootDynamicarray( ):
 	printtailArrayRootDynamic()
 
 	cprintheaderRootDynamicOperate()
-	for x in ListOperate:
+	for x in DictOperate:
 		commonname = getname(x)
-		printOperateRootDynamic(x, commonname)
+		printOperateRootDynamic(x, commonname, DictOperate[x])
 		cprintOperate(commonname)
 		hprintOperate(commonname)
 	printtailArrayRootDynamic()	
@@ -603,7 +604,7 @@ with open(json_file) as file:
 	data = json.loads(file.read(), object_pairs_hook=OrderedDict)
 
 ListObjects = []
-ListOperate = []
+DictOperate = {}
 for i,(key,value) in enumerate(data.items()):
 	generatestartedobject(key, value)
 

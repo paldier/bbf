@@ -213,9 +213,11 @@ struct deployment_unit_update {
 struct op_cmd {
 	char *name;
 	operation opt;
+	char *type;
 };
 
-int add_dynamic_operate(char *path, operation operate);
+int add_dynamic_operate(char *path, operation operate, char *optype);
+void operate_list_cmds(struct dmctx *dmctx);
 opr_ret_t operate_on_node(struct dmctx *dmctx, char *path, char *input);
 
 #endif

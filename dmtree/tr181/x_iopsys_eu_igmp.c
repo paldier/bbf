@@ -216,26 +216,7 @@ static int get_igmpp_no_of_entries(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
-static int browse_igmps_cgrp_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	//perform ubus call to mcast stats and browse through each igmp group json object
-	int i = 0, id = 0;
-	json_object *res = NULL, *jobj = NULL, *arrobj = NULL, *group_obj = NULL;
-	char *idx, *idx_last = NULL;
-
-	dmubus_call("mcast", "stats", UBUS_ARGS{}, 0, &res);
-	if (res) {
-		jobj = dmjson_select_obj_in_array_idx(res, 0, 1, "snooping");
-		dmjson_foreach_obj_in_array(jobj, arrobj, group_obj, i, 1, "groups") {
-			idx = handle_update_instance(1, dmctx, &idx_last, update_instance_without_section, 1, ++id);
-				if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)group_obj, idx) == DM_STOP)
-					break;
-		}
-	}
-	return 0;
-}
-
-static int browse_igmpp_cgrp_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_igmp_cgrp_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	//perform ubus call to mcast stats and browse through each igmp group json object
 	int i = 0, id = 0;
@@ -352,7 +333,7 @@ static int get_igmps_filter_no_of_entries(char *refparam, struct dmctx *ctx, voi
 	return 0;
 }
 
-static int get_igmps_cgrps_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_igmp_cgrps_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	int i = 0, cnt = 0;
 	json_object *res = NULL, *jobj = NULL, *arrobj = NULL, *group_obj = NULL;
@@ -1011,23 +992,7 @@ static int set_igmpp_filter_address(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int browse_igmps_cgrp_assoc_dev_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
-{
-	//parse and browse through prev_data(it will be json object containing group address and details of its clients)
-
-	int i = 0, id = 0;
-	json_object *arrobj = NULL, *client_jobj = NULL;
-	char *idx, *idx_last = NULL;
-
-	dmjson_foreach_obj_in_array((struct json_object *)prev_data, arrobj, client_jobj, i, 1, "clients") {
-		idx = handle_update_instance(1, dmctx, &idx_last, update_instance_without_section, 1, ++id);
-			if (DM_LINK_INST_OBJ(dmctx, parent_node, (void *)client_jobj, idx) == DM_STOP)
-				break;
-	}
-	return 0;
-}
-
-static int browse_igmpp_cgrp_assoc_dev_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
+static int browse_igmp_cgrp_assoc_dev_inst(struct dmctx *dmctx, DMNODE *parent_node, void *prev_data, char *prev_instance)
 {
 	//parse and browse through prev_data(it will be json object containing group address and details of its clients)
 
@@ -1054,19 +1019,13 @@ static int browse_igmpp_cgrp_stats_inst(struct dmctx *dmctx, DMNODE *parent_node
 	//ToDo
 	return 0;
 }
-static int get_igmps_cgrp_gaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_igmp_cgrp_gaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "groupaddr");
 	return 0;
 }
 
-static int get_igmpp_cgrp_gaddr(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value((json_object *)data, 1, "groupaddr");
-	return 0;
-}
-
-static int get_igmps_cgrp_assoc_dev_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_igmp_cgrp_assoc_dev_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	int i = 0, cnt = 0;
 	json_object *arrobj = NULL, *client_obj = NULL;
@@ -1078,19 +1037,7 @@ static int get_igmps_cgrp_assoc_dev_no_of_entries(char *refparam, struct dmctx *
 	return 0;
 }
 
-static int get_igmpp_cgrp_assoc_dev_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	int i = 0, cnt = 0;
-	json_object *arrobj = NULL, *client_obj = NULL;
-
-	dmjson_foreach_obj_in_array((json_object *)data, arrobj, client_obj, i, 1, "clients") {
-		cnt++;
-	}
-	dmasprintf(value, "%d", cnt);
-	return 0;
-}
-
-static int get_igmps_cgrp_adev_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_igmp_cgrp_adev_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *ifname;
 	ifname = dmjson_get_value((json_object *)data, 1, "device");
@@ -1101,7 +1048,7 @@ static int get_igmps_cgrp_adev_iface(char *refparam, struct dmctx *ctx, void *da
 	return 0;
 }
 
-static int get_igmpp_cgrp_adev_host(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_igmp_cgrp_adev_host(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	char *ipaddr;
 	ipaddr = dmjson_get_value((json_object *)data, 1, "ipaddr");
@@ -1112,37 +1059,9 @@ static int get_igmpp_cgrp_adev_host(char *refparam, struct dmctx *ctx, void *dat
 	return 0;
 }
 
-static int get_igmpp_cgrp_adev_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
+static int get_igmp_cgrp_adev_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
 {
 	*value = dmjson_get_value((json_object *)data, 1, "timeout");
-	return 0;
-}
-
-static int get_igmps_cgrp_adev_host(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *ipaddr;
-	ipaddr = dmjson_get_value((json_object *)data, 1, "ipaddr");
-
-	adm_entry_get_linker_param(ctx, dm_print_path("%s%cHosts%cHost%c", dmroot, dm_delim, dm_delim, dm_delim), ipaddr, value);
-	if (*value == NULL)
-		*value = "";
-	return 0;
-}
-
-static int get_igmps_cgrp_adev_timeout(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	*value = dmjson_get_value((json_object *)data, 1, "timeout");
-	return 0;
-}
-
-static int get_igmpp_cgrp_adev_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	char *ifname;
-	ifname = dmjson_get_value((json_object *)data, 1, "device");
-
-	adm_entry_get_linker_param(ctx, dm_print_path("%s%cEthernet%cInterface%c", dmroot, dm_delim, dm_delim, dm_delim), ifname, value);
-	if (*value == NULL)
-		*value = "";
 	return 0;
 }
 
@@ -1430,22 +1349,6 @@ static int set_igmp_proxy_aggregation(char *refparam, struct dmctx *ctx, void *d
 		break;
 	}
 
-	return 0;
-}
-
-static int get_igmpp_cgrps_no_of_entries(char *refparam, struct dmctx *ctx, void *data, char *instance, char **value)
-{
-	int i = 0, cnt = 0;
-	json_object *res = NULL, *jobj = NULL, *arrobj = NULL, *group_obj = NULL;
-
-	dmubus_call("mcast", "stats", UBUS_ARGS{}, 0, &res);
-	if (res) {
-		jobj = dmjson_select_obj_in_array_idx(res, 0, 1, "snooping");
-		dmjson_foreach_obj_in_array(jobj, arrobj, group_obj, i, 1, "groups") {
-			cnt++;
-		}
-	}
-	dmasprintf(value, "%d", cnt);
 	return 0;
 }
 
@@ -1787,20 +1690,20 @@ DMLEAF X_IOPSYS_EU_IGMPParams[] = {
 };
 
 DMOBJ X_IOPSYS_EU_IGMPSnoopingObj[] = {
-{"ClientGroup", &DMREAD, NULL, NULL, NULL, browse_igmps_cgrp_inst, NULL, NULL, NULL, IGMPSnoopingCLientGroupObj, IGMPSnoopingClientGroupParams, NULL, BBFDM_BOTH},
+{"ClientGroup", &DMREAD, NULL, NULL, NULL, browse_igmp_cgrp_inst, NULL, NULL, NULL, IGMPSnoopingCLientGroupObj, IGMPSnoopingClientGroupParams, NULL, BBFDM_BOTH},
 {"Filter", &DMWRITE, add_igmps_filter_obj, del_igmps_filter_obj, NULL, browse_igmps_filter_inst, NULL, NULL, NULL, NULL, IGMPSnoopingFilterParams, NULL, BBFDM_BOTH},
 {0}
 };
 
 DMOBJ IGMPSnoopingCLientGroupObj[] = {
-{"AssociatedDevice", &DMREAD, NULL, NULL, NULL, browse_igmps_cgrp_assoc_dev_inst, NULL, NULL, NULL, NULL, IGMPSnoopingClientGroupAssociatedDeviceParams, NULL, BBFDM_BOTH},
+{"AssociatedDevice", &DMREAD, NULL, NULL, NULL, browse_igmp_cgrp_assoc_dev_inst, NULL, NULL, NULL, NULL, IGMPSnoopingClientGroupAssociatedDeviceParams, NULL, BBFDM_BOTH},
 {"ClientGroupStats", &DMREAD, NULL, NULL, NULL, browse_igmps_cgrp_stats_inst, NULL, NULL, NULL, NULL, IGMPSnoopingClientGroupStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
 
 DMLEAF IGMPSnoopingClientGroupParams[] = {
-{"GroupAddress", &DMREAD, DMT_STRING, get_igmps_cgrp_gaddr, NULL, NULL, NULL, BBFDM_BOTH},
-{"AssociatedDeviceNumberOfEntries", &DMREAD, DMT_UNINT, get_igmps_cgrp_assoc_dev_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{"GroupAddress", &DMREAD, DMT_STRING, get_igmp_cgrp_gaddr, NULL, NULL, NULL, BBFDM_BOTH},
+{"AssociatedDeviceNumberOfEntries", &DMREAD, DMT_UNINT, get_igmp_cgrp_assoc_dev_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -1811,9 +1714,9 @@ DMLEAF IGMPSnoopingFilterParams[] = {
 };
 
 DMLEAF IGMPSnoopingClientGroupAssociatedDeviceParams[] = {
-{"Interface", &DMREAD, DMT_STRING, get_igmps_cgrp_adev_iface, NULL, NULL, NULL, BBFDM_BOTH},
-{"Host", &DMREAD, DMT_STRING, get_igmps_cgrp_adev_host, NULL, NULL, NULL, BBFDM_BOTH},
-{"Timeout", &DMREAD, DMT_UNINT, get_igmps_cgrp_adev_timeout, NULL, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMREAD, DMT_STRING, get_igmp_cgrp_adev_iface, NULL, NULL, NULL, BBFDM_BOTH},
+{"Host", &DMREAD, DMT_STRING, get_igmp_cgrp_adev_host, NULL, NULL, NULL, BBFDM_BOTH},
+{"Timeout", &DMREAD, DMT_UNINT, get_igmp_cgrp_adev_timeout, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -1835,26 +1738,26 @@ DMLEAF X_IOPSYS_EU_IGMPSnoopingParams[] = {
 {"Interface", &DMWRITE, DMT_STRING, get_igmp_snooping_interface, set_igmp_snooping_interface, NULL, NULL, BBFDM_BOTH},
 {"Mode", &DMWRITE, DMT_STRING, get_igmp_snooping_mode, set_igmp_snooping_mode, NULL, NULL, BBFDM_BOTH},
 {"FilterNumberOfEntries", &DMREAD, DMT_UNINT, get_igmps_filter_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
-{"ClientGroupNumberOfEntries", &DMREAD, DMT_UNINT, get_igmps_cgrps_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{"ClientGroupNumberOfEntries", &DMREAD, DMT_UNINT, get_igmp_cgrps_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
 DMOBJ X_IOPSYS_EU_IGMPProxyObj[] = {
 {"Interface", &DMWRITE, add_igmpp_interface_obj, del_igmpp_interface_obj, NULL, browse_igmpp_interface_inst, NULL, NULL, NULL, NULL, IGMPProxyInterfaceParams, NULL, BBFDM_BOTH},
-{"ClientGroup", &DMREAD, NULL, NULL, NULL, browse_igmpp_cgrp_inst, NULL, NULL, NULL, IGMPProxyCLientGroupObj, IGMPProxyClientGroupParams, NULL, BBFDM_BOTH},
+{"ClientGroup", &DMREAD, NULL, NULL, NULL, browse_igmp_cgrp_inst, NULL, NULL, NULL, IGMPProxyCLientGroupObj, IGMPProxyClientGroupParams, NULL, BBFDM_BOTH},
 {"Filter", &DMWRITE, add_igmpp_filter_obj, del_igmpp_filter_obj, NULL, browse_igmpp_filter_inst, NULL, NULL, NULL, NULL, IGMPProxyFilterParams, NULL, BBFDM_BOTH},
 {0}
 };
 
 DMOBJ IGMPProxyCLientGroupObj[] = {
-{"AssociatedDevice", &DMREAD, NULL, NULL, NULL, browse_igmpp_cgrp_assoc_dev_inst, NULL, NULL, NULL, NULL, IGMPProxyClientGroupAssociatedDeviceParams, NULL, BBFDM_BOTH},
+{"AssociatedDevice", &DMREAD, NULL, NULL, NULL, browse_igmp_cgrp_assoc_dev_inst, NULL, NULL, NULL, NULL, IGMPProxyClientGroupAssociatedDeviceParams, NULL, BBFDM_BOTH},
 {"ClientGroupStats", &DMREAD, NULL, NULL, NULL, browse_igmpp_cgrp_stats_inst, NULL, NULL, NULL, NULL, IGMPProxyClientGroupStatsParams, NULL, BBFDM_BOTH},
 {0}
 };
 
 DMLEAF IGMPProxyClientGroupParams[] = {
-{"GroupAddress", &DMREAD, DMT_STRING, get_igmpp_cgrp_gaddr, NULL, NULL, NULL, BBFDM_BOTH},
-{"AssociatedDeviceNumberOfEntries", &DMREAD, DMT_UNINT, get_igmpp_cgrp_assoc_dev_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{"GroupAddress", &DMREAD, DMT_STRING, get_igmp_cgrp_gaddr, NULL, NULL, NULL, BBFDM_BOTH},
+{"AssociatedDeviceNumberOfEntries", &DMREAD, DMT_UNINT, get_igmp_cgrp_assoc_dev_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -1865,9 +1768,9 @@ DMLEAF IGMPProxyFilterParams[] = {
 };
 
 DMLEAF IGMPProxyClientGroupAssociatedDeviceParams[] = {
-{"Interface", &DMREAD, DMT_STRING, get_igmpp_cgrp_adev_iface, NULL, NULL, NULL, BBFDM_BOTH},
-{"Host", &DMREAD, DMT_STRING, get_igmpp_cgrp_adev_host, NULL, NULL, NULL, BBFDM_BOTH},
-{"Timeout", &DMREAD, DMT_UNINT, get_igmpp_cgrp_adev_timeout, NULL, NULL, NULL, BBFDM_BOTH},
+{"Interface", &DMREAD, DMT_STRING, get_igmp_cgrp_adev_iface, NULL, NULL, NULL, BBFDM_BOTH},
+{"Host", &DMREAD, DMT_STRING, get_igmp_cgrp_adev_host, NULL, NULL, NULL, BBFDM_BOTH},
+{"Timeout", &DMREAD, DMT_UNINT, get_igmp_cgrp_adev_timeout, NULL, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 
@@ -1897,7 +1800,7 @@ DMLEAF X_IOPSYS_EU_IGMPProxyParams[] = {
 {"ImmediateLeave", &DMWRITE, DMT_BOOL, get_igmp_proxy_fast_leave, set_igmp_proxy_fast_leave, NULL, NULL, BBFDM_BOTH},
 {"Robustness", &DMWRITE, DMT_UNINT, get_igmp_proxy_robustness, set_igmp_proxy_robustness, NULL, NULL, BBFDM_BOTH},
 {"Aggregation", &DMWRITE, DMT_BOOL, get_igmp_proxy_aggregation, set_igmp_proxy_aggregation, NULL, NULL, BBFDM_BOTH},
-{"ClientGroupNumberOfEntries", &DMREAD, DMT_UNINT, get_igmpp_cgrps_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
+{"ClientGroupNumberOfEntries", &DMREAD, DMT_UNINT, get_igmp_cgrps_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {"FilterNumberOfEntries", &DMREAD, DMT_UNINT, get_igmpp_filter_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {"InterfaceNumberOfEntries", &DMREAD, DMT_UNINT, get_igmpp_interface_no_of_entries, NULL, NULL, NULL, BBFDM_BOTH},
 {0}

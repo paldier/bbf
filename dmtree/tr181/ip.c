@@ -195,6 +195,7 @@ static int get_IP_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char
 
 static int set_IP_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
+	FILE *fp = NULL;
 	char buf[64] = {0};
 	bool b;
 
@@ -205,8 +206,32 @@ static int set_IP_IPv6Enable(char *refparam, struct dmctx *ctx, void *data, char
 			break;
 		case VALUESET:
 			string_to_bool(value, &b);
+
+			fp = fopen("/etc/sysctl.conf", "r+");
+			if (!fp)
+				return 0;
+
 			snprintf(buf, sizeof(buf), "net.ipv6.conf.all.disable_ipv6=%d", b ? 0 : 1);
 			DMCMD("sysctl", 2, "-w", buf);
+
+			fseek(fp, 0, SEEK_END);
+			long length = ftell(fp);
+			char *buffer = dmcalloc(1, length+1);
+			if (buffer) {
+				fseek(fp, 0, SEEK_SET);
+				fread(buffer, 1, length, fp);
+				char *ptr = strstr(buffer, "net.ipv6.conf.all.disable_ipv6");
+				if (ptr) {
+					*(ptr+31) = (b) ? '0' : '1';
+					fseek(fp, 0, SEEK_SET);
+					fwrite(buffer, sizeof(char), strlen(buffer), fp);
+				} else {
+					fputs(buf, fp);
+				}
+				dmfree(buffer);
+			}
+			fclose(fp);
+
 			break;
 	}
 	return 0;

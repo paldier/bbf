@@ -608,13 +608,103 @@ struct uci_section *get_dup_section_in_dmmap_eq(char *dmmap_package, char* secti
 	return NULL;
 }
 
+static void get_mcast_iface_key(char *p_ifname, char *key, size_t key_size)
+{
+	int itf_found = 0;
+	struct uci_section *n_sec;
+	char *intf_name;
+
+	uci_foreach_sections("network", "interface", n_sec) {
+		itf_found = 0;
+		dmuci_get_value_by_section_string(n_sec, "ifname", &intf_name);
+
+		intf_name = dmstrdup(intf_name);
+		char *pch, *spch;
+		pch = strtok_r(intf_name, " ", &spch);
+		while (pch != NULL) {
+			if (strcmp(pch, p_ifname) == 0) {
+				strncpy(key, section_name(n_sec), key_size - 1);
+				itf_found = 1;
+				break;
+			}
+			pch = strtok_r(NULL, " ", &spch);
+		}
+
+		if (itf_found)
+			break;
+	}
+}
+
+static void sync_mcast_dmmap_iface_sec(struct uci_list *proxy_iface, char *s_mode,
+		struct uci_section *s, char *dmmap_package, char *dmmap_sec,
+		struct list_head *dup_list, char *up_iface)
+{
+	struct uci_element *e;
+	struct uci_section *d_sec;
+	int found = 0;
+	char key[1024] = "";
+	char *s_name;
+	char *v;
+
+	uci_foreach_element(proxy_iface, e) {
+		char *p_ifname = dmstrdup(e->name);
+		if (strstr(p_ifname, "br-") != NULL) {
+			strncpy(key, p_ifname, sizeof(key) - 1);
+		} else {
+			get_mcast_iface_key(p_ifname, key, sizeof(key));
+		}
+
+		// Now that we have the key which is the ifname, verify if interface
+		// section for this already exists in dmmap_mcast file. In case yes,
+		// add this to the dup_list, else create entry in the dmmap_mcast
+		// file corresponding to this interface
+		uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "ifname",
+				key, d_sec) {
+			dmuci_get_value_by_section_string(d_sec, "section_name", &s_name);
+			if (strcmp(s_name, section_name(s)) == 0) {
+				add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
+				found = 1;
+				break;
+			}
+		}
+
+		if (found == 0) {
+			// add entry in dmmap for this
+			dmuci_add_section_bbfdm(dmmap_package, dmmap_sec, &d_sec, &v);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "section_name",
+					section_name(s));
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "ifname",
+					key);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "upstream",
+					up_iface);
+			DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "snooping_mode",
+					s_mode);
+			add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
+		}
+	}
+}
+
+static void add_empty_mcast_iface_to_list(char *dmmap_package, char *dmmap_sec,
+		struct uci_section *s, struct list_head *dup_list)
+{
+	struct uci_section *dmmap_sect;
+	char *f_ifname;
+
+	uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "section_name",
+			section_name(s), dmmap_sect) {
+		dmuci_get_value_by_section_string(dmmap_sect, "ifname", &f_ifname);
+
+		if (strcmp(f_ifname, "") == 0)
+			add_sectons_list_paramameter(dup_list, s, dmmap_sect, NULL);
+	}
+}
+
 void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, char *section_type,
 					void *data, char *dmmap_package, char *dmmap_sec, char *proto,
 					struct list_head *dup_list)
 {
-	struct uci_section *s, *dmmap_sect, *d_sec, *stmp;
+	struct uci_section *s, *stmp;
 	char *v;
-	char *s_name;
 
 	dmmap_file_path_get(dmmap_package);
 	uci_foreach_option_eq(package, section_type, "proto", proto, s) {
@@ -626,36 +716,12 @@ void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, 
 		// and update the dmmap section accordingly. The do the same exercise for the list
 		// snooping_interface
 		struct uci_list *proxy_iface = NULL;
+
 		dmuci_get_value_by_section_list(s, "upstream_interface", &proxy_iface);
 		if (proxy_iface != NULL) {
-			struct uci_element *e;
-			uci_foreach_element(proxy_iface, e) {
-				char *p_ifname = dmstrdup(e->name);
-				int found = 0;
-				uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "ifname",
-						p_ifname, d_sec) {
-					dmuci_get_value_by_section_string(d_sec, "section_name", &s_name);
-					if (strcmp(s_name, section_name(s)) == 0) {
-						add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
-						found = 1;
-						break;
-					}
-				}
+			sync_mcast_dmmap_iface_sec(proxy_iface, "0", s, dmmap_package,
+					dmmap_sec, dup_list, "1");
 
-				if (found == 0) {
-					// add entry in dmmap for this
-					dmuci_add_section_bbfdm(dmmap_package, dmmap_sec, &d_sec, &v);
-					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "section_name",
-							section_name(s));
-					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "ifname",
-							p_ifname);
-					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "upstream",
-							"1");
-					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "snooping_mode",
-							"0");
-					add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
-				}
-			}
 		}
 
 		struct uci_list *snooping_iface = NULL;
@@ -663,46 +729,14 @@ void synchronize_specific_config_sections_with_dmmap_mcast_iface(char *package, 
 		dmuci_get_value_by_section_list(s, "downstream_interface", &snooping_iface);
 		dmuci_get_value_by_section_string(s, "snooping_mode", &s_mode);
 		if (snooping_iface != NULL) {
-			struct uci_element *e;
-			uci_foreach_element(snooping_iface, e) {
-				char *s_ifname = dmstrdup(e->name);
-				int found = 0;
-				uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "ifname",
-						s_ifname, d_sec) {
-					dmuci_get_value_by_section_string(d_sec, "section_name", &s_name);
-					if (strcmp(s_name, section_name(s)) == 0) {
-						add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
-						found = 1;
-						break;
-					}
-				}
-
-				if (found == 0) {
-					// add entry in dmmap for this
-					dmuci_add_section_bbfdm(dmmap_package, dmmap_sec, &d_sec, &v);
-					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "section_name",
-							section_name(s));
-					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "ifname",
-							s_ifname);
-					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "upstream",
-							"0");
-					DMUCI_SET_VALUE_BY_SECTION(bbfdm, d_sec, "snooping_mode",
-							s_mode);
-					add_sectons_list_paramameter(dup_list, s, d_sec, NULL);
-				}
-			}
+			sync_mcast_dmmap_iface_sec(snooping_iface, s_mode, s, dmmap_package,
+					dmmap_sec, dup_list, "0");
 		}
 
-		char *f_ifname;
 		// There can be entries in the dmmap_mcast file that do not have an ifname set.
 		// For such entries, now add to dup_list
-		uci_path_foreach_option_eq(bbfdm, dmmap_package, dmmap_sec, "section_name",
-				section_name(s), dmmap_sect) {
-			dmuci_get_value_by_section_string(dmmap_sect, "ifname", &f_ifname);
+		add_empty_mcast_iface_to_list(dmmap_package, dmmap_sec, s, dup_list);
 
-			if (strcmp(f_ifname, "") == 0)
-				add_sectons_list_paramameter(dup_list, s, dmmap_sect, NULL);
-		}
 	}
 
 	/*

@@ -707,6 +707,33 @@ static int add_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data
 	return 0;
 }
 
+static void get_igmpp_iface_del_key_val(char *key, size_t key_size, char *if_name)
+{
+	struct uci_section *s;
+	char *ifval;
+	if (strstr(if_name, "br-") != NULL) {
+		strncpy(key, if_name, key_size - 1);
+	} else {
+		uci_foreach_sections("network", "interface", s) {
+			if(strcmp(section_name(s), if_name) == 0) {
+				dmuci_get_value_by_section_string(s, "ifname", &ifval);
+				strncpy(key, ifval, key_size - 1);
+				break;
+			}
+		}
+	}
+}
+static void del_igmpp_iface_val(char *upstream, void *data, char *pch)
+{
+	if (strcmp(upstream, "1") == 0) {
+		dmuci_del_list_value_by_section((struct uci_section *)data,
+				"upstream_interface", pch);
+	} else {
+		dmuci_del_list_value_by_section((struct uci_section *)data,
+				"downstream_interface", pch);
+	}
+}
+
 static int del_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data, char *instance, unsigned char del_action)
 {
 	struct uci_section *d_sec = NULL;
@@ -724,20 +751,25 @@ static int del_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data
 				dmuci_get_value_by_section_string(d_sec, "upstream", &upstream);
 				dmuci_delete_by_section(d_sec, NULL, NULL);
 				found = 1;
+			} else {
+				continue;
 			}
 
 			if (found) {
-				if (strcmp(upstream, "1") == 0) {
-					dmuci_del_list_value_by_section((struct uci_section *)data,
-							"upstream_interface", if_name);
-				} else {
-					dmuci_del_list_value_by_section((struct uci_section *)data,
-							"downstream_interface", if_name);
+				char key[1024];
+				get_igmpp_iface_del_key_val(key, sizeof(key), if_name);
+
+				char *pch, *spch;
+				pch = strtok_r(key, " ", &spch);
+				while (pch != NULL) {
+					del_igmpp_iface_val(upstream, data, pch);
+					pch = strtok_r(NULL, " ", &spch);
 				}
+				del_dmmap_sec_with_opt_eq("dmmap_mcast", "proxy_interface",
+						"ifname", if_name);
 				break;
 			}
 		}
-
 		break;
 	case DEL_ALL:
 		uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "proxy_interface",
@@ -745,12 +777,14 @@ static int del_igmpp_interface_obj(char *refparam, struct dmctx *ctx, void *data
 			dmuci_get_value_by_section_string(d_sec, "ifname", &if_name);
 			dmuci_get_value_by_section_string(d_sec, "upstream", &upstream);
 			if (if_name[0] != '\0') {
-				if (strcmp(upstream, "1") == 0) {
-					dmuci_del_list_value_by_section((struct uci_section *)data,
-							"upstream_interface", if_name);
-				} else {
-					dmuci_del_list_value_by_section((struct uci_section *)data,
-							"downstream_interface", if_name);
+				char key[1024];
+				get_igmpp_iface_del_key_val(key, sizeof(key), if_name);
+
+				char *pch, *spch;
+				pch = strtok_r(key, " ", &spch);
+				while (pch != NULL) {
+					del_igmpp_iface_val(upstream, data, pch);
+					pch = strtok_r(NULL, " ", &spch);
 				}
 			}
 		}
@@ -1400,13 +1434,95 @@ static void update_snooping_mode(struct uci_section *s)
 	return;
 }
 
+static void sync_proxy_interface_sections(struct uci_section *s, char *section,
+                                char *value, bool up_iface)
+{
+        struct uci_list *v = NULL;
+        struct uci_element *e;
+        char *val;
+
+	dmuci_get_value_by_section_list(s, section, &v);
+	// value here is a list of space separated names of interface so,
+	// the first task is to tokenise this and then for each interface,
+	// update the downstream or upstream interface list.
+	value = dmstrdup(value);
+
+	char *pch = NULL, *spch = NULL;
+	pch = strtok_r(value, " ", &spch);
+	while (pch != NULL) {
+		int found = 0; // use to avoid duplicate entries
+
+		if (v != NULL) {
+			// For each pch value check if entry already exists
+			// in the qos uci file in the downstream or upstream list
+			uci_foreach_element(v, e) {
+				val = dmstrdup(e->name);
+				if (strcmp(val, pch) == 0) {
+					found = 1;
+					if (!up_iface) {
+						// if entry is found and upstream was set to
+						// false, then, remove this entry
+						dmuci_del_list_value_by_section(s, section, val);
+					}
+
+					// Further action is not required
+					break;
+				}
+			}
+
+			// if entry was not found and b is true create entry. Check for
+			// found in needed otherwise, duplicate entry maybe created
+			if (up_iface && !found) {
+				dmuci_add_list_value_by_section(s, section, pch);
+			}
+		} else {
+			// The list of downstream or upstream interfaces in uci file is
+			// empty, so just add entries if needed
+			if (up_iface) {
+				dmuci_add_list_value_by_section(s, section, pch);
+			}
+		}
+
+		pch = strtok_r(NULL, " ", &spch);
+	}
+}
+
+static void set_igmpp_iface_val(void *data, char *instance, char *linker, char *interface_linker, bool is_br)
+{
+	struct uci_section *d_sec;
+	char *up, *f_inst;
+	bool b;
+
+	uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "proxy_interface",
+			"section_name", section_name((struct uci_section *)data), d_sec) {
+		dmuci_get_value_by_section_string(d_sec, "iface_instance", &f_inst);
+		if (strcmp(instance, f_inst) == 0) {
+			if (is_br)
+				dmuci_set_value_by_section(d_sec, "ifname", interface_linker);
+			else
+				dmuci_set_value_by_section(d_sec, "ifname", linker);
+
+			dmuci_get_value_by_section_string(d_sec, "upstream", &up);
+			string_to_bool(up, &b);
+			sync_proxy_interface_sections((struct uci_section *)data,
+					"downstream_interface", interface_linker, !b);
+
+			// Now update the proxy_interface list
+			sync_proxy_interface_sections((struct uci_section *)data,
+					"upstream_interface", interface_linker, b);
+			update_snooping_mode((struct uci_section *)data);
+			break;
+		}
+	}
+}
+
 static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *linker, *interface_linker = NULL;
 	char ifname[16];
-	char *up, *f_inst, *if_type;
-	struct uci_section *d_sec, *s;
-	bool b;
+	char *if_type;
+	struct uci_section *s;
+	bool is_br = false;
 
 	switch (action) {
 	case VALUECHECK:
@@ -1417,38 +1533,26 @@ static int set_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 		// First check if this is a bridge type interface
 		if (get_igmp_snooping_interface_val(value, ifname, sizeof(ifname)) == 0) {
 			interface_linker = dmstrdup(ifname);
+			is_br = true;
 		} else {
 			adm_entry_get_linker_value(ctx, value, &linker);
 			uci_foreach_sections("network", "interface", s) {
 				if(strcmp(section_name(s), linker) != 0) {
 					continue;
 				}
+
 				dmuci_get_value_by_section_string(s, "type", &if_type);
-				if (strcmp(if_type, "bridge") == 0)
+				if (strcmp(if_type, "bridge") == 0) {
 					dmasprintf(&interface_linker, "br-%s", linker);
-				else
+					is_br = true;
+				} else {
 					dmuci_get_value_by_section_string(s, "ifname", &interface_linker);
-				break;
-			}
-		}
-		uci_path_foreach_option_eq(bbfdm, "dmmap_mcast", "proxy_interface",
-				"section_name", section_name((struct uci_section *)data), d_sec) {
-			dmuci_get_value_by_section_string(d_sec, "iface_instance", &f_inst);
-			if (strcmp(instance, f_inst) == 0) {
-				dmuci_set_value_by_section(d_sec, "ifname", interface_linker);
-				dmuci_get_value_by_section_string(d_sec, "upstream", &up);
-				string_to_bool(up, &b);
-				sync_dmmap_bool_to_uci_list((struct uci_section *)data,
-						"downstream_interface", interface_linker, !b);
-
-				// Now update the proxy_interface list
-				sync_dmmap_bool_to_uci_list((struct uci_section *)data,
-						"upstream_interface", interface_linker, b);
-				update_snooping_mode((struct uci_section *)data);
+				}
 				break;
 			}
 		}
 
+		set_igmpp_iface_val(data, instance, linker, interface_linker, is_br);
 		break;
 	}
 
@@ -1526,21 +1630,13 @@ static int get_igmpp_interface_iface(char *refparam, struct dmctx *ctx, void *da
 			break;
 		}
 	} else {
-		char *device_name, *tmp_linker = NULL;
-		// it is a L3 interface, get the section name from device name to construct the linker
-		uci_foreach_sections("network", "interface", s) {
-			dmuci_get_value_by_section_string(s, "ifname", &device_name);
-			if (strcmp(device_name, ifname) == 0) {
-				tmp_linker = dmstrdup(section_name(s));
-				break;
-			}
-		}
-
-		if (tmp_linker == NULL)
+		// in case its a L3 interface, the ifname would be section name of network file in the dmmap file,
+		// which infact is the linker, just use that directly.
+		if (ifname == NULL)
 			goto end;
 
 		adm_entry_get_linker_param(ctx, dm_print_path("%s%cIP%cInterface%c", dmroot, dm_delim,
-					dm_delim, dm_delim), tmp_linker, value);
+					dm_delim, dm_delim), ifname, value);
 	}
 
 end:
@@ -1553,7 +1649,7 @@ end:
 static int set_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void *data, char *instance, char *value, int action)
 {
 	char *f_inst, *ifname;
-	struct uci_section *d_sec;
+	struct uci_section *d_sec, *s;
 	bool b;
 
 	switch (action) {
@@ -1567,13 +1663,33 @@ static int set_igmpp_interface_upstream(char *refparam, struct dmctx *ctx, void 
 				"section_name", section_name((struct uci_section *)data), d_sec) {
 			dmuci_get_value_by_section_string(d_sec, "iface_instance", &f_inst);
 			if (strcmp(instance, f_inst) == 0) {
+				// The interface is a part of downstream or upstream list in the
+				// uci file based on the value of upstream parameter, hence, when
+				// this parameter is updated, need arises to update the lists as well.
+				// Reading the interface name to be updated associated with the
+				// instance for which upstream parameter is being updated is hence
+				// needed. This value is read into variable key.
+				char key[1024];
+				char *ifval;
 				dmuci_get_value_by_section_string(d_sec, "ifname", &ifname);
+				if (strstr(ifname, "br-") != NULL) {
+					strncpy(key, ifname, sizeof(key) - 1);
+				} else {
+					uci_foreach_sections("network", "interface", s) {
+						if(strcmp(section_name(s), ifname) == 0) {
+							dmuci_get_value_by_section_string(s, "ifname", &ifval);
+							strncpy(key, ifval, sizeof(key) - 1);
+							break;
+						}
+					}
+				}
+
 				dmuci_set_value_by_section(d_sec, "upstream", (b) ? "1" : "0");
 
-				sync_dmmap_bool_to_uci_list((struct uci_section *)data,
-						"downstream_interface", ifname, !b);
-				sync_dmmap_bool_to_uci_list((struct uci_section *)data,
-						"upstream_interface", ifname, b);
+				sync_proxy_interface_sections((struct uci_section *)data,
+						"downstream_interface", key, !b);
+				sync_proxy_interface_sections((struct uci_section *)data,
+						"upstream_interface", key, b);
 				update_snooping_mode((struct uci_section *)data);
 
 				break;
@@ -1763,7 +1879,7 @@ DMLEAF IGMPProxyClientGroupParams[] = {
 
 DMLEAF IGMPProxyFilterParams[] = {
 {"Enable", &DMWRITE, DMT_BOOL, get_igmpp_filter_enable, set_igmpp_filter_enable, NULL, NULL, BBFDM_BOTH},
-{"IPAddress", &DMWRITE, DMT_STRING, get_igmpp_filter_address, set_igmpp_filter_address, NULL, NULL, BBFDM_BOTH},
+{"IPPrefix", &DMWRITE, DMT_STRING, get_igmpp_filter_address, set_igmpp_filter_address, NULL, NULL, BBFDM_BOTH},
 {0}
 };
 

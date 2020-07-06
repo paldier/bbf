@@ -768,7 +768,7 @@ static int get_WiFiAccessPoint_AllowedMACAddress(char *refparam, struct dmctx *c
 	struct uci_list *val;
 	dmuci_get_value_by_section_list(((struct wifi_acp_args *)data)->wifi_acp_sec, "maclist", &val);
 	if (val)
-		*value = dmuci_list_to_string(val, " ");
+		*value = dmuci_list_to_string(val, ",");
 	return 0;
 }
 
@@ -784,7 +784,8 @@ static int set_WiFiAccessPoint_AllowedMACAddress(char *refparam, struct dmctx *c
 				return FAULT_9007;
 			break;
 		case VALUESET:
-			arr = strsplit(value, " ", &length);
+			arr = strsplit(value, ",", &length);
+			dmuci_set_value_by_section(((struct wifi_acp_args *)data)->wifi_acp_sec, "maclist", "");
 			for (i = 0; i < length; i++)
 				dmuci_add_list_value_by_section(((struct wifi_acp_args *)data)->wifi_acp_sec, "maclist", arr[i]);
 			break;
